@@ -37,6 +37,7 @@ import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.glu.GLU;
 
 import ch.ethz.fcl.ether.gl.Frame;
+import ch.ethz.fcl.ether.model.IModel;
 
 import com.jogamp.opengl.util.awt.TextRenderer;
 
@@ -54,6 +55,8 @@ public interface IView extends KeyListener, MouseListener, MouseMotionListener, 
 
 	Frame getFrame();
 	IScene getScene();
+	IModel getModel();
+
 	Camera getCamera();
 	int getWidth();
 	int getHeight();

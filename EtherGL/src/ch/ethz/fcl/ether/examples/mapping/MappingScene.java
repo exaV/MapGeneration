@@ -34,10 +34,10 @@ import javax.media.opengl.GL2;
 import ch.ethz.fcl.ether.mapping.BoxCalibrationModel;
 import ch.ethz.fcl.ether.mapping.CalibrationTool;
 import ch.ethz.fcl.ether.mapping.FillTool;
+import ch.ethz.fcl.ether.render.IRenderer;
 import ch.ethz.fcl.ether.render.ShadowVolumeRenderer;
 import ch.ethz.fcl.ether.scene.AbstractScene;
 import ch.ethz.fcl.ether.scene.AbstractTool;
-import ch.ethz.fcl.ether.scene.IRenderer;
 import ch.ethz.fcl.ether.scene.ITool;
 import ch.ethz.fcl.ether.scene.IView;
 

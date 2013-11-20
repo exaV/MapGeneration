@@ -27,7 +27,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package ch.ethz.fcl.ether.model;
 
+import java.util.List;
+
 import ch.ethz.fcl.ether.geom.BoundingVolume;
+import ch.ethz.fcl.ether.render.IRenderGroup;
 
 /**
  * Interface for all models to be rendered / interacted with. At this point, the
@@ -39,4 +42,6 @@ import ch.ethz.fcl.ether.geom.BoundingVolume;
  */
 public interface IModel {
 	BoundingVolume getBounds();
+	
+	List<IRenderGroup> getRenderGroups();	
 }

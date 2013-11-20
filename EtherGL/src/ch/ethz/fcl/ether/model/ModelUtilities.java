@@ -29,7 +29,7 @@ package ch.ethz.fcl.ether.model;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
-public final class ModelUtils {
+public final class ModelUtilities {
 	// @formatter:off
 	public static final float[] UNIT_CUBE_FACES = {
 		1, 1, 0, 0, 1, 0, 1, 1, 1,

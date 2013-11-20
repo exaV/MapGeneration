@@ -25,9 +25,12 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package ch.ethz.fcl.ether.scene;
+package ch.ethz.fcl.ether.render;
 
 import javax.media.opengl.GL2;
+
+import ch.ethz.fcl.ether.model.IModel;
+import ch.ethz.fcl.ether.scene.IView;
 
 /**
  * Simple rendering interface.
@@ -35,7 +38,6 @@ import javax.media.opengl.GL2;
  * @author radar
  * 
  */
-// XXX work in progress
 public interface IRenderer {
-	void renderModel(GL2 gl, IView view);
+	void renderModel(GL2 gl, IModel model, IView view);
 }

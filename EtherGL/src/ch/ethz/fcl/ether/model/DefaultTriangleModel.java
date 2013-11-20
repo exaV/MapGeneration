@@ -27,8 +27,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package ch.ethz.fcl.ether.model;
 
-import ch.ethz.fcl.ether.geom.BoundingVolume;
+import java.util.List;
 
+import ch.ethz.fcl.ether.geom.BoundingVolume;
+import ch.ethz.fcl.ether.render.IRenderGroup;
+
+// XXX KILL THIS CLASS
 public class DefaultTriangleModel implements ITriangleModel {
 	private float[] faces;
 	private float[] normals;
@@ -51,7 +55,7 @@ public class DefaultTriangleModel implements ITriangleModel {
 	@Override
 	public float[] getNormals() {
 		if (normals == null) {
-			normals = ModelUtils.calculateNormals(getFaces());
+			normals = ModelUtilities.calculateNormals(getFaces());
 		}
 		return normals;
 	}
@@ -69,5 +73,11 @@ public class DefaultTriangleModel implements ITriangleModel {
 		for (int i = 0; i < faces.length; i += 3) {
 			bounds.add(faces[i], faces[i+1], faces[i+2]);
 		}
+	}
+
+	@Override
+	public List<IRenderGroup> getRenderGroups() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

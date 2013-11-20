@@ -31,6 +31,11 @@ import java.util.Collection;
 
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
+/**
+ * Axis aligned bounding box.
+ * @author radar
+ *
+ */
 public final class BoundingBox {
 	boolean valid;
 	double minX;

@@ -40,6 +40,7 @@ import javax.media.opengl.glu.GLU;
 import ch.ethz.fcl.ether.gl.DrawingUtilities;
 import ch.ethz.fcl.ether.gl.Frame;
 import ch.ethz.fcl.ether.gl.ProjectionUtilities;
+import ch.ethz.fcl.ether.model.IModel;
 import ch.ethz.fcl.ether.ui.Button;
 
 import com.jogamp.opengl.util.awt.TextRenderer;
@@ -93,6 +94,11 @@ public abstract class AbstractView implements IView {
 	@Override
 	public IScene getScene() {
 		return scene;
+	}
+	
+	@Override
+	public final IModel getModel() {
+		return scene.getModel();
 	}
 	
 	@Override
@@ -229,7 +235,7 @@ public abstract class AbstractView implements IView {
 
 		// draw model elements
 		if (!getScene().getCurrentTool().isExclusive()) {
-			getScene().getRenderer().renderModel(gl, this);
+			getScene().getRenderer().renderModel(gl, getModel(), this);
 		}
 		getScene().getCurrentTool().render3D(gl, this);
 		

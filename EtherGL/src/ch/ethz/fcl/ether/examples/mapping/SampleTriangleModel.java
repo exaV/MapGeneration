@@ -28,7 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package ch.ethz.fcl.ether.examples.mapping;
 
 import ch.ethz.fcl.ether.model.DefaultTriangleModel;
-import ch.ethz.fcl.ether.model.ModelUtils;
+import ch.ethz.fcl.ether.model.ModelUtilities;
 
 
 public class SampleTriangleModel extends DefaultTriangleModel {
@@ -37,11 +37,11 @@ public class SampleTriangleModel extends DefaultTriangleModel {
 	}
 	
 	public void reset() {
-		float[] faces = new float[4 * ModelUtils.UNIT_CUBE_FACES.length];
-		ModelUtils.addCube(faces, 0, -0.3f, -0.3f, 0.1f, 0.1f, 0.1f);
-		ModelUtils.addCube(faces, 1, 0.1f, -0.2f, 0.2f, 0.1f, 0.2f);
-		ModelUtils.addCube(faces, 2, 0f, 0f, 0.1f, 0.2f, 0.1f);
-		ModelUtils.addCube(faces, 3, 0.2f, 0.1f, 0.1f, 0.1f, 0.2f);
+		float[] faces = new float[4 * ModelUtilities.UNIT_CUBE_FACES.length];
+		ModelUtilities.addCube(faces, 0, -0.3f, -0.3f, 0.1f, 0.1f, 0.1f);
+		ModelUtilities.addCube(faces, 1, 0.1f, -0.2f, 0.2f, 0.1f, 0.2f);
+		ModelUtilities.addCube(faces, 2, 0f, 0f, 0.1f, 0.2f, 0.1f);
+		ModelUtilities.addCube(faces, 3, 0.2f, 0.1f, 0.1f, 0.1f, 0.2f);
 		setTriangles(faces, null);
 	}
 }

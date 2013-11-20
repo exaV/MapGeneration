@@ -27,6 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package ch.ethz.fcl.ether.model;
 
+// XXX KILL THIS CLASS
 public interface ITriangleModel extends IModel {
 	float[] getFaces();
 

@@ -31,8 +31,8 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
 import ch.ethz.fcl.ether.geom.BoundingVolume;
+import ch.ethz.fcl.ether.model.IModel;
 import ch.ethz.fcl.ether.model.ITriangleModel;
-import ch.ethz.fcl.ether.scene.IRenderer;
 import ch.ethz.fcl.ether.scene.IView;
 import ch.ethz.fcl.ether.scene.NavigationGrid;
 
@@ -60,11 +60,11 @@ public class ShadowVolumeRenderer implements IRenderer {
 	private boolean enableShadows = false;
 
 	@Override
-	public void renderModel(GL2 gl, IView view) {
-		if (!(view.getScene().getModel() instanceof ITriangleModel))
+	public void renderModel(GL2 gl, IModel model, IView view) {
+		if (!(model instanceof ITriangleModel))
 			throw new UnsupportedOperationException("can only render models that implement ITriangleModel");
 	
-		ITriangleModel model = (ITriangleModel)view.getScene().getModel();
+		ITriangleModel m = (ITriangleModel)model;
 		BoundingVolume bounds = model.getBounds();
 		
 		// enable depth test
@@ -80,14 +80,14 @@ public class ShadowVolumeRenderer implements IRenderer {
 		gl.glEnd();
 
 		// render geometry
-		renderGeometry(gl, model);
+		renderGeometry(gl, m);
 		
 		//debug
 		//gl.glColor4d(1.0, 1.0, 0.0, 0.5);
 		//renderShadowVolumes(gl, view, true);
 
 		// render shadow volumes
-		if (enableShadows) renderShadows(gl, model, LIGHT_POSITION, SHADOW_COLOR);
+		if (enableShadows) renderShadows(gl, m, LIGHT_POSITION, SHADOW_COLOR);
 		
 		// cleanup
 		gl.glDisable(GL2.GL_DEPTH_TEST);

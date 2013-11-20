@@ -31,6 +31,11 @@ import java.util.Collection;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
+/**
+ * Axis aligned bounding volume.
+ * @author radar
+ *
+ */
 public final class BoundingVolume {
 	boolean valid;
 	double minX;

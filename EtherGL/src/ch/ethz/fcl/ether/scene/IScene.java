@@ -33,6 +33,7 @@ import java.awt.event.MouseWheelEvent;
 import java.util.List;
 
 import ch.ethz.fcl.ether.model.IModel;
+import ch.ethz.fcl.ether.render.IRenderer;
 import ch.ethz.fcl.ether.ui.Button;
 
 /**
