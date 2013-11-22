@@ -4,7 +4,7 @@ import java.util.EnumSet;
 
 import ch.ethz.util.FloatList;
 
-public class GenericRenderGroup extends AbstractRenderGroup {
+public class GenericGeometryGroup extends AbstractGeometryGroup {
 	private float[] pointVertices;
 	private float[] pointColors;
 	private float pointSize;
@@ -17,10 +17,10 @@ public class GenericRenderGroup extends AbstractRenderGroup {
 	private float[] triangleTexCoords;
 	private ITextureData triangleTexData;
 	
-	public GenericRenderGroup() {
+	public GenericGeometryGroup() {
 	}
 
-	public GenericRenderGroup(EnumSet<Element> elements, EnumSet<Appearance> appearances) {
+	public GenericGeometryGroup(EnumSet<Element> elements, EnumSet<Appearance> appearances) {
 		super(elements, appearances);
 	}
 	

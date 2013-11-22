@@ -34,8 +34,8 @@ import javax.media.opengl.GL2;
 import ch.ethz.ether.mapping.BoxCalibrationModel;
 import ch.ethz.ether.mapping.CalibrationTool;
 import ch.ethz.ether.mapping.FillTool;
+import ch.ethz.ether.render.ForwardRenderer;
 import ch.ethz.ether.render.IRenderer;
-import ch.ethz.ether.render.ShadowVolumeRenderer;
 import ch.ethz.ether.scene.AbstractScene;
 import ch.ethz.ether.scene.AbstractTool;
 import ch.ethz.ether.scene.ITool;
@@ -72,7 +72,7 @@ public class MappingScene extends AbstractScene {
 	private final CalibrationTool calibrationTool = new CalibrationTool(new BoxCalibrationModel(0.5f, 0.5f, 0.5f, 0.8f, 0.8f));
 	private final FillTool fillTool = new FillTool();
 	
-	private final ShadowVolumeRenderer renderer = new ShadowVolumeRenderer();
+	private final IRenderer renderer = new ForwardRenderer();
 
 	public MappingScene() {
 		setLightPosition(lightPosition);
@@ -80,7 +80,7 @@ public class MappingScene extends AbstractScene {
 	}
 
 	@Override
-	public IRenderer getRenderer() {
+	public IRenderer getDefaultRenderer() {
 		return renderer;
 	}
 
@@ -116,7 +116,7 @@ public class MappingScene extends AbstractScene {
 	}
 	
 	@Override
-	public SampleTriangleModel getModel() {
-		return (SampleTriangleModel)super.getModel();
+	public MappingTriangleModel getModel() {
+		return (MappingTriangleModel)super.getModel();
 	}
 }

@@ -83,6 +83,10 @@ public final class BoundingBox {
 		return maxY - minY;
 	}
 
+	public void add(float x, float y, float z) {
+		add((double)x, (double)y);
+	}
+
 	public void add(double x, double y) {
 		minX = Math.min(minX, x);
 		maxX = Math.max(maxX, x);
@@ -91,14 +95,26 @@ public final class BoundingBox {
 		valid = true;
 	}
 
-	public void add(Vector2D point) {
-		add(point.getX(), point.getY());
+	public void add(Vector2D vertex) {
+		add(vertex.getX(), vertex.getY());
 	}
 	
-	public void add(Collection<Vector2D> points) {
-		for (Vector2D point : points)
+	public void add(Collection<Vector2D> vertices) {
+		for (Vector2D point : vertices)
 			add(point);
 	}
+	
+	public void add(float[] vertices) {
+		for (int i = 0; i < vertices.length; i += 2) {
+			add(vertices[i], vertices[i+1]);
+		}
+	}
+
+	public void add(double[] vertices) {
+		for (int i = 0; i < vertices.length; i += 2) {
+			add(vertices[i], vertices[i+1]);
+		}
+	}	
 	
 	public void add(BoundingBox b) {
 		add(b.minX, b.minY);

@@ -1,8 +1,10 @@
 package ch.ethz.ether.render;
 
+import java.util.EnumSet;
+
 import ch.ethz.util.FloatList;
 
-public interface IRenderGroup {
+public interface IGeometryGroup {
 	public interface ITextureData {
 		byte[] getRGBAData();
 		int getWidth();
@@ -18,9 +20,17 @@ public interface IRenderGroup {
 	public enum Appearance {
 		SHADED,
 		TEXTURED,
+		TRANSPARENT,
+		OVERLAY,
+		SCREEN_SPACE_OVERLAY
 	}
-	
+
+	public EnumSet<Element> getElements();
+	public void setElements(EnumSet<Element> elements);
 	public boolean containsElement(Element element);
+	
+	public EnumSet<Appearance> getAppearances();
+	public void setAppearances(EnumSet<Appearance> appearances);
 	public boolean containsAppearance(Appearance appearance);
 	
 	public void getPointVertices(FloatList dst);

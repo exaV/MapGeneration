@@ -1,6 +1,8 @@
 package ch.ethz.util;
 
-// quick and dirty. we probably better use an existing library (trove, or similar)
+
+// quick and dirty
+// XXX we probably better use an existing library (trove, or similar)
 public final class FloatList {
 	float[] array;
 	int size;
@@ -14,12 +16,12 @@ public final class FloatList {
 	}
 	
 	public void add(float value) {
-		reserve(1);
+		ensureCapacity(size + 1);
 		array[size++] = value;
 	}
 	
 	public void addAll(float[] values) {
-		reserve(values.length);
+		ensureCapacity(size + values.length);
 		System.arraycopy(values, 0, array, size, values.length);
 		size += values.length;
 	}
@@ -36,9 +38,9 @@ public final class FloatList {
 		return array;
 	}
 	
-	private void reserve(int extra) {
-		if (size + extra > array.length) {
-			float[] a = new float[size + extra];
+	public void ensureCapacity(int capacity) {
+		if (capacity > array.length) {
+			float[] a = new float[capacity];
 			System.arraycopy(array, 0, a, 0, size);
 			array = a;
 		}

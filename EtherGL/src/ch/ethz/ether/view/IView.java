@@ -38,6 +38,7 @@ import javax.media.opengl.glu.GLU;
 
 import ch.ethz.ether.gl.Frame;
 import ch.ethz.ether.model.IModel;
+import ch.ethz.ether.render.IRenderer;
 import ch.ethz.ether.scene.IScene;
 
 import com.jogamp.opengl.util.awt.TextRenderer;
@@ -50,13 +51,14 @@ import com.jogamp.opengl.util.awt.TextRenderer;
  * 
  */
 public interface IView extends KeyListener, MouseListener, MouseMotionListener, MouseWheelListener {
-	public enum ViewType {
+	enum ViewType {
 		INTERACTIVE_VIEW, MAPPED_VIEW
 	}
 
 	Frame getFrame();
 	IScene getScene();
 	IModel getModel();
+	IRenderer getRenderer();
 
 	Camera getCamera();
 	int getWidth();

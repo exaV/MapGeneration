@@ -25,23 +25,40 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package ch.ethz.ether.examples.mapping;
+package ch.ethz.ether.model;
 
-import ch.ethz.ether.model.DefaultTriangleModel;
-import ch.ethz.ether.model.ModelUtilities;
+import java.util.EnumSet;
 
+import ch.ethz.ether.geom.BoundingVolume;
+import ch.ethz.ether.render.GenericGeometryGroup;
+import ch.ethz.ether.render.IGeometryGroup.Appearance;
+import ch.ethz.ether.render.IGeometryGroup.Element;
+import ch.ethz.ether.render.GeometryGroups;
 
-public class SampleTriangleModel extends DefaultTriangleModel {
-	public SampleTriangleModel() {
-		reset();
+public class SimpleTriangleModel implements IModel {
+	private final GeometryGroups groups = new GeometryGroups();
+	private final GenericGeometryGroup triangles = new GenericGeometryGroup();
+	private final BoundingVolume bounds = new BoundingVolume();
+
+	public SimpleTriangleModel() {
+		triangles.setElements(EnumSet.of(Element.TRIANGLES));
+		triangles.setAppearances(EnumSet.of(Appearance.SHADED));
+		groups.add(triangles);
+	}
+
+	@Override
+	public BoundingVolume getBounds() {
+		return bounds;
 	}
 	
-	public void reset() {
-		float[] faces = new float[4 * ModelUtilities.UNIT_CUBE_FACES.length];
-		ModelUtilities.addCube(faces, 0, -0.3f, -0.3f, 0.1f, 0.1f, 0.1f);
-		ModelUtilities.addCube(faces, 1, 0.1f, -0.2f, 0.2f, 0.1f, 0.2f);
-		ModelUtilities.addCube(faces, 2, 0f, 0f, 0.1f, 0.2f, 0.1f);
-		ModelUtilities.addCube(faces, 3, 0.2f, 0.1f, 0.1f, 0.1f, 0.2f);
-		setTriangles(faces, null);
+	public void setTriangles(float[] vertices, float[] colors) {
+		triangles.setTriangles(vertices, colors, null, null, null);
+		bounds.reset();
+		bounds.add(vertices);
+	}
+
+	@Override
+	public GeometryGroups getGeometryGroups() {
+		return groups;
 	}
 }

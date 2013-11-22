@@ -27,14 +27,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package ch.ethz.ether.render;
 
-import javax.media.opengl.GL;
-import javax.media.opengl.GL2;
-
-import ch.ethz.ether.geom.BoundingVolume;
-import ch.ethz.ether.model.IModel;
-import ch.ethz.ether.model.ITriangleModel;
-import ch.ethz.ether.scene.NavigationGrid;
-import ch.ethz.ether.view.IView;
 
 /**
  * Very basic shadow volume renderer.
@@ -43,7 +35,8 @@ import ch.ethz.ether.view.IView;
  */
 // XXX work in progress (silhouettes, shader optimizations, etc...)
 
-public class ShadowVolumeRenderer implements IRenderer {
+public class ShadowVolumeRenderer /*implements IRenderer*/ {
+/*
 	private enum StencilShadowMethod {
 		ZPASS,
 		ZFAIL
@@ -61,12 +54,9 @@ public class ShadowVolumeRenderer implements IRenderer {
 
 	@Override
 	public void renderModel(GL2 gl, IModel model, IView view) {
-		if (!(model instanceof ITriangleModel))
-			throw new UnsupportedOperationException("can only render models that implement ITriangleModel");
-	
-		ITriangleModel m = (ITriangleModel)model;
 		BoundingVolume bounds = model.getBounds();
-		
+		IRenderGroup group = model.getRenderGroups().get(0);
+			
 		// enable depth test
 		gl.glEnable(GL2.GL_DEPTH_TEST);
 
@@ -80,14 +70,14 @@ public class ShadowVolumeRenderer implements IRenderer {
 		gl.glEnd();
 
 		// render geometry
-		renderGeometry(gl, m);
+		renderGeometry(gl, group);
 		
 		//debug
 		//gl.glColor4d(1.0, 1.0, 0.0, 0.5);
 		//renderShadowVolumes(gl, view, true);
 
 		// render shadow volumes
-		if (enableShadows) renderShadows(gl, m, LIGHT_POSITION, SHADOW_COLOR);
+		if (enableShadows) renderShadows(gl, group, LIGHT_POSITION, SHADOW_COLOR);
 		
 		// cleanup
 		gl.glDisable(GL2.GL_DEPTH_TEST);
@@ -101,12 +91,12 @@ public class ShadowVolumeRenderer implements IRenderer {
 		this.enableShadows = enableShadows;
 	}
 
-	private void renderGeometry(GL2 gl, ITriangleModel model) {
+	private void renderGeometry(GL2 gl, IRenderGroup group) {
 		gl.glColor3fv(MODEL_COLOR, 0);
-		drawTriangles(gl, model.getFaces(), model.getNormals(), model.getColors());
+		drawTriangles(gl, group.getFaces(), group.getNormals(), group.getColors());
 	}
 
-	private void renderShadows(GL2 gl, ITriangleModel model, float[] lightPosition, float[] shadowColor) {
+	private void renderShadows(GL2 gl, IRenderGroup group, float[] lightPosition, float[] shadowColor) {
 		gl.glColorMask(false, false, false, false);
 		gl.glDepthMask(false);
 		gl.glEnable(GL.GL_POLYGON_OFFSET_FILL);
@@ -124,7 +114,7 @@ public class ShadowVolumeRenderer implements IRenderer {
 			gl.glStencilFunc(GL.GL_ALWAYS, 0, 0xff);
 			gl.glStencilOp(GL.GL_KEEP, GL.GL_DECR_WRAP, GL.GL_KEEP);
 
-			renderShadowVolumes(gl, model, lightPosition, true);
+			renderShadowVolumes(gl, group, lightPosition, true);
 		} else {
 			// z-pass
 			gl.glActiveStencilFaceEXT(GL.GL_BACK);
@@ -135,7 +125,7 @@ public class ShadowVolumeRenderer implements IRenderer {
 			gl.glStencilFunc(GL.GL_ALWAYS, 0, 0xff);
 			gl.glStencilOp(GL.GL_KEEP, GL.GL_KEEP, GL.GL_DECR_WRAP);
 
-			renderShadowVolumes(gl, model, lightPosition, false);
+			renderShadowVolumes(gl, group, lightPosition, false);
 		}
 		gl.glDisable(GL2.GL_STENCIL_TEST_TWO_SIDE_EXT);				
 		gl.glDisable(GL.GL_STENCIL_TEST);
@@ -155,9 +145,9 @@ public class ShadowVolumeRenderer implements IRenderer {
 	private final float[] _f = new float[9]; // current face (triangle)
 	private final float[] _e = new float[9]; // current extruded face
 
-	private void renderShadowVolumes(GL2 gl, ITriangleModel model, float[] lightPosition, boolean drawCaps) {
-		float[] vertices = model.getFaces();
-		float[] normals = model.getNormals();
+	private void renderShadowVolumes(GL2 gl, IRenderGroup group, float[] lightPosition, boolean drawCaps) {
+		float[] vertices = group.getFaces();
+		float[] normals = group.getNormals();
 		
 		for (int i = 0; i < vertices.length; i+=9) {
 			if (isFacingLight(vertices, normals, i, lightPosition)) {
@@ -258,4 +248,5 @@ public class ShadowVolumeRenderer implements IRenderer {
 	private static boolean isFacingLight(float v[], float n[], int i, float[] light) {
 		return ((light[0] - v[i+0]) * n[i+0] + (light[1] - v[i+1]) * n[i+1] + (light[2] - v[i+2]) * n[i+2]) < 0;
 	}
+*/
 }

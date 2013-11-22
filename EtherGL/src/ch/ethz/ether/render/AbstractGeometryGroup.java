@@ -5,17 +5,28 @@ import java.util.EnumSet;
 import ch.ethz.util.FloatList;
 import ch.ethz.util.UpdateRequest;
 
-public abstract class AbstractRenderGroup implements IRenderGroup {
+public abstract class AbstractGeometryGroup implements IGeometryGroup {
 	private EnumSet<Element> elements = EnumSet.noneOf(Element.class);
 	private EnumSet<Appearance> appearances = EnumSet.noneOf(Appearance.class);
 	private UpdateRequest updater = new UpdateRequest();
 	
-	protected AbstractRenderGroup() {	
+	protected AbstractGeometryGroup() {	
 	}
 	
-	protected AbstractRenderGroup(EnumSet<Element> elements, EnumSet<Appearance> appearances) {
+	protected AbstractGeometryGroup(EnumSet<Element> elements, EnumSet<Appearance> appearances) {
 		this.elements = elements;
 		this.appearances = appearances;
+	}
+	
+	@Override
+	public final EnumSet<Element> getElements() {
+		return elements.clone();
+	}
+	
+	@Override
+	public final void setElements(EnumSet<Element> elements) {
+		this.elements = elements.clone();
+		requestUpdate();
 	}
 	
 	@Override
@@ -23,33 +34,20 @@ public abstract class AbstractRenderGroup implements IRenderGroup {
 		return elements.contains(element);
 	}
 	
-	public final void setElements(EnumSet<Element> elements) {
-		this.elements = elements;
+	@Override
+	public final EnumSet<Appearance> getAppearances() {
+		return appearances.clone();
 	}
-	
-	public final void addElement(Element element) {
-		elements.add(element);
-	}
-	
-	public final void removeElement(Element element) {
-		elements.remove(element);
+
+	@Override
+	public final void setAppearances(EnumSet<Appearance> appearances) {
+		this.appearances = appearances.clone();
+		requestUpdate();
 	}
 	
 	@Override
 	public final boolean containsAppearance(Appearance appearance) {
 		return appearances.contains(appearance);
-	}
-
-	public final void setAppearances(EnumSet<Appearance> appearances) {
-		this.appearances = appearances;
-	}
-
-	public final void addAppearance(Appearance appearance) {
-		appearances.add(appearance);
-	}
-	
-	public final void removeAppearance(Appearance appearance) {
-		appearances.remove(appearance);
 	}
 	
 	@Override

@@ -25,15 +25,23 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package ch.ethz.ether.model;
+package ch.ethz.ether.examples.mapping;
 
-// XXX KILL THIS CLASS
-public interface ITriangleModel extends IModel {
-	float[] getFaces();
+import ch.ethz.ether.geom.GeometryUtilities;
+import ch.ethz.ether.model.SimpleTriangleModel;
+import ch.ethz.util.FloatList;
 
-	float[] getNormals();
+public class MappingTriangleModel extends SimpleTriangleModel {
+	public MappingTriangleModel() {
+		reset();
+	}
 
-	float[] getColors();
-
-	public void setTriangles(float[] faces, float[] colors);
+	public void reset() {
+		FloatList vertices = new FloatList();
+		GeometryUtilities.addCube(vertices, -0.3f, -0.3f, 0.1f, 0.1f, 0.1f);
+		GeometryUtilities.addCube(vertices, 0.1f, -0.2f, 0.2f, 0.1f, 0.2f);
+		GeometryUtilities.addCube(vertices, 0f, 0f, 0.1f, 0.2f, 0.1f);
+		GeometryUtilities.addCube(vertices, 0.2f, 0.1f, 0.1f, 0.1f, 0.2f);
+		setTriangles(vertices.toArray(), null);
+	}
 }

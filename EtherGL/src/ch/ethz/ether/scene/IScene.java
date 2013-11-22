@@ -80,15 +80,15 @@ public interface IScene {
 	 */
 	boolean isEnabled(IView view);
 	
-	public IView getCurrentView();
-	public ITool getCurrentTool();
-	public void setCurrentTool(ITool tool);
-	public NavigationTool getNavigationTool();
-	public NavigationGrid getNavigationGrid();
+	IView getCurrentView();
+	ITool getCurrentTool();
+	void setCurrentTool(ITool tool);
+	NavigationTool getNavigationTool();
+	NavigationGrid getNavigationGrid();
 	
-	public IRenderer getRenderer();
+	IRenderer getDefaultRenderer();
 
-	public List<Button> getButtons();
+	List<Button> getButtons();
 	
 	// key listener
 

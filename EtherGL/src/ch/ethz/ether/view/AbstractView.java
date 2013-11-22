@@ -41,6 +41,7 @@ import ch.ethz.ether.gl.DrawingUtilities;
 import ch.ethz.ether.gl.Frame;
 import ch.ethz.ether.gl.ProjectionUtilities;
 import ch.ethz.ether.model.IModel;
+import ch.ethz.ether.render.IRenderer;
 import ch.ethz.ether.scene.IScene;
 import ch.ethz.ether.ui.Button;
 
@@ -100,6 +101,12 @@ public abstract class AbstractView implements IView {
 	@Override
 	public final IModel getModel() {
 		return scene.getModel();
+	}
+	
+	@Override
+	public IRenderer getRenderer() {
+		// TODO: allow support for view-specific renderers
+		return scene.getDefaultRenderer();
 	}
 	
 	@Override
@@ -236,7 +243,7 @@ public abstract class AbstractView implements IView {
 
 		// draw model elements
 		if (!getScene().getCurrentTool().isExclusive()) {
-			getScene().getRenderer().renderModel(gl, getModel(), this);
+			getRenderer().renderModel(gl, getModel(), this);
 		}
 		getScene().getCurrentTool().render3D(gl, this);
 		

@@ -113,24 +113,24 @@ public final class BoundingVolume {
 		valid = true;
 	}
 
-	public void add(Vector3D point) {
-		add(point.getX(), point.getY(), point.getZ());
+	public void add(Vector3D vertex) {
+		add(vertex.getX(), vertex.getY(), vertex.getZ());
 	}
 	
-	public void add(Collection<Vector3D> points) {
-		for (Vector3D point : points)
-			add(point);
+	public void add(Collection<Vector3D> vertices) {
+		for (Vector3D vertex : vertices)
+			add(vertex);
 	}
 	
-	public void add(float[] points) {
-		for (int i = 0; i < points.length; i += 3) {
-			add(points[i], points[i+1], points[i+2]);
+	public void add(float[] vertices) {
+		for (int i = 0; i < vertices.length; i += 3) {
+			add(vertices[i], vertices[i+1], vertices[i+2]);
 		}
 	}
 
-	public void add(double[] points) {
-		for (int i = 0; i < points.length; i += 3) {
-			add(points[i], points[i+1], points[i+2]);
+	public void add(double[] vertices) {
+		for (int i = 0; i < vertices.length; i += 3) {
+			add(vertices[i], vertices[i+1], vertices[i+2]);
 		}
 	}
 

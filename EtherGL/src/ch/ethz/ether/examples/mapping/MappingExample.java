@@ -29,7 +29,7 @@ package ch.ethz.ether.examples.mapping;
 
 import javax.swing.SwingUtilities;
 
-import ch.ethz.ether.model.ITriangleModel;
+import ch.ethz.ether.model.IModel;
 import ch.ethz.ether.view.IView.ViewType;
 
 public final class MappingExample {
@@ -52,7 +52,7 @@ public final class MappingExample {
 	 * additional square 4 points at 0.8 units.
 	 */
 	public MappingExample() {
-		ITriangleModel model = new SampleTriangleModel();
+		IModel model = new MappingTriangleModel();
 
 		scene = new MappingScene();
 		scene.setModel(model);
