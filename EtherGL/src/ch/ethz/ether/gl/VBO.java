@@ -40,104 +40,121 @@ import com.jogamp.common.nio.Buffers;
  * @author radar
  * 
  */
-// XXX work in progress
+// XXX work in progress (will change with GLcore 3/4+)
 public class VBO {
-	private int vboV;
-	private int vboN;
-	private int vboC;
-	private boolean hasNormals;
-	private boolean hasColors;
-	private int size;
-
-	public VBO(GL2 gl) {
-		this(gl, false, false);
-	}
+	private static final FloatBuffer EMPTY_BUFFER = Buffers.newDirectFloatBuffer(0);
 	
-	public VBO(GL2 gl, boolean hasNormals, boolean hasColors) {
+	private int vbos[] = new int[4];
+	private boolean hasNormals = false;
+	private boolean hasColors = false;
+	private boolean hasTexCoords = false;
+	private int numVertices;
+
+	public VBO(GL gl) {
 		// generate a VBO pointer / handle
-		int[] buf = new int[3];
-		gl.glGenBuffers(3, buf, 0);
-		vboV = buf[0];
-		vboN = buf[1];
-		vboC = buf[2];
-		this.hasNormals = hasNormals;
-		this.hasColors = hasColors;
+		gl.glGenBuffers(4, vbos, 0);
 	}
 
-	public void dispose(GL2 gl) {
-		gl.glDeleteBuffers(3, new int[] { vboV, vboN, vboC }, 0);
+	public void dispose(GL gl) {
+		gl.glDeleteBuffers(4, vbos, 0);
+		vbos = null;
 	}
 	
-	public void load(GL2 gl, float[] vertices) {
-		load(gl, vertices.length / 3, vertices, null, null);
+	public void load(GL gl, FloatBuffer vertices) {
+		load(gl, vertices.limit() / 3, vertices, null, null, null);
 	}
 
-	public void load(GL2 gl, int numVertices, float[] vertices, float[] normals, float[] colors) {
-		size = numVertices * 3 ;
+	public void load(GL gl, int numVertices, FloatBuffer vertices, FloatBuffer normals, FloatBuffer colors, FloatBuffer texCoords) {
+		this.numVertices = numVertices;
+		hasNormals = hasColors = hasTexCoords = false;
 
-		if (vertices != null) {
-			FloatBuffer data = Buffers.newDirectFloatBuffer(vertices);
-			data.rewind();
-
-			int bytesPerFloat = Float.SIZE / Byte.SIZE;
+		int bytesPerFloat = Float.SIZE / Byte.SIZE;
+		
+		if (vertices != null && vertices.limit() != 0) {
+			vertices.rewind();
 
 			// transfer data to VBO
-			int numBytes = data.capacity() * bytesPerFloat;
-			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vboV);
-			gl.glBufferData(GL.GL_ARRAY_BUFFER, numBytes, data, GL.GL_STATIC_DRAW);
+			int numBytes = vertices.limit() * bytesPerFloat;
+			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vbos[0]);
+			gl.glBufferData(GL.GL_ARRAY_BUFFER, numBytes, vertices, GL.GL_STATIC_DRAW);
 			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, 0);
 		}
 
-		if (hasNormals && normals != null) {
-			FloatBuffer data = Buffers.newDirectFloatBuffer(normals);
-			data.rewind();
-
-			int bytesPerFloat = Float.SIZE / Byte.SIZE;
+		if (normals != null && normals.limit() != 0) {
+			hasNormals = true;
+			normals.rewind();
 
 			// transfer data to VBO
-			int numBytes = data.capacity() * bytesPerFloat;
-			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vboN);
-			gl.glBufferData(GL.GL_ARRAY_BUFFER, numBytes, data, GL.GL_STATIC_DRAW);
+			int numBytes = normals.limit() * bytesPerFloat;
+			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vbos[1]);
+			gl.glBufferData(GL.GL_ARRAY_BUFFER, numBytes, normals, GL.GL_STATIC_DRAW);
 			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, 0);
 		}
 
-		if (hasColors && colors != null) {
-			FloatBuffer data = Buffers.newDirectFloatBuffer(colors);
-			data.rewind();
-
-			int bytesPerFloat = Float.SIZE / Byte.SIZE;
+		if (colors != null && colors.limit() != 0) {
+			hasColors = true;
+			colors.rewind();
 
 			// transfer data to VBO
-			int numBytes = data.capacity() * bytesPerFloat;
-			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vboC);
-			gl.glBufferData(GL.GL_ARRAY_BUFFER, numBytes, data, GL.GL_STATIC_DRAW);
+			int numBytes = colors.limit() * bytesPerFloat;
+			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vbos[2]);
+			gl.glBufferData(GL.GL_ARRAY_BUFFER, numBytes, colors, GL.GL_STATIC_DRAW);
 			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, 0);
 		}
+
+		if (texCoords != null && texCoords.limit() != 0) {
+			hasTexCoords = true;
+			texCoords.rewind();
+
+			// transfer data to VBO
+			int numBytes = texCoords.limit() * bytesPerFloat;
+			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vbos[3]);
+			gl.glBufferData(GL.GL_ARRAY_BUFFER, numBytes, texCoords, GL.GL_STATIC_DRAW);
+			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, 0);
+		}
+	}
+	
+	public void clear(GL gl) {
+		load(gl, 0, EMPTY_BUFFER, EMPTY_BUFFER, EMPTY_BUFFER, EMPTY_BUFFER);
 	}
 
 	public void render(GL2 gl, int mode) {
-		gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vboV);
+		if (numVertices == 0)
+			return;
+		
+		gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vbos[0]);
 		gl.glEnableClientState(GL2.GL_VERTEX_ARRAY);
 		gl.glVertexPointer(3, GL.GL_FLOAT, 0, 0);
 
 		if (hasNormals) {
-			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vboN);
+			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vbos[1]);
 			gl.glEnableClientState(GL2.GL_NORMAL_ARRAY);
 			gl.glNormalPointer(GL.GL_FLOAT, 0, 0);
 		}
 
 		if (hasColors) {
-			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vboC);
+			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vbos[2]);
 			gl.glEnableClientState(GL2.GL_COLOR_ARRAY);
 			gl.glColorPointer(4, GL.GL_FLOAT, 0, 0);
 		}
 
-		gl.glDrawArrays(mode, 0, size / 3);
+		if (hasTexCoords) {
+			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vbos[2]);
+			gl.glEnableClientState(GL2.GL_TEXTURE_COORD_ARRAY);
+			gl.glTexCoordPointer(2, GL.GL_FLOAT, 0, 0);
+			
+		}
+		
+		gl.glDrawArrays(mode, 0, numVertices);
+
 		gl.glDisableClientState(GL2.GL_VERTEX_ARRAY);
 		if (hasNormals)
 			gl.glDisableClientState(GL2.GL_NORMAL_ARRAY);
 		if (hasColors)
 			gl.glDisableClientState(GL2.GL_COLOR_ARRAY);
+		if (hasTexCoords)
+			gl.glDisableClientState(GL2.GL_TEXTURE_COORD_ARRAY);
+
 		gl.glBindBuffer(GL.GL_ARRAY_BUFFER, 0);
 	}
 }

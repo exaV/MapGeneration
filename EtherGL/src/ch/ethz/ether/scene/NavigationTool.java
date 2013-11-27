@@ -33,13 +33,17 @@ import java.awt.event.MouseWheelEvent;
 import ch.ethz.ether.view.IView;
 
 public class NavigationTool extends AbstractTool {
-	private static final double CAMERA_ROTATE_SCALE = 1.0;
-	private static final double CAMERA_TRANSLATE_SCALE = 0.01;
+	private static final float CAMERA_ROTATE_SCALE = 1.0f;
+	private static final float CAMERA_TRANSLATE_SCALE = 0.01f;
 
 	private int button;
 	private int mouseX;
 	private int mouseY;
 
+	public NavigationTool(IScene scene) {
+		super(scene);
+	}
+	
 	@Override
 	public void mousePressed(MouseEvent e, IView view) {
 		button = e.getButton();
@@ -67,7 +71,7 @@ public class NavigationTool extends AbstractTool {
 	
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e, IView view) {
-		view.getCamera().addToDistance(0.25 * e.getWheelRotation());
+		view.getCamera().addToDistance(0.25f * e.getWheelRotation());
 		view.repaint();
 	}
 }

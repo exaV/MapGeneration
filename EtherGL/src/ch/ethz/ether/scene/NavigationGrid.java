@@ -34,7 +34,7 @@ import ch.ethz.ether.view.IView;
 
 public class NavigationGrid {
 	public static final float[] AXIS_COLOR = { 1.0f, 1.0f, 1.0f, 0.75f };
-	public static final float[] GRID_COLOR = { 1.0f, 1.0f, 1.0f, 0.5f };
+	public static final float[] GRID_COLOR = { 0.5f, 0.5f, 0.5f, 1.0f };
 
 	private int numGridLines;
 	private float gridSpacing;
@@ -51,8 +51,8 @@ public class NavigationGrid {
 		gl.glColor4fv(NavigationGrid.AXIS_COLOR, 0);
 		DrawingUtilities.drawLines(gl, getAxisLines());
 
-		DrawingUtilities.drawText3D(view, (double)getAxisLines()[3], (double)getAxisLines()[4], (double)getAxisLines()[5], "X");
-		DrawingUtilities.drawText3D(view, (double)getAxisLines()[9], (double)getAxisLines()[10], (double)getAxisLines()[11], "Y");
+		DrawingUtilities.drawText3D(view, getAxisLines()[3], getAxisLines()[4], getAxisLines()[5], "X");
+		DrawingUtilities.drawText3D(view, getAxisLines()[9], getAxisLines()[10], getAxisLines()[11], "Y");
 
 		gl.glColor4fv(NavigationGrid.GRID_COLOR, 0);
 		DrawingUtilities.drawLines(gl, getGridLines());		

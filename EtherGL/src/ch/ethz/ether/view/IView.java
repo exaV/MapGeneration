@@ -34,10 +34,8 @@ import java.awt.event.MouseWheelListener;
 
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.glu.GLU;
 
 import ch.ethz.ether.gl.Frame;
-import ch.ethz.ether.model.IModel;
 import ch.ethz.ether.render.IRenderer;
 import ch.ethz.ether.scene.IScene;
 
@@ -57,7 +55,6 @@ public interface IView extends KeyListener, MouseListener, MouseMotionListener, 
 
 	Frame getFrame();
 	IScene getScene();
-	IModel getModel();
 	IRenderer getRenderer();
 
 	Camera getCamera();
@@ -68,11 +65,10 @@ public interface IView extends KeyListener, MouseListener, MouseMotionListener, 
 	
 	int[] getViewport();
 	
-	double[] getProjectionMatrix();
-	double[] getModelviewMatrix();
-	void setMatrices(double[] projectionMatrix, double[] modelviewMatrix);
+	float[] getProjectionMatrix();
+	float[] getModelviewMatrix();
+	void setMatrices(float[] projectionMatrix, float[] modelviewMatrix);
 	
-	GLU getGLU();
 	TextRenderer getTextRenderer();
 	
 	boolean isEnabled();
@@ -84,25 +80,25 @@ public interface IView extends KeyListener, MouseListener, MouseMotionListener, 
 	 * same scene instance with multiple Frames, this will be called for
 	 * initialization for each Frame.
 	 */
-	void init(GLAutoDrawable drawable, GL2 gl, GLU glu);
+	void init(GLAutoDrawable drawable, GL2 gl);
 
 	/**
 	 * Called after resize. Also called when the drawable is first set to
 	 * visible.
 	 */
-	void reshape(GLAutoDrawable drawable, GL2 gl, GLU glu, int x, int y, int width, int height);
+	void reshape(GLAutoDrawable drawable, GL2 gl, int x, int y, int width, int height);
 
 	/**
 	 * Called to perform rendering.
 	 */
-	void display(GLAutoDrawable drawable, GL2 gl, GLU glu);
+	void display(GLAutoDrawable drawable, GL2 gl);
 
 	/**
 	 * Notifies the listener to perform the release of all OpenGL resources per
 	 * GLContext, such as memory buffers and GLSL programs. Caution: Use this
 	 * mechanism with care if you're using multiple Frames with shared contexts.
 	 */
-	void dispose(GLAutoDrawable drawable, GL2 gl, GLU glu);
+	void dispose(GLAutoDrawable drawable, GL2 gl);
 
 	/**
 	 * Can be called to request to repaint this view.

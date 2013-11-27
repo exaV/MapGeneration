@@ -27,8 +27,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package ch.ethz.ether.mapping;
 
-
-// TODO: make ICalibrationModel extend a generic wireframe (line + points) model (equivalent triangle model)
 public interface ICalibrationModel {
 	public float[] getCalibrationVertices();
 	public float[] getCalibrationLines();

@@ -32,13 +32,13 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
+import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
 import javax.media.opengl.awt.GLCanvas;
-import javax.media.opengl.glu.GLU;
 import javax.swing.JFrame;
 
 import ch.ethz.ether.view.IView;
@@ -88,12 +88,12 @@ public final class Frame extends GLCanvas {
 	 *            the frame's title, nor null for an undecorated frame
 	 */
 	public Frame(int width, int height, String title) {
-		super(getCapabilities(), null, frames.isEmpty() ? null : frames.get(0).getContext(), null);
+		super(getCapabilities(), null, null);
+		if (frames.size() > 0)
+			setSharedContext(frames.get(0).getContext());
 		frames.add(this);
 		setPreferredSize(new Dimension(width, height));
 		addGLEventListener(new GLEventListener() {
-			private GLU glu;
-
 			/**
 			 * Called back immediately after the OpenGL context is initialized.
 			 * Can be used to perform one-time initialization. Run only once.
@@ -102,10 +102,9 @@ public final class Frame extends GLCanvas {
 			public void init(GLAutoDrawable drawable) {
 				GL2 gl = drawable.getGL().getGL2();
 				gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-				gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
-				glu = new GLU();
+				gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 				if (view != null)
-					view.init(drawable, gl, glu);
+					view.init(drawable, gl);
 			}
 
 			/**
@@ -115,7 +114,7 @@ public final class Frame extends GLCanvas {
 			@Override
 			public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
 				if (view != null)
-					view.reshape(drawable, drawable.getGL().getGL2(), glu, x, y, width, height);
+					view.reshape(drawable, drawable.getGL().getGL2(), x, y, width, height);
 			}
 
 			/**
@@ -124,7 +123,7 @@ public final class Frame extends GLCanvas {
 			@Override
 			public void display(GLAutoDrawable drawable) {
 				if (view != null)
-					view.display(drawable, drawable.getGL().getGL2(), glu);
+					view.display(drawable, drawable.getGL().getGL2());
 			}
 
 			/**
@@ -135,10 +134,10 @@ public final class Frame extends GLCanvas {
 			@Override
 			public void dispose(GLAutoDrawable drawable) {
 				if (view != null)
-					view.dispose(drawable, drawable.getGL().getGL2(), glu);
+					view.dispose(drawable, drawable.getGL().getGL2());
 			}
 		});
-
+		
 		jframe = new JFrame();
 		jframe.getContentPane().add(this);
 		jframe.addWindowListener(new WindowAdapter() {
@@ -186,12 +185,13 @@ public final class Frame extends GLCanvas {
 	}
 
 	private static GLCapabilities getCapabilities() {
-		GLProfile profile = GLProfile.getDefault();
+		// TODO: switch to GL3/GL4 once we're getting there
+		GLProfile profile = GLProfile.get(GLProfile.GL2);
 		GLCapabilities caps = new GLCapabilities(profile);
 		caps.setAlphaBits(8);
 		caps.setStencilBits(16);
-		//caps.setSampleBuffers(true);
-		//caps.setNumSamples(4);
+		// caps.setSampleBuffers(true);
+		// caps.setNumSamples(4);
 		return caps;
 	}
 }

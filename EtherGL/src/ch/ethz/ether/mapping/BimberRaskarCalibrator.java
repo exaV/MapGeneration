@@ -28,6 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package ch.ethz.ether.mapping;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.math3.linear.ArrayRealVector;
@@ -47,24 +48,24 @@ public final class BimberRaskarCalibrator implements ICalibrator {
 	}
 
 	@Override
-	public double calibrate(ArrayList<Vector3D> modelVertices, ArrayList<Vector3D> projectedVertices, double near, double far) {
+	public double calibrate(List<float[]> modelVertices, List<float[]> projectedVertices, float near, float far) {
 		if (modelVertices.size() < 6) {
-			throw new IllegalArgumentException("not enough points");
+			return Double.POSITIVE_INFINITY;
 		}
 
 		// Bimber Raskar Appendix A.1
 
-		// step 1: fill matrix tha covers the constraining equations
+		// step 1: fill matrix that covers the constraining equations
 
 		RealMatrix lhs = MatrixUtils.createRealMatrix(2 * modelVertices.size(), 12);
 		for (int i = 0; i < modelVertices.size(); ++i) {
-			Vector3D mp = modelVertices.get(i);
-			Vector3D dp = projectedVertices.get(i);
-			double x = mp.getX();
-			double y = mp.getY();
-			double z = mp.getZ();
-			double u = dp.getX();
-			double v = dp.getY();
+			float[] mp = modelVertices.get(i);
+			float[] dp = projectedVertices.get(i);
+			double x = mp[0];
+			double y = mp[1];
+			double z = mp[2];
+			double u = dp[0];
+			double v = dp[1];
 
 			lhs.setEntry(2 * i, 0, x);
 			lhs.setEntry(2 * i, 1, y);
@@ -196,26 +197,26 @@ public final class BimberRaskarCalibrator implements ICalibrator {
 	}
 
 	@Override
-	public double[] getProjectionMatrix() {
-		return toDoubleArray(projectionMatrix);
+	public float[] getProjectionMatrix() {
+		return toFloatArray(projectionMatrix);
 	}
 
 	@Override
-	public double[] getModelviewMatrix() {
-		return toDoubleArray(modelviewMatrix);
+	public float[] getModelviewMatrix() {
+		return toFloatArray(modelviewMatrix);
 	}
 	
-	private double getError(RealMatrix projectionMatrix, RealMatrix modelviewMatrix, ArrayList<Vector3D> modelVertices, ArrayList<Vector3D> projectedVertices) {
+	private double getError(RealMatrix projectionMatrix, RealMatrix modelviewMatrix, List<float[]> modelVertices, List<float[]> projectedVertices) {
 		if (modelVertices.size() != projectedVertices.size())
 			throw new IllegalArgumentException("lists of vectors do not have same size");
 
 		RealMatrix pm = projectionMatrix.multiply(modelviewMatrix);
 		ArrayList<Vector3D> projectedPoints = new ArrayList<Vector3D>(modelVertices.size());
 		RealVector rp = new ArrayRealVector(4);
-		for (Vector3D p : modelVertices) {
-			rp.setEntry(0, p.getX());
-			rp.setEntry(1, p.getY());
-			rp.setEntry(2, p.getZ());
+		for (float[] p : modelVertices) {
+			rp.setEntry(0, p[0]);
+			rp.setEntry(1, p[1]);
+			rp.setEntry(2, p[2]);
 			rp.setEntry(3, 1.0);
 			RealVector pp = pm.operate(rp);
 			pp = pp.mapDivide(pp.getEntry(3));
@@ -224,15 +225,16 @@ public final class BimberRaskarCalibrator implements ICalibrator {
 		
 		double error = 0.0;
 		for (int i = 0; i < projectedPoints.size(); ++i) {
-			error += projectedPoints.get(i).distance(projectedVertices.get(i));
+			float[] p = projectedVertices.get(i);
+			error += projectedPoints.get(i).distance(new Vector3D(p[0], p[1], p[2]));
 		}
 		return error;
 	}
 	
-	private double[] toDoubleArray(RealMatrix m) {
-		double[] a = new double[16];
+	private float[] toFloatArray(RealMatrix m) {
+		float[] a = new float[16];
 		for (int i = 0; i < 16; ++i) {
-			a[i] = m.getEntry(i % 4, i / 4);
+			a[i] = (float)m.getEntry(i % 4, i / 4);
 		}
 		return a;
 	}

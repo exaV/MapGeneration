@@ -52,16 +52,17 @@ public final class MappingExample {
 	 * additional square 4 points at 0.8 units.
 	 */
 	public MappingExample() {
-		IModel model = new MappingTriangleModel();
-
 		scene = new MappingScene();
+		
+		IModel model = new MappingTriangleModel(scene);
+
 		scene.setModel(model);
 
-		scene.addView(new MappingView(scene, 0, 10, 512, 512, ViewType.INTERACTIVE_VIEW, "0", "View 0", 0.0));
-		//scene.addView(new MappingView(scene, 530, 0, 400, 400, ViewType.MAPPED_VIEW, "1", "View 1", 0.0));
-		//scene.addView(new MappingView(scene, 940, 0, 400, 400, ViewType.MAPPED_VIEW, "2", "View 2", 90.0));
-		//scene.addView(new MappingView(scene, 530, 410, 400, 400, ViewType.MAPPED_VIEW, "3", "View 3", 180.0));
-		//scene.addView(new MappingView(scene, 940, 410, 400, 400, ViewType.MAPPED_VIEW, "4", "View 4", 270.0));
+		scene.addView(new MappingView(scene, 0, 10, 512, 512, ViewType.INTERACTIVE_VIEW, "0", "View 0", 0.0f));
+		scene.addView(new MappingView(scene, 530, 0, 400, 400, ViewType.MAPPED_VIEW, "1", "View 1", 0.0f));
+		//scene.addView(new MappingView(scene, 940, 0, 400, 400, ViewType.MAPPED_VIEW, "2", "View 2", 90.0f));
+		//scene.addView(new MappingView(scene, 530, 410, 400, 400, ViewType.MAPPED_VIEW, "3", "View 3", 180.0f));
+		//scene.addView(new MappingView(scene, 940, 410, 400, 400, ViewType.MAPPED_VIEW, "4", "View 4", 270.0f));
 
 		//try {
 		//	new TUIO(scene);

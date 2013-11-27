@@ -28,17 +28,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package ch.ethz.ether.mapping;
 
 import java.nio.ByteBuffer;
-import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.prefs.Preferences;
-
-import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
 public class CalibrationContext {
 	public boolean calibrated = false;
 	public int currentSelection = -1;
-	public ArrayList<Vector3D> modelVertices = new ArrayList<Vector3D>();
-	public ArrayList<Vector3D> projectedVertices = new ArrayList<Vector3D>();
+	public List<float[]> modelVertices = new ArrayList<float[]>();
+	public List<float[]> projectedVertices = new ArrayList<float[]>();
 
 	public void load(Preferences p, int index) {
 		byte[] mv = p.getByteArray("modelVertices_" + index, null);
@@ -48,8 +47,8 @@ public class CalibrationContext {
 			projectedVertices = fromByteArray(pv);
 			calibrated = true;
 		} else {
-			modelVertices = new ArrayList<Vector3D>();
-			projectedVertices = new ArrayList<Vector3D>();
+			modelVertices = new ArrayList<float[]>();
+			projectedVertices = new ArrayList<float[]>();
 			calibrated = false;
 		}
 	}
@@ -64,23 +63,21 @@ public class CalibrationContext {
 		}		
 	}
 	
-	private byte[] toByteArray(ArrayList<Vector3D> vertices) {
+	private byte[] toByteArray(List<float[]> vertices) {
 		ByteBuffer bb = ByteBuffer.allocate(vertices.size() * 3 * 8);
-		DoubleBuffer db = bb.asDoubleBuffer();
-		for (Vector3D v : vertices) {
-			db.put(v.getX());
-			db.put(v.getY());
-			db.put(v.getZ());
+		FloatBuffer fb = bb.asFloatBuffer();
+		for (float[] v : vertices) {
+			fb.put(v);
 		}
 		return bb.array();
 	}
 	
-	private ArrayList<Vector3D> fromByteArray(byte[] bytes) {
-		ArrayList<Vector3D> list = new ArrayList<Vector3D>();
+	private List<float[]> fromByteArray(byte[] bytes) {
+		List<float[]> list = new ArrayList<float[]>();
 		ByteBuffer bb = ByteBuffer.wrap(bytes);
-		DoubleBuffer dd = bb.asDoubleBuffer();
+		FloatBuffer dd = bb.asFloatBuffer();
 		for (int i = 0; i < dd.capacity(); i+=3) {
-			list.add(new Vector3D(dd.get(), dd.get(), dd.get()));
+			list.add(new float[] { dd.get(), dd.get(), dd.get() });
 		}
 		return list;
 	}

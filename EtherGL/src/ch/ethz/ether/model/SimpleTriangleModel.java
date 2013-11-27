@@ -27,23 +27,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package ch.ethz.ether.model;
 
-import java.util.EnumSet;
-
 import ch.ethz.ether.geom.BoundingVolume;
-import ch.ethz.ether.render.GenericGeometryGroup;
-import ch.ethz.ether.render.IGeometryGroup.Appearance;
-import ch.ethz.ether.render.IGeometryGroup.Element;
-import ch.ethz.ether.render.GeometryGroups;
+import ch.ethz.ether.render.GenericRenderGroup;
+import ch.ethz.ether.render.IRenderGroup.Source;
+import ch.ethz.ether.render.IRenderGroup.Type;
+import ch.ethz.ether.scene.IScene;
 
 public class SimpleTriangleModel implements IModel {
-	private final GeometryGroups groups = new GeometryGroups();
-	private final GenericGeometryGroup triangles = new GenericGeometryGroup();
+	private final GenericRenderGroup triangles = new GenericRenderGroup(Source.MODEL, Type.TRIANGLES);
 	private final BoundingVolume bounds = new BoundingVolume();
 
-	public SimpleTriangleModel() {
-		triangles.setElements(EnumSet.of(Element.TRIANGLES));
-		triangles.setAppearances(EnumSet.of(Appearance.SHADED));
-		groups.add(triangles);
+	public SimpleTriangleModel(IScene scene) {
+		scene.getRenderGroups().add(triangles);
 	}
 
 	@Override
@@ -52,13 +47,8 @@ public class SimpleTriangleModel implements IModel {
 	}
 	
 	public void setTriangles(float[] vertices, float[] colors) {
-		triangles.setTriangles(vertices, colors, null, null, null);
+		triangles.set(vertices, null, colors, null, 0, 0, null);
 		bounds.reset();
 		bounds.add(vertices);
-	}
-
-	@Override
-	public GeometryGroups getGeometryGroups() {
-		return groups;
 	}
 }

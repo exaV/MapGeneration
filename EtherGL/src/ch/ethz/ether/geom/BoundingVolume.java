@@ -38,12 +38,12 @@ import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
  */
 public final class BoundingVolume {
 	boolean valid;
-	double minX;
-	double maxX;
-	double minY;
-	double maxY;
-	double minZ;
-	double maxZ;
+	float minX;
+	float maxX;
+	float minY;
+	float maxY;
+	float minZ;
+	float maxZ;
 
 	public BoundingVolume() {
 		reset();
@@ -63,47 +63,43 @@ public final class BoundingVolume {
 		return valid;
 	}
 
-	public double getMinX() {
+	public float getMinX() {
 		return minX;
 	}
 
-	public double getMaxX() {
+	public float getMaxX() {
 		return maxX;
 	}
 
-	public double getMinY() {
+	public float getMinY() {
 		return minY;
 	}
 
-	public double getMaxY() {
+	public float getMaxY() {
 		return maxY;
 	}
 
-	public double getMinZ() {
+	public float getMinZ() {
 		return minZ;
 	}
 
-	public double getMaxZ() {
+	public float getMaxZ() {
 		return maxZ;
 	}
 
-	public double getExtentX() {
+	public float getExtentX() {
 		return maxX - minX;
 	}
 
-	public double getExtentY() {
+	public float getExtentY() {
 		return maxY - minY;
 	}
 
-	public double getExtentZ() {
+	public float getExtentZ() {
 		return maxZ - minZ;
 	}
 
 	public void add(float x, float y, float z) {
-		add((double)x, (double)y, (double)z);
-	}
-
-	public void add(double x, double y, double z) {
 		minX = Math.min(minX, x);
 		maxX = Math.max(maxX, x);
 		minY = Math.min(minY, y);
@@ -111,6 +107,10 @@ public final class BoundingVolume {
 		minZ = Math.min(minZ, z);
 		maxZ = Math.max(maxZ, z);
 		valid = true;
+	}
+
+	public void add(double x, double y, double z) {
+		add((float)x, (float)y, (float)z);
 	}
 
 	public void add(Vector3D vertex) {

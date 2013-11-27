@@ -29,7 +29,7 @@ package ch.ethz.ether.gl;
 
 import java.nio.ByteBuffer;
 
-import javax.media.opengl.GL2;
+import javax.media.opengl.GL;
 
 import com.jogamp.common.nio.Buffers;
 
@@ -43,39 +43,39 @@ import com.jogamp.common.nio.Buffers;
 public class Texture {
 	private int tex;
 
-	public Texture(GL2 gl) {
+	public Texture(GL gl) {
 		// generate a VBO pointer / handle
 		int[] buf = new int[1];
 		gl.glGenTextures(1, buf, 0);
 		tex = buf[0];
 
-		gl.glBindTexture(GL2.GL_TEXTURE_2D, tex);
-	    gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER, GL2.GL_LINEAR);
-	    gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER, GL2.GL_LINEAR_MIPMAP_LINEAR);
-	    gl.glBindTexture(GL2.GL_TEXTURE_2D, 0);
+		gl.glBindTexture(GL.GL_TEXTURE_2D, tex);
+	    gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
+	    gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR_MIPMAP_LINEAR);
+	    gl.glBindTexture(GL.GL_TEXTURE_2D, 0);
 	}
 	
-	public void dispose(GL2 gl) {
+	public void dispose(GL gl) {
 		gl.glDeleteTextures(1, new int[] { tex }, 0);
 	}	
 	
-	public void load(GL2 gl, int width, int height, byte[] rgba) {
-		gl.glBindTexture(GL2.GL_TEXTURE_2D, tex);
-	    gl.glPixelStorei(GL2.GL_UNPACK_ALIGNMENT, 1);
+	public void load(GL gl, int width, int height, byte[] rgba) {
+		gl.glBindTexture(GL.GL_TEXTURE_2D, tex);
+	    gl.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
 	    ByteBuffer data = Buffers.newDirectByteBuffer(rgba);
 	    data.rewind();
-	    gl.glTexImage2D(GL2.GL_TEXTURE_2D, 0, GL2.GL_RGBA, width, height, 0, GL2.GL_RGBA, GL2.GL_UNSIGNED_BYTE, data);
-	    gl.glGenerateMipmap(GL2.GL_TEXTURE_2D);
-	    gl.glBindTexture(GL2.GL_TEXTURE_2D, 0);
+	    gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, width, height, 0, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, data);
+	    gl.glGenerateMipmap(GL.GL_TEXTURE_2D);
+	    gl.glBindTexture(GL.GL_TEXTURE_2D, 0);
 	}
 	
-	public void enable(GL2 gl) {
-		gl.glBindTexture(GL2.GL_TEXTURE_2D, tex);
-		gl.glEnable(GL2.GL_TEXTURE_2D);
+	public void enable(GL gl) {
+		gl.glBindTexture(GL.GL_TEXTURE_2D, tex);
+		gl.glEnable(GL.GL_TEXTURE_2D);
 	}
 
-	public void disable(GL2 gl) {
-	    gl.glBindTexture(GL2.GL_TEXTURE_2D, 0);
-		gl.glDisable(GL2.GL_TEXTURE_2D);
+	public void disable(GL gl) {
+	    gl.glBindTexture(GL.GL_TEXTURE_2D, 0);
+		gl.glDisable(GL.GL_TEXTURE_2D);
 	}
 }

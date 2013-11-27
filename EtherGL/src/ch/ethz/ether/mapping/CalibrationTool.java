@@ -33,14 +33,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.prefs.Preferences;
 
-import javax.media.opengl.GL;
-import javax.media.opengl.GL2;
-
-import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
-
 import ch.ethz.ether.gl.ProjectionUtilities;
-import ch.ethz.ether.gl.VBO;
+import ch.ethz.ether.render.AbstractRenderGroup;
+import ch.ethz.ether.render.IRenderGroup;
+import ch.ethz.ether.render.IRenderGroup.Pass;
+import ch.ethz.ether.render.IRenderGroup.Source;
+import ch.ethz.ether.render.IRenderGroup.Type;
+import ch.ethz.ether.render.IRenderGroups;
+import ch.ethz.ether.render.util.IAddOnlyFloatList;
+import ch.ethz.ether.render.util.Primitives;
 import ch.ethz.ether.scene.AbstractTool;
+import ch.ethz.ether.scene.IScene;
 import ch.ethz.ether.view.IView;
 import ch.ethz.util.PreferencesStore;
 
@@ -64,94 +67,128 @@ public final class CalibrationTool extends AbstractTool {
 	public static final float[] CALIBRATION_COLOR_UNCALIBRATED = { 1.0f, 1.0f, 0.0f, 1.0f };
 	public static final float[] CALIBRATION_COLOR_CALIBRATED = { 0.0f, 1.0f, 0.0f, 1.0f };
 
-	public static final double CROSSHAIR_SIZE = 20.0;
+	private static final float POINT_SIZE = 10;
+	private static final float CROSSHAIR_SIZE = 20;
 
 	private final ICalibrator calibrator = new BimberRaskarCalibrator();
 	private final ICalibrationModel model;
 
 	private Map<IView, CalibrationContext> contexts = new HashMap<IView, CalibrationContext>();
 
-	private VBO vboVertices;
-	private VBO vboEdges;
+	private IRenderGroup modelPoints = new AbstractRenderGroup(Source.TOOL, Type.POINTS, Pass.OVERLAY) {
+		@Override
+		public void getVertices(IAddOnlyFloatList dst) {
+			dst.addAll(model.getCalibrationVertices());
+		};
 
-	public CalibrationTool(ICalibrationModel model) {
-		this.model = model;
-		setExclusive(true);
-	}
+		@Override
+		public float[] getColor() {
+			return MODEL_COLOR;
+		};
 
-	@Override
-	public void render3D(GL2 gl, IView view) {
-		if (!view.isCurrent())
-			return;
+		@Override
+		public float getPointSize() {
+			return POINT_SIZE;
+		};
+	};
 
-		renderGrid(gl, view);
-		
-		updateVBOs(gl);
+	private IRenderGroup modelLines = new AbstractRenderGroup(Source.TOOL, Type.LINES, Pass.OVERLAY) {
+		@Override
+		public void getVertices(IAddOnlyFloatList dst) {
+			dst.addAll(model.getCalibrationLines());
+		};
 
-		gl.glColor4fv(MODEL_COLOR, 0);
+		@Override
+		public float[] getColor() {
+			return MODEL_COLOR;
+		};
+	};
 
-		// vertices
-		gl.glPointSize(10.0f);
-		if (vboVertices != null) {
-			vboVertices.render(gl, GL.GL_POINTS);
-		}
-		gl.glPointSize(1.0f);
-
-		// lines
-		if (vboEdges != null) {
-			vboEdges.render(gl, GL.GL_LINES);
-		}
-	}
-
-	@Override
-	public void render2D(GL2 gl, IView view) {
-		renderUI(gl, view, CALIBRATION_HELP);
-		
-		if (!view.isCurrent())
-			return;
-
-		CalibrationContext context = getContext(view);
-
-		// ---- CALIBRATION MODEL
-		float[] c = context.calibrated ? CALIBRATION_COLOR_CALIBRATED : CALIBRATION_COLOR_UNCALIBRATED;
-		double[] v = new double[3];
-		for (int i = 0; i < context.projectedVertices.size(); ++i) {
-			Vector3D a = context.projectedVertices.get(i);
-			gl.glPointSize(10.0f);
-			gl.glColor4f(c[0], c[1], c[2], 0.5f);
-			gl.glBegin(GL2.GL_POINTS);
-			gl.glVertex3d(a.getX(), a.getY(), a.getZ());
-			gl.glEnd();
-			gl.glPointSize(1.0f);
-			if (i == context.currentSelection) {
-				gl.glColor4f(c[0], c[1], c[2], 1.0f);
-				gl.glBegin(GL2.GL_LINES);
-				gl.glVertex3d(a.getX() - CROSSHAIR_SIZE / view.getWidth(), a.getY(), a.getZ());
-				gl.glVertex3d(a.getX() + CROSSHAIR_SIZE / view.getWidth(), a.getY(), a.getZ());
-				gl.glVertex3d(a.getX(), a.getY() - CROSSHAIR_SIZE / view.getHeight(), a.getZ());
-				gl.glVertex3d(a.getX(), a.getY() + CROSSHAIR_SIZE / view.getHeight(), a.getZ());
-				gl.glEnd();
+	private IRenderGroup calibrationPoints = new AbstractRenderGroup(Source.TOOL, Type.POINTS, Pass.DEVICE_SPACE_OVERLAY) {
+		@Override
+		public void getVertices(IAddOnlyFloatList dst) {
+			IView view = getScene().getCurrentView();
+			if (view == null)
+				return;
+			for (float[] v : getContext(view).projectedVertices) {
+				dst.addAll(v);
 			}
+		};
+
+		@Override
+		public float[] getColor() {
+			IView view = getScene().getCurrentView();
+			if (view == null)
+				return MODEL_COLOR;
+			return getContext(view).calibrated ? CALIBRATION_COLOR_CALIBRATED : CALIBRATION_COLOR_UNCALIBRATED;
+		};
+
+		@Override
+		public float getPointSize() {
+			return 10;
+		};
+	};
+
+	private IRenderGroup calibrationLines = new AbstractRenderGroup(Source.TOOL, Type.LINES, Pass.DEVICE_SPACE_OVERLAY) {
+		private float[] v = new float[3];
+
+		@Override
+		public void getVertices(IAddOnlyFloatList dst) {
+			IView view = getScene().getCurrentView();
+			if (view == null)
+				return;
+
+			CalibrationContext context = getContext(view);
+			for (int i = 0; i < context.projectedVertices.size(); ++i) {
+				float[] a = context.modelVertices.get(i);
+				if (!ProjectionUtilities.projectToDeviceCoordinates(view, a[0], a[1], a[2], v))
+					continue;
+				a = context.projectedVertices.get(i);
+				Primitives.addLine(dst, v[0], v[1], v[2], a[0], a[1], a[2]);
+
+				if (i == context.currentSelection) {
+					Primitives.addLine(dst, a[0] - CROSSHAIR_SIZE / view.getWidth(), a[1], a[2], a[0] + CROSSHAIR_SIZE / view.getWidth(), a[1], a[2]);
+					Primitives.addLine(dst, a[0], a[1] - CROSSHAIR_SIZE / view.getHeight(), a[2], a[0], a[1] + CROSSHAIR_SIZE / view.getHeight(), a[2]);
+				}
+			}
+		};
+
+		@Override
+		public float[] getColor() {
+			IView view = getScene().getCurrentView();
+			if (view == null)
+				return MODEL_COLOR;
+			return getContext(view).calibrated ? CALIBRATION_COLOR_CALIBRATED : CALIBRATION_COLOR_UNCALIBRATED;
+		};
+	};
+
+	public CalibrationTool(IScene scene, ICalibrationModel model) {
+		super(scene);
+		this.model = model;
+	}
+
+	@Override
+	public void setActive(boolean active) {
+		super.setActive(active);
+		IRenderGroups groups = getScene().getRenderGroups();
+		if (active) {
+			groups.add(modelLines);
+			groups.add(modelPoints);
+			groups.add(calibrationPoints);
+			groups.add(calibrationLines);
+			groups.setSource(Source.TOOL);
+		} else {
+			groups.remove(modelLines);
+			groups.remove(modelPoints);
+			groups.remove(calibrationPoints);
+			groups.remove(calibrationLines);
+			groups.setSource(null);
 		}
-		gl.glColor4f(c[0], c[1], c[2], 0.5f);
-		gl.glBegin(GL2.GL_LINES);
-		for (int i = 0; i < context.projectedVertices.size(); ++i) {
-			Vector3D a = context.modelVertices.get(i);
-			if (!ProjectionUtilities.projectToDeviceCoordinates(view, a.getX(), a.getY(), a.getZ(), v))
-				continue;
-			gl.glVertex3dv(v, 0);
-			a = context.projectedVertices.get(i);
-			gl.glVertex3d(a.getX(), a.getY(), a.getZ());
-		}
-		gl.glEnd();
 	}
 
 	@Override
 	public void keyPressed(KeyEvent e, IView view) {
 		switch (e.getKeyCode()) {
-		case KeyEvent.VK_C:
-			contexts.put(view, new CalibrationContext());
-			break;
 		case KeyEvent.VK_L:
 			loadCalibration(view);
 			break;
@@ -170,6 +207,9 @@ public final class CalibrationTool extends AbstractTool {
 		case KeyEvent.VK_RIGHT:
 			cursorAdjust(view, 1, 0);
 			break;
+		case KeyEvent.VK_C:
+			clearCalibration(view);
+			break;
 		case KeyEvent.VK_BACK_SPACE:
 		case KeyEvent.VK_DELETE:
 			deleteCurrent(view);
@@ -187,48 +227,50 @@ public final class CalibrationTool extends AbstractTool {
 
 		// first, try to hit calibration point
 		for (int i = 0; i < context.projectedVertices.size(); ++i) {
-			int x = ProjectionUtilities.deviceToScreenX(view, context.projectedVertices.get(i).getX());
-			int y = ProjectionUtilities.deviceToScreenY(view, context.projectedVertices.get(i).getY());
+			int x = ProjectionUtilities.deviceToScreenX(view, context.projectedVertices.get(i)[0]);
+			int y = ProjectionUtilities.deviceToScreenY(view, context.projectedVertices.get(i)[1]);
 			if (snap2D(e.getX(), view.getHeight() - e.getY(), x, y)) {
 				// we got a point to move!
 				context.currentSelection = i;
-				view.repaint();
+				calibrate(view);
 				return;
 			}
 		}
 
 		// second, try to hit model point
 		float[] mv = model.getCalibrationVertices();
-		double[] vv = new double[3];
+		float[] vv = new float[3];
 		for (int i = 0; i < mv.length; i += 3) {
 			if (!ProjectionUtilities.projectToScreenCoordinates(view, mv[i], mv[i + 1], mv[i + 2], vv))
 				continue;
 			if (snap2D(e.getX(), view.getHeight() - e.getY(), (int) vv[0], (int) vv[1])) {
-				Vector3D a = new Vector3D(mv[i], mv[i + 1], mv[i + 2]);
+				float[] a = new float[] { mv[i], mv[i + 1], mv[i + 2] };
 				int index = context.modelVertices.indexOf(a);
 				if (index != -1) {
 					context.currentSelection = index;
 				} else {
 					context.currentSelection = context.modelVertices.size();
 					context.modelVertices.add(a);
-					context.projectedVertices.add(new Vector3D(ProjectionUtilities.screenToDeviceX(view, (int) vv[0]), ProjectionUtilities.screenToDeviceY(view, (int) vv[1]), 0));
+					context.projectedVertices.add(new float[] { ProjectionUtilities.screenToDeviceX(view, (int) vv[0]), ProjectionUtilities.screenToDeviceY(view, (int) vv[1]), 0 });
 				}
 				calibrate(view);
-				view.repaint();
 				return;
 			}
 		}
+		
+		// need to update VBOs when current view changes. since it's only little work, we just update on every mouse click
+		// TODO a better solution would be to have a current view change handler in the tool...
+		calibrate(view);
 	}
 
 	@Override
 	public void mouseDragged(MouseEvent e, IView view) {
 		CalibrationContext context = getContext(view);
 		if (context.currentSelection != -1) {
-			Vector3D a = new Vector3D(ProjectionUtilities.screenToDeviceX(view, e.getX()), ProjectionUtilities.screenToDeviceY(view, view.getHeight() - e.getY()), 0);
+			float[] a = new float[] { ProjectionUtilities.screenToDeviceX(view, e.getX()), ProjectionUtilities.screenToDeviceY(view, view.getHeight() - e.getY()), 0 };
 			context.projectedVertices.set(context.currentSelection, a);
 			calibrate(view);
 		}
-		view.repaint();
 	}
 
 	private CalibrationContext getContext(IView view) {
@@ -240,11 +282,11 @@ public final class CalibrationTool extends AbstractTool {
 		return context;
 	}
 
-	private void cursorAdjust(IView view, double dx, double dy) {
+	private void cursorAdjust(IView view, float dx, float dy) {
 		CalibrationContext context = getContext(view);
 		if (context.currentSelection != -1) {
-			Vector3D p = context.projectedVertices.get(context.currentSelection);
-			Vector3D a = new Vector3D(p.getX() + dx / view.getWidth(), p.getY() + dy / view.getHeight(), 0.0);
+			float[] p = context.projectedVertices.get(context.currentSelection);
+			float[] a = new float[] { p[0] + dx / view.getWidth(), p[1] + dy / view.getHeight(), 0 };
 			context.projectedVertices.set(context.currentSelection, a);
 			calibrate(view);
 		}
@@ -279,35 +321,33 @@ public final class CalibrationTool extends AbstractTool {
 		}
 	}
 
-	private void calibrate(IView view) {
-		try {
-			CalibrationContext context = getContext(view);
-			context.calibrated = false;
+	private void clearCalibration(IView view) {
+		contexts.put(view, new CalibrationContext());
+		view.setMatrices(null, null);
+		calibrate(view);
+	}
 
+	private void calibrate(IView view) {
+		CalibrationContext context = getContext(view);
+		context.calibrated = false;
+		try {
 			double error = calibrator.calibrate(context.modelVertices, context.projectedVertices, view.getCamera().getNearClippingPlane(), view.getCamera().getFarClippingPlane());
 			if (error < MAX_CALIBRATION_ERROR)
 				context.calibrated = true;
-
-			if (context.calibrated)
-				view.setMatrices(calibrator.getProjectionMatrix(), calibrator.getModelviewMatrix());
-			else
-				view.setMatrices(null, null);
-			view.repaint();
 			// System.out.println("error: " + error);
+			
 		} catch (Throwable t) {
 		}
-	}
+		if (context.calibrated)
+			view.setMatrices(calibrator.getProjectionMatrix(), calibrator.getModelviewMatrix());
+		else
+			view.setMatrices(null, null);
 
-	// vbo handling
-	private void updateVBOs(GL2 gl) {
-		if (vboVertices == null && model.getCalibrationVertices() != null) {
-			vboVertices = new VBO(gl, false, false);
-			vboVertices.load(gl, model.getCalibrationVertices().length / 3, model.getCalibrationVertices(), null, null);
-		}
-		if (vboEdges == null && model.getCalibrationLines() != null) {
-			vboEdges = new VBO(gl, false, false);
-			vboEdges.load(gl,  model.getCalibrationLines().length / 3, model.getCalibrationLines(), null, null);
-		}
+		// need to update VBOs
+		calibrationPoints.requestUpdate();
+		calibrationLines.requestUpdate();
+		
+		// lazily repaint all views
+		view.getScene().repaintAll();
 	}
-
 }

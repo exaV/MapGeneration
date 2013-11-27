@@ -28,18 +28,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package ch.ethz.ether.model;
 
 import ch.ethz.ether.geom.BoundingVolume;
-import ch.ethz.ether.render.GeometryGroups;
 
 /**
- * Interface for all models to be rendered / interacted with. At this point, the
- * 'model' is just a marker interface, and not used by the mogl package. Later
- * on this is likely to change.
+ * Interface for all models to be rendered / interacted with.
  * 
  * @author radar
  * 
  */
 public interface IModel {
 	BoundingVolume getBounds();
-	
-	GeometryGroups getGeometryGroups();	
 }

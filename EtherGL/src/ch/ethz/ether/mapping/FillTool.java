@@ -27,11 +27,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package ch.ethz.ether.mapping;
 
-import javax.media.opengl.GL2;
-
+import ch.ethz.ether.render.AbstractRenderGroup;
+import ch.ethz.ether.render.IRenderGroup;
+import ch.ethz.ether.render.IRenderGroup.Pass;
+import ch.ethz.ether.render.IRenderGroup.Source;
+import ch.ethz.ether.render.IRenderGroup.Type;
+import ch.ethz.ether.render.IRenderGroups;
+import ch.ethz.ether.render.util.IAddOnlyFloatList;
+import ch.ethz.ether.render.util.Primitives;
 import ch.ethz.ether.scene.AbstractTool;
-import ch.ethz.ether.view.IView;
-import ch.ethz.ether.view.IView.ViewType;
+import ch.ethz.ether.scene.IScene;
 
 public final class FillTool extends AbstractTool {
 	// @formatter:off
@@ -41,24 +46,31 @@ public final class FillTool extends AbstractTool {
 		"[0] Return"
 	};
 	// @formatter:on
-
-	public FillTool() {
-		setExclusive(true);
+	
+	private IRenderGroup group = new AbstractRenderGroup(Source.TOOL, Type.TRIANGLES, Pass.DEVICE_SPACE_OVERLAY) {
+		@Override
+		public void getVertices(IAddOnlyFloatList dst) {
+			Primitives.addRectangle(dst, -1.0f, -1.0f, -0.1f, -0.1f);
+			Primitives.addRectangle(dst, 0.1f, -1.0f, 1.0f, -0.1f);
+			Primitives.addRectangle(dst, 0.1f, 0.1f, 1.0f, 1.0f);
+			Primitives.addRectangle(dst, -1.0f, 0.1f, -0.1f, 1.0f);
+		};
+	};
+	
+	public FillTool(IScene scene) {
+		super(scene);
 	}
-
+	
 	@Override
-	public void render2D(GL2 gl, IView view) {
-		renderUI(gl, view, FILL_HELP);
-
-		if (view.getViewType() != ViewType.MAPPED_VIEW || !view.isCurrent())
-			return;
-
-		gl.glColor4f(1, 1, 1, 1);
-		gl.glRectd(-1, -1, -0.1, -0.1);
-		gl.glRectd(1, -1, 0.1, -0.1);
-		gl.glRectd(-1, 1, -0.1, 0.1);
-		gl.glRectd(1, 1, 0.1, 0.1);
-		gl.glRectd(-0.01, -1, 0.01, 1);
-		gl.glRectd(-1, -0.01, 1, 0.01);
+	public void setActive(boolean active) {
+		super.setActive(active);
+		IRenderGroups groups = getScene().getRenderGroups();
+		if (active) {
+			groups.add(group);
+			groups.setSource(Source.TOOL);
+		} else {
+			groups.remove(group);
+			groups.setSource(null);
+		}
 	}
 }

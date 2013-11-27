@@ -27,9 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package ch.ethz.ether.mapping;
 
-import java.util.ArrayList;
-
-import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+import java.util.List;
 
 /**
  * Interface for calibrators.
@@ -38,9 +36,9 @@ import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
  * 
  */
 public interface ICalibrator {
-	double calibrate(ArrayList<Vector3D> modelVertices, ArrayList<Vector3D> projectedVertices, double near, double far);
+	double calibrate(List<float[]> modelVertices, List<float[]> projectedVertices, float near, float far);
 
-	double[] getProjectionMatrix();
+	float[] getProjectionMatrix();
 
-	double[] getModelviewMatrix();
+	float[] getModelviewMatrix();
 }

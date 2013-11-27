@@ -27,14 +27,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package ch.ethz.ether.render;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
+import javax.media.opengl.glu.GLU;
 
 import ch.ethz.ether.geom.BoundingVolume;
-import ch.ethz.ether.gl.VBO;
-import ch.ethz.ether.model.IModel;
+import ch.ethz.ether.gl.Matrix4x4;
+import ch.ethz.ether.render.IRenderGroup.Pass;
 import ch.ethz.ether.scene.NavigationGrid;
 import ch.ethz.ether.view.IView;
 
@@ -44,71 +43,73 @@ import ch.ethz.ether.view.IView;
  * 
  */
 public class ForwardRenderer implements IRenderer {
-	private class RenderGroup {
-		//private Shader shader;
-		//private VAO vao;
-		private VBO vbo; // replace with VAO
-		private IGeometryGroup geometry;
-	}
+	private final float[] projectionMatrix2D = Matrix4x4.identity();
+	private final float[] modelviewMatrix2D = Matrix4x4.identity();
 	
-	// XXX work in progress
-	private static final float[] MODEL_COLOR = { 1.0f, 1.0f, 1.0f, 1.0f };
-	
-	private final List<RenderGroup> groupShaded = new ArrayList<RenderGroup>();
-	private final List<RenderGroup> groupTransparent = new ArrayList<RenderGroup>();
-	private final List<RenderGroup> groupOverlay = new ArrayList<RenderGroup>();
-	private final List<RenderGroup> groupSSOverlay = new ArrayList<RenderGroup>();
-
 	@Override
-	public void renderModel(GL2 gl, IModel model, IView view) {
-		BoundingVolume bounds = model.getBounds();
+	public void render(GL2 gl, IView view) {
+		BoundingVolume bounds = view.getScene().getModel().getBounds();
 		
-		updateRenderGroups(model);
+		RenderGroups groups = (RenderGroups)view.getScene().getRenderGroups();
+		groups.update(gl);
 
-		/*
+		//---- 1. DEPTH PASS (DEPTH WRITE&TEST ENABLED, BLEND OFF)
+		gl.glEnable(GL.GL_DEPTH_TEST);
 		
+		gl.glMatrixMode(GL2.GL_PROJECTION);
+		gl.glLoadMatrixf(view.getProjectionMatrix(), 0);
+		gl.glMatrixMode(GL2.GL_MODELVIEW);
+		gl.glLoadMatrixf(view.getModelviewMatrix(), 0);
 		
-		
-		// enable depth test
-		gl.glEnable(GL2.GL_DEPTH_TEST);
-
-		// render ground plane (XXX FIXME: move to model as rendergroup)
+		// render ground plane (XXX FIXME: move to model as geometry group)
 		gl.glColor4fv(NavigationGrid.GRID_COLOR, 0);
 		gl.glBegin(GL2.GL_QUADS);
-		gl.glVertex3d(bounds.getMinX(), bounds.getMinY(), -0.001);
-		gl.glVertex3d(bounds.getMaxX(), bounds.getMinY(), -0.001);
-		gl.glVertex3d(bounds.getMaxX(), bounds.getMaxY(), -0.001);
-		gl.glVertex3d(bounds.getMinX(), bounds.getMaxY(), -0.001);
+		gl.glVertex3d(2*bounds.getMinX(), 2*bounds.getMinY(), -0.001);
+		gl.glVertex3d(2*bounds.getMaxX(), 2*bounds.getMinY(), -0.001);
+		gl.glVertex3d(2*bounds.getMaxX(), 2*bounds.getMaxY(), -0.001);
+		gl.glVertex3d(2*bounds.getMinX(), 2*bounds.getMaxY(), -0.001);
 		gl.glEnd();
+		
+		groups.render(gl, view, Pass.DEPTH);
+		
+		
+		//---- 2. TRANSPARENCY PASS (DEPTH WRITE DISABLED, DEPTH TEST ENABLED, BLEND ON)
+		gl.glEnable(GL.GL_BLEND);
+		gl.glDepthMask(false);
+		groups.render(gl, view, Pass.TRANSPARENCY);
+		
+		
+		//---- 3. OVERLAY PASS (DEPTH WRITE&TEST DISABLED, BLEND ON)
+		gl.glDisable(GL.GL_DEPTH_TEST);
+		groups.render(gl, view, Pass.OVERLAY);
 
-		// render geometry
-		renderGeometry(gl, group);
 		
-		// cleanup
-		gl.glDisable(GL2.GL_DEPTH_TEST);
-		*/
-	}
-	
-	private void renderGeometry(GL2 gl, IGeometryGroup geometry) {
-		//gl.glColor3fv(MODEL_COLOR, 0);
-		//drawTriangles(gl, geometry.getFaces(), geometry.getNormals(), geometry.getColors());
-	}
-	
-	private void updateRenderGroups(IModel model) {
-		GeometryGroups geometry = model.getGeometryGroups();
+		//---- 4. DEVICE SPACE OVERLAY (DEPTH WRITE&TEST DISABLED, BLEND ON)
+		Matrix4x4.identity(projectionMatrix2D);
+		gl.glMatrixMode(GL2.GL_PROJECTION);
+		gl.glLoadMatrixf(projectionMatrix2D, 0);
+
+		Matrix4x4.identity(modelviewMatrix2D);
+		gl.glMatrixMode(GL2.GL_MODELVIEW);
+		gl.glLoadMatrixf(modelviewMatrix2D, 0);
 		
-		// check if list of groups changed, and create / dispose VBOs accordingly
-		if (geometry.needsUpdate()) {
-			
-		}
+		groups.render(gl, view, Pass.DEVICE_SPACE_OVERLAY);
+
 		
-		// update VBOs for each group
-		for (RenderGroup g : groupShaded) {
-			if (g.geometry.needsUpdate())
-				updateBuffers(g.vbo, g.geometry);
-		}
-	}
-	
-	private void updateBuffers(VBO vbo, IGeometryGroup group) {
-	}
+		//---- 5. SCREEN SPACE OVERLAY (DEPTH WRITE&TEST DISABLED, BLEND ON)
+		Matrix4x4.ortho(0, view.getViewport()[2], view.getViewport()[3], 0, -1, 1, projectionMatrix2D);
+		gl.glMatrixMode(GL2.GL_PROJECTION);
+		gl.glLoadMatrixf(projectionMatrix2D, 0);
+
+		Matrix4x4.identity(modelviewMatrix2D);
+		gl.glMatrixMode(GL2.GL_MODELVIEW);
+		gl.glLoadMatrixf(modelviewMatrix2D, 0);
+		
+		groups.render(gl, view, Pass.SCREEN_SPACE_OVERLAY);
+		
+		
+		//---- 6. CLEANUP: RETURN TO DEFAULTS (XXX EXCEPT FOR MATRICES, WHICH WILL BE REMOVED ANYWAY)
+		gl.glDisable(GL.GL_BLEND);
+		gl.glDepthMask(true);
+	}	
 }

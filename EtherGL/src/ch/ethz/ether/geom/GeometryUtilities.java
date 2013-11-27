@@ -2,7 +2,7 @@ package ch.ethz.ether.geom;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
-import ch.ethz.util.FloatList;
+import ch.ethz.ether.render.util.FloatList;
 
 public class GeometryUtilities {
 	// @formatter:off

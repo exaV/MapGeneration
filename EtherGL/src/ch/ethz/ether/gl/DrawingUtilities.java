@@ -35,6 +35,7 @@ import ch.ethz.ether.view.IView;
 
 import com.jogamp.opengl.util.awt.TextRenderer;
 
+// XXX REMOVE FIXED PIPELINE STUFF
 public final class DrawingUtilities {
 	public static void drawPoints(GL2 gl, float[] vertices) {
 		gl.glBegin(GL2.GL_POINTS);
@@ -54,25 +55,25 @@ public final class DrawingUtilities {
 
 	public static void drawTextRaster(IView view, int col, int row, String text) {
 		Rectangle2D fontBounds = view.getTextRenderer().getBounds("W");
-		double y = view.getHeight() - fontBounds.getHeight() * (row + 1);
-		double x = fontBounds.getWidth() * col;
+		float y = view.getHeight() - (float) fontBounds.getHeight() * (row + 1);
+		float x = (float) fontBounds.getWidth() * col;
 		drawText2D(view, x, y, text);
 	}
 
-	public static  void drawText2D(IView view, double x, double y, String text) {
+	public static void drawText2D(IView view, float x, float y, String text) {
 		TextRenderer tr = view.getTextRenderer();
 		tr.beginRendering(view.getWidth(), view.getHeight());
 		tr.draw(text, (int) x, (int) y);
 		tr.endRendering();
 	}
 
-	public static void drawText3D(IView view, double x, double y, double z, String text) {
+	public static void drawText3D(IView view, float x, float y, float z, String text) {
 		drawText3D(view, x, y, z, 0, 0, text);
 	}
 
-	public static void drawText3D(IView view, double x, double y, double z, int dx, int dy, String text) {
-		double[] v = new double[3];
-		view.getGLU().gluProject(x, y, z, view.getModelviewMatrix(), 0, view.getProjectionMatrix(), 0, view.getViewport(), 0, v, 0);
+	public static void drawText3D(IView view, float x, float y, float z, int dx, int dy, String text) {
+		float[] v = new float[3];
+		ProjectionUtilities.projectToScreenCoordinates(view, x, y, z, v);
 		TextRenderer tr = view.getTextRenderer();
 		tr.beginRendering(view.getWidth(), view.getHeight());
 		tr.draw(text, (int) v[0] + dx, (int) v[1] + dy);

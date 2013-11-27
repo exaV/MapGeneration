@@ -53,9 +53,9 @@ public class TUIO {
 
 	private static final long WAIT_TIME_MS = 50;
 	
-	private static final double MUL_ROTATE = 360.0;
-	private static final double MUL_TRANSLATE = 5.0;
-	private static final double MUL_DISTANCE = 10.0;
+	private static final float SCALE_ROTATE = 360;
+	private static final float SCALE_TRANSLATE = 5;
+	private static final float SCALE_DISTANCE = 10;
 
 	@SuppressWarnings("unused")
 	private class Cursor {
@@ -227,17 +227,17 @@ public class TUIO {
 	private void handleSwipeOrPinch2(float swipeX, float swipeY, float pinch) {
 		// XXX do we really need to discriminate between swipe and pinch, or just let both go at once?
 		if (Math.abs(pinch) > 0.001) {
-			view.getCamera().addToDistance(-MUL_DISTANCE * pinch);
+			view.getCamera().addToDistance(-SCALE_DISTANCE * pinch);
 		} else {
-			view.getCamera().addToRotateZ(MUL_ROTATE * swipeX);
-			view.getCamera().addToRotateX(MUL_ROTATE * swipeY);
+			view.getCamera().addToRotateZ(SCALE_ROTATE * swipeX);
+			view.getCamera().addToRotateX(SCALE_ROTATE * swipeY);
 		}
 		view.repaint();
 	}
 	
 	private void handleSwipe3(float swipeX, float swipeY) {
-		view.getCamera().addToTranslateX(MUL_TRANSLATE * swipeX);
-		view.getCamera().addToTranslateY(-MUL_TRANSLATE * swipeY);
+		view.getCamera().addToTranslateX(SCALE_TRANSLATE * swipeX);
+		view.getCamera().addToTranslateY(-SCALE_TRANSLATE * swipeY);
 		view.repaint();
 	}
 }

@@ -27,50 +27,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package ch.ethz.ether.gl;
 
+import jogamp.opengl.ProjectFloat;
+
 import org.apache.commons.math3.geometry.euclidean.threed.Line;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
 import ch.ethz.ether.view.IView;
 
 public final class ProjectionUtilities {
-	/**
-	 * Returns a perspective projection matrix. Same as gluPerspective, but with
-	 * support for far plane at infinity.
-	 * 
-	 * @param fovy
-	 *            field of view (degrees)
-	 * @param aspect
-	 *            aspect ratio
-	 * @param near
-	 *            near plane
-	 * @param far
-	 *            far plane (set to Double.POSITIVE_INFINITY for far plane at
-	 *            infinity)
-	 * @return column first perspective projection matrix
-	 */
-	public static double[] getPerspectiveMatrix(double fovy, double aspect, double near, double far) {
-		final double radians = fovy / 2 * Math.PI / 180;
-		double sine = Math.sin(radians);
-		double deltaZ = far - near;
+	// XXX replace this if possible to get rid of jogl dependencies
+	private static final ProjectFloat project = new ProjectFloat();
 
-		if ((deltaZ == 0) || (sine == 0) || (aspect == 0)) {
-			return new double[16];
-		}
-
-		double cotangent = (float) Math.cos(radians) / sine;
-
-		double[] m = new double[16];
-
-		m[0] = cotangent / aspect;
-		m[5] = cotangent;
-		m[10] = far >= Double.POSITIVE_INFINITY ? -1 : -(far + near) / deltaZ;
-		m[11] = -1;
-		m[14] = far >= Double.POSITIVE_INFINITY ? -2 * near : -2 * near * far / deltaZ;
-		return m;
-	}
-	
-	public static boolean projectToDeviceCoordinates(IView view, double x, double y, double z, double[] v) {
-		if (!view.getGLU().gluProject(x, y, z, view.getModelviewMatrix(), 0, view.getProjectionMatrix(), 0, view.getViewport(), 0, v, 0))
+	public static boolean projectToDeviceCoordinates(IView view, float x, float y, float z, float[] v) {
+		if (!project.gluProject(x, y, z, view.getModelviewMatrix(), 0, view.getProjectionMatrix(), 0, view.getViewport(), 0, v, 0))
 			return false;
 		v[0] = screenToDeviceX(view, (int) v[0]);
 		v[1] = screenToDeviceY(view, (int) v[1]);
@@ -78,31 +47,31 @@ public final class ProjectionUtilities {
 		return true;
 	}
 
-	public static boolean projectToScreenCoordinates(IView view, double x, double y, double z, double[] v) {
-		return view.getGLU().gluProject(x, y, z, view.getModelviewMatrix(), 0, view.getProjectionMatrix(), 0, view.getViewport(), 0, v, 0);
+	public static boolean projectToScreenCoordinates(IView view, float x, float y, float z, float[] v) {
+		return project.gluProject(x, y, z, view.getModelviewMatrix(), 0, view.getProjectionMatrix(), 0, view.getViewport(), 0, v, 0);
 	}
 
-	public static int deviceToScreenX(IView view, double x) {
+	public static int deviceToScreenX(IView view, float x) {
 		return (int) ((1.0 + x) / 2.0 * view.getWidth());
 	}
 
-	public static int deviceToScreenY(IView view, double y) {
+	public static int deviceToScreenY(IView view, float y) {
 		return (int) ((1.0 + y) / 2.0 * view.getHeight());
 	}
 
-	public static double screenToDeviceX(IView view, int x) {
-		return 2.0 * x / view.getWidth() - 1.0;
+	public static float screenToDeviceX(IView view, int x) {
+		return 2f * x / view.getWidth() - 1f;
 	}
 
-	public static double screenToDeviceY(IView view, int y) {
-		return 2.0 * y / view.getHeight() - 1.0;
+	public static float screenToDeviceY(IView view, int y) {
+		return 2f * y / view.getHeight() - 1f;
 	}
 
-	public static Line getRay(IView view, double winX, double winY) {
+	public static Line getRay(IView view, float winX, float winY) {
 		// XXX FIXME: how about near and far???
-		double[] w = new double[8];
-		view.getGLU().gluUnProject(winX, winY, 0.1, view.getModelviewMatrix(), 0, view.getProjectionMatrix(), 0, view.getViewport(), 0, w, 0);
-		view.getGLU().gluUnProject(winX, winY, 0.9, view.getModelviewMatrix(), 0, view.getProjectionMatrix(), 0, view.getViewport(), 0, w, 4);
+		float[] w = new float[8];
+		project.gluUnProject(winX, winY, 0.1f, view.getModelviewMatrix(), 0, view.getProjectionMatrix(), 0, view.getViewport(), 0, w, 0);
+		project.gluUnProject(winX, winY, 0.9f, view.getModelviewMatrix(), 0, view.getProjectionMatrix(), 0, view.getViewport(), 0, w, 4);
 		return new Line(new Vector3D(w[0], w[1], w[2]), new Vector3D(w[4], w[5], w[6]));
 	}
 }

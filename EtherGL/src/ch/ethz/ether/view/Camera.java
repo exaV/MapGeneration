@@ -33,100 +33,100 @@ import ch.ethz.util.MathUtils;
 public class Camera {
 	private static final boolean KEEP_ROT_X_POSITIVE = true;
 	
-	private double near = 0.1;
-	// public double far = 1000.0;
-	private double far = Double.POSITIVE_INFINITY;
+	private float near = 0.1f;
+	// public float far = 1000.0f;
+	private float far = Float.POSITIVE_INFINITY;
 
-	private double fov = 45.0;
-	private double distance = 2.0;
-	private double rotateZ = 0.0;
-	private double rotateX = 45.0;
-	private double translateX = 0.0;
-	private double translateY = 0.0;
+	private float fov = 45.0f;
+	private float distance = 2.0f;
+	private float rotateZ = 0.0f;
+	private float rotateX = 45.0f;
+	private float translateX = 0.0f;
+	private float translateY = 0.0f;
 
 	public Camera() {
 
 	}
 
-	public double getNearClippingPlane() {
+	public float getNearClippingPlane() {
 		return near;
 	}
 
-	public double getFarClippingPlane() {
+	public float getFarClippingPlane() {
 		return far;
 	}
 	
-	public double getFOV() {
+	public float getFOV() {
 		return fov;
 	}
 
-	public double getDistance() {
+	public float getDistance() {
 		return distance;
 	}
 
-	public void setDistance(double distance) {
+	public void setDistance(float distance) {
 		this.distance = distance;
 		distance = Math.max(near, distance);
 		distance = Math.min(far, distance);
 	}
 
-	public void addToDistance(double delta) {
+	public void addToDistance(float delta) {
 		distance += distance / 10.0 * delta;
 		distance = Math.max(near, distance);
 		distance = Math.min(far, distance);
 	}
 
-	public double getRotateZ() {
+	public float getRotateZ() {
 		return rotateZ;
 	}
 
-	public void setRotateZ(double rotateZ) {
+	public void setRotateZ(float rotateZ) {
 		this.rotateZ = rotateZ;
 	}
 
-	public void addToRotateZ(double delta) {
+	public void addToRotateZ(float delta) {
 		rotateZ += delta;
 	}
 
-	public double getRotateX() {
+	public float getRotateX() {
 		return rotateX;
 	}
 
-	public void setRotateX(double rotateX) {
-		this.rotateX = MathUtils.clamp(rotateX, KEEP_ROT_X_POSITIVE ? 0.0 : -90.0, 90.0);
+	public void setRotateX(float rotateX) {
+		this.rotateX = MathUtils.clamp(rotateX, KEEP_ROT_X_POSITIVE ? 0 : -90, 90);
 	}
 
-	public void addToRotateX(double delta) {
-		this.rotateX = MathUtils.clamp(rotateX + delta, KEEP_ROT_X_POSITIVE ? 0.0 : -90.0, 90.0);
+	public void addToRotateX(float delta) {
+		this.rotateX = MathUtils.clamp(rotateX + delta, KEEP_ROT_X_POSITIVE ? 0 : -90, 90);
 	}
 
-	public double getTranslateX() {
+	public float getTranslateX() {
 		return translateX;
 	}
 
-	public void setTranslateX(double translateX) {
+	public void setTranslateX(float translateX) {
 		this.translateX = translateX;
 	}
 
-	public void addToTranslateX(double delta) {
-		translateX += distance / 10.0 * delta;
+	public void addToTranslateX(float delta) {
+		translateX += distance / 10 * delta;
 	}
 
-	public double getTranslateY() {
+	public float getTranslateY() {
 		return translateY;
 	}
 
-	public void setTranslateY(double translateY) {
+	public void setTranslateY(float translateY) {
 		this.translateY = translateY;
 	}
 
-	public void addToTranslateY(double delta) {
-		translateY += distance / 10.0 * delta;
+	public void addToTranslateY(float delta) {
+		translateY += distance / 10 * delta;
 	}
 	
 	public void frame(BoundingVolume bounds) {
-		double extent = 1.5 * Math.max(Math.max(bounds.getExtentX(), bounds.getExtentY()), bounds.getExtentZ());
-		double d = 0.5 * extent / Math.tan(Math.toRadians(fov/2));
+		float extent = 1.5f * Math.max(Math.max(bounds.getExtentX(), bounds.getExtentY()), bounds.getExtentZ());
+		float d = 0.5f * extent / (float)Math.tan(Math.toRadians(fov/2));
 		setDistance(d);
 		// FIXME hack, assume centered model for now
 		setTranslateX(0);

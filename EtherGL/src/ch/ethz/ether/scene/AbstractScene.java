@@ -35,6 +35,7 @@ import java.util.Collection;
 import java.util.List;
 
 import ch.ethz.ether.model.IModel;
+import ch.ethz.ether.render.IRenderGroups;
 import ch.ethz.ether.ui.Button;
 import ch.ethz.ether.view.IView;
 import ch.ethz.ether.view.IView.ViewType;
@@ -47,16 +48,15 @@ import ch.ethz.ether.view.IView.ViewType;
  * 
  */
 public abstract class AbstractScene implements IScene {
-
 	private IModel model;
-
 	private final ArrayList<IView> views = new ArrayList<IView>();
-
-	private final NavigationTool navigationTool = new NavigationTool();
+	private final IRenderGroups groups = IRenderGroups.Factory.create();	
+	
+	private final NavigationTool navigationTool = new NavigationTool(this);
 	private final NavigationGrid navigationGrid = new NavigationGrid(10, 0.1f);
 
 	private IView currentView = null;
-	private ITool currentTool = new NullTool();
+	private ITool activeTool = null;
 
 	private final List<Button> buttons = new ArrayList<Button>();
 
@@ -81,6 +81,11 @@ public abstract class AbstractScene implements IScene {
 	public List<IView> getViews() {
 		return views;
 	}
+	
+	@Override
+	public IRenderGroups getRenderGroups() {
+		return groups;
+	}
 
 	@Override
 	public void repaintAll() {
@@ -99,16 +104,23 @@ public abstract class AbstractScene implements IScene {
 	}
 
 	@Override
-	public ITool getCurrentTool() {
-		return currentTool;
+	public ITool getActiveTool() {
+		return activeTool;
 	}
 
 	@Override
-	public void setCurrentTool(ITool tool) {
-		if (tool != null)
-			currentTool = tool;
-		else
-			currentTool = new NullTool();
+	public void setActiveTool(ITool tool) {
+		if (activeTool == tool)
+			return;
+		
+		if (activeTool != null)
+			activeTool.setActive(false);
+		
+		activeTool = tool;
+		
+		if (activeTool != null)
+			activeTool.setActive(true);
+
 		repaintAll();
 	}
 
@@ -147,7 +159,7 @@ public abstract class AbstractScene implements IScene {
 			System.exit(0);
 
 		// finally, pass on to tool
-		currentTool.keyPressed(e, view);
+		activeTool.keyPressed(e, view);
 	}
 
 	@Override
@@ -185,7 +197,7 @@ public abstract class AbstractScene implements IScene {
 
 		// handle tools (with active navigation when modifier is pressed)
 		if (!isModifierDown(e))
-			currentTool.mousePressed(e, view);
+			activeTool.mousePressed(e, view);
 		else
 			navigationTool.mousePressed(e, view);
 	}
@@ -193,7 +205,7 @@ public abstract class AbstractScene implements IScene {
 	@Override
 	public void mouseReleased(MouseEvent e, IView view) {
 		if (!isModifierDown(e))
-			currentTool.mouseReleased(e, view);
+			activeTool.mouseReleased(e, view);
 		else
 			navigationTool.mouseReleased(e, view);
 	}
@@ -220,14 +232,14 @@ public abstract class AbstractScene implements IScene {
 				repaintAll();
 			}
 		}
-		currentTool.mouseMoved(e, view);
+		activeTool.mouseMoved(e, view);
 		navigationTool.mouseMoved(e, view);
 	}
 
 	@Override
 	public void mouseDragged(MouseEvent e, IView view) {
 		if (!isModifierDown(e))
-			currentTool.mouseDragged(e, view);
+			activeTool.mouseDragged(e, view);
 		else
 			navigationTool.mouseDragged(e, view);
 	}

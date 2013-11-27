@@ -31,20 +31,12 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 
-import javax.media.opengl.GL2;
-
 import ch.ethz.ether.view.IView;
 
 public interface ITool {
-	boolean isEnabled();
-	void setEnabled(boolean enabled);
+	boolean isActive();
+	void setActive(boolean enabled);
 
-	boolean isExclusive();
-	void setExclusive(boolean exclusive);
-	
-	void render3D(GL2 gl, IView view);
-	void render2D(GL2 gl, IView view);
-	
 	// key listener
 
 	void keyPressed(KeyEvent e, IView view);

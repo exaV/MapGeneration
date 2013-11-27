@@ -33,14 +33,13 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 
+import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.glu.GLU;
 
 import ch.ethz.ether.gl.DrawingUtilities;
 import ch.ethz.ether.gl.Frame;
-import ch.ethz.ether.gl.ProjectionUtilities;
-import ch.ethz.ether.model.IModel;
+import ch.ethz.ether.gl.Matrix4x4;
 import ch.ethz.ether.render.IRenderer;
 import ch.ethz.ether.scene.IScene;
 import ch.ethz.ether.ui.Button;
@@ -66,14 +65,16 @@ public abstract class AbstractView implements IView {
 
 	private Camera camera = new Camera();
 
-	private GLU glu;
 	private TextRenderer textRenderer;
-
-	private int[] viewport = new int[4];
-	private double[] projectionMatrix = new double[16];
-	private double[] modelviewMatrix = new double[16];	
-	private boolean updateMatrices = true;
 	
+	private int[] viewport = new int[4];
+	private float[] projectionMatrix3D = Matrix4x4.identity();
+	private float[] modelviewMatrix3D = Matrix4x4.identity();
+	private boolean lockMatrices3D = false;
+
+	private float[] projectionMatrix2D = Matrix4x4.identity();
+	private float[] modelviewMatrix2D = Matrix4x4.identity();
+
 	protected AbstractView(IScene scene, int x, int y, int w, int h, ViewType viewType, String id, String title) {
 		this.frame = new Frame(w, h, title);
 		this.scene = scene;
@@ -97,18 +98,13 @@ public abstract class AbstractView implements IView {
 	public IScene getScene() {
 		return scene;
 	}
-	
-	@Override
-	public final IModel getModel() {
-		return scene.getModel();
-	}
-	
+
 	@Override
 	public IRenderer getRenderer() {
 		// TODO: allow support for view-specific renderers
 		return scene.getDefaultRenderer();
 	}
-	
+
 	@Override
 	public Camera getCamera() {
 		return camera;
@@ -123,12 +119,12 @@ public abstract class AbstractView implements IView {
 	public final int getHeight() {
 		return viewport[3];
 	}
-	
+
 	@Override
 	public String getId() {
 		return id;
 	}
-	
+
 	@Override
 	public ViewType getViewType() {
 		return viewType;
@@ -138,131 +134,92 @@ public abstract class AbstractView implements IView {
 	public int[] getViewport() {
 		return viewport;
 	}
-	
+
 	@Override
-	public final double[] getProjectionMatrix() {
-		return projectionMatrix;
+	public final float[] getProjectionMatrix() {
+		return projectionMatrix3D;
 	}
 
 	@Override
-	public final double[] getModelviewMatrix() {
-		return modelviewMatrix;
+	public final float[] getModelviewMatrix() {
+		return modelviewMatrix3D;
 	}
 
 	@Override
-	public void setMatrices(double[] projectionMatrix, double[] modelviewMatrix) {
+	public void setMatrices(float[] projectionMatrix, float[] modelviewMatrix) {
 		if (projectionMatrix == null) {
-			this.updateMatrices = true;
+			this.lockMatrices3D = false;
 		} else {
-			this.updateMatrices = false;
-			this.projectionMatrix = projectionMatrix;
-			this.modelviewMatrix = modelviewMatrix;			
+			this.lockMatrices3D = true;
+			this.projectionMatrix3D = projectionMatrix;
+			this.modelviewMatrix3D = modelviewMatrix;
 		}
-	}
-	
-	@Override
-	public final GLU getGLU() {
-		return glu;
 	}
 	
 	@Override
 	public TextRenderer getTextRenderer() {
 		return textRenderer;
 	}
-	
+
 	@Override
 	public boolean isEnabled() {
 		return getScene().isEnabled(this);
 	}
-	
+
 	@Override
 	public boolean isCurrent() {
 		return getScene().getCurrentView() == this;
 	}
-	
-	
+
 	// opengl handling
 
 	@Override
-	public void init(GLAutoDrawable drawable, GL2 gl, GLU glu) {
-		this.glu = glu;
-
+	public void init(GLAutoDrawable drawable, GL2 gl) {
 		textRenderer = new TextRenderer(FONT);
 
 		gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		gl.glClearDepth(1.0f);
 
-		gl.glDisable(GL2.GL_DEPTH_TEST);
-		gl.glDepthFunc(GL2.GL_LEQUAL);
+		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
 
-		gl.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_NICEST);
-
-		gl.glShadeModel(GL2.GL_SMOOTH);
-
-		gl.glEnable(GL2.GL_BLEND);
-		gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_ALPHA);
-		
 		gl.glEnable(GL2.GL_POINT_SMOOTH);
 	}
 
-	
 	@Override
-	public void display(GLAutoDrawable drawable, GL2 gl, GLU glu) {
-		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT | GL2.GL_STENCIL_BUFFER_BIT);
+	public void display(GLAutoDrawable drawable, GL2 gl) {
+		gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT | GL.GL_STENCIL_BUFFER_BIT);
 
 		if (!getScene().isEnabled(this))
 			return;
 
-		
-		// ---- 3D SCENE ----
+		// fetch viewport
+		gl.glGetIntegerv(GL.GL_VIEWPORT, viewport, 0);
 
-		// projection setup
-		gl.glMatrixMode(GL2.GL_PROJECTION);
-		if (updateMatrices) {
+		// update 3D matrices
+		if (!lockMatrices3D) {
 			Camera c = getCamera();
-			gl.glLoadIdentity();
-			gl.glLoadMatrixd(ProjectionUtilities.getPerspectiveMatrix(c.getFOV(), (double) getWidth() / getHeight(), c.getNearClippingPlane(), c.getFarClippingPlane()), 0);
-		} else {
-			gl.glLoadMatrixd(getProjectionMatrix(), 0);
+			Matrix4x4.perspective(c.getFOV(), (float)getWidth() / (float)getHeight(), c.getNearClippingPlane(), c.getFarClippingPlane(), projectionMatrix3D);
+
+			Matrix4x4.identity(modelviewMatrix3D);
+			Matrix4x4.translate(c.getTranslateX(), c.getTranslateY(), -c.getDistance(), modelviewMatrix3D);
+			Matrix4x4.rotate(c.getRotateX() - 90, 1, 0, 0, modelviewMatrix3D);
+			Matrix4x4.rotate(c.getRotateZ(), 0, 0, 1, modelviewMatrix3D);
 		}
 
-		// view setup
-		gl.glMatrixMode(GL2.GL_MODELVIEW);
-		if (updateMatrices) {
-			Camera c = getCamera();
-			gl.glLoadIdentity();
-			gl.glTranslated(c.getTranslateX(), c.getTranslateY(), -c.getDistance());
-			gl.glRotated(c.getRotateX() - 90.0, 1.0, 0.0, 0.0);
-			gl.glRotated(c.getRotateZ(), 0.0, 0.0, 1.0);
-		} else {
-			gl.glLoadMatrixd(getModelviewMatrix(), 0);
-		}
+		// render model
+		getRenderer().render(gl, this);
+		
 
-		// fetch viewport, and projection/modelview matrices
-		fetchView(gl);
-
-		// draw model elements
-		if (!getScene().getCurrentTool().isExclusive()) {
-			getRenderer().renderModel(gl, getModel(), this);
-		}
-		getScene().getCurrentTool().render3D(gl, this);
-		
-		
-		// ---- 2D SCENE ----
-
-		gl.glMatrixMode(GL2.GL_PROJECTION);
-		gl.glLoadIdentity();
-		gl.glMatrixMode(GL2.GL_MODELVIEW);
-		gl.glLoadIdentity();
-		getScene().getCurrentTool().render2D(gl, this);
-		
-		// ---- PIXEL SPACE (FOR UI)
-		
+		// render ui (XXX this should probably move)
 		if (getViewType() == ViewType.INTERACTIVE_VIEW) {
+			Matrix4x4.ortho(0, viewport[2], viewport[3], 0, -1, 1, projectionMatrix2D);
 			gl.glMatrixMode(GL2.GL_PROJECTION);
-			gl.glOrtho(0, viewport[2], viewport[3], 0, -1, 1);
+			gl.glLoadMatrixf(projectionMatrix2D, 0);
+
+			Matrix4x4.identity(modelviewMatrix2D);
 			gl.glMatrixMode(GL2.GL_MODELVIEW);
-			gl.glLoadIdentity();
+			gl.glLoadMatrixf(modelviewMatrix2D, 0);
+
 			for (Button button : getScene().getButtons()) {
 				button.render(gl, this);
 			}
@@ -270,10 +227,10 @@ public abstract class AbstractView implements IView {
 				DrawingUtilities.drawText2D(this, 8, 8, Button.getMessage());
 			}
 		}
-	}	
-	
+	}
+
 	@Override
-	public void reshape(GLAutoDrawable drawable, GL2 gl, GLU glu, int x, int y, int width, int height) {
+	public void reshape(GLAutoDrawable drawable, GL2 gl, int x, int y, int width, int height) {
 		if (height == 0)
 			height = 1; // prevent divide by zero
 		viewport[2] = width;
@@ -282,9 +239,8 @@ public abstract class AbstractView implements IView {
 	}
 
 	@Override
-	public void dispose(GLAutoDrawable drawable, GL2 gl, GLU glu) {
-		glu = null;
-		textRenderer = null;
+	public void dispose(GLAutoDrawable drawable, GL2 gl) {
+		// XXX TODO
 	}
 
 	@Override
@@ -355,13 +311,4 @@ public abstract class AbstractView implements IView {
 	public void mouseWheelMoved(MouseWheelEvent e) {
 		scene.mouseWheelMoved(e, this);
 	}
-
-	
-	// private stuff
-	
-	private void fetchView(GL2 gl) {
-		gl.glGetIntegerv(GL2.GL_VIEWPORT, viewport, 0);
-		gl.glGetDoublev(GL2.GL_PROJECTION_MATRIX, projectionMatrix, 0);
-		gl.glGetDoublev(GL2.GL_MODELVIEW_MATRIX, modelviewMatrix, 0);
-	}	
 }

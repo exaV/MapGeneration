@@ -46,11 +46,11 @@ public class PreferencesStore {
 	 * @param matrix
 	 *            matrix (4x4) to be stored
 	 */
-	public void putMatrix4x4(String key, double[] matrix) {
+	public void putMatrix4x4(String key, float[] matrix) {
 		assert (matrix.length == 16);
 		get().putBoolean(key + "_matrix", true);
 		for (int i = 0; i < matrix.length; ++i)
-			get().putDouble(key + "_" + i, matrix[i]);
+			get().putFloat(key + "_" + i, matrix[i]);
 	}
 
 	/**
@@ -61,13 +61,13 @@ public class PreferencesStore {
 	 * @return the stored matrix or null if no matrix exists in store for given
 	 *         key.
 	 */
-	public double[] getMatrix4x4(String key) {
+	public float[] getMatrix4x4(String key) {
 		if (!get().getBoolean(key + "_matrix", false))
 			return null;
 
-		double[] matrix = new double[16];
+		float[] matrix = new float[16];
 		for (int i = 0; i < matrix.length; ++i) {
-			matrix[i] = get().getDouble(key + "_" + i, 0.0);
+			matrix[i] = get().getFloat(key + "_" + i, 0);
 		}
 		return matrix;
 	}

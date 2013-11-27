@@ -31,61 +31,31 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 
-import javax.media.opengl.GL2;
-
-import ch.ethz.ether.gl.DrawingUtilities;
 import ch.ethz.ether.view.IView;
-import ch.ethz.ether.view.IView.ViewType;
 
 public abstract class AbstractTool implements ITool {
 	public static final int SNAP_SIZE = 4;
 	
-	private boolean enabled = true;
-	private boolean exclusive = false;
+	private IScene scene;
+	private boolean active = false;
 
-	protected void renderUI(GL2 gl, IView view, String[] text) {
-		if (view.getViewType() == ViewType.INTERACTIVE_VIEW) {
-			DrawingUtilities.setTextColor(view, 1.0f, 1.0f, 1.0f, 0.5f);
-			for (int i = 0; i < text.length; ++i) {
-				DrawingUtilities.drawTextRaster(view, 1, 30 + i + 1, text[i]);
-			}
-		}
+	protected AbstractTool(IScene scene) {
+		this.scene = scene;
 	}
 	
-	protected void renderGrid(GL2 gl, IView view) {
-		view.getScene().getNavigationGrid().render(gl, view);
+	protected IScene getScene() {
+		return scene;
 	}
 	
 	@Override
-	public boolean isExclusive() {
-		return exclusive;
+	public final boolean isActive() {
+		return active;
 	}
 	
 	@Override
-	public void setExclusive(boolean exclusive) {
-		this.exclusive = exclusive;
+	public void setActive(boolean active) {
+		this.active = active;
 	}
-	
-	@Override
-	public final boolean isEnabled() {
-		return enabled;
-	}
-	
-	@Override
-	public final void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
-	
-	
-	// draw routine
-	@Override
-	public void render3D(GL2 gl, IView view) {
-	}
-	
-	@Override
-	public void render2D(GL2 gl, IView view) {
-	}
-	
 
 	// key listener
 

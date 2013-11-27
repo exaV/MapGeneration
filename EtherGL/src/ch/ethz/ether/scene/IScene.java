@@ -33,6 +33,7 @@ import java.awt.event.MouseWheelEvent;
 import java.util.List;
 
 import ch.ethz.ether.model.IModel;
+import ch.ethz.ether.render.IRenderGroups;
 import ch.ethz.ether.render.IRenderer;
 import ch.ethz.ether.ui.Button;
 import ch.ethz.ether.view.IView;
@@ -47,7 +48,7 @@ import ch.ethz.ether.view.IView;
 public interface IScene {
 	/**
 	 * Get the scene's model
-	 * @return model
+	 * @return model the scene's model
 	 */
 	IModel getModel();
 	
@@ -58,31 +59,37 @@ public interface IScene {
 	void setModel(IModel model);
 
 	/**
-	 * Add a view to the scene.
+	 * Add a view to the scene
 	 * @param view the view to add
 	 */
 	void addView(IView view);
 
 	/**
-	 * Get a list of all views.
+	 * Get a list of all views
 	 * @return list of views
 	 */
 	List<IView> getViews();
+	
+	/**
+	 * Get list of all geometry groups
+	 * @return list of geometry groups
+	 */
+	IRenderGroups getRenderGroups();
 
 	/**
-	 * Repaint all views.
+	 * Repaint all views
 	 */
 	void repaintAll();
 
 	/** 
 	 * Determine whether a given view is enabled by the scene (i.e. whether it should paint or not)
-	 * @return
+	 * @return true if view is enabled
 	 */
 	boolean isEnabled(IView view);
 	
 	IView getCurrentView();
-	ITool getCurrentTool();
-	void setCurrentTool(ITool tool);
+	ITool getActiveTool();
+	void setActiveTool(ITool tool);
 	NavigationTool getNavigationTool();
 	NavigationGrid getNavigationGrid();
 	

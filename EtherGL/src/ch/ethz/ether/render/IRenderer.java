@@ -29,7 +29,6 @@ package ch.ethz.ether.render;
 
 import javax.media.opengl.GL2;
 
-import ch.ethz.ether.model.IModel;
 import ch.ethz.ether.view.IView;
 
 /**
@@ -39,5 +38,5 @@ import ch.ethz.ether.view.IView;
  * 
  */
 public interface IRenderer {
-	void renderModel(GL2 gl, IModel model, IView view);
+	void render(GL2 gl, IView view);
 }

@@ -29,8 +29,6 @@ package ch.ethz.ether.examples.mapping;
 
 import java.awt.event.KeyEvent;
 
-import javax.media.opengl.GL2;
-
 import ch.ethz.ether.mapping.BoxCalibrationModel;
 import ch.ethz.ether.mapping.CalibrationTool;
 import ch.ethz.ether.mapping.FillTool;
@@ -45,7 +43,7 @@ import ch.ethz.ether.view.IView;
 public class MappingScene extends AbstractScene {
 	private float[] lightPosition = { 10.0f, 6.0f, 8.0f };
 
-	private final ITool defaultTool = new AbstractTool() {
+	private final ITool defaultTool = new AbstractTool(this) {
 		// @formatter:off
 		private final String[] help = {
 			"Simple Mapping Example (Without Content)",
@@ -57,7 +55,7 @@ public class MappingScene extends AbstractScene {
 			"Use Mouse Buttons + Shift or Mouse Wheel to Navigate"
 		};
 		// @formatter:on
-
+/*
 		@Override
 		public void render3D(GL2 gl, IView view) {
 			renderGrid(gl, view);
@@ -67,16 +65,17 @@ public class MappingScene extends AbstractScene {
 		public void render2D(GL2 gl, IView view) {
 			renderUI(gl, view, help);
 		}
+*/
 	};
 	
-	private final CalibrationTool calibrationTool = new CalibrationTool(new BoxCalibrationModel(0.5f, 0.5f, 0.5f, 0.8f, 0.8f));
-	private final FillTool fillTool = new FillTool();
+	private final CalibrationTool calibrationTool = new CalibrationTool(this, new BoxCalibrationModel(0.5f, 0.5f, 0.5f, 0.8f, 0.8f));
+	private final FillTool fillTool = new FillTool(this);
 	
 	private final IRenderer renderer = new ForwardRenderer();
 
 	public MappingScene() {
 		setLightPosition(lightPosition);
-		setCurrentTool(defaultTool);
+		setActiveTool(defaultTool);
 	}
 
 	@Override
@@ -93,13 +92,13 @@ public class MappingScene extends AbstractScene {
 		switch (e.getKeyCode()) {
 		case KeyEvent.VK_0:
 		case KeyEvent.VK_1:
-			setCurrentTool(defaultTool);
+			setActiveTool(defaultTool);
 			break;
 		case KeyEvent.VK_2:
-			setCurrentTool(calibrationTool);
+			setActiveTool(calibrationTool);
 			break;
 		case KeyEvent.VK_3:
-			setCurrentTool(fillTool);
+			setActiveTool(fillTool);
 			break;
 		default:
 			super.keyPressed(e, view);

@@ -29,10 +29,12 @@ package ch.ethz.ether.examples.mapping;
 
 import ch.ethz.ether.geom.GeometryUtilities;
 import ch.ethz.ether.model.SimpleTriangleModel;
-import ch.ethz.util.FloatList;
+import ch.ethz.ether.render.util.FloatList;
+import ch.ethz.ether.scene.IScene;
 
 public class MappingTriangleModel extends SimpleTriangleModel {
-	public MappingTriangleModel() {
+	public MappingTriangleModel(IScene scene) {
+		super(scene);
 		reset();
 	}
 

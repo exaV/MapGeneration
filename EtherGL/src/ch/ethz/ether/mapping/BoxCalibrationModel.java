@@ -29,8 +29,6 @@ package ch.ethz.ether.mapping;
 
 
 public class BoxCalibrationModel implements ICalibrationModel {
-	private float[] calibrationVertices;
-	private float[] calibrationLines;
 	private float boxExtentX;
 	private float boxExtentY;
 	private float boxExtentZ;
@@ -47,38 +45,31 @@ public class BoxCalibrationModel implements ICalibrationModel {
 
 	@Override
 	public float[] getCalibrationVertices() {
-		if (calibrationVertices == null) {
-			float bx = boxExtentX / 2;
-			float by = boxExtentY / 2;
-			float bz = boxExtentZ;
-			float px = planeExtentX / 2;
-			float py = planeExtentY / 2;
-			calibrationVertices = new float[] {
-					// box bottom 
-					bx, by, 0, -bx, by, 0, -bx, -by, 0, bx, -by, 0, 
-					// box top
-					bx, by, bz, -bx, by, bz, -bx, -by, bz, bx, -by, bz,
-					// plane
-					px, py, 0, -px, py, 0, -px, -py, 0, px, -py, 0 };
-
-		}
-		return calibrationVertices;
+		float bx = boxExtentX / 2;
+		float by = boxExtentY / 2;
+		float bz = boxExtentZ;
+		float px = planeExtentX / 2;
+		float py = planeExtentY / 2;
+		return new float[] {
+				// box bottom
+				bx, by, 0, -bx, by, 0, -bx, -by, 0, bx, -by, 0,
+				// box top
+				bx, by, bz, -bx, by, bz, -bx, -by, bz, bx, -by, bz,
+				// plane
+				px, py, 0, -px, py, 0, -px, -py, 0, px, -py, 0 };
 	}
 
 	@Override
 	public float[] getCalibrationLines() {
-		if (calibrationLines == null) {
-			float bx = boxExtentX / 2;
-			float by = boxExtentY / 2;
-			float bz = boxExtentZ;
-			calibrationLines = new float[] {
-					// bottom
-					bx, by, 0, -bx, by, 0, -bx, by, 0, -bx, -by, 0, -bx, -by, 0, bx, -by, 0, bx, -by, 0, bx, by, 0,
-					// top
-					bx, by, bz, -bx, by, bz, -bx, by, bz, -bx, -by, bz, -bx, -by, bz, bx, -by, bz, bx, -by, bz, bx, by, bz,
-					// side
-					bx, by, 0, bx, by, bz, -bx, by, 0, -bx, by, bz, -bx, -by, 0, -bx, -by, bz, bx, -by, 0, bx, -by, bz };
-		}
-		return calibrationLines;
+		float bx = boxExtentX / 2;
+		float by = boxExtentY / 2;
+		float bz = boxExtentZ;
+		return new float[] {
+				// bottom
+				bx, by, 0, -bx, by, 0, -bx, by, 0, -bx, -by, 0, -bx, -by, 0, bx, -by, 0, bx, -by, 0, bx, by, 0,
+				// top
+				bx, by, bz, -bx, by, bz, -bx, by, bz, -bx, -by, bz, -bx, -by, bz, bx, -by, bz, bx, -by, bz, bx, by, bz,
+				// side
+				bx, by, 0, bx, by, bz, -bx, by, 0, -bx, by, bz, -bx, -by, 0, -bx, -by, bz, bx, -by, 0, bx, -by, bz };
 	}
 }

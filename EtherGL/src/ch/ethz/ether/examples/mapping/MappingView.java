@@ -52,7 +52,7 @@ public class MappingView extends AbstractView {
 	 * @param initialCamRotateZ
 	 *            initial z angle of view
 	 */
-	public MappingView(MappingScene scene, int x, int y, int w, int h, ViewType viewType, String id, String title, double initialCamRotateZ) {
+	public MappingView(MappingScene scene, int x, int y, int w, int h, ViewType viewType, String id, String title, float initialCamRotateZ) {
 		super(scene, x, y, w, h, viewType, id, viewType == ViewType.MAPPED_VIEW ? null : title);
 		getCamera().setRotateZ(initialCamRotateZ);
 	}

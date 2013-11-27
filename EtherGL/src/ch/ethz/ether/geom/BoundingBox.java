@@ -33,15 +33,16 @@ import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
 /**
  * Axis aligned bounding box.
+ * 
  * @author radar
- *
+ * 
  */
 public final class BoundingBox {
 	boolean valid;
-	double minX;
-	double maxX;
-	double minY;
-	double maxY;
+	float minX;
+	float maxX;
+	float minY;
+	float maxY;
 
 	public BoundingBox() {
 		reset();
@@ -59,35 +60,31 @@ public final class BoundingBox {
 		return valid;
 	}
 
-	public double getMinX() {
+	public float getMinX() {
 		return minX;
 	}
 
-	public double getMaxX() {
+	public float getMaxX() {
 		return maxX;
 	}
 
-	public double getMinY() {
+	public float getMinY() {
 		return minY;
 	}
 
-	public double getMaxY() {
+	public float getMaxY() {
 		return maxY;
 	}
 
-	public double getExtentX() {
+	public float getExtentX() {
 		return maxX - minX;
 	}
 
-	public double getExtentY() {
+	public float getExtentY() {
 		return maxY - minY;
 	}
 
-	public void add(float x, float y, float z) {
-		add((double)x, (double)y);
-	}
-
-	public void add(double x, double y) {
+	public void add(float x, float y) {
 		minX = Math.min(minX, x);
 		maxX = Math.max(maxX, x);
 		minY = Math.min(minY, y);
@@ -95,34 +92,38 @@ public final class BoundingBox {
 		valid = true;
 	}
 
+	public void add(double x, double y) {
+		add((float) x, (float) y);
+	}
+
 	public void add(Vector2D vertex) {
 		add(vertex.getX(), vertex.getY());
 	}
-	
+
 	public void add(Collection<Vector2D> vertices) {
 		for (Vector2D point : vertices)
 			add(point);
 	}
-	
+
 	public void add(float[] vertices) {
 		for (int i = 0; i < vertices.length; i += 2) {
-			add(vertices[i], vertices[i+1]);
+			add(vertices[i], vertices[i + 1]);
 		}
 	}
 
 	public void add(double[] vertices) {
 		for (int i = 0; i < vertices.length; i += 2) {
-			add(vertices[i], vertices[i+1]);
+			add(vertices[i], vertices[i + 1]);
 		}
-	}	
-	
+	}
+
 	public void add(BoundingBox b) {
 		add(b.minX, b.minY);
 		add(b.maxX, b.maxY);
 	}
-	
+
 	@Override
 	public String toString() {
 		return valid ? "[" + minX + "," + maxX + "][" + minY + "," + maxY + "]" : "invalid";
-	}	
+	}
 }
