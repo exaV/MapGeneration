@@ -91,7 +91,6 @@ public interface IScene {
 	ITool getActiveTool();
 	void setActiveTool(ITool tool);
 	NavigationTool getNavigationTool();
-	NavigationGrid getNavigationGrid();
 	
 	IRenderer getDefaultRenderer();
 

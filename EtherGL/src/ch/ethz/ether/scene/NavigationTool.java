@@ -30,9 +30,18 @@ package ch.ethz.ether.scene;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 
+import ch.ethz.ether.render.AbstractRenderGroup;
+import ch.ethz.ether.render.IRenderGroup;
+import ch.ethz.ether.render.IRenderGroups;
+import ch.ethz.ether.render.IRenderGroup.Source;
+import ch.ethz.ether.render.IRenderGroup.Type;
+import ch.ethz.ether.render.util.IAddOnlyFloatList;
+import ch.ethz.ether.render.util.Primitives;
 import ch.ethz.ether.view.IView;
 
 public class NavigationTool extends AbstractTool {
+	public static final float[] GRID_COLOR = { 0.5f, 0.5f, 0.5f, 1.0f };
+
 	private static final float CAMERA_ROTATE_SCALE = 1.0f;
 	private static final float CAMERA_TRANSLATE_SCALE = 0.01f;
 
@@ -40,21 +49,62 @@ public class NavigationTool extends AbstractTool {
 	private int mouseX;
 	private int mouseY;
 
+	// TODO: make grid dynamic/configurable
+	private IRenderGroup grid = new AbstractRenderGroup(Source.TOOL, Type.LINES) {
+		@Override
+		public void getVertices(IAddOnlyFloatList dst) {
+			int gridNumLines = 12;
+			float gridSpacing = 0.1f;
+
+			// add axis lines
+			float e = 0.5f * gridSpacing * (gridNumLines + 1);
+			Primitives.addLine(dst, -e, 0, e, 0);
+			Primitives.addLine(dst, 0, -e, 0, e);
+
+			// add grid lines
+			int n = gridNumLines / 2;
+			for (int i = 1; i <= n; ++i) {
+				Primitives.addLine(dst, i * gridSpacing, -e, i * gridSpacing, e);
+				Primitives.addLine(dst, -i * gridSpacing, -e, -i * gridSpacing, e);
+				Primitives.addLine(dst, -e, i * gridSpacing, e, i * gridSpacing);
+				Primitives.addLine(dst, -e, -i * gridSpacing, e, -i * gridSpacing);
+			}
+		}
+
+		@Override
+		public float[] getColor() {
+			return GRID_COLOR;
+		}
+	};
+
 	public NavigationTool(IScene scene) {
 		super(scene);
+		// XXX hack: currently grid is always enabled
+		setActive(true);
 	}
-	
+
+	@Override
+	public void setActive(boolean active) {
+		super.setActive(active);
+		IRenderGroups groups = getScene().getRenderGroups();
+		if (active) {
+			groups.add(grid);
+		} else {
+			groups.remove(grid);
+		}
+	}
+
 	@Override
 	public void mousePressed(MouseEvent e, IView view) {
 		button = e.getButton();
 	}
-	
+
 	@Override
 	public void mouseMoved(MouseEvent e, IView view) {
 		mouseX = e.getX();
 		mouseY = e.getY();
 	}
-	
+
 	@Override
 	public void mouseDragged(MouseEvent e, IView view) {
 		if (button == MouseEvent.BUTTON1) {
@@ -68,7 +118,7 @@ public class NavigationTool extends AbstractTool {
 		mouseX = e.getX();
 		mouseY = e.getY();
 	}
-	
+
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e, IView view) {
 		view.getCamera().addToDistance(0.25f * e.getWheelRotation());

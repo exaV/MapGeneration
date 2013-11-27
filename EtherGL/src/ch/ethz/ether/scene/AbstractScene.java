@@ -53,7 +53,6 @@ public abstract class AbstractScene implements IScene {
 	private final IRenderGroups groups = IRenderGroups.Factory.create();	
 	
 	private final NavigationTool navigationTool = new NavigationTool(this);
-	private final NavigationGrid navigationGrid = new NavigationGrid(10, 0.1f);
 
 	private IView currentView = null;
 	private ITool activeTool = null;
@@ -127,11 +126,6 @@ public abstract class AbstractScene implements IScene {
 	@Override
 	public NavigationTool getNavigationTool() {
 		return navigationTool;
-	}
-
-	@Override
-	public NavigationGrid getNavigationGrid() {
-		return navigationGrid;
 	}
 
 	@Override

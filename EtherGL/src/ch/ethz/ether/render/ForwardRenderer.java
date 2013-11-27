@@ -29,12 +29,11 @@ package ch.ethz.ether.render;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
-import javax.media.opengl.glu.GLU;
 
 import ch.ethz.ether.geom.BoundingVolume;
 import ch.ethz.ether.gl.Matrix4x4;
 import ch.ethz.ether.render.IRenderGroup.Pass;
-import ch.ethz.ether.scene.NavigationGrid;
+import ch.ethz.ether.scene.NavigationTool;
 import ch.ethz.ether.view.IView;
 
 /**
@@ -62,7 +61,7 @@ public class ForwardRenderer implements IRenderer {
 		gl.glLoadMatrixf(view.getModelviewMatrix(), 0);
 		
 		// render ground plane (XXX FIXME: move to model as geometry group)
-		gl.glColor4fv(NavigationGrid.GRID_COLOR, 0);
+		gl.glColor4fv(NavigationTool.GRID_COLOR, 0);
 		gl.glBegin(GL2.GL_QUADS);
 		gl.glVertex3d(2*bounds.getMinX(), 2*bounds.getMinY(), -0.001);
 		gl.glVertex3d(2*bounds.getMaxX(), 2*bounds.getMinY(), -0.001);
