@@ -131,29 +131,30 @@ public class VBO {
 			gl.glEnableClientState(GL2.GL_NORMAL_ARRAY);
 			gl.glNormalPointer(GL.GL_FLOAT, 0, 0);
 		}
-
 		if (hasColors) {
 			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vbos[2]);
 			gl.glEnableClientState(GL2.GL_COLOR_ARRAY);
 			gl.glColorPointer(4, GL.GL_FLOAT, 0, 0);
 		}
-
 		if (hasTexCoords) {
-			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vbos[2]);
+			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vbos[3]);
 			gl.glEnableClientState(GL2.GL_TEXTURE_COORD_ARRAY);
-			gl.glTexCoordPointer(2, GL.GL_FLOAT, 0, 0);
-			
+			gl.glTexCoordPointer(2, GL.GL_FLOAT, 0, 0);	
 		}
 		
 		gl.glDrawArrays(mode, 0, numVertices);
 
 		gl.glDisableClientState(GL2.GL_VERTEX_ARRAY);
-		if (hasNormals)
+		
+		if (hasNormals) {
 			gl.glDisableClientState(GL2.GL_NORMAL_ARRAY);
-		if (hasColors)
+		}
+		if (hasColors) {
 			gl.glDisableClientState(GL2.GL_COLOR_ARRAY);
-		if (hasTexCoords)
+		}
+		if (hasTexCoords) {
 			gl.glDisableClientState(GL2.GL_TEXTURE_COORD_ARRAY);
+		}
 
 		gl.glBindBuffer(GL.GL_ARRAY_BUFFER, 0);
 	}

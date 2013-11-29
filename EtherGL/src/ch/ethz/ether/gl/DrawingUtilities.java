@@ -27,16 +27,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package ch.ethz.ether.gl;
 
-import java.awt.geom.Rectangle2D;
-
-import javax.media.opengl.GL2;
-
-import ch.ethz.ether.view.IView;
-
-import com.jogamp.opengl.util.awt.TextRenderer;
 
 // XXX REMOVE FIXED PIPELINE STUFF
 public final class DrawingUtilities {
+/*
 	public static void drawPoints(GL2 gl, float[] vertices) {
 		gl.glBegin(GL2.GL_POINTS);
 		for (int i = 0; i < vertices.length; i += 3) {
@@ -87,4 +81,5 @@ public final class DrawingUtilities {
 	public static void setTextColor(IView view, float[] rgba) {
 		view.getTextRenderer().setColor(rgba[0], rgba[1], rgba[2], rgba[3]);
 	}
+*/
 }

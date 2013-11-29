@@ -32,11 +32,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
-import javax.media.opengl.GL;
-import javax.media.opengl.GL2;
-import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCapabilities;
-import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
 import javax.media.opengl.awt.GLCanvas;
 import javax.swing.JFrame;
@@ -93,50 +89,6 @@ public final class Frame extends GLCanvas {
 			setSharedContext(frames.get(0).getContext());
 		frames.add(this);
 		setPreferredSize(new Dimension(width, height));
-		addGLEventListener(new GLEventListener() {
-			/**
-			 * Called back immediately after the OpenGL context is initialized.
-			 * Can be used to perform one-time initialization. Run only once.
-			 */
-			@Override
-			public void init(GLAutoDrawable drawable) {
-				GL2 gl = drawable.getGL().getGL2();
-				gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-				gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
-				if (view != null)
-					view.init(drawable, gl);
-			}
-
-			/**
-			 * Called after resize. Also called when the drawable is first set
-			 * to visible.
-			 */
-			@Override
-			public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
-				if (view != null)
-					view.reshape(drawable, drawable.getGL().getGL2(), x, y, width, height);
-			}
-
-			/**
-			 * Called to perform rendering.
-			 */
-			@Override
-			public void display(GLAutoDrawable drawable) {
-				if (view != null)
-					view.display(drawable, drawable.getGL().getGL2());
-			}
-
-			/**
-			 * Notifies the listener to perform the release of all OpenGL
-			 * resources per GLContext, such as memory buffers and GLSL
-			 * programs.
-			 */
-			@Override
-			public void dispose(GLAutoDrawable drawable) {
-				if (view != null)
-					view.dispose(drawable, drawable.getGL().getGL2());
-			}
-		});
 		
 		jframe = new JFrame();
 		jframe.getContentPane().add(this);
@@ -167,12 +119,16 @@ public final class Frame extends GLCanvas {
 	public void setView(IView view) {
 		if (this.view == view)
 			return;
-		removeMouseListener(this.view);
-		removeMouseMotionListener(this.view);
-		removeMouseWheelListener(this.view);
-		removeKeyListener(this.view);
+		if (this.view != null) {
+			removeGLEventListener(this.view);
+			removeMouseListener(this.view);
+			removeMouseMotionListener(this.view);
+			removeMouseWheelListener(this.view);
+			removeKeyListener(this.view);
+		}
 		this.view = view;
 		if (this.view != null) {
+			addGLEventListener(this.view);
 			addMouseListener(this.view);
 			addMouseMotionListener(this.view);
 			addMouseWheelListener(this.view);

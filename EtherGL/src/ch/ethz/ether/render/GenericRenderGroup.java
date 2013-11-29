@@ -59,7 +59,7 @@ public class GenericRenderGroup extends AbstractRenderGroup {
 	}
 
 	@Override
-	public ITextureData getTexData() {
+	public ITextureData getTextureData() {
 		return texData;
 	}
 

@@ -29,6 +29,7 @@ package ch.ethz.ether.render;
 
 import javax.media.opengl.GL2;
 
+import ch.ethz.ether.render.IRenderGroup.Source;
 import ch.ethz.ether.view.IView;
 
 /**
@@ -38,5 +39,53 @@ import ch.ethz.ether.view.IView;
  * 
  */
 public interface IRenderer {
+	static final IRenderGroups GROUPS = new RenderGroups();
+
+	interface IRenderGroups {
+		/**
+		 * Add render group to renderer.
+		 * 
+		 * @param group
+		 *            the group to be added
+		 */
+		void add(IRenderGroup group);
+
+		/**
+		 * Add multiple groups to renderer.
+		 * 
+		 * @param group
+		 *            first group
+		 * @param groups
+		 *            all other groups
+		 */
+		void add(IRenderGroup group, IRenderGroup... groups);
+
+		/**
+		 * Remove render group from renderer.
+		 * 
+		 * @param group
+		 *            the group to be removed
+		 */
+		void remove(IRenderGroup group);
+
+		/**
+		 * Remove multiple groups from renderer.
+		 * 
+		 * @param group
+		 *            first group
+		 * @param groups
+		 *            all other groups
+		 */
+		void remove(IRenderGroup group, IRenderGroup... groups);
+
+		/**
+		 * Restrict renderer to render only groups with specific source.
+		 * 
+		 * @param source
+		 *            source groups to be rendered or NULL to render all sources
+		 */
+		void setSource(Source source);
+	}
+
 	void render(GL2 gl, IView view);
 }

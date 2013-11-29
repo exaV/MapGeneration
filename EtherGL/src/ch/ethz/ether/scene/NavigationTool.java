@@ -32,9 +32,9 @@ import java.awt.event.MouseWheelEvent;
 
 import ch.ethz.ether.render.AbstractRenderGroup;
 import ch.ethz.ether.render.IRenderGroup;
-import ch.ethz.ether.render.IRenderGroups;
 import ch.ethz.ether.render.IRenderGroup.Source;
 import ch.ethz.ether.render.IRenderGroup.Type;
+import ch.ethz.ether.render.IRenderer;
 import ch.ethz.ether.render.util.IAddOnlyFloatList;
 import ch.ethz.ether.render.util.Primitives;
 import ch.ethz.ether.view.IView;
@@ -80,18 +80,17 @@ public class NavigationTool extends AbstractTool {
 	public NavigationTool(IScene scene) {
 		super(scene);
 		// XXX hack: currently grid is always enabled
-		setActive(true);
+		activate();
 	}
 
 	@Override
-	public void setActive(boolean active) {
-		super.setActive(active);
-		IRenderGroups groups = getScene().getRenderGroups();
-		if (active) {
-			groups.add(grid);
-		} else {
-			groups.remove(grid);
-		}
+	public void activate() {
+		IRenderer.GROUPS.add(grid);
+	}
+	
+	@Override
+	public void deactivate() {
+		IRenderer.GROUPS.remove(grid);
 	}
 
 	@Override

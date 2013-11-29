@@ -38,7 +38,7 @@ public abstract class AbstractRenderGroup implements IRenderGroup {
 	}
 
 	@Override
-	public Source getSource() {
+	public final Source getSource() {
 		return source;
 	}
 	
@@ -53,7 +53,7 @@ public abstract class AbstractRenderGroup implements IRenderGroup {
 	}
 	
 	@Override
-	public void setPass(Pass pass) {
+	public final void setPass(Pass pass) {
 		this.pass = pass;
 		requestUpdate();
 	}
@@ -103,9 +103,22 @@ public abstract class AbstractRenderGroup implements IRenderGroup {
 	public float getLineWidth() {
 		return 1;
 	}
+	
+	@Override
+	public final void requestTextureUpdate() {
+		ITextureData textureData = getTextureData();
+		if (textureData != null)
+			textureData.requestUpdate();
+	}
+	
+	@Override
+	public final boolean needsTextureUpdate() {
+		ITextureData textureData = getTextureData();
+		return textureData != null && textureData.needsUpdate();
+	}
 
 	@Override
-	public ITextureData getTexData() {
+	public ITextureData getTextureData() {
 		return null;
 	}
 }

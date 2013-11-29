@@ -32,14 +32,10 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelListener;
 
-import javax.media.opengl.GL2;
-import javax.media.opengl.GLAutoDrawable;
+import javax.media.opengl.GLEventListener;
 
 import ch.ethz.ether.gl.Frame;
-import ch.ethz.ether.render.IRenderer;
 import ch.ethz.ether.scene.IScene;
-
-import com.jogamp.opengl.util.awt.TextRenderer;
 
 /**
  * A 'view' here is a view with some control functionality, i.e. it handles the
@@ -48,60 +44,92 @@ import com.jogamp.opengl.util.awt.TextRenderer;
  * @author radar
  * 
  */
-public interface IView extends KeyListener, MouseListener, MouseMotionListener, MouseWheelListener {
+public interface IView extends GLEventListener, KeyListener, MouseListener, MouseMotionListener, MouseWheelListener {
 	enum ViewType {
 		INTERACTIVE_VIEW, MAPPED_VIEW
 	}
 
-	Frame getFrame();
+	/**
+	 * Get the scene this view belongs to.
+	 * 
+	 * @return the scene
+	 */
 	IScene getScene();
-	IRenderer getRenderer();
 
+	/**
+	 * Get associated camera.
+	 * 
+	 * @return the camera
+	 */
 	Camera getCamera();
+
+	/**
+	 * Get viewport width.
+	 * 
+	 * @return viewport width
+	 */
 	int getWidth();
+
+	/**
+	 * Get viewport height.
+	 * 
+	 * @return viewport height
+	 */
 	int getHeight();
-	ViewType getViewType();
-	String getId();
-	
+
+	/**
+	 * Get viewport [x, y, w, h]. Note: This returns a reference to an internal
+	 * array. Writing to the array has no effect, except for a messed up
+	 * viewport until the next redraw cycle.
+	 * 
+	 * @return the viewport.
+	 */
 	int[] getViewport();
-	
-	float[] getProjectionMatrix();
-	float[] getModelviewMatrix();
-	void setMatrices(float[] projectionMatrix, float[] modelviewMatrix);
-	
-	TextRenderer getTextRenderer();
-	
+
+	/**
+	 * Get view type.
+	 * 
+	 * @return the view type
+	 */
+	ViewType getViewType();
+
+	/**
+	 * Get underlying Frame which allows access to native window etc. Use with
+	 * caution.
+	 * 
+	 * @return the frame
+	 */
+	Frame getFrame();
+
+	/**
+	 * Check whether view is enabled for rendering.
+	 * 
+	 * @return true if view is enabled, false otherwise
+	 */
 	boolean isEnabled();
+
+	/**
+	 * Enable or disable view for rendering.
+	 * 
+	 * @param enabled
+	 *            enables view if true, disables otherwise
+	 */
+	void setEnabled(boolean enabled);
+
+	/**
+	 * Check whether view currently receives events.
+	 * 
+	 * @return true if view receives events, false otherwise
+	 */
 	boolean isCurrent();
-	
-	/**
-	 * Called immediately after the OpenGL context is initialized. Can be used
-	 * to perform one-time initialization. Run only once. Caution: If you used
-	 * same scene instance with multiple Frames, this will be called for
-	 * initialization for each Frame.
-	 */
-	void init(GLAutoDrawable drawable, GL2 gl);
 
 	/**
-	 * Called after resize. Also called when the drawable is first set to
-	 * visible.
+	 * Request to update view and its dependencies. Internally calls all view changed listeners
 	 */
-	void reshape(GLAutoDrawable drawable, GL2 gl, int x, int y, int width, int height);
+	void update();
 
 	/**
-	 * Called to perform rendering.
-	 */
-	void display(GLAutoDrawable drawable, GL2 gl);
-
-	/**
-	 * Notifies the listener to perform the release of all OpenGL resources per
-	 * GLContext, such as memory buffers and GLSL programs. Caution: Use this
-	 * mechanism with care if you're using multiple Frames with shared contexts.
-	 */
-	void dispose(GLAutoDrawable drawable, GL2 gl);
-
-	/**
-	 * Can be called to request to repaint this view.
+	 * Request to repaint this view.
 	 */
 	void repaint();
 }

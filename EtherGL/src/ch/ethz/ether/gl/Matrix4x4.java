@@ -32,7 +32,7 @@ import java.util.Arrays;
 /**
  * Basic matrix utilities for dealing with OpenGL 4x4 matrices. Note: Some of
  * this code is taken from JOGL. For more complex matrix operations, use the
- * Apache commons library.
+ * included Apache commons library.
  * 
  * @author radar
  * 

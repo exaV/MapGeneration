@@ -35,26 +35,27 @@ import ch.ethz.ether.view.IView;
 
 public abstract class AbstractTool implements ITool {
 	public static final int SNAP_SIZE = 4;
-	
+
 	private IScene scene;
-	private boolean active = false;
 
 	protected AbstractTool(IScene scene) {
 		this.scene = scene;
 	}
-	
-	protected IScene getScene() {
+
+	protected final IScene getScene() {
 		return scene;
 	}
-	
+
 	@Override
-	public final boolean isActive() {
-		return active;
+	public void activate() {
 	}
-	
+
 	@Override
-	public void setActive(boolean active) {
-		this.active = active;
+	public void deactivate() {
+	}
+
+	@Override
+	public void viewChanged(IView view) {
 	}
 
 	// key listener
@@ -88,11 +89,10 @@ public abstract class AbstractTool implements ITool {
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e, IView view) {
 	}
-	
-	
+
 	public static final boolean snap2D(int mx, int my, int x, int y) {
 		if ((mx >= x - SNAP_SIZE) && (mx <= x + SNAP_SIZE) && (my >= y - SNAP_SIZE) && (my < y + SNAP_SIZE))
 			return true;
 		return false;
-	}	
+	}
 }

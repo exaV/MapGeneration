@@ -9,10 +9,13 @@ import java.util.Map;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
+import ch.ethz.ether.gl.Texture;
 import ch.ethz.ether.gl.VBO;
 import ch.ethz.ether.render.IRenderGroup.Flag;
+import ch.ethz.ether.render.IRenderGroup.ITextureData;
 import ch.ethz.ether.render.IRenderGroup.Pass;
 import ch.ethz.ether.render.IRenderGroup.Source;
+import ch.ethz.ether.render.IRenderer.IRenderGroups;
 import ch.ethz.ether.render.util.FloatList;
 import ch.ethz.ether.view.IView;
 import ch.ethz.ether.view.IView.ViewType;
@@ -20,9 +23,13 @@ import ch.ethz.util.UpdateRequest;
 
 final class RenderGroups implements IRenderGroups {
 	class RenderEntry {
-		RenderEntry(IRenderGroup group, VBO vbo) {
+		final IRenderGroup group;
+		final int mode;
+		VBO vbo;
+		Texture texture;
+
+		RenderEntry(IRenderGroup group) {
 			this.group = group;
-			this.vbo = vbo;
 			switch (group.getType()) {
 			case POINTS:
 				mode = GL.GL_POINTS;
@@ -37,19 +44,69 @@ final class RenderGroups implements IRenderGroups {
 				throw new IllegalStateException();
 			}
 		}
+		
+		void dispose(GL2 gl) {
+			if (vbo != null)
+				vbo.dispose(gl);
+			if (texture != null)
+				texture.dispose(gl);
+		}
+
+		void update(GL2 gl) {
+			ITextureData texData = group.getTextureData();
+			boolean needsTextureUpdate = group.needsTextureUpdate();
+
+			if (!group.needsUpdate() && !needsTextureUpdate)
+				return;
+
+			if (vbo == null)
+				vbo = new VBO(gl);
+
+			vertices.clear();
+			group.getVertices(vertices);
+			if (vertices.isEmpty()) {
+				vbo.clear(gl);
+				return;
+			}
+
+			int numVertices = vertices.size() / 3;
+
+			normals.clear();
+			group.getNormals(normals);
+
+			colors.clear();
+			group.getColors(colors);
+
+			texCoords.clear();
+			group.getTexCoords(texCoords);
+
+			vbo.load(gl, numVertices, vertices.buffer(), normals.buffer(), colors.buffer(), texCoords.buffer());
+
+			if (texData != null) {
+				if (texture == null)
+					texture = new Texture(gl);
+				if (needsTextureUpdate)
+					texture.load(gl, texData.getWidth(), texData.getHeight(), texData.getBuffer(), texData.getFormat());
+			}
+		}
 
 		void render(GL2 gl) {
+			update(gl);
+
+			ITextureData texData = group.getTextureData();
+			if (texData != null)
+				texture.enable(gl);
+
 			gl.glColor4fv(group.getColor(), 0);
 			if (mode == GL.GL_LINES)
 				gl.glLineWidth(group.getLineWidth());
 			else if (mode == GL.GL_POINTS)
 				gl.glPointSize(group.getPointSize());
 			vbo.render(gl, mode);
-		}
 
-		final IRenderGroup group;
-		final VBO vbo;
-		final int mode;
+			if (texData != null)
+				texture.disable(gl);
+		}
 	}
 
 	private final UpdateRequest updater = new UpdateRequest();
@@ -69,15 +126,21 @@ final class RenderGroups implements IRenderGroups {
 
 	}
 
-	// TODO: Proper dispose...
-
 	@Override
 	public void add(IRenderGroup group) {
 		if (!groups.containsKey(group)) {
 			added.add(group);
 			group.requestUpdate();
+			group.requestTextureUpdate();
 			updater.requestUpdate();
 		}
+	}
+
+	@Override
+	public void add(IRenderGroup group, IRenderGroup... groups) {
+		add(group);
+		for (IRenderGroup g : groups)
+			add(g);
 	}
 
 	@Override
@@ -86,6 +149,13 @@ final class RenderGroups implements IRenderGroups {
 			removed.add(group);
 			updater.requestUpdate();
 		}
+	}
+
+	@Override
+	public void remove(IRenderGroup group, IRenderGroup... groups) {
+		remove(group);
+		for (IRenderGroup g : groups)
+			remove(g);
 	}
 
 	@Override
@@ -100,43 +170,15 @@ final class RenderGroups implements IRenderGroups {
 		if (updater.needsUpdate()) {
 			// update added / removed groups
 			for (IRenderGroup group : added) {
-				groups.put(group, new RenderEntry(group, new VBO(gl)));
+				groups.put(group, new RenderEntry(group));
 			}
 			added.clear();
 
 			for (IRenderGroup group : removed) {
 				RenderEntry entry = groups.remove(group);
-				if (entry != null) {
-					entry.vbo.dispose(gl);
-				}
+				entry.dispose(gl);
 			}
 			removed.clear();
-		}
-
-		for (RenderEntry entry : groups.values()) {
-			if (entry.group.needsUpdate()) {
-				VBO vbo = entry.vbo;
-
-				vertices.clear();
-				entry.group.getVertices(vertices);
-				if (vertices.isEmpty()) {
-					vbo.clear(gl);
-					continue;
-				}
-
-				int numVertices = vertices.size() / 3;
-
-				normals.clear();
-				entry.group.getNormals(normals);
-
-				colors.clear();
-				entry.group.getColors(colors);
-
-				texCoords.clear();
-				entry.group.getTexCoords(texCoords);
-
-				vbo.load(gl, numVertices, vertices.buffer(), normals.buffer(), colors.buffer(), texCoords.buffer());
-			}
 		}
 	}
 

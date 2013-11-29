@@ -27,16 +27,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package ch.ethz.ether.mapping;
 
+import java.util.Collections;
+
 import ch.ethz.ether.render.AbstractRenderGroup;
 import ch.ethz.ether.render.IRenderGroup;
 import ch.ethz.ether.render.IRenderGroup.Pass;
 import ch.ethz.ether.render.IRenderGroup.Source;
 import ch.ethz.ether.render.IRenderGroup.Type;
-import ch.ethz.ether.render.IRenderGroups;
+import ch.ethz.ether.render.IRenderer;
 import ch.ethz.ether.render.util.IAddOnlyFloatList;
 import ch.ethz.ether.render.util.Primitives;
 import ch.ethz.ether.scene.AbstractTool;
 import ch.ethz.ether.scene.IScene;
+import ch.ethz.ether.view.IView;
 
 public final class FillTool extends AbstractTool {
 	// @formatter:off
@@ -47,7 +50,7 @@ public final class FillTool extends AbstractTool {
 	};
 	// @formatter:on
 	
-	private IRenderGroup group = new AbstractRenderGroup(Source.TOOL, Type.TRIANGLES, Pass.DEVICE_SPACE_OVERLAY) {
+	private IRenderGroup quads = new AbstractRenderGroup(Source.TOOL, Type.TRIANGLES, Pass.DEVICE_SPACE_OVERLAY) {
 		@Override
 		public void getVertices(IAddOnlyFloatList dst) {
 			Primitives.addRectangle(dst, -1.0f, -1.0f, -0.1f, -0.1f);
@@ -62,15 +65,20 @@ public final class FillTool extends AbstractTool {
 	}
 	
 	@Override
-	public void setActive(boolean active) {
-		super.setActive(active);
-		IRenderGroups groups = getScene().getRenderGroups();
-		if (active) {
-			groups.add(group);
-			groups.setSource(Source.TOOL);
-		} else {
-			groups.remove(group);
-			groups.setSource(null);
-		}
+	public void activate() {
+		IRenderer.GROUPS.add(quads);
+		IRenderer.GROUPS.setSource(Source.TOOL);
+	}
+	
+	@Override
+	public void deactivate() {
+		IRenderer.GROUPS.remove(quads);
+		IRenderer.GROUPS.setSource(null);
+		getScene().enableViews(null);
+	}	
+	
+	@Override
+	public void viewChanged(IView view) {
+		getScene().enableViews(Collections.singleton(view));
 	}
 }

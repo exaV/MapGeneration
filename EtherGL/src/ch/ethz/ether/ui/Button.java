@@ -27,11 +27,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package ch.ethz.ether.ui;
 
-import java.awt.geom.Rectangle2D;
-
 import javax.media.opengl.GL2;
 
-import ch.ethz.ether.gl.DrawingUtilities;
 import ch.ethz.ether.view.IView;
 
 public class Button {
@@ -148,9 +145,10 @@ public class Button {
 		gl.glVertex2f(bx + buttonWidth / 2, by - buttonHeight / 2);
 		gl.glEnd();
 
-		Rectangle2D b = view.getTextRenderer().getBounds(label);
-		DrawingUtilities.setTextColor(view, COLOR_TEXT);
-		DrawingUtilities.drawText2D(view, bx - (float) b.getWidth() / 2, view.getHeight() - by - (float) b.getHeight() / 2, label);
+		//XXX
+		//Rectangle2D b = view.getTextRenderer().getBounds(label);
+		//DrawingUtilities.setTextColor(view, COLOR_TEXT);
+		//DrawingUtilities.drawText2D(view, bx - (float) b.getWidth() / 2, view.getHeight() - by - (float) b.getHeight() / 2, label);
 	}
 
 	public void fire(IView view) {

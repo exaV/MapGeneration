@@ -39,7 +39,7 @@ public final class ProjectionUtilities {
 	private static final ProjectFloat project = new ProjectFloat();
 
 	public static boolean projectToDeviceCoordinates(IView view, float x, float y, float z, float[] v) {
-		if (!project.gluProject(x, y, z, view.getModelviewMatrix(), 0, view.getProjectionMatrix(), 0, view.getViewport(), 0, v, 0))
+		if (!project.gluProject(x, y, z, view.getCamera().getModelviewMatrix(), 0, view.getCamera().getProjectionMatrix(), 0, view.getViewport(), 0, v, 0))
 			return false;
 		v[0] = screenToDeviceX(view, (int) v[0]);
 		v[1] = screenToDeviceY(view, (int) v[1]);
@@ -48,7 +48,7 @@ public final class ProjectionUtilities {
 	}
 
 	public static boolean projectToScreenCoordinates(IView view, float x, float y, float z, float[] v) {
-		return project.gluProject(x, y, z, view.getModelviewMatrix(), 0, view.getProjectionMatrix(), 0, view.getViewport(), 0, v, 0);
+		return project.gluProject(x, y, z, view.getCamera().getModelviewMatrix(), 0, view.getCamera().getProjectionMatrix(), 0, view.getViewport(), 0, v, 0);
 	}
 
 	public static int deviceToScreenX(IView view, float x) {
@@ -70,8 +70,8 @@ public final class ProjectionUtilities {
 	public static Line getRay(IView view, float winX, float winY) {
 		// XXX FIXME: how about near and far???
 		float[] w = new float[8];
-		project.gluUnProject(winX, winY, 0.1f, view.getModelviewMatrix(), 0, view.getProjectionMatrix(), 0, view.getViewport(), 0, w, 0);
-		project.gluUnProject(winX, winY, 0.9f, view.getModelviewMatrix(), 0, view.getProjectionMatrix(), 0, view.getViewport(), 0, w, 4);
+		project.gluUnProject(winX, winY, 0.1f, view.getCamera().getModelviewMatrix(), 0, view.getCamera().getProjectionMatrix(), 0, view.getViewport(), 0, w, 0);
+		project.gluUnProject(winX, winY, 0.9f, view.getCamera().getModelviewMatrix(), 0, view.getCamera().getProjectionMatrix(), 0, view.getViewport(), 0, w, 4);
 		return new Line(new Vector3D(w[0], w[1], w[2]), new Vector3D(w[4], w[5], w[6]));
 	}
 }

@@ -4,62 +4,97 @@ import java.nio.Buffer;
 import java.util.EnumSet;
 
 import ch.ethz.ether.render.util.IAddOnlyFloatList;
+import ch.ethz.util.UpdateRequest;
 
 public interface IRenderGroup {
-	public static float[] DEFAULT_COLOR = new float[] { 1, 1, 1, 1};
-	
-	public interface ITextureData {
+	static final float[] DEFAULT_COLOR = new float[] { 1, 1, 1, 1 };
+
+	interface ITextureData {
 		Buffer getBuffer();
+
 		int getWidth();
+
 		int getHeight();
+
+		int getFormat();
+
+		void requestUpdate();
+
+		boolean needsUpdate();
 	}
-	
-	public enum Source {
-		MODEL,
-		TOOL;
-		
+
+	abstract class AbstractTextureData implements ITextureData {
+		private UpdateRequest updater = new UpdateRequest();
+
+		protected AbstractTextureData() {
+			this(false);
+		}
+
+		protected AbstractTextureData(boolean requestUpdate) {
+			if (requestUpdate)
+				requestUpdate();
+		}
+
+		@Override
+		public void requestUpdate() {
+			updater.requestUpdate();
+		}
+
+		@Override
+		public boolean needsUpdate() {
+			return updater.needsUpdate();
+		}
+	}
+
+	enum Source {
+		MODEL, TOOL;
+
 		public static EnumSet<Source> ALL_SOURCES = EnumSet.allOf(Source.class);
 	}
-	
-	public enum Type {
-		POINTS,
-		LINES,
-		TRIANGLES,
+
+	enum Type {
+		POINTS, LINES, TRIANGLES,
 	}
-	
+
 	enum Pass {
-		DEPTH,
-		TRANSPARENCY,
-		OVERLAY,
-		DEVICE_SPACE_OVERLAY,
-		SCREEN_SPACE_OVERLAY
-	}	
-	
-	public enum Flag {
-		SHADED,
-		TEXTURED,
-		INTERACTIVE_VIEW_ONLY
+		DEPTH, TRANSPARENCY, OVERLAY, DEVICE_SPACE_OVERLAY, SCREEN_SPACE_OVERLAY
 	}
-	
-	public void requestUpdate();
-	public boolean needsUpdate();
 
-	public Source getSource();
-	
-	public Type getType();
-	
-	public Pass getPass();
-	public void setPass(Pass pass);
-	
-	public boolean containsFlag(Flag flags);
-	
-	public void getVertices(IAddOnlyFloatList dst);
-	public void getNormals(IAddOnlyFloatList dst);
-	public void getColors(IAddOnlyFloatList dst);
-	public void getTexCoords(IAddOnlyFloatList dst);
+	enum Flag {
+		SHADED, TEXTURED, INTERACTIVE_VIEW_ONLY
+	}
 
-	public float[] getColor();
-	public float getPointSize();
-	public float getLineWidth();
-	public ITextureData getTexData();
+	void requestUpdate();
+
+	boolean needsUpdate();
+
+	Source getSource();
+
+	Type getType();
+
+	Pass getPass();
+
+	void setPass(Pass pass);
+
+	boolean containsFlag(Flag flags);
+
+	void getVertices(IAddOnlyFloatList dst);
+
+	void getNormals(IAddOnlyFloatList dst);
+
+	void getColors(IAddOnlyFloatList dst);
+
+	void getTexCoords(IAddOnlyFloatList dst);
+
+	float[] getColor();
+
+	float getPointSize();
+
+	float getLineWidth();
+	
+	void requestTextureUpdate();
+	
+	boolean needsTextureUpdate();
+
+	ITextureData getTextureData();
 }

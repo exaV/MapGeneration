@@ -113,7 +113,7 @@ public class GeometryServer {
 						position[1] += (sunPosition[1] - position[1]) / 10f;
 						// System.out.println(scene.getLightPosition()[0]+" "+scene.getLightPosition()[1]);
 						scene.setLightPosition(position);
-						scene.repaintAll();
+						scene.repaintViews();
 					}
 				});
 

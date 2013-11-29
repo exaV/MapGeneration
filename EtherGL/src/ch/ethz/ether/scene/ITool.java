@@ -34,8 +34,25 @@ import java.awt.event.MouseWheelEvent;
 import ch.ethz.ether.view.IView;
 
 public interface ITool {
-	boolean isActive();
-	void setActive(boolean enabled);
+	/**
+	 * Called when tool is activated. Note that this call is always followed by
+	 * {@link #viewChanged(IView)}.
+	 */
+	void activate();
+
+	/**
+	 * Called when tool is deactivated.
+	 */
+	void deactivate();
+
+	/**
+	 * Called when current view has changed. Tools should use this to update
+	 * view-dependent buffers (e.g. screen-space buffers).
+	 * 
+	 * @param view
+	 *            the new current view
+	 */
+	void viewChanged(IView view);
 
 	// key listener
 
@@ -54,6 +71,6 @@ public interface ITool {
 	void mouseDragged(MouseEvent e, IView view);
 
 	// mouse wheel listener
-	
+
 	void mouseWheelMoved(MouseWheelEvent e, IView view);
 }

@@ -49,16 +49,16 @@ public class ForwardRenderer implements IRenderer {
 	public void render(GL2 gl, IView view) {
 		BoundingVolume bounds = view.getScene().getModel().getBounds();
 		
-		RenderGroups groups = (RenderGroups)view.getScene().getRenderGroups();
+		RenderGroups groups = (RenderGroups)GROUPS;
 		groups.update(gl);
 
 		//---- 1. DEPTH PASS (DEPTH WRITE&TEST ENABLED, BLEND OFF)
 		gl.glEnable(GL.GL_DEPTH_TEST);
 		
 		gl.glMatrixMode(GL2.GL_PROJECTION);
-		gl.glLoadMatrixf(view.getProjectionMatrix(), 0);
+		gl.glLoadMatrixf(view.getCamera().getProjectionMatrix(), 0);
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
-		gl.glLoadMatrixf(view.getModelviewMatrix(), 0);
+		gl.glLoadMatrixf(view.getCamera().getModelviewMatrix(), 0);
 		
 		// render ground plane (XXX FIXME: move to model as geometry group)
 		gl.glColor4fv(NavigationTool.GRID_COLOR, 0);
@@ -96,7 +96,7 @@ public class ForwardRenderer implements IRenderer {
 
 		
 		//---- 5. SCREEN SPACE OVERLAY (DEPTH WRITE&TEST DISABLED, BLEND ON)
-		Matrix4x4.ortho(0, view.getViewport()[2], view.getViewport()[3], 0, -1, 1, projectionMatrix2D);
+		Matrix4x4.ortho(0, view.getWidth(), view.getHeight(), 0, -1, 1, projectionMatrix2D);
 		gl.glMatrixMode(GL2.GL_PROJECTION);
 		gl.glLoadMatrixf(projectionMatrix2D, 0);
 

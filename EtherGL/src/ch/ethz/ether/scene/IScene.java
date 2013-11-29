@@ -30,10 +30,10 @@ package ch.ethz.ether.scene;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.util.Collection;
 import java.util.List;
 
 import ch.ethz.ether.model.IModel;
-import ch.ethz.ether.render.IRenderGroups;
 import ch.ethz.ether.render.IRenderer;
 import ch.ethz.ether.ui.Button;
 import ch.ethz.ether.view.IView;
@@ -47,55 +47,91 @@ import ch.ethz.ether.view.IView;
  */
 public interface IScene {
 	/**
-	 * Get the scene's model
+	 * Get the scene's model.
+	 * 
 	 * @return model the scene's model
 	 */
 	IModel getModel();
-	
+
 	/**
-	 * Set the scene's model
-	 * @param model to be set
+	 * Set the scene's model. This effectively unhooks the current model from
+	 * the scene and replaces it with the new one. If a scene implementation
+	 * does not implement such behavior it will throw an
+	 * {@link #UnsupportedOperationException}.
+	 * 
+	 * @param model
+	 *            to be set
 	 */
 	void setModel(IModel model);
 
 	/**
-	 * Add a view to the scene
-	 * @param view the view to add
+	 * Add a view to the scene.
+	 * 
+	 * @param view
+	 *            the view to add
 	 */
 	void addView(IView view);
 
 	/**
-	 * Get a list of all views
+	 * Get a list of all views.
+	 * 
 	 * @return list of views
 	 */
 	List<IView> getViews();
-	
-	/**
-	 * Get list of all geometry groups
-	 * @return list of geometry groups
-	 */
-	IRenderGroups getRenderGroups();
 
 	/**
-	 * Repaint all views
+	 * Get current view (i.e. the view that currently receives events).
+	 * 
+	 * @return the current view
 	 */
-	void repaintAll();
-
-	/** 
-	 * Determine whether a given view is enabled by the scene (i.e. whether it should paint or not)
-	 * @return true if view is enabled
-	 */
-	boolean isEnabled(IView view);
-	
 	IView getCurrentView();
-	ITool getActiveTool();
-	void setActiveTool(ITool tool);
-	NavigationTool getNavigationTool();
-	
-	IRenderer getDefaultRenderer();
 
+	/**
+	 * Enable a list of views for rendering.
+	 * 
+	 * @param views
+	 *            list of views to be enabled for rendering or NULL to enable
+	 *            all views
+	 */
+	void enableViews(Collection<IView> views);
+
+	/**
+	 * Repaint all views.
+	 */
+	void repaintViews();
+
+	/**
+	 * Get current tool.
+	 * 
+	 * @return the current tool
+	 */
+	ITool getCurrentTool();
+
+	/**
+	 * Set current tool.
+	 * 
+	 * @param tool
+	 *            the tool to be set as current tool
+	 */
+	void setCurrentTool(ITool tool);
+
+	/**
+	 * Get navigation tool.
+	 * 
+	 * @return the navigation tool
+	 */
+	NavigationTool getNavigationTool();
+
+	/**
+	 * Get renderer.
+	 * 
+	 * @return the renderer
+	 */
+	IRenderer getRenderer();
+
+	// XXX access to UI. to be revised
 	List<Button> getButtons();
-	
+
 	// key listener
 
 	void keyPressed(KeyEvent e, IView view);

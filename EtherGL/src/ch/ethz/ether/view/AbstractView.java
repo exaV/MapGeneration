@@ -27,7 +27,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package ch.ethz.ether.view;
 
-import java.awt.Font;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -37,49 +36,38 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 
-import ch.ethz.ether.gl.DrawingUtilities;
 import ch.ethz.ether.gl.Frame;
 import ch.ethz.ether.gl.Matrix4x4;
-import ch.ethz.ether.render.IRenderer;
 import ch.ethz.ether.scene.IScene;
 import ch.ethz.ether.ui.Button;
 
-import com.jogamp.opengl.util.awt.TextRenderer;
-
 /**
- * Abstract view class that implements some basic common functionality. Use as
- * base for common implementations.
+ * Abstract view class that implements some basic functionality. Use as base for
+ * implementations.
  * 
  * @author radar
  * 
  */
 public abstract class AbstractView implements IView {
-
-	private static final Font FONT = new Font("SansSerif", Font.BOLD, 12);
-
 	private final Frame frame;
 	private final IScene scene;
 
 	private final ViewType viewType;
-	private final String id;
 
-	private Camera camera = new Camera();
+	private final Camera camera = new Camera(this);
 
-	private TextRenderer textRenderer;
+	private final int[] viewport = new int[4];
 	
-	private int[] viewport = new int[4];
-	private float[] projectionMatrix3D = Matrix4x4.identity();
-	private float[] modelviewMatrix3D = Matrix4x4.identity();
-	private boolean lockMatrices3D = false;
+	private boolean enabled = true;
+
 
 	private float[] projectionMatrix2D = Matrix4x4.identity();
 	private float[] modelviewMatrix2D = Matrix4x4.identity();
 
-	protected AbstractView(IScene scene, int x, int y, int w, int h, ViewType viewType, String id, String title) {
+	protected AbstractView(IScene scene, int x, int y, int w, int h, ViewType viewType, String title) {
 		this.frame = new Frame(w, h, title);
 		this.scene = scene;
 		this.viewType = viewType;
-		this.id = id;
 		frame.setView(this);
 		Point p = frame.getJFrame().getLocation();
 		if (x != -1)
@@ -90,19 +78,8 @@ public abstract class AbstractView implements IView {
 	}
 
 	@Override
-	public final Frame getFrame() {
-		return frame;
-	}
-
-	@Override
 	public IScene getScene() {
 		return scene;
-	}
-
-	@Override
-	public IRenderer getRenderer() {
-		// TODO: allow support for view-specific renderers
-		return scene.getDefaultRenderer();
 	}
 
 	@Override
@@ -121,8 +98,8 @@ public abstract class AbstractView implements IView {
 	}
 
 	@Override
-	public String getId() {
-		return id;
+	public int[] getViewport() {
+		return viewport;
 	}
 
 	@Override
@@ -131,52 +108,42 @@ public abstract class AbstractView implements IView {
 	}
 
 	@Override
-	public int[] getViewport() {
-		return viewport;
-	}
-
-	@Override
-	public final float[] getProjectionMatrix() {
-		return projectionMatrix3D;
-	}
-
-	@Override
-	public final float[] getModelviewMatrix() {
-		return modelviewMatrix3D;
-	}
-
-	@Override
-	public void setMatrices(float[] projectionMatrix, float[] modelviewMatrix) {
-		if (projectionMatrix == null) {
-			this.lockMatrices3D = false;
-		} else {
-			this.lockMatrices3D = true;
-			this.projectionMatrix3D = projectionMatrix;
-			this.modelviewMatrix3D = modelviewMatrix;
-		}
-	}
-	
-	@Override
-	public TextRenderer getTextRenderer() {
-		return textRenderer;
+	public final Frame getFrame() {
+		return frame;
 	}
 
 	@Override
 	public boolean isEnabled() {
-		return getScene().isEnabled(this);
+		return enabled;
+	}
+	
+	@Override
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 
 	@Override
 	public boolean isCurrent() {
 		return getScene().getCurrentView() == this;
 	}
-
-	// opengl handling
+	
+	@Override
+	public void update() {
+		getScene().getCurrentTool().viewChanged(this);
+	}
 
 	@Override
-	public void init(GLAutoDrawable drawable, GL2 gl) {
-		textRenderer = new TextRenderer(FONT);
+	public void repaint() {
+		frame.repaint();
+	}
 
+	
+	// GLEventListener implementation
+
+	@Override
+	public void init(GLAutoDrawable drawable) {
+		GL2 gl = drawable.getGL().getGL2();
+		
 		gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		gl.glClearDepth(1.0f);
 
@@ -186,31 +153,21 @@ public abstract class AbstractView implements IView {
 	}
 
 	@Override
-	public void display(GLAutoDrawable drawable, GL2 gl) {
+	public void display(GLAutoDrawable drawable) {
+		GL2 gl = drawable.getGL().getGL2();
+		
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT | GL.GL_STENCIL_BUFFER_BIT);
 
-		if (!getScene().isEnabled(this))
+		if (!isEnabled())
 			return;
 
 		// fetch viewport
 		gl.glGetIntegerv(GL.GL_VIEWPORT, viewport, 0);
 
-		// update 3D matrices
-		if (!lockMatrices3D) {
-			Camera c = getCamera();
-			Matrix4x4.perspective(c.getFOV(), (float)getWidth() / (float)getHeight(), c.getNearClippingPlane(), c.getFarClippingPlane(), projectionMatrix3D);
-
-			Matrix4x4.identity(modelviewMatrix3D);
-			Matrix4x4.translate(c.getTranslateX(), c.getTranslateY(), -c.getDistance(), modelviewMatrix3D);
-			Matrix4x4.rotate(c.getRotateX() - 90, 1, 0, 0, modelviewMatrix3D);
-			Matrix4x4.rotate(c.getRotateZ(), 0, 0, 1, modelviewMatrix3D);
-		}
-
 		// render model
-		getRenderer().render(gl, this);
-		
+		getScene().getRenderer().render(gl, this);
 
-		// render ui (XXX this should probably move)
+		// render ui (XXX move ui rendering, doesnt belong here)
 		if (getViewType() == ViewType.INTERACTIVE_VIEW) {
 			Matrix4x4.ortho(0, viewport[2], viewport[3], 0, -1, 1, projectionMatrix2D);
 			gl.glMatrixMode(GL2.GL_PROJECTION);
@@ -224,28 +181,28 @@ public abstract class AbstractView implements IView {
 				button.render(gl, this);
 			}
 			if (Button.getMessage() != null) {
-				DrawingUtilities.drawText2D(this, 8, 8, Button.getMessage());
+				// XXX
+				// DrawingUtilities.drawText2D(this, 8, 8, Button.getMessage());
 			}
 		}
 	}
 
 	@Override
-	public void reshape(GLAutoDrawable drawable, GL2 gl, int x, int y, int width, int height) {
+	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
+		GL2 gl = drawable.getGL().getGL2();
+
 		if (height == 0)
 			height = 1; // prevent divide by zero
 		viewport[2] = width;
 		viewport[3] = height;
 		gl.glViewport(0, 0, width, height);
+		camera.update();
 	}
 
 	@Override
-	public void dispose(GLAutoDrawable drawable, GL2 gl) {
+	public void dispose(GLAutoDrawable drawable) {
+		//GL2 gl = drawable.getGL().getGL2();
 		// XXX TODO
-	}
-
-	@Override
-	public void repaint() {
-		frame.repaint();
 	}
 
 	// key listener

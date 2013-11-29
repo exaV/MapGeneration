@@ -55,17 +55,6 @@ public class MappingScene extends AbstractScene {
 			"Use Mouse Buttons + Shift or Mouse Wheel to Navigate"
 		};
 		// @formatter:on
-/*
-		@Override
-		public void render3D(GL2 gl, IView view) {
-			renderGrid(gl, view);
-		}
-
-		@Override
-		public void render2D(GL2 gl, IView view) {
-			renderUI(gl, view, help);
-		}
-*/
 	};
 	
 	private final CalibrationTool calibrationTool = new CalibrationTool(this, new BoxCalibrationModel(0.5f, 0.5f, 0.5f, 0.8f, 0.8f));
@@ -75,16 +64,16 @@ public class MappingScene extends AbstractScene {
 
 	public MappingScene() {
 		setLightPosition(lightPosition);
-		setActiveTool(defaultTool);
+		setCurrentTool(defaultTool);
 	}
 
 	@Override
-	public IRenderer getDefaultRenderer() {
+	public IRenderer getRenderer() {
 		return renderer;
 	}
 
 	public void modelChanged() {
-		repaintAll();
+		repaintViews();
 	}
 
 	@Override
@@ -92,18 +81,18 @@ public class MappingScene extends AbstractScene {
 		switch (e.getKeyCode()) {
 		case KeyEvent.VK_0:
 		case KeyEvent.VK_1:
-			setActiveTool(defaultTool);
+			setCurrentTool(defaultTool);
 			break;
 		case KeyEvent.VK_2:
-			setActiveTool(calibrationTool);
+			setCurrentTool(calibrationTool);
 			break;
 		case KeyEvent.VK_3:
-			setActiveTool(fillTool);
+			setCurrentTool(fillTool);
 			break;
 		default:
 			super.keyPressed(e, view);
 		}
-		repaintAll();
+		repaintViews();
 	}
 
 	public float[] getLightPosition() {

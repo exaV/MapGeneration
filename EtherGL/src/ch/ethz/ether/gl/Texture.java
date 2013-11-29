@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package ch.ethz.ether.gl;
 
-import java.nio.ByteBuffer;
+import java.nio.Buffer;
 
 import javax.media.opengl.GL;
 
@@ -60,15 +60,18 @@ public class Texture {
 	}	
 	
 	public void load(GL gl, int width, int height, byte[] rgba) {
+		load(gl, width, height, Buffers.newDirectByteBuffer(rgba), GL.GL_RGBA);
+	}
+	
+	public void load(GL gl, int width, int height, Buffer buffer, int format) {
 		gl.glBindTexture(GL.GL_TEXTURE_2D, tex);
 	    gl.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
-	    ByteBuffer data = Buffers.newDirectByteBuffer(rgba);
-	    data.rewind();
-	    gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, width, height, 0, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, data);
+	    buffer.rewind();
+	    gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, width, height, 0, format, GL.GL_UNSIGNED_BYTE, buffer);
 	    gl.glGenerateMipmap(GL.GL_TEXTURE_2D);
 	    gl.glBindTexture(GL.GL_TEXTURE_2D, 0);
 	}
-	
+
 	public void enable(GL gl) {
 		gl.glBindTexture(GL.GL_TEXTURE_2D, tex);
 		gl.glEnable(GL.GL_TEXTURE_2D);

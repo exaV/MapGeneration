@@ -32,10 +32,10 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import ch.ethz.ether.model.IModel;
-import ch.ethz.ether.render.IRenderGroups;
 import ch.ethz.ether.ui.Button;
 import ch.ethz.ether.view.IView;
 import ch.ethz.ether.view.IView.ViewType;
@@ -50,7 +50,6 @@ import ch.ethz.ether.view.IView.ViewType;
 public abstract class AbstractScene implements IScene {
 	private IModel model;
 	private final ArrayList<IView> views = new ArrayList<IView>();
-	private final IRenderGroups groups = IRenderGroups.Factory.create();	
 	
 	private final NavigationTool navigationTool = new NavigationTool(this);
 
@@ -78,49 +77,54 @@ public abstract class AbstractScene implements IScene {
 
 	@Override
 	public List<IView> getViews() {
-		return views;
+		return Collections.unmodifiableList(views);
 	}
 	
 	@Override
-	public IRenderGroups getRenderGroups() {
-		return groups;
+	public IView getCurrentView() {
+		return currentView;
+	}
+	
+	@Override
+	public void enableViews(Collection<IView> views) {
+		if (views != null) {
+			for (IView view : this.views) {
+				view.setEnabled(views.contains(view));
+			}
+		} else {
+			for (IView view : this.views) {
+				view.setEnabled(true);
+			}
+		}
 	}
 
 	@Override
-	public void repaintAll() {
+	public void repaintViews() {
 		for (IView view : views)
 			view.repaint();
 	}
 
 	@Override
-	public boolean isEnabled(IView view) {
-		return true;
-	}
-
-	@Override
-	public IView getCurrentView() {
-		return currentView;
-	}
-
-	@Override
-	public ITool getActiveTool() {
+	public ITool getCurrentTool() {
 		return activeTool;
 	}
 
 	@Override
-	public void setActiveTool(ITool tool) {
+	public void setCurrentTool(ITool tool) {
 		if (activeTool == tool)
 			return;
 		
 		if (activeTool != null)
-			activeTool.setActive(false);
+			activeTool.deactivate();
 		
 		activeTool = tool;
 		
-		if (activeTool != null)
-			activeTool.setActive(true);
+		if (activeTool != null) {
+			activeTool.activate();
+			activeTool.viewChanged(getCurrentView());
+		}
 
-		repaintAll();
+		repaintViews();
 	}
 
 	@Override
@@ -137,13 +141,13 @@ public abstract class AbstractScene implements IScene {
 
 	@Override
 	public void keyPressed(KeyEvent e, IView view) {
-		updateCurrentView(view);
+		setCurrentView(view);
 
 		// buttons have precedence over tools
 		for (Button button : view.getScene().getButtons()) {
 			if (button.getKey() == e.getKeyCode()) {
 				button.fire(view);
-				view.getScene().repaintAll();
+				view.getScene().repaintViews();
 				return;
 			}
 		}
@@ -176,14 +180,14 @@ public abstract class AbstractScene implements IScene {
 
 	@Override
 	public void mousePressed(MouseEvent e, IView view) {
-		updateCurrentView(view);
+		setCurrentView(view);
 
 		// buttons have precedence over tools
 		if (view.getViewType() == ViewType.INTERACTIVE_VIEW) {
 			for (Button button : view.getScene().getButtons()) {
 				if (button.hit(e.getPoint().x, e.getPoint().y, view)) {
 					button.fire(view);
-					view.getScene().repaintAll();
+					view.getScene().repaintViews();
 					return;
 				}
 			}
@@ -223,7 +227,7 @@ public abstract class AbstractScene implements IScene {
 			String newMessage = button != null ? button.getHelp() : null;
 			if ((newMessage == null && Button.getMessage() != null) || (newMessage != null && !newMessage.equals(Button.getMessage()))) {
 				Button.setMessage(newMessage);
-				repaintAll();
+				repaintViews();
 			}
 		}
 		activeTool.mouseMoved(e, view);
@@ -262,10 +266,11 @@ public abstract class AbstractScene implements IScene {
 		return e.isShiftDown() || e.isControlDown() || e.isAltDown() || e.isMetaDown();
 	}
 
-	private void updateCurrentView(IView view) {
+	private void setCurrentView(IView view) {
 		if (currentView != view) {
 			currentView = view;
-			repaintAll();
+			getCurrentTool().viewChanged(currentView);
+			repaintViews();
 		}
 	}
 }

@@ -29,6 +29,7 @@ package ch.ethz.ether.mapping;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.prefs.Preferences;
@@ -39,7 +40,7 @@ import ch.ethz.ether.render.IRenderGroup;
 import ch.ethz.ether.render.IRenderGroup.Pass;
 import ch.ethz.ether.render.IRenderGroup.Source;
 import ch.ethz.ether.render.IRenderGroup.Type;
-import ch.ethz.ether.render.IRenderGroups;
+import ch.ethz.ether.render.IRenderer;
 import ch.ethz.ether.render.util.IAddOnlyFloatList;
 import ch.ethz.ether.render.util.Primitives;
 import ch.ethz.ether.scene.AbstractTool;
@@ -168,22 +169,23 @@ public final class CalibrationTool extends AbstractTool {
 	}
 
 	@Override
-	public void setActive(boolean active) {
-		super.setActive(active);
-		IRenderGroups groups = getScene().getRenderGroups();
-		if (active) {
-			groups.add(modelLines);
-			groups.add(modelPoints);
-			groups.add(calibrationPoints);
-			groups.add(calibrationLines);
-			groups.setSource(Source.TOOL);
-		} else {
-			groups.remove(modelLines);
-			groups.remove(modelPoints);
-			groups.remove(calibrationPoints);
-			groups.remove(calibrationLines);
-			groups.setSource(null);
-		}
+	public void activate() {
+		IRenderer.GROUPS.add(modelLines, modelPoints, calibrationPoints, calibrationLines);
+		IRenderer.GROUPS.setSource(Source.TOOL);
+	}
+	
+	@Override
+	public void deactivate() {
+		IRenderer.GROUPS.remove(modelLines, modelPoints, calibrationPoints, calibrationLines);
+		IRenderer.GROUPS.setSource(null);
+		getScene().enableViews(null);
+	}
+	
+	@Override
+	public void viewChanged(IView view) {
+		getScene().enableViews(Collections.singleton(view));
+		calibrationPoints.requestUpdate();
+		calibrationLines.requestUpdate();
 	}
 
 	@Override
@@ -215,7 +217,7 @@ public final class CalibrationTool extends AbstractTool {
 			deleteCurrent(view);
 			break;
 		}
-		view.getScene().repaintAll();
+		view.getScene().repaintViews();
 	}
 
 	@Override
@@ -323,7 +325,7 @@ public final class CalibrationTool extends AbstractTool {
 
 	private void clearCalibration(IView view) {
 		contexts.put(view, new CalibrationContext());
-		view.setMatrices(null, null);
+		view.getCamera().setMatrices(null, null);
 		calibrate(view);
 	}
 
@@ -339,15 +341,15 @@ public final class CalibrationTool extends AbstractTool {
 		} catch (Throwable t) {
 		}
 		if (context.calibrated)
-			view.setMatrices(calibrator.getProjectionMatrix(), calibrator.getModelviewMatrix());
+			view.getCamera().setMatrices(calibrator.getProjectionMatrix(), calibrator.getModelviewMatrix());
 		else
-			view.setMatrices(null, null);
+			view.getCamera().setMatrices(null, null);
 
 		// need to update VBOs
 		calibrationPoints.requestUpdate();
 		calibrationLines.requestUpdate();
 		
 		// lazily repaint all views
-		view.getScene().repaintAll();
+		view.getScene().repaintViews();
 	}
 }
