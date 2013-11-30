@@ -259,10 +259,6 @@ public final class CalibrationTool extends AbstractTool {
 				return;
 			}
 		}
-		
-		// need to update VBOs when current view changes. since it's only little work, we just update on every mouse click
-		// TODO a better solution would be to have a current view change handler in the tool...
-		calibrate(view);
 	}
 
 	@Override
@@ -337,7 +333,6 @@ public final class CalibrationTool extends AbstractTool {
 			if (error < MAX_CALIBRATION_ERROR)
 				context.calibrated = true;
 			// System.out.println("error: " + error);
-			
 		} catch (Throwable t) {
 		}
 		if (context.calibrated)

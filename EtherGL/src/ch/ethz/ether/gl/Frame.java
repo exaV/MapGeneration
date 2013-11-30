@@ -45,9 +45,6 @@ import com.jogamp.opengl.util.FPSAnimator;
  * OpenGL frame class (i.e. an OpenGL window) that combines a GLCanvas and a
  * JFrame.
  * 
- * TODO: The OpenGL Capabilities code here is still inflexible, and needs to be
- * improved
- * 
  * @author radar
  * 
  */
@@ -142,6 +139,7 @@ public final class Frame extends GLCanvas {
 
 	private static GLCapabilities getCapabilities() {
 		// TODO: switch to GL3/GL4 once we're getting there
+		// TODO: make this configurable
 		GLProfile profile = GLProfile.get(GLProfile.GL2);
 		GLCapabilities caps = new GLCapabilities(profile);
 		caps.setAlphaBits(8);

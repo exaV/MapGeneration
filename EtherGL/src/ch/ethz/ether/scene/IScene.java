@@ -35,7 +35,7 @@ import java.util.List;
 
 import ch.ethz.ether.model.IModel;
 import ch.ethz.ether.render.IRenderer;
-import ch.ethz.ether.ui.Button;
+import ch.ethz.ether.ui.UI;
 import ch.ethz.ether.view.IView;
 
 /**
@@ -129,8 +129,11 @@ public interface IScene {
 	 */
 	IRenderer getRenderer();
 
-	// XXX access to UI. to be revised
-	List<Button> getButtons();
+	/**
+	 * Get UI.
+	 * @return the ui
+	 */
+	UI getUI();
 
 	// key listener
 

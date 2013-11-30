@@ -35,12 +35,11 @@ import javax.media.opengl.GL2;
 import com.jogamp.common.nio.Buffers;
 
 /**
- * Simple, even primitive VBO wrapper.
+ * Very simple VBO wrapper.
  * 
  * @author radar
  * 
  */
-// XXX work in progress (will change with GLcore 3/4+)
 public class VBO {
 	private static final FloatBuffer EMPTY_BUFFER = Buffers.newDirectFloatBuffer(0);
 	

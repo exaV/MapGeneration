@@ -6,7 +6,8 @@ import ch.ethz.ether.render.util.IAddOnlyFloatList;
 import ch.ethz.util.UpdateRequest;
 
 public abstract class AbstractRenderGroup implements IRenderGroup {
-	private final UpdateRequest updater = new UpdateRequest();
+	private final UpdateRequest geometryUpdater = new UpdateRequest();
+	private final UpdateRequest textureUpdater = new UpdateRequest();
 	private final Source source;
 	private final Type type;
 	private Pass pass;
@@ -29,12 +30,12 @@ public abstract class AbstractRenderGroup implements IRenderGroup {
 	
 	@Override
 	public final void requestUpdate() {
-		updater.requestUpdate();
+		geometryUpdater.requestUpdate();
 	}
 	
 	@Override
 	public final boolean needsUpdate() {
-		return updater.needsUpdate();
+		return geometryUpdater.needsUpdate();
 	}
 
 	@Override
@@ -58,11 +59,21 @@ public abstract class AbstractRenderGroup implements IRenderGroup {
 		requestUpdate();
 	}
 	
-	protected final EnumSet<Flag> getFlags() {
+	public final EnumSet<Flag> getFlags() {
 		return flags.clone();
 	}
+	
+	public final void addFlag(Flag flag) {
+		if (flags.add(flag))
+			requestUpdate();
+	}
+	
+	public final void removeFlag(Flag flag) {
+		if (flags.remove(flag))
+			requestUpdate();		
+	}
 
-	protected final void setFlags(EnumSet<Flag> flags) {
+	public final void setFlags(EnumSet<Flag> flags) {
 		this.flags = flags.clone();
 		requestUpdate();
 	}
@@ -106,15 +117,12 @@ public abstract class AbstractRenderGroup implements IRenderGroup {
 	
 	@Override
 	public final void requestTextureUpdate() {
-		ITextureData textureData = getTextureData();
-		if (textureData != null)
-			textureData.requestUpdate();
+		textureUpdater.requestUpdate();
 	}
 	
 	@Override
 	public final boolean needsTextureUpdate() {
-		ITextureData textureData = getTextureData();
-		return textureData != null && textureData.needsUpdate();
+		return textureUpdater.needsUpdate();
 	}
 
 	@Override

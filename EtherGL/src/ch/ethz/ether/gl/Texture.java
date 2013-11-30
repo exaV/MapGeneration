@@ -34,12 +34,11 @@ import javax.media.opengl.GL;
 import com.jogamp.common.nio.Buffers;
 
 /**
- * Simple, even primitive texture wrapper.
+ * Very simple texture wrapper.
  * 
  * @author radar
  * 
  */
-// XXX work in progress
 public class Texture {
 	private int tex;
 

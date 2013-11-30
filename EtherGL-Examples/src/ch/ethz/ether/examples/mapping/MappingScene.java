@@ -33,13 +33,12 @@ import ch.ethz.ether.mapping.BoxCalibrationModel;
 import ch.ethz.ether.mapping.CalibrationTool;
 import ch.ethz.ether.mapping.FillTool;
 import ch.ethz.ether.render.ForwardRenderer;
-import ch.ethz.ether.render.IRenderer;
 import ch.ethz.ether.scene.AbstractScene;
 import ch.ethz.ether.scene.AbstractTool;
 import ch.ethz.ether.scene.ITool;
 import ch.ethz.ether.view.IView;
 
-// XXX FIXME light position currently not implemented
+// XXX light position currently not implemented
 public class MappingScene extends AbstractScene {
 	private float[] lightPosition = { 10.0f, 6.0f, 8.0f };
 
@@ -60,16 +59,10 @@ public class MappingScene extends AbstractScene {
 	private final CalibrationTool calibrationTool = new CalibrationTool(this, new BoxCalibrationModel(0.5f, 0.5f, 0.5f, 0.8f, 0.8f));
 	private final FillTool fillTool = new FillTool(this);
 	
-	private final IRenderer renderer = new ForwardRenderer();
-
 	public MappingScene() {
+		super(new ForwardRenderer());
 		setLightPosition(lightPosition);
 		setCurrentTool(defaultTool);
-	}
-
-	@Override
-	public IRenderer getRenderer() {
-		return renderer;
 	}
 
 	public void modelChanged() {

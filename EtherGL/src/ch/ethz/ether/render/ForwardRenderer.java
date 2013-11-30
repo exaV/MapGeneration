@@ -33,7 +33,6 @@ import javax.media.opengl.GL2;
 import ch.ethz.ether.geom.BoundingVolume;
 import ch.ethz.ether.gl.Matrix4x4;
 import ch.ethz.ether.render.IRenderGroup.Pass;
-import ch.ethz.ether.scene.NavigationTool;
 import ch.ethz.ether.view.IView;
 
 /**
@@ -45,6 +44,9 @@ public class ForwardRenderer implements IRenderer {
 	private final float[] projectionMatrix2D = Matrix4x4.identity();
 	private final float[] modelviewMatrix2D = Matrix4x4.identity();
 	
+	public ForwardRenderer() {
+	}
+	
 	@Override
 	public void render(GL2 gl, IView view) {
 		BoundingVolume bounds = view.getScene().getModel().getBounds();
@@ -54,13 +56,16 @@ public class ForwardRenderer implements IRenderer {
 
 		//---- 1. DEPTH PASS (DEPTH WRITE&TEST ENABLED, BLEND OFF)
 		gl.glEnable(GL.GL_DEPTH_TEST);
+		gl.glEnable(GL2.GL_POLYGON_OFFSET_FILL);
+		gl.glPolygonOffset(1, 3);
 		
 		gl.glMatrixMode(GL2.GL_PROJECTION);
 		gl.glLoadMatrixf(view.getCamera().getProjectionMatrix(), 0);
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
 		gl.glLoadMatrixf(view.getCamera().getModelviewMatrix(), 0);
 		
-		// render ground plane (XXX FIXME: move to model as geometry group)
+		// render ground plane (FIXME: move to model as geometry group)
+		/*
 		gl.glColor4fv(NavigationTool.GRID_COLOR, 0);
 		gl.glBegin(GL2.GL_QUADS);
 		gl.glVertex3d(2*bounds.getMinX(), 2*bounds.getMinY(), -0.001);
@@ -68,9 +73,11 @@ public class ForwardRenderer implements IRenderer {
 		gl.glVertex3d(2*bounds.getMaxX(), 2*bounds.getMaxY(), -0.001);
 		gl.glVertex3d(2*bounds.getMinX(), 2*bounds.getMaxY(), -0.001);
 		gl.glEnd();
+		*/
 		
 		groups.render(gl, view, Pass.DEPTH);
 		
+		gl.glDisable(GL2.GL_POLYGON_OFFSET_FILL);
 		
 		//---- 2. TRANSPARENCY PASS (DEPTH WRITE DISABLED, DEPTH TEST ENABLED, BLEND ON)
 		gl.glEnable(GL.GL_BLEND);
@@ -107,7 +114,7 @@ public class ForwardRenderer implements IRenderer {
 		groups.render(gl, view, Pass.SCREEN_SPACE_OVERLAY);
 		
 		
-		//---- 6. CLEANUP: RETURN TO DEFAULTS (XXX EXCEPT FOR MATRICES, WHICH WILL BE REMOVED ANYWAY)
+		//---- 6. CLEANUP: RETURN TO DEFAULTS
 		gl.glDisable(GL.GL_BLEND);
 		gl.glDepthMask(true);
 	}	

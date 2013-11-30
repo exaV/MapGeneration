@@ -37,9 +37,7 @@ import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 
 import ch.ethz.ether.gl.Frame;
-import ch.ethz.ether.gl.Matrix4x4;
 import ch.ethz.ether.scene.IScene;
-import ch.ethz.ether.ui.Button;
 
 /**
  * Abstract view class that implements some basic functionality. Use as base for
@@ -60,10 +58,6 @@ public abstract class AbstractView implements IView {
 	
 	private boolean enabled = true;
 
-
-	private float[] projectionMatrix2D = Matrix4x4.identity();
-	private float[] modelviewMatrix2D = Matrix4x4.identity();
-
 	protected AbstractView(IScene scene, int x, int y, int w, int h, ViewType viewType, String title) {
 		this.frame = new Frame(w, h, title);
 		this.scene = scene;
@@ -78,12 +72,12 @@ public abstract class AbstractView implements IView {
 	}
 
 	@Override
-	public IScene getScene() {
+	public final IScene getScene() {
 		return scene;
 	}
 
 	@Override
-	public Camera getCamera() {
+	public final Camera getCamera() {
 		return camera;
 	}
 
@@ -98,12 +92,12 @@ public abstract class AbstractView implements IView {
 	}
 
 	@Override
-	public int[] getViewport() {
+	public final int[] getViewport() {
 		return viewport;
 	}
 
 	@Override
-	public ViewType getViewType() {
+	public final ViewType getViewType() {
 		return viewType;
 	}
 
@@ -113,27 +107,27 @@ public abstract class AbstractView implements IView {
 	}
 
 	@Override
-	public boolean isEnabled() {
+	public final boolean isEnabled() {
 		return enabled;
 	}
 	
 	@Override
-	public void setEnabled(boolean enabled) {
+	public final void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
 
 	@Override
-	public boolean isCurrent() {
+	public final boolean isCurrent() {
 		return getScene().getCurrentView() == this;
 	}
 	
 	@Override
-	public void update() {
+	public final void update() {
 		getScene().getCurrentTool().viewChanged(this);
 	}
 
 	@Override
-	public void repaint() {
+	public final void repaint() {
 		frame.repaint();
 	}
 
@@ -141,7 +135,7 @@ public abstract class AbstractView implements IView {
 	// GLEventListener implementation
 
 	@Override
-	public void init(GLAutoDrawable drawable) {
+	public final void init(GLAutoDrawable drawable) {
 		GL2 gl = drawable.getGL().getGL2();
 		
 		gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -153,7 +147,7 @@ public abstract class AbstractView implements IView {
 	}
 
 	@Override
-	public void display(GLAutoDrawable drawable) {
+	public final void display(GLAutoDrawable drawable) {
 		GL2 gl = drawable.getGL().getGL2();
 		
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT | GL.GL_STENCIL_BUFFER_BIT);
@@ -163,32 +157,16 @@ public abstract class AbstractView implements IView {
 
 		// fetch viewport
 		gl.glGetIntegerv(GL.GL_VIEWPORT, viewport, 0);
-
-		// render model
+		
+		// repaint UI surface if necessary
+		getScene().getUI().update();
+		
+		// render everything
 		getScene().getRenderer().render(gl, this);
-
-		// render ui (XXX move ui rendering, doesnt belong here)
-		if (getViewType() == ViewType.INTERACTIVE_VIEW) {
-			Matrix4x4.ortho(0, viewport[2], viewport[3], 0, -1, 1, projectionMatrix2D);
-			gl.glMatrixMode(GL2.GL_PROJECTION);
-			gl.glLoadMatrixf(projectionMatrix2D, 0);
-
-			Matrix4x4.identity(modelviewMatrix2D);
-			gl.glMatrixMode(GL2.GL_MODELVIEW);
-			gl.glLoadMatrixf(modelviewMatrix2D, 0);
-
-			for (Button button : getScene().getButtons()) {
-				button.render(gl, this);
-			}
-			if (Button.getMessage() != null) {
-				// XXX
-				// DrawingUtilities.drawText2D(this, 8, 8, Button.getMessage());
-			}
-		}
 	}
 
 	@Override
-	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
+	public final void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
 		GL2 gl = drawable.getGL().getGL2();
 
 		if (height == 0)
@@ -200,9 +178,9 @@ public abstract class AbstractView implements IView {
 	}
 
 	@Override
-	public void dispose(GLAutoDrawable drawable) {
+	public final void dispose(GLAutoDrawable drawable) {
+		// TODO
 		//GL2 gl = drawable.getGL().getGL2();
-		// XXX TODO
 	}
 
 	// key listener

@@ -27,36 +27,36 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package ch.ethz.ether.ui;
 
-import javax.media.opengl.GL2;
+import java.awt.Color;
 
 import ch.ethz.ether.view.IView;
 
 public class Button {
-	public enum State {
-		DEFAULT(new float[] { 0.6f, 0, 0, 0.75f }), PRESSED(new float[] { 1, 0.2f, 0.2f, 0.75f }), DISABLED(new float[] { 0.5f, 0.5f, 0.5f, 0.75f });
+	public static final int BUTTON_WIDTH = 48;
+	public static final int BUTTON_HEIGHT = 48;
 
-		State(float[] color) {
-			this.color = color;
+	public static final int BUTTON_GAP = 8;
+
+	public enum State {
+		DEFAULT(0.6f, 0, 0, 0.75f), PRESSED(1, 0.2f, 0.2f, 0.75f), DISABLED(0.5f, 0.5f, 0.5f, 0.75f);
+
+		State(float r, float g, float b, float a) {
+			this.color = new Color(r, g, b, a);
 		}
 
-		public float[] getColor() {
+		public Color getColor() {
 			return color;
 		}
 
-		private float[] color;
+		private final Color color;
 	}
 
 	public interface IButtonAction {
 		void execute(Button button, IView view);
 	}
 
-	private static final float[] COLOR_TEXT = { 1, 1, 1, 1 };
 
-	private static int buttonWidth = 48;
-	private static int buttonHeight = 48;
-
-	private static int buttonGap = 8;
-
+	private UI ui;
 	private int x;
 	private int y;
 	private String label;
@@ -87,6 +87,10 @@ public class Button {
 		this(x, y, label, help, key, action);
 		setState(pressed);
 	}
+	
+	void setUI(UI ui) {
+		this.ui = ui;
+	}
 
 	public int getX() {
 		return x;
@@ -114,10 +118,12 @@ public class Button {
 
 	public void setState(State state) {
 		this.state = state;
+		if (ui != null) ui.requestUpdate();
 	}
 
 	public void setState(boolean pressed) {
 		setState(pressed ? State.PRESSED : State.DEFAULT);
+		if (ui != null) ui.requestUpdate();
 	}
 
 	public IButtonAction getAction() {
@@ -129,26 +135,9 @@ public class Button {
 	}
 
 	public boolean hit(int x, int y, IView view) {
-		float bx = buttonGap + this.x * (buttonGap + buttonWidth);
-		float by = buttonGap + this.y * (buttonGap + buttonHeight);
-		return x >= bx && x <= bx + buttonWidth && y >= by && y <= by + buttonHeight;
-	}
-
-	public void render(GL2 gl, IView view) {
-		float bx = buttonGap + x * (buttonGap + buttonWidth) + buttonWidth / 2;
-		float by = buttonGap + y * (buttonGap + buttonHeight) + buttonHeight / 2;
-		gl.glColor4fv(state.getColor(), 0);
-		gl.glBegin(GL2.GL_TRIANGLE_FAN);
-		gl.glVertex2f(bx - buttonWidth / 2, by - buttonHeight / 2);
-		gl.glVertex2f(bx - buttonWidth / 2, by + buttonHeight / 2);
-		gl.glVertex2f(bx + buttonWidth / 2, by + buttonHeight / 2);
-		gl.glVertex2f(bx + buttonWidth / 2, by - buttonHeight / 2);
-		gl.glEnd();
-
-		//XXX
-		//Rectangle2D b = view.getTextRenderer().getBounds(label);
-		//DrawingUtilities.setTextColor(view, COLOR_TEXT);
-		//DrawingUtilities.drawText2D(view, bx - (float) b.getWidth() / 2, view.getHeight() - by - (float) b.getHeight() / 2, label);
+		float bx = ui.getX() + this.x * (BUTTON_GAP + BUTTON_WIDTH);
+		float by = ui.getY() + this.y * (BUTTON_GAP + BUTTON_HEIGHT);
+		return x >= bx && x <= bx + BUTTON_WIDTH && y >= by && y <= by + BUTTON_HEIGHT;
 	}
 
 	public void fire(IView view) {
@@ -157,15 +146,5 @@ public class Button {
 		if (action == null)
 			throw new UnsupportedOperationException("button '" + label + "' has no action defined");
 		action.execute(this, view);
-	}
-
-	private static String message = null;
-
-	public static void setMessage(String message) {
-		Button.message = message;
-	}
-
-	public static String getMessage() {
-		return message;
 	}
 }

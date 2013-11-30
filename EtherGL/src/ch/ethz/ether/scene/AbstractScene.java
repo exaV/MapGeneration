@@ -36,7 +36,9 @@ import java.util.Collections;
 import java.util.List;
 
 import ch.ethz.ether.model.IModel;
+import ch.ethz.ether.render.IRenderer;
 import ch.ethz.ether.ui.Button;
+import ch.ethz.ether.ui.UI;
 import ch.ethz.ether.view.IView;
 import ch.ethz.ether.view.IView.ViewType;
 
@@ -47,16 +49,22 @@ import ch.ethz.ether.view.IView.ViewType;
  * @author radar
  * 
  */
+// TODO: we should probably move UI event handling to UI...
 public abstract class AbstractScene implements IScene {
 	private IModel model;
 	private final ArrayList<IView> views = new ArrayList<IView>();
+	private final IRenderer renderer;
+	private final UI ui = new UI(this);
 	
 	private final NavigationTool navigationTool = new NavigationTool(this);
 
 	private IView currentView = null;
 	private ITool activeTool = null;
-
-	private final List<Button> buttons = new ArrayList<Button>();
+	
+	
+	protected AbstractScene(IRenderer renderer) {
+		this.renderer = renderer;
+	}
 
 	@Override
 	public IModel getModel() {
@@ -64,29 +72,29 @@ public abstract class AbstractScene implements IScene {
 	}
 
 	@Override
-	public void setModel(IModel model) {
+	public final void setModel(IModel model) {
 		this.model = model;
 	}
 
 	@Override
-	public void addView(IView view) {
+	public final void addView(IView view) {
 		views.add(view);
 		if (currentView == null)
 			currentView = view;
 	}
 
 	@Override
-	public List<IView> getViews() {
+	public final List<IView> getViews() {
 		return Collections.unmodifiableList(views);
 	}
 	
 	@Override
-	public IView getCurrentView() {
+	public final IView getCurrentView() {
 		return currentView;
 	}
 	
 	@Override
-	public void enableViews(Collection<IView> views) {
+	public final void enableViews(Collection<IView> views) {
 		if (views != null) {
 			for (IView view : this.views) {
 				view.setEnabled(views.contains(view));
@@ -99,18 +107,18 @@ public abstract class AbstractScene implements IScene {
 	}
 
 	@Override
-	public void repaintViews() {
+	public final void repaintViews() {
 		for (IView view : views)
 			view.repaint();
 	}
 
 	@Override
-	public ITool getCurrentTool() {
+	public final ITool getCurrentTool() {
 		return activeTool;
 	}
 
 	@Override
-	public void setCurrentTool(ITool tool) {
+	public final void setCurrentTool(ITool tool) {
 		if (activeTool == tool)
 			return;
 		
@@ -128,13 +136,18 @@ public abstract class AbstractScene implements IScene {
 	}
 
 	@Override
-	public NavigationTool getNavigationTool() {
+	public final NavigationTool getNavigationTool() {
 		return navigationTool;
 	}
-
+	
 	@Override
-	public List<Button> getButtons() {
-		return buttons;
+	public final IRenderer getRenderer() {
+		return renderer;
+	}
+	
+	@Override
+	public final UI getUI() {
+		return ui;
 	}
 
 	// key listener
@@ -144,7 +157,7 @@ public abstract class AbstractScene implements IScene {
 		setCurrentView(view);
 
 		// buttons have precedence over tools
-		for (Button button : view.getScene().getButtons()) {
+		for (Button button : ui.getButtons()) {
 			if (button.getKey() == e.getKeyCode()) {
 				button.fire(view);
 				view.getScene().repaintViews();
@@ -184,7 +197,7 @@ public abstract class AbstractScene implements IScene {
 
 		// buttons have precedence over tools
 		if (view.getViewType() == ViewType.INTERACTIVE_VIEW) {
-			for (Button button : view.getScene().getButtons()) {
+			for (Button button : ui.getButtons()) {
 				if (button.hit(e.getPoint().x, e.getPoint().y, view)) {
 					button.fire(view);
 					view.getScene().repaintViews();
@@ -218,17 +231,14 @@ public abstract class AbstractScene implements IScene {
 	public void mouseMoved(MouseEvent e, IView view) {
 		if (view.getViewType() == ViewType.INTERACTIVE_VIEW) {
 			Button button = null;
-			for (Button b : view.getScene().getButtons()) {
+			for (Button b : ui.getButtons()) {
 				if (b.hit(e.getPoint().x, e.getPoint().y, view)) {
 					button = b;
 					break;
 				}
 			}
-			String newMessage = button != null ? button.getHelp() : null;
-			if ((newMessage == null && Button.getMessage() != null) || (newMessage != null && !newMessage.equals(Button.getMessage()))) {
-				Button.setMessage(newMessage);
-				repaintViews();
-			}
+			String message = button != null ? button.getHelp() : null;
+			view.getScene().getUI().setMessage(message);
 		}
 		activeTool.mouseMoved(e, view);
 		navigationTool.mouseMoved(e, view);
@@ -246,18 +256,7 @@ public abstract class AbstractScene implements IScene {
 
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e, IView view) {
-		// TODO: update current view here?
 		navigationTool.mouseWheelMoved(e, view);
-	}
-
-	// protected stuff
-
-	protected final void addButton(Button button) {
-		buttons.add(button);
-	}
-
-	protected final void addButtons(Collection<? extends Button> buttons) {
-		this.buttons.addAll(buttons);
 	}
 
 	// private stuff

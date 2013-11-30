@@ -4,10 +4,10 @@ import java.nio.Buffer;
 import java.util.EnumSet;
 
 import ch.ethz.ether.render.util.IAddOnlyFloatList;
-import ch.ethz.util.UpdateRequest;
 
 public interface IRenderGroup {
 	static final float[] DEFAULT_COLOR = new float[] { 1, 1, 1, 1 };
+	static final float[] DEFAULT_QUAD_TEX_COORDS = new float[] { 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1 };
 
 	interface ITextureData {
 		Buffer getBuffer();
@@ -17,33 +17,6 @@ public interface IRenderGroup {
 		int getHeight();
 
 		int getFormat();
-
-		void requestUpdate();
-
-		boolean needsUpdate();
-	}
-
-	abstract class AbstractTextureData implements ITextureData {
-		private UpdateRequest updater = new UpdateRequest();
-
-		protected AbstractTextureData() {
-			this(false);
-		}
-
-		protected AbstractTextureData(boolean requestUpdate) {
-			if (requestUpdate)
-				requestUpdate();
-		}
-
-		@Override
-		public void requestUpdate() {
-			updater.requestUpdate();
-		}
-
-		@Override
-		public boolean needsUpdate() {
-			return updater.needsUpdate();
-		}
 	}
 
 	enum Source {

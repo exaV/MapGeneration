@@ -1,5 +1,6 @@
 package ch.ethz.ether.render;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -16,15 +17,16 @@ import ch.ethz.ether.render.util.Primitives;
 public class TextRenderGroup extends AbstractRenderGroup {
 	public static final Font FONT = new Font("SansSerif", Font.BOLD, 12);
 
-	private static final float[] TEX_COORDS = new float[] { 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1 };
-	private BufferedImage image;
-	private Graphics2D graphics;
+	private static final Color CLEAR_COLOR = new Color(0, 0, 0, 0);
+
+	private final BufferedImage image;
+	private final Graphics2D graphics;
 	private int x;
 	private int y;
 	private int w;
 	private int h;
 
-	private ITextureData textureData = new AbstractTextureData() {
+	private final ITextureData textureData = new ITextureData() {
 		@Override
 		public int getWidth() {
 			return w;
@@ -45,7 +47,7 @@ public class TextRenderGroup extends AbstractRenderGroup {
 			return GL.GL_BGRA;
 		}
 	};
-	
+
 	public TextRenderGroup(Source source, int x, int y, int w, int h) {
 		super(source, Type.TRIANGLES, Pass.SCREEN_SPACE_OVERLAY);
 		image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
@@ -57,61 +59,77 @@ public class TextRenderGroup extends AbstractRenderGroup {
 		this.h = h;
 	}
 
-	public int getWidth() {
+	public final int getX() {
+		return x;
+	}
+	
+	public final int getY() {
+		return y;
+	}
+	
+	public final int getWidth() {
 		return w;
 	}
-	
-	public int getHeight() {
+
+	public final int getHeight() {
 		return h;
 	}
-	
-	public void setPosition(int x, int y) {
+
+	public final void setPosition(int x, int y) {
 		this.x = x;
 		this.y = y;
 		requestUpdate();
 	}
-	
+
 	public void clear() {
-		graphics.setColor(Color.RED);
-		//graphics.setColor(new Color(0, 0, 0, 0));
-		graphics.fillRect(0, 0, getWidth(), getHeight());
-		graphics.setColor(Color.WHITE);
-		graphics.drawRect(5, 5, getWidth() - 10, getHeight() - 10);
-		requestTexureUpdate();
+		graphics.setComposite(AlphaComposite.getInstance(AlphaComposite.CLEAR));
+		fillRect(CLEAR_COLOR, x, y, w, h);
+		graphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
+	}
+
+	public void fillRect(Color color, int x, int y, int w, int h) {
+		graphics.setColor(color);
+		graphics.fillRect(x, y, w, h);
+		requestTextureUpdate();
 	}
 
 	public void drawString(String string, int x, int y) {
-		graphics.setColor(Color.WHITE);
-		graphics.drawString(string, x, y);
-		requestTexureUpdate();
+		drawString(Color.WHITE, string, x, y);
+		requestTextureUpdate();
 	}
-	
+
+	public void drawString(Color color, String string, int x, int y) {
+		graphics.setColor(color);
+		graphics.drawString(string, x, y);
+		requestTextureUpdate();
+	}
+
 	public void drawStrings(String[] strings, int x, int y) {
-		graphics.setColor(Color.WHITE);
+		drawStrings(Color.WHITE, strings, x, y);
+	}
+
+	public void drawStrings(Color color, String[] strings, int x, int y) {
+		graphics.setColor(color);
 		int dy = 0;
 		for (String s : strings) {
 			graphics.drawString(s, x, y + dy);
 			dy += FONT.getSize();
 		}
-		requestTexureUpdate();
+		requestTextureUpdate();
 	}
 
 	@Override
-	public void getVertices(IAddOnlyFloatList dst) {
+	public final void getVertices(IAddOnlyFloatList dst) {
 		Primitives.addRectangle(dst, x, y, x + w, y + h);
 	};
 
 	@Override
-	public void getTexCoords(IAddOnlyFloatList dst) {
-		dst.addAll(TEX_COORDS);
+	public final void getTexCoords(IAddOnlyFloatList dst) {
+		dst.addAll(DEFAULT_QUAD_TEX_COORDS);
 	}
 
 	@Override
-	public ITextureData getTextureData() {
+	public final ITextureData getTextureData() {
 		return textureData;
-	}
-	
-	public void requestTexureUpdate() {
-		textureData.requestUpdate();		
 	}
 }

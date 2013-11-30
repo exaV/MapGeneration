@@ -68,7 +68,6 @@ public final class ProjectionUtilities {
 	}
 
 	public static Line getRay(IView view, float winX, float winY) {
-		// XXX FIXME: how about near and far???
 		float[] w = new float[8];
 		project.gluUnProject(winX, winY, 0.1f, view.getCamera().getModelviewMatrix(), 0, view.getCamera().getProjectionMatrix(), 0, view.getViewport(), 0, w, 0);
 		project.gluUnProject(winX, winY, 0.9f, view.getCamera().getModelviewMatrix(), 0, view.getCamera().getProjectionMatrix(), 0, view.getViewport(), 0, w, 4);
