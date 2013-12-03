@@ -33,7 +33,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 
 import javax.media.opengl.GL;
-import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 
 import ch.ethz.ether.gl.Frame;
@@ -136,19 +135,17 @@ public abstract class AbstractView implements IView {
 
 	@Override
 	public final void init(GLAutoDrawable drawable) {
-		GL2 gl = drawable.getGL().getGL2();
+		GL gl = drawable.getGL();
 		
 		gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		gl.glClearDepth(1.0f);
 
 		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-
-		gl.glEnable(GL2.GL_POINT_SMOOTH);
 	}
 
 	@Override
 	public final void display(GLAutoDrawable drawable) {
-		GL2 gl = drawable.getGL().getGL2();
+		GL gl = drawable.getGL();
 		
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT | GL.GL_STENCIL_BUFFER_BIT);
 
@@ -162,12 +159,16 @@ public abstract class AbstractView implements IView {
 		getScene().getUI().update();
 		
 		// render everything
-		getScene().getRenderer().render(gl, this);
+		try {
+			getScene().getRenderer().render(gl.getGL3(), this);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public final void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
-		GL2 gl = drawable.getGL().getGL2();
+		GL gl = drawable.getGL();
 
 		if (height == 0)
 			height = 1; // prevent divide by zero
@@ -180,7 +181,6 @@ public abstract class AbstractView implements IView {
 	@Override
 	public final void dispose(GLAutoDrawable drawable) {
 		// TODO
-		//GL2 gl = drawable.getGL().getGL2();
 	}
 
 	// key listener

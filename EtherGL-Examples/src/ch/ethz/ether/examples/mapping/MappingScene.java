@@ -32,7 +32,7 @@ import java.awt.event.KeyEvent;
 import ch.ethz.ether.mapping.BoxCalibrationModel;
 import ch.ethz.ether.mapping.CalibrationTool;
 import ch.ethz.ether.mapping.FillTool;
-import ch.ethz.ether.render.ForwardRenderer;
+import ch.ethz.ether.render.forward.ForwardRenderer;
 import ch.ethz.ether.scene.AbstractScene;
 import ch.ethz.ether.scene.AbstractTool;
 import ch.ethz.ether.scene.ITool;

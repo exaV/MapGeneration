@@ -27,19 +27,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package ch.ethz.ether.gl;
 
-import jogamp.opengl.ProjectFloat;
-
 import org.apache.commons.math3.geometry.euclidean.threed.Line;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
 import ch.ethz.ether.view.IView;
 
-public final class ProjectionUtilities {
-	// XXX replace this if possible to get rid of jogl dependencies
-	private static final ProjectFloat project = new ProjectFloat();
+import com.jogamp.opengl.math.FloatUtil;
 
-	public static boolean projectToDeviceCoordinates(IView view, float x, float y, float z, float[] v) {
-		if (!project.gluProject(x, y, z, view.getCamera().getModelviewMatrix(), 0, view.getCamera().getProjectionMatrix(), 0, view.getViewport(), 0, v, 0))
+public final class ProjectionUtilities {
+	public static boolean projectToDevice(IView view, float x, float y, float z, float[] v) {
+		if (!projectToScreen(view, x, y, z, v))
 			return false;
 		v[0] = screenToDeviceX(view, (int) v[0]);
 		v[1] = screenToDeviceY(view, (int) v[1]);
@@ -47,8 +44,37 @@ public final class ProjectionUtilities {
 		return true;
 	}
 
-	public static boolean projectToScreenCoordinates(IView view, float x, float y, float z, float[] v) {
-		return project.gluProject(x, y, z, view.getCamera().getModelviewMatrix(), 0, view.getCamera().getProjectionMatrix(), 0, view.getViewport(), 0, v, 0);
+	public static boolean projectToScreen(IView view, float x, float y, float z, float[] v) {
+		return projectToScreen(view.getCamera().getViewMatrix(), view.getCamera().getProjectionMatrix(), view.getViewport(), x, y, z, v);
+	}
+
+	private static boolean projectToScreen(float[] viewMatrix, float[] projMatrix, int[] viewport, float x, float y, float z, float[] v) {
+		final float[] in = new float[4];
+		final float[] out = new float[4];
+
+		in[0] = x;
+		in[1] = y;
+		in[2] = z;
+		in[3] = 1.0f;
+
+		Matrix4x4.multiplyVector(viewMatrix, in, out);
+		Matrix4x4.multiplyVector(projMatrix, out, in);
+
+		if (in[3] == 0.0f)
+			return false;
+
+		in[3] = (1.0f / in[3]) * 0.5f;
+
+		// map x, y and z to range [0, 1]
+		in[0] = in[0] * in[3] + 0.5f;
+		in[1] = in[1] * in[3] + 0.5f;
+		in[2] = in[2] * in[3] + 0.5f;
+
+		// map x,y to viewport
+		v[0] = in[0] * viewport[2] + viewport[0];
+		v[1] = in[1] * viewport[3] + viewport[1];
+		v[2] = in[2];
+		return true;
 	}
 
 	public static int deviceToScreenX(IView view, float x) {
@@ -67,10 +93,59 @@ public final class ProjectionUtilities {
 		return 2f * y / view.getHeight() - 1f;
 	}
 
-	public static Line getRay(IView view, float winX, float winY) {
-		float[] w = new float[8];
-		project.gluUnProject(winX, winY, 0.1f, view.getCamera().getModelviewMatrix(), 0, view.getCamera().getProjectionMatrix(), 0, view.getViewport(), 0, w, 0);
-		project.gluUnProject(winX, winY, 0.9f, view.getCamera().getModelviewMatrix(), 0, view.getCamera().getProjectionMatrix(), 0, view.getViewport(), 0, w, 4);
-		return new Line(new Vector3D(w[0], w[1], w[2]), new Vector3D(w[4], w[5], w[6]));
+	public static Line getRay(IView view, float x, float y) {
+		float[] p0 = new float[4];
+		float[] p1 = new float[4];
+		float[] vm = view.getCamera().getViewMatrix();
+		float[] pm = view.getCamera().getProjectionMatrix();
+		int[] vp = view.getViewport();
+		unprojectFromScreen(vm, pm, vp, x, y, 0.1f, p0);
+		unprojectFromScreen(vm, pm, vp, x, y, 0.9f, p1);
+		return new Line(new Vector3D(p0[0], p0[1], p0[2]), new Vector3D(p1[0], p1[1], p1[2]));
+	}
+
+	public static boolean unprojectFromScreen(IView view, float x, float y, float z, float[] v) {
+		return unprojectFromScreen(view.getCamera().getViewMatrix(), view.getCamera().getProjectionMatrix(), view.getViewport(), x, y, z, v);
+	}
+
+	public static boolean unprojectFromScreen(float[] viewMatrix, float[] projectionMatrix, int[] viewport, float x, float y, float z, float[] v) {
+		final float[] in = new float[4];
+		final float[] out = new float[4];
+		final float[] matrix = new float[16];
+
+		Matrix4x4.multiply(projectionMatrix, viewMatrix, matrix);
+		FloatUtil.multMatrixf(projectionMatrix, 0, viewMatrix, 0, matrix, 0);
+
+		if (Matrix4x4.invert(matrix, matrix) == null) {
+			return false;
+		}
+
+		in[0] = x;
+		in[1] = y;
+		in[2] = z;
+		in[3] = 1.0f;
+
+		// Map x and y from window coordinates
+		in[0] = (in[0] - viewport[0]) / viewport[2];
+		in[1] = (in[1] - viewport[1]) / viewport[3];
+
+		// Map to range -1 to 1
+		in[0] = in[0] * 2 - 1;
+		in[1] = in[1] * 2 - 1;
+		in[2] = in[2] * 2 - 1;
+
+		FloatUtil.multMatrixVecf(matrix, in, out);
+
+		if (out[3] == 0.0) {
+			return false;
+		}
+
+		out[3] = 1.0f / out[3];
+
+		v[0] = out[0] * out[3];
+		v[1] = out[1] * out[3];
+		v[2] = out[2] * out[3];
+
+		return true;
 	}
 }

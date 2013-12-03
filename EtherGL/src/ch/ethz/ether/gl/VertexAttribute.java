@@ -27,58 +27,82 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package ch.ethz.ether.gl;
 
-import java.nio.Buffer;
+import java.nio.FloatBuffer;
 
 import javax.media.opengl.GL;
+import javax.media.opengl.GL3;
 
 import com.jogamp.common.nio.Buffers;
 
+// FIXME: this is not an attribute, this is just a vertex buffer
 /**
- * Very simple texture wrapper.
+ * Very simple vertex attribute wrapper.
  * 
  * @author radar
  * 
  */
-public class Texture {
-	private int[] tex;
+public class VertexAttribute {
+	private static final FloatBuffer EMPTY_BUFFER = Buffers.newDirectFloatBuffer(0);
 
-	public Texture() {
+	private int[] vbo;
+	private int size;
+
+	public VertexAttribute() {
 	}
 
 	public void dispose(GL gl) {
-		if (tex != null) {
-			gl.glDeleteTextures(1, tex, 0);
-			tex = null;
+		if (vbo != null) {
+			gl.glDeleteBuffers(1, vbo, 0);
+			vbo = null;
 		}
 	}
 
-	public void load(GL gl, int width, int height, byte[] rgba) {
-		load(gl, width, height, Buffers.newDirectByteBuffer(rgba), GL.GL_RGBA);
-	}
+	public void load(GL gl, FloatBuffer vertices) {
+		if (vbo == null) {
+			vbo = new int[1];
+			gl.glGenBuffers(1, vbo, 0);
+		}
 
-	public void load(GL gl, int width, int height, Buffer buffer, int format) {
-		if (tex == null) {
-			tex = new int[1];
-			gl.glGenTextures(1, tex, 0);
-			gl.glBindTexture(GL.GL_TEXTURE_2D, tex[0]);
-			gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
-			gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR_MIPMAP_LINEAR);
+		int bytesPerFloat = Float.SIZE / Byte.SIZE;
+
+		gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vbo[0]);
+		if (vertices != null && vertices.limit() != 0) {
+			size = vertices.limit();
+			vertices.rewind();
+
+			// transfer data to VBO
+			int numBytes = vertices.limit() * bytesPerFloat;
+			gl.glBufferData(GL.GL_ARRAY_BUFFER, numBytes, vertices, GL.GL_STATIC_DRAW);
 		} else {
-			gl.glBindTexture(GL.GL_TEXTURE_2D, tex[0]);
+			size = 0;
+			gl.glBufferData(GL.GL_ARRAY_BUFFER, 0, EMPTY_BUFFER, GL.GL_STATIC_DRAW);
 		}
-		gl.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
-		buffer.rewind();
-		gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, width, height, 0, format, GL.GL_UNSIGNED_BYTE, buffer);
-		gl.glGenerateMipmap(GL.GL_TEXTURE_2D);
-		gl.glBindTexture(GL.GL_TEXTURE_2D, 0);
+		gl.glBindBuffer(GL.GL_ARRAY_BUFFER, 0);
 	}
 
-	public void enable(GL gl) {
-		if (tex != null)
-			gl.glBindTexture(GL.GL_TEXTURE_2D, tex[0]);
+	public void clear(GL gl) {
+		load(gl, null);
 	}
 
-	public void disable(GL gl) {
-		gl.glBindTexture(GL.GL_TEXTURE_2D, 0);
-	}	
+	public void enable(GL3 gl, int size, int index) {
+		if (size > 0) {
+			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vbo[0]);
+			gl.glEnableVertexAttribArray(index);
+			gl.glVertexAttribPointer(index, size, GL.GL_FLOAT, false, 0, 0);
+		}
+	}
+
+	public void disable(GL3 gl, int index) {
+		if (size > 0) {
+			gl.glDisableVertexAttribArray(index);
+		}
+	}
+
+	public int size() {
+		return size;
+	}
+	
+	public boolean isEmpty() {
+		return size == 0;
+	}
 }

@@ -42,7 +42,7 @@ import ch.ethz.util.MathUtils;
 public final class BimberRaskarCalibrator implements ICalibrator {
 
 	private RealMatrix projectionMatrix;
-	private RealMatrix modelviewMatrix;
+	private RealMatrix viewMatrix;
 
 	public BimberRaskarCalibrator() {
 	}
@@ -116,7 +116,7 @@ public final class BimberRaskarCalibrator implements ICalibrator {
 		pmv.setRowVector(1, s.getSubVector(4, 4));
 		pmv.setRowVector(2, s.getSubVector(8, 4));
 
-		// step 4: decompose pmv into 4x4 projection and modelview matrices
+		// step 4: decompose pmv into 4x4 projection and view matrices
 		double scale = pmv.getSubMatrix(2, 2, 0, 2).getRowVector(0).getNorm();
 		pmv = pmv.scalarMultiply(1.0 / scale);
 
@@ -154,7 +154,7 @@ public final class BimberRaskarCalibrator implements ICalibrator {
 		// create rotation matrix and translation vector
 		// (skipped since not needed for our purpose here)
 
-		// create 4x4 projection and modelview matrices
+		// create 4x4 projection and view matrices
 		projectionMatrix = MatrixUtils.createRealMatrix(4, 4);
 		projectionMatrix.setEntry(0, 0, -a);
 		projectionMatrix.setEntry(0, 1, 0.0);
@@ -178,22 +178,22 @@ public final class BimberRaskarCalibrator implements ICalibrator {
 		projectionMatrix.setEntry(3, 2, -1);
 		projectionMatrix.setEntry(3, 3, 0);
 
-		modelviewMatrix = MatrixUtils.createRealMatrix(4, 4);
-		modelviewMatrix.setEntry(0, 0, r0.getX());
-		modelviewMatrix.setEntry(0, 1, r0.getY());
-		modelviewMatrix.setEntry(0, 2, r0.getZ());
-		modelviewMatrix.setEntry(1, 0, r1.getX());
-		modelviewMatrix.setEntry(1, 1, r1.getY());
-		modelviewMatrix.setEntry(1, 2, r1.getZ());
-		modelviewMatrix.setEntry(2, 0, r2.getX());
-		modelviewMatrix.setEntry(2, 1, r2.getY());
-		modelviewMatrix.setEntry(2, 2, r2.getZ());
-		modelviewMatrix.setEntry(0, 3, tx);
-		modelviewMatrix.setEntry(1, 3, ty);
-		modelviewMatrix.setEntry(2, 3, tz);
-		modelviewMatrix.setEntry(3, 3, 1.0);
+		viewMatrix = MatrixUtils.createRealMatrix(4, 4);
+		viewMatrix.setEntry(0, 0, r0.getX());
+		viewMatrix.setEntry(0, 1, r0.getY());
+		viewMatrix.setEntry(0, 2, r0.getZ());
+		viewMatrix.setEntry(1, 0, r1.getX());
+		viewMatrix.setEntry(1, 1, r1.getY());
+		viewMatrix.setEntry(1, 2, r1.getZ());
+		viewMatrix.setEntry(2, 0, r2.getX());
+		viewMatrix.setEntry(2, 1, r2.getY());
+		viewMatrix.setEntry(2, 2, r2.getZ());
+		viewMatrix.setEntry(0, 3, tx);
+		viewMatrix.setEntry(1, 3, ty);
+		viewMatrix.setEntry(2, 3, tz);
+		viewMatrix.setEntry(3, 3, 1.0);
 
-		return getError(projectionMatrix, modelviewMatrix, modelVertices, projectedVertices);
+		return getError(projectionMatrix, viewMatrix, modelVertices, projectedVertices);
 	}
 
 	@Override
@@ -202,15 +202,15 @@ public final class BimberRaskarCalibrator implements ICalibrator {
 	}
 
 	@Override
-	public float[] getModelviewMatrix() {
-		return toFloatArray(modelviewMatrix);
+	public float[] getModelMatrix() {
+		return toFloatArray(viewMatrix);
 	}
 	
-	private double getError(RealMatrix projectionMatrix, RealMatrix modelviewMatrix, List<float[]> modelVertices, List<float[]> projectedVertices) {
+	private double getError(RealMatrix projectionMatrix, RealMatrix viewMatrix, List<float[]> modelVertices, List<float[]> projectedVertices) {
 		if (modelVertices.size() != projectedVertices.size())
 			throw new IllegalArgumentException("lists of vectors do not have same size");
 
-		RealMatrix pm = projectionMatrix.multiply(modelviewMatrix);
+		RealMatrix pm = projectionMatrix.multiply(viewMatrix);
 		ArrayList<Vector3D> projectedPoints = new ArrayList<Vector3D>(modelVertices.size());
 		RealVector rp = new ArrayRealVector(4);
 		for (float[] p : modelVertices) {

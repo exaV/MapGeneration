@@ -32,20 +32,17 @@ public class GenericRenderGroup extends AbstractRenderGroup {
 
 	@Override
 	public void getNormals(IAddOnlyFloatList dst) {
-		if (normals != null)
-			dst.addAll(normals);
+		dst.addAll(normals);
 	}
 
 	@Override
 	public void getColors(IAddOnlyFloatList dst) {
-		if (colors != null)
-			dst.addAll(colors);
+		dst.addAll(colors);
 	}
 
 	@Override
 	public void getTexCoords(IAddOnlyFloatList dst) {
-		if (texCoords != null)
-			dst.addAll(texCoords);
+		dst.addAll(texCoords);
 	}
 
 	@Override

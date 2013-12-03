@@ -27,10 +27,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package ch.ethz.ether.render;
 
-import javax.media.opengl.GL2;
+import javax.media.opengl.GL3;
 
 import ch.ethz.ether.render.IRenderGroup.Source;
 import ch.ethz.ether.view.IView;
+
+/*
+ * FIXME / TODO: render group interfaces needs revising. 
+ * get rid of render entry. basically a render group should 
+ * include render code + program + attributes + samplers. depending on the 
+ * level of specialization, subclasses can encapsulate some of these entities
+ * e.g. PointRenderGroup, LineRenderGroup, TextRenderGroup and similar
+ */
 
 /**
  * Simple rendering interface.
@@ -87,5 +95,7 @@ public interface IRenderer {
 		void setSource(Source source);
 	}
 
-	void render(GL2 gl, IView view);
+	void render(GL3 gl, IView view);
+
+	IRenderEntry getEntry(GL3 gl, IRenderGroup group);
 }

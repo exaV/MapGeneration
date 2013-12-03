@@ -55,7 +55,7 @@ public class Camera {
 	private float translateY = 0.0f;
 
 	private float[] projectionMatrix = Matrix4x4.identity();
-	private float[] modelviewMatrix = Matrix4x4.identity();
+	private float[] viewMatrix = Matrix4x4.identity();
 
 	public Camera(IView view) {
 		this.view = view;
@@ -207,31 +207,31 @@ public class Camera {
 		return projectionMatrix;
 	}
 
-	public float[] getModelviewMatrix() {
-		if (modelviewMatrix == null) {
-			modelviewMatrix = Matrix4x4.identity();
-			Matrix4x4.translate(translateX, translateY, -distance, modelviewMatrix);
-			Matrix4x4.rotate(rotateX - 90, 1, 0, 0, modelviewMatrix);
-			Matrix4x4.rotate(rotateZ, 0, 0, 1, modelviewMatrix);
+	public float[] getViewMatrix() {
+		if (viewMatrix == null) {
+			viewMatrix = Matrix4x4.identity();
+			Matrix4x4.translate(translateX, translateY, -distance, viewMatrix);
+			Matrix4x4.rotate(rotateX - 90, 1, 0, 0, viewMatrix);
+			Matrix4x4.rotate(rotateZ, 0, 0, 1, viewMatrix);
 		}
-		return modelviewMatrix;
+		return viewMatrix;
 	}	
 	
-	public void setMatrices(float[] projectionMatrix, float[] modelviewMatrix) {
+	public void setMatrices(float[] projectionMatrix, float[] viewMatrix) {
 		if (projectionMatrix == null) {
 			this.locked = false;
 			update();
 		} else {
 			this.locked = true;
 			this.projectionMatrix = projectionMatrix;
-			this.modelviewMatrix = modelviewMatrix;
+			this.viewMatrix = viewMatrix;
 			update();
 		}
 	}
 
 	public void update() {
 		if (!locked) {
-			modelviewMatrix = null;
+			viewMatrix = null;
 			projectionMatrix = null;
 		}
 		view.update();

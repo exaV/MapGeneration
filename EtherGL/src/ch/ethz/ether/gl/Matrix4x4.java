@@ -39,6 +39,26 @@ import java.util.Arrays;
  */
 public final class Matrix4x4 {
 	/**
+	 * Create new 4x4 zero matrix.
+	 * @return
+	 */
+	public static float[] zero() {
+		return new float[16];
+	}
+
+	/**
+	 * Zero existing 4x4 matrix or return new zero matrix.
+	 * @param m matrix to be zero'd or null to create new matrix
+	 * @return zero matrix
+	 */
+	public static float[] zero(float[] m) {
+		if (m == null)
+			m = zero();
+		Arrays.fill(m, 0);
+		return m;
+	}
+
+	/**
 	 * Returns new identity matrix.
 	 * 
 	 * @return column-major identity matrix
@@ -66,29 +86,42 @@ public final class Matrix4x4 {
 	}
 
 	/**
-	 * Multiplies two matrices. a = a * b
+	 * Copy matrix into new matrix.
+	 * @param m matrix to be copied
+	 * @return copy of m
+	 */
+	public static float[] copy(float[] m) {
+		return Arrays.copyOf(m, 16);
+	}
+
+	/**
+	 * Multiplies two matrices result = a * b. The first matrix passed (a) can
+	 * be used as result for in place operations, i.e. a=multiply(a,b,a).
 	 * 
 	 * @param a
-	 *            4x4 matrix in column-major order (also result)
+	 *            4x4 matrix in column-major order
 	 * @param b
 	 *            4x4 matrix in column-major order
+	 * @param result
+	 *            4x4 matrix for result = a * b, or null to create new matrix
+	 * 
 	 * @return multiplied column-major matrix
 	 */
-	public static float[] multiply(float[] a, float[] b) {
+	public static float[] multiply(float[] a, float[] b, float[] result) {
+		if (result == null)
+			result = zero();
 		for (int i = 0; i < 4; i++) {
 			float ai0 = a[i + 0 * 4];
 			float ai1 = a[i + 1 * 4];
 			float ai2 = a[i + 2 * 4];
 			float ai3 = a[i + 3 * 4];
-			a[i + 0 * 4] = ai0 * b[0 + 0 * 4] + ai1 * b[1 + 0 * 4] + ai2 * b[2 + 0 * 4] + ai3 * b[3 + 0 * 4];
-			a[i + 1 * 4] = ai0 * b[0 + 1 * 4] + ai1 * b[1 + 1 * 4] + ai2 * b[2 + 1 * 4] + ai3 * b[3 + 1 * 4];
-			a[i + 2 * 4] = ai0 * b[0 + 2 * 4] + ai1 * b[1 + 2 * 4] + ai2 * b[2 + 2 * 4] + ai3 * b[3 + 2 * 4];
-			a[i + 3 * 4] = ai0 * b[0 + 3 * 4] + ai1 * b[1 + 3 * 4] + ai2 * b[2 + 3 * 4] + ai3 * b[3 + 3 * 4];
+			result[i + 0 * 4] = ai0 * b[0 + 0 * 4] + ai1 * b[1 + 0 * 4] + ai2 * b[2 + 0 * 4] + ai3 * b[3 + 0 * 4];
+			result[i + 1 * 4] = ai0 * b[0 + 1 * 4] + ai1 * b[1 + 1 * 4] + ai2 * b[2 + 1 * 4] + ai3 * b[3 + 1 * 4];
+			result[i + 2 * 4] = ai0 * b[0 + 2 * 4] + ai1 * b[1 + 2 * 4] + ai2 * b[2 + 2 * 4] + ai3 * b[3 + 2 * 4];
+			result[i + 3 * 4] = ai0 * b[0 + 3 * 4] + ai1 * b[1 + 3 * 4] + ai2 * b[2 + 3 * 4] + ai3 * b[3 + 3 * 4];
 		}
-		return a;
+		return result;
 	}
-
-	private static final float[] t = identity();
 
 	/**
 	 * Multiplies matrix m with translation matrix t. m = m * t
@@ -106,13 +139,12 @@ public final class Matrix4x4 {
 	public static float[] translate(float tx, float ty, float tz, float[] m) {
 		if (m == null)
 			m = identity();
+		final float[] t = identity();
 		t[12] = tx;
 		t[13] = ty;
 		t[14] = tz;
-		return multiply(m, t);
+		return multiply(m, t, m);
 	}
-
-	private static final float[] r = identity();
 
 	/**
 	 * Multiplies matrix m with rotation matrix r. m = m * r
@@ -153,6 +185,7 @@ public final class Matrix4x4 {
 		float yz = y * z;
 		float zs = z * s;
 
+		final float[] r = identity();
 		r[0] = x * x * ic + c;
 		r[1] = xy * ic + zs;
 		r[2] = xz * ic - ys;
@@ -163,7 +196,7 @@ public final class Matrix4x4 {
 		r[9] = yz * ic - xs;
 		r[10] = z * z * ic + c;
 
-		return multiply(m, r);
+		return multiply(m, r, m);
 	}
 
 	/**
@@ -206,11 +239,7 @@ public final class Matrix4x4 {
 	 * @return column-major perspective projection matrix
 	 */
 	public static float[] perspective(float fovy, float aspect, float near, float far, float[] m) {
-		if (m != null) {
-			Arrays.fill(m, 0);
-		} else {
-			m = new float[16];
-		}
+		m = zero(m);
 
 		double radians = fovy / 2 * Math.PI / 180;
 		double sine = Math.sin(radians);
@@ -251,11 +280,7 @@ public final class Matrix4x4 {
 	 * @return column-major orthographic projection matrix
 	 */
 	public static float[] ortho(float left, float right, float bottom, float top, float near, float far, float[] m) {
-		if (m != null) {
-			Arrays.fill(m, 0);
-		} else {
-			m = new float[16];
-		}
+		m = zero(m);
 
 		float dx = right - left;
 		float dy = top - bottom;
@@ -273,4 +298,91 @@ public final class Matrix4x4 {
 		m[15] = 1;
 		return m;
 	}
+
+	/**
+	 * Invert matrix.
+	 * 
+	 * @param a
+	 *            input matrix
+	 * @param ainv
+	 *            inverse of a or null to create new matrix
+	 * @return the inverse of a or null if a is singular
+	 */
+	public static float[] invert(float[] src, float[] inverse) {
+		final float[][] temp = new float[4][4];
+
+		for (int i = 0; i < 4; i++) {
+			for (int j = 0; j < 4; j++) {
+				temp[i][j] = src[i * 4 + j];
+			}
+		}
+		inverse = identity(inverse);
+
+		for (int i = 0; i < 4; i++) {
+			// look for largest element in column
+			int swap = i;
+			for (int j = i + 1; j < 4; j++) {
+				if (Math.abs(temp[j][i]) > Math.abs(temp[i][i])) {
+					swap = j;
+				}
+			}
+
+			if (swap != i) {
+				// swap rows
+				for (int k = 0; k < 4; k++) {
+					float t = temp[i][k];
+					temp[i][k] = temp[swap][k];
+					temp[swap][k] = t;
+
+					t = inverse[i * 4 + k];
+					inverse[i * 4 + k] = inverse[swap * 4 + k];
+					inverse[swap * 4 + k] = t;
+				}
+			}
+
+			if (temp[i][i] == 0) {
+				// singular input
+				return null;
+			}
+
+			float t = temp[i][i];
+			for (int k = 0; k < 4; k++) {
+				temp[i][k] /= t;
+				inverse[i * 4 + k] /= t;
+			}
+			for (int j = 0; j < 4; j++) {
+				if (j != i) {
+					t = temp[j][i];
+					for (int k = 0; k < 4; k++) {
+						temp[j][k] -= temp[i][k] * t;
+						inverse[j * 4 + k] -= inverse[i * 4 + k] * t;
+					}
+				}
+			}
+		}
+		return inverse;
+	}
+
+	/**
+	 * Transform vector with matrix b = m * a.
+	 * 
+	 * @param m
+	 *            the matrix
+	 * @param a
+	 *            the input vector
+	 * @param b
+	 *            the output vector or null if new vector to be created
+	 * @return the output vector (b)
+	 */
+	public static final float[] multiplyVector(float[] m, float[] a, float[] b) {
+		if (b == null) {
+			b = new float[4];
+		}
+		// (one matrix row in column-major order) X (column vector)
+		for (int i = 0; i < 4; i++) {
+			b[i] = a[0] * m[i] + a[1] * m[4 + i] + a[2] * m[8 + i] + a[3] * m[12 + i];
+		}
+		return b;
+	}
+
 }

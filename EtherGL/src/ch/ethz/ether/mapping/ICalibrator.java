@@ -40,5 +40,5 @@ public interface ICalibrator {
 
 	float[] getProjectionMatrix();
 
-	float[] getModelviewMatrix();
+	float[] getModelMatrix();
 }

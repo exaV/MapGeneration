@@ -4,18 +4,17 @@ import java.nio.FloatBuffer;
 
 import com.jogamp.common.nio.Buffers;
 
-
 public final class FloatList implements IAddOnlyFloatList {
 	FloatBuffer buffer;
 
 	public FloatList() {
 		this(0);
 	}
-	
+
 	public FloatList(int initialCapacity) {
 		ensureCapacity(initialCapacity);
 	}
-	
+
 	@Override
 	public void add(float value) {
 		ensureCapacity(buffer.limit() + 1);
@@ -48,28 +47,30 @@ public final class FloatList implements IAddOnlyFloatList {
 
 	@Override
 	public void addAll(float[] values) {
-		ensureCapacity(buffer.limit() + values.length);
-		buffer.put(values);
+		if (values != null) {
+			ensureCapacity(buffer.limit() + values.length);
+			buffer.put(values);
+		}
 	}
-	
+
 	@Override
 	public int size() {
 		return buffer.limit();
 	}
-	
+
 	@Override
 	public boolean isEmpty() {
 		return buffer.limit() == 0;
 	}
-	
+
 	public void clear() {
 		buffer.limit(0);
 	}
-	
+
 	public FloatBuffer buffer() {
 		return buffer;
 	}
-	
+
 	public float[] toArray() {
 		if (buffer.limit() == 0)
 			return null;
@@ -78,7 +79,7 @@ public final class FloatList implements IAddOnlyFloatList {
 		buffer.get(array);
 		return array;
 	}
-	
+
 	@Override
 	public void ensureCapacity(int capacity) {
 		if (buffer == null) {
@@ -91,6 +92,5 @@ public final class FloatList implements IAddOnlyFloatList {
 		}
 		buffer.limit(capacity);
 	}
-
 
 }

@@ -142,7 +142,7 @@ public final class CalibrationTool extends AbstractTool {
 			CalibrationContext context = getContext(view);
 			for (int i = 0; i < context.projectedVertices.size(); ++i) {
 				float[] a = context.modelVertices.get(i);
-				if (!ProjectionUtilities.projectToDeviceCoordinates(view, a[0], a[1], a[2], v))
+				if (!ProjectionUtilities.projectToDevice(view, a[0], a[1], a[2], v))
 					continue;
 				a = context.projectedVertices.get(i);
 				Primitives.addLine(dst, v[0], v[1], v[2], a[0], a[1], a[2]);
@@ -243,7 +243,7 @@ public final class CalibrationTool extends AbstractTool {
 		float[] mv = model.getCalibrationVertices();
 		float[] vv = new float[3];
 		for (int i = 0; i < mv.length; i += 3) {
-			if (!ProjectionUtilities.projectToScreenCoordinates(view, mv[i], mv[i + 1], mv[i + 2], vv))
+			if (!ProjectionUtilities.projectToScreen(view, mv[i], mv[i + 1], mv[i + 2], vv))
 				continue;
 			if (snap2D(e.getX(), view.getHeight() - e.getY(), (int) vv[0], (int) vv[1])) {
 				float[] a = new float[] { mv[i], mv[i + 1], mv[i + 2] };
@@ -336,7 +336,7 @@ public final class CalibrationTool extends AbstractTool {
 		} catch (Throwable t) {
 		}
 		if (context.calibrated)
-			view.getCamera().setMatrices(calibrator.getProjectionMatrix(), calibrator.getModelviewMatrix());
+			view.getCamera().setMatrices(calibrator.getProjectionMatrix(), calibrator.getModelMatrix());
 		else
 			view.getCamera().setMatrices(null, null);
 
