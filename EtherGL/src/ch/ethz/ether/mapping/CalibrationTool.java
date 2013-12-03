@@ -74,7 +74,7 @@ public final class CalibrationTool extends AbstractTool {
 	private final ICalibrator calibrator = new BimberRaskarCalibrator();
 	private final ICalibrationModel model;
 
-	private Map<IView, CalibrationContext> contexts = new HashMap<IView, CalibrationContext>();
+	private Map<IView, CalibrationContext> contexts = new HashMap<>();
 
 	private IRenderGroup modelPoints = new AbstractRenderGroup(Source.TOOL, Type.POINTS, Pass.OVERLAY) {
 		@Override

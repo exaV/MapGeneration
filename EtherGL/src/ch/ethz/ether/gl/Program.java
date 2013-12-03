@@ -27,7 +27,7 @@ public final class Program {
 	}
 
 	public static final class Shader {
-		private static final Map<String, Shader> SHADERS = new HashMap<String, Shader>();
+		private static final Map<String, Shader> SHADERS = new HashMap<>();
 
 		private final Class<?> root;
 		private final String path;
@@ -74,7 +74,7 @@ public final class Program {
 		}
 	}
 
-	private static final Map<String, Program> PROGRAMS = new HashMap<String, Program>();
+	private static final Map<String, Program> PROGRAMS = new HashMap<>();
 
 	private final ShaderProgram program = new ShaderProgram();
 	private String id;

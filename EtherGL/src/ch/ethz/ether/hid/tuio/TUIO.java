@@ -80,7 +80,7 @@ public class TUIO {
 	}
 
 	private class Handler implements OSCHandler {
-		private final List<Integer> alive = new ArrayList<Integer>();
+		private final List<Integer> alive = new ArrayList<>();
 
 		@Override
 		public Object[] handle(String[] address, int addrIdx, StringBuilder typeString, long timestamp, Object... args) throws OSCError {
@@ -131,7 +131,7 @@ public class TUIO {
 
 	private OSCServer server;
 
-	private Map<Integer, Cursor> cursors = new HashMap<Integer, Cursor>();
+	private Map<Integer, Cursor> cursors = new HashMap<>();
 
 	private long startTime;
 

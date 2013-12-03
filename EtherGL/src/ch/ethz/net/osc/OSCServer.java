@@ -52,12 +52,12 @@ public final class OSCServer extends OSCDispatcher implements OSCSender {
 	private final InetSocketAddress address;
 	private final DatagramSocket socket;
 
-	private final BlockingQueue<DatagramPacket> receiveQueue = new LinkedBlockingQueue<DatagramPacket>();
-	private final BlockingQueue<DatagramPacket> sendQueue = new LinkedBlockingQueue<DatagramPacket>();
+	private final BlockingQueue<DatagramPacket> receiveQueue = new LinkedBlockingQueue<>();
+	private final BlockingQueue<DatagramPacket> sendQueue = new LinkedBlockingQueue<>();
 
 	private final AtomicBoolean awtPending = new AtomicBoolean();
 
-	private final Map<String, SocketAddress> remotePeers = new HashMap<String, SocketAddress>();
+	private final Map<String, SocketAddress> remotePeers = new HashMap<>();
 
 	public OSCServer(int port) throws UnknownHostException, IOException {
 		this(port, null);

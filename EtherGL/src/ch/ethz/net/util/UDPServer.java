@@ -50,7 +50,7 @@ public class UDPServer {
 	private final DatagramSocket socket;
 	private final UDPHandler handler;
 
-	private final BlockingQueue<DatagramPacket> receiveQueue = new LinkedBlockingQueue<DatagramPacket>();
+	private final BlockingQueue<DatagramPacket> receiveQueue = new LinkedBlockingQueue<>();
 
 	private final AtomicBoolean awtPending = new AtomicBoolean();
 

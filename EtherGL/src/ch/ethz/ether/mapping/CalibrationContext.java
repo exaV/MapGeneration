@@ -36,8 +36,8 @@ import java.util.prefs.Preferences;
 public class CalibrationContext {
 	public boolean calibrated = false;
 	public int currentSelection = -1;
-	public List<float[]> modelVertices = new ArrayList<float[]>();
-	public List<float[]> projectedVertices = new ArrayList<float[]>();
+	public List<float[]> modelVertices = new ArrayList<>();
+	public List<float[]> projectedVertices = new ArrayList<>();
 
 	public void load(Preferences p, int index) {
 		byte[] mv = p.getByteArray("modelVertices_" + index, null);
@@ -47,8 +47,8 @@ public class CalibrationContext {
 			projectedVertices = fromByteArray(pv);
 			calibrated = true;
 		} else {
-			modelVertices = new ArrayList<float[]>();
-			projectedVertices = new ArrayList<float[]>();
+			modelVertices = new ArrayList<>();
+			projectedVertices = new ArrayList<>();
 			calibrated = false;
 		}
 	}
@@ -73,7 +73,7 @@ public class CalibrationContext {
 	}
 	
 	private List<float[]> fromByteArray(byte[] bytes) {
-		List<float[]> list = new ArrayList<float[]>();
+		List<float[]> list = new ArrayList<>();
 		ByteBuffer bb = ByteBuffer.wrap(bytes);
 		FloatBuffer dd = bb.asFloatBuffer();
 		for (int i = 0; i < dd.capacity(); i+=3) {

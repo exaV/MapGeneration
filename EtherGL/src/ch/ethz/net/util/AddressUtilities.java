@@ -45,11 +45,6 @@ public class AddressUtilities {
 		return getLocalHost(true);
 	}
 
-	// TODO: can be removed when with JDK1.7
-	public static InetAddress getLoopBackAddress() throws UnknownHostException {
-		return InetAddress.getByName("127.0.0.1");
-	}
-
 	private static InetAddress getFirstNonLoopbackAddress(boolean ipv4only) throws SocketException {
 		InetAddress[] addrs = AddressUtilities.getLocalAddresses(ipv4only);
 		InetAddress result = null;
@@ -77,7 +72,7 @@ public class AddressUtilities {
 	}
 
 	private static InetAddress[] getLocalAddresses(boolean ipv4only) throws SocketException {
-		ArrayList<InetAddress> result = new ArrayList<InetAddress>();
+		ArrayList<InetAddress> result = new ArrayList<>();
 		for (Enumeration<NetworkInterface> e = NetworkInterface.getNetworkInterfaces(); e.hasMoreElements();) {
 			NetworkInterface nif = e.nextElement();
 			for (Enumeration<InetAddress> en = nif.getInetAddresses(); en.hasMoreElements();) {

@@ -51,7 +51,7 @@ import com.jogamp.opengl.util.FPSAnimator;
 public final class Frame extends GLCanvas {
 	private static final long serialVersionUID = 3901950325854383346L;
 
-	private static ArrayList<Frame> frames = new ArrayList<Frame>();
+	private static ArrayList<Frame> frames = new ArrayList<>();
 
 	private final JFrame jframe;
 	private FPSAnimator animator;

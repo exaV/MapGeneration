@@ -69,12 +69,12 @@ public class GeometryServer {
 							// /address[1]/address[2]/...
 							// double someValue =
 							// ((Number)args[0]).doubleValue();
-							ArrayList<ArrayList<Number>> objects = new ArrayList<ArrayList<Number>>();
-							ArrayList<Number> object = new ArrayList<Number>();
+							ArrayList<ArrayList<Number>> objects = new ArrayList<>();
+							ArrayList<Number> object = new ArrayList<>();
 							for (int i = 1; i < args.length; ) {
 								if (args[i] instanceof String) {
 									objects.add(object);
-									object = new ArrayList<Number>();
+									object = new ArrayList<>();
 									i++;
 								} else {
 									object.add((Number)args[i]);
@@ -199,7 +199,7 @@ public class GeometryServer {
 	}
 	
 	private void createGeometry(ArrayList<ArrayList<Number>> objects) {
-		ArrayList<float[]> geometry = new ArrayList<float[]>();
+		ArrayList<float[]> geometry = new ArrayList<>();
 		for (ArrayList<Number> object : objects) {
 			int i = 0;
 			int n = object.size();

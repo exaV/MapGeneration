@@ -20,10 +20,10 @@ import ch.ethz.util.UpdateRequest;
 final class RenderGroups implements IRenderGroups {
 	private final UpdateRequest updater = new UpdateRequest();
 
-	private final List<IRenderGroup> added = new ArrayList<IRenderGroup>();
-	private final List<IRenderGroup> removed = new ArrayList<IRenderGroup>();
+	private final List<IRenderGroup> added = new ArrayList<>();
+	private final List<IRenderGroup> removed = new ArrayList<>();
 
-	private final Map<IRenderGroup, IRenderEntry> groups = new HashMap<IRenderGroup, IRenderEntry>();
+	private final Map<IRenderGroup, IRenderEntry> groups = new HashMap<>();
 	private EnumSet<Source> sources = Source.ALL_SOURCES;
 
 	private final FloatList data = new FloatList();

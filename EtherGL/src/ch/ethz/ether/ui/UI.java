@@ -20,7 +20,7 @@ public final class UI {
 	private final TextRenderGroup group = new TextRenderGroup(Source.TOOL, 0, 0, 512, 512);
 	private final UpdateRequest updater = new UpdateRequest();
 
-	private final List<Button> buttons = new ArrayList<Button>();
+	private final List<Button> buttons = new ArrayList<>();
 	private String message;
 
 	public UI(IScene scene) {

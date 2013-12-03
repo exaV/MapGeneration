@@ -52,7 +52,7 @@ import ch.ethz.ether.view.IView.ViewType;
 // TODO: we should probably move UI event handling to UI...
 public abstract class AbstractScene implements IScene {
 	private IModel model;
-	private final ArrayList<IView> views = new ArrayList<IView>();
+	private final ArrayList<IView> views = new ArrayList<>();
 	private final IRenderer renderer;
 	private final UI ui = new UI(this);
 	

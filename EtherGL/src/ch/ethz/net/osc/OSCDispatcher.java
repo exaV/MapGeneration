@@ -216,7 +216,7 @@ public abstract class OSCDispatcher {
 
 		public OSCNode get(String name) {
 			if (children == null)
-				children = new ConcurrentHashMap<String, OSCNode>();
+				children = new ConcurrentHashMap<>();
 			OSCNode result = children.get(name);
 			if (result == null) {
 				result = new OSCNode();

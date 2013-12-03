@@ -211,7 +211,7 @@ public final class BimberRaskarCalibrator implements ICalibrator {
 			throw new IllegalArgumentException("lists of vectors do not have same size");
 
 		RealMatrix pm = projectionMatrix.multiply(viewMatrix);
-		ArrayList<Vector3D> projectedPoints = new ArrayList<Vector3D>(modelVertices.size());
+		ArrayList<Vector3D> projectedPoints = new ArrayList<>(modelVertices.size());
 		RealVector rp = new ArrayRealVector(4);
 		for (float[] p : modelVertices) {
 			rp.setEntry(0, p[0]);
