@@ -31,14 +31,13 @@ import java.util.List;
 
 /**
  * Interface for calibrators.
- * 
+ *
  * @author radar
- * 
  */
 public interface ICalibrator {
-	double calibrate(List<float[]> modelVertices, List<float[]> projectedVertices, float near, float far);
+    double calibrate(List<float[]> modelVertices, List<float[]> projectedVertices, float near, float far);
 
-	float[] getProjectionMatrix();
+    float[] getProjectionMatrix();
 
-	float[] getModelMatrix();
+    float[] getModelMatrix();
 }

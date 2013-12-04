@@ -31,36 +31,36 @@ import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.RealVector;
 
-public final class MathUtils {
-	public static Vector3D toVector3D(RealVector v) {
-		return new Vector3D(v.getEntry(0), v.getEntry(1), v.getEntry(2));
-	}
+public final class MathUtil {
+    public static Vector3D toVector3D(RealVector v) {
+        return new Vector3D(v.getEntry(0), v.getEntry(1), v.getEntry(2));
+    }
 
-	public static RealVector toRealVector(Vector3D v) {
-		return new ArrayRealVector(v.toArray(), false);
-	}
+    public static RealVector toRealVector(Vector3D v) {
+        return new ArrayRealVector(v.toArray(), false);
+    }
 
-	public static float map(float value, float sourceMin, float sourceMax, float targetMin, float targetMax) {
-		if (sourceMax - sourceMin == 0)
-			return 0;
-		return (value - sourceMin) * (targetMax - targetMin) / (sourceMax - sourceMin) + targetMin;
-	}
+    public static float map(float value, float sourceMin, float sourceMax, float targetMin, float targetMax) {
+        if (sourceMax - sourceMin == 0)
+            return 0;
+        return (value - sourceMin) * (targetMax - targetMin) / (sourceMax - sourceMin) + targetMin;
+    }
 
-	public static double map(double value, double sourceMin, double sourceMax, double targetMin, double targetMax) {
-		if (sourceMax - sourceMin == 0)
-			return 0;
-		return (value - sourceMin) * (targetMax - targetMin) / (sourceMax - sourceMin) + targetMin;
-	}
+    public static double map(double value, double sourceMin, double sourceMax, double targetMin, double targetMax) {
+        if (sourceMax - sourceMin == 0)
+            return 0;
+        return (value - sourceMin) * (targetMax - targetMin) / (sourceMax - sourceMin) + targetMin;
+    }
 
-	public static int clamp(int value, int min, int max) {
-		return Math.max(min, Math.min(max, value));
-	}
+    public static int clamp(int value, int min, int max) {
+        return Math.max(min, Math.min(max, value));
+    }
 
-	public static float clamp(float value, float min, float max) {
-		return Math.max(min, Math.min(max, value));
-	}
+    public static float clamp(float value, float min, float max) {
+        return Math.max(min, Math.min(max, value));
+    }
 
-	public static double clamp(double value, double min, double max) {
-		return Math.max(min, Math.min(max, value));
-	}
+    public static double clamp(double value, double min, double max) {
+        return Math.max(min, Math.min(max, value));
+    }
 }

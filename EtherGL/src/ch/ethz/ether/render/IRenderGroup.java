@@ -3,71 +3,71 @@ package ch.ethz.ether.render;
 import java.nio.Buffer;
 import java.util.EnumSet;
 
-import ch.ethz.ether.render.util.IAddOnlyFloatList;
+import ch.ethz.util.IAddOnlyFloatList;
 
 public interface IRenderGroup {
-	static final float[] DEFAULT_COLOR = new float[] { 1, 1, 1, 1 };
-	static final float[] DEFAULT_QUAD_TEX_COORDS = new float[] { 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1 };
+    static final float[] DEFAULT_COLOR = new float[]{1, 1, 1, 1};
+    static final float[] DEFAULT_QUAD_TEX_COORDS = new float[]{0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1};
 
-	interface ITextureData {
-		Buffer getBuffer();
+    interface ITextureData {
+        Buffer getBuffer();
 
-		int getWidth();
+        int getWidth();
 
-		int getHeight();
+        int getHeight();
 
-		int getFormat();
-	}
+        int getFormat();
+    }
 
-	enum Source {
-		MODEL, TOOL;
+    enum Source {
+        MODEL, TOOL;
 
-		public static EnumSet<Source> ALL_SOURCES = EnumSet.allOf(Source.class);
-	}
+        public static EnumSet<Source> ALL_SOURCES = EnumSet.allOf(Source.class);
+    }
 
-	enum Type {
-		POINTS, LINES, TRIANGLES,
-	}
+    enum Type {
+        POINTS, LINES, TRIANGLES,
+    }
 
-	enum Pass {
-		DEPTH, TRANSPARENCY, OVERLAY, DEVICE_SPACE_OVERLAY, SCREEN_SPACE_OVERLAY
-	}
+    enum Pass {
+        DEPTH, TRANSPARENCY, OVERLAY, DEVICE_SPACE_OVERLAY, SCREEN_SPACE_OVERLAY
+    }
 
-	enum Flag {
-		SHADED, TEXTURED, INTERACTIVE_VIEW_ONLY
-	}
+    enum Flag {
+        SHADED, TEXTURED, INTERACTIVE_VIEW_ONLY
+    }
 
-	void requestUpdate();
+    void requestUpdate();
 
-	boolean needsUpdate();
+    boolean needsUpdate();
 
-	Source getSource();
+    Source getSource();
 
-	Type getType();
+    Type getType();
 
-	Pass getPass();
+    Pass getPass();
 
-	void setPass(Pass pass);
+    void setPass(Pass pass);
 
-	boolean containsFlag(Flag flags);
+    boolean containsFlag(Flag flags);
 
-	void getVertices(IAddOnlyFloatList dst);
+    void getVertices(IAddOnlyFloatList dst);
 
-	void getNormals(IAddOnlyFloatList dst);
+    void getNormals(IAddOnlyFloatList dst);
 
-	void getColors(IAddOnlyFloatList dst);
+    void getColors(IAddOnlyFloatList dst);
 
-	void getTexCoords(IAddOnlyFloatList dst);
+    void getTexCoords(IAddOnlyFloatList dst);
 
-	float[] getColor();
+    float[] getColor();
 
-	float getPointSize();
+    float getPointSize();
 
-	float getLineWidth();
-	
-	void requestTextureUpdate();
-	
-	boolean needsTextureUpdate();
+    float getLineWidth();
 
-	ITextureData getTextureData();
+    void requestTextureUpdate();
+
+    boolean needsTextureUpdate();
+
+    ITextureData getTextureData();
 }

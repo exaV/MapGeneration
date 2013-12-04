@@ -44,108 +44,101 @@ import com.jogamp.opengl.util.FPSAnimator;
 /**
  * OpenGL frame class (i.e. an OpenGL window) that combines a GLCanvas and a
  * JFrame.
- * 
+ *
  * @author radar
- * 
  */
 public final class Frame extends GLCanvas {
-	private static final long serialVersionUID = 3901950325854383346L;
+    private static final long serialVersionUID = 3901950325854383346L;
 
-	private static ArrayList<Frame> frames = new ArrayList<>();
+    private static ArrayList<Frame> frames = new ArrayList<>();
 
-	private final JFrame jframe;
-	private FPSAnimator animator;
+    private final JFrame jframe;
+    private FPSAnimator animator;
 
-	private IView view;
+    private IView view;
 
-	/**
-	 * Creates undecorated frame.
-	 * 
-	 * @param width
-	 *            the frame's width
-	 * @param height
-	 *            the frame's height
-	 */
-	public Frame(int width, int height) {
-		this(width, height, null);
-	}
+    /**
+     * Creates undecorated frame.
+     *
+     * @param width  the frame's width
+     * @param height the frame's height
+     */
+    public Frame(int width, int height) {
+        this(width, height, null);
+    }
 
-	/**
-	 * Creates a decorated or undecorated frame with given dimensions
-	 * 
-	 * @param width
-	 *            the frame's width
-	 * @param height
-	 *            the frame's height
-	 * @param title
-	 *            the frame's title, nor null for an undecorated frame
-	 */
-	public Frame(int width, int height, String title) {
-		super(getCapabilities(), null, null);
-		if (frames.size() > 0)
-			setSharedContext(frames.get(0).getContext());
-		frames.add(this);
-		setPreferredSize(new Dimension(width, height));
-		
-		jframe = new JFrame();
-		jframe.getContentPane().add(this);
-		jframe.addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosing(WindowEvent e) {
-				if (animator != null && animator.isStarted())
-					animator.stop();
-				frames.remove(Frame.this);
-				if (frames.isEmpty())
-					System.exit(0);
-			}
-		});
-		if (title != null)
-			jframe.setTitle(title);
-		else
-			jframe.setUndecorated(true);
-		jframe.pack();
-		jframe.setVisible(true);
-	}
+    /**
+     * Creates a decorated or undecorated frame with given dimensions
+     *
+     * @param width  the frame's width
+     * @param height the frame's height
+     * @param title  the frame's title, nor null for an undecorated frame
+     */
+    public Frame(int width, int height, String title) {
+        super(getCapabilities(), null, null);
+        if (frames.size() > 0)
+            setSharedContext(frames.get(0).getContext());
+        frames.add(this);
+        setPreferredSize(new Dimension(width, height));
 
-	/**
-	 * Sets/clears the view for this frame.
-	 * 
-	 * @param view
-	 *            The view to be assigned, or null if view to be cleared.
-	 */
-	public void setView(IView view) {
-		if (this.view == view)
-			return;
-		if (this.view != null) {
-			removeGLEventListener(this.view);
-			removeMouseListener(this.view);
-			removeMouseMotionListener(this.view);
-			removeMouseWheelListener(this.view);
-			removeKeyListener(this.view);
-		}
-		this.view = view;
-		if (this.view != null) {
-			addGLEventListener(this.view);
-			addMouseListener(this.view);
-			addMouseMotionListener(this.view);
-			addMouseWheelListener(this.view);
-			addKeyListener(this.view);
-		}
-	}
+        jframe = new JFrame();
+        jframe.getContentPane().add(this);
+        jframe.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                if (animator != null && animator.isStarted())
+                    animator.stop();
+                frames.remove(Frame.this);
+                if (frames.isEmpty())
+                    System.exit(0);
+            }
+        });
+        if (title != null)
+            jframe.setTitle(title);
+        else
+            jframe.setUndecorated(true);
+        jframe.pack();
+        jframe.setVisible(true);
+    }
 
-	public JFrame getJFrame() {
-		return jframe;
-	}
+    /**
+     * Sets/clears the view for this frame.
+     *
+     * @param view The view to be assigned, or null if view to be cleared.
+     */
+    public void setView(IView view) {
+        if (this.view == view)
+            return;
+        if (this.view != null) {
+            removeGLEventListener(this.view);
+            removeMouseListener(this.view);
+            removeMouseMotionListener(this.view);
+            removeMouseWheelListener(this.view);
+            removeKeyListener(this.view);
+        }
+        this.view = view;
+        if (this.view != null) {
+            addGLEventListener(this.view);
+            addMouseListener(this.view);
+            addMouseMotionListener(this.view);
+            addMouseWheelListener(this.view);
+            addKeyListener(this.view);
+        }
+    }
 
-	private static GLCapabilities getCapabilities() {
-		// TODO: switch to GL3/GL4 once we're getting there
-		// TODO: make this configurable
-		GLProfile profile = GLProfile.get(GLProfile.GL3);
-		GLCapabilities caps = new GLCapabilities(profile);
-		caps.setAlphaBits(8);
-		caps.setStencilBits(16);
-		// caps.setSampleBuffers(true);
-		// caps.setNumSamples(4);
-		return caps;
-	}
+    public JFrame getJFrame() {
+        return jframe;
+    }
+
+    private static GLCapabilities getCapabilities() {
+        // TODO: switch to GL3/GL4 once we're getting there
+        // TODO: make this configurable
+        GLProfile profile = GLProfile.get(GLProfile.GL3);
+        GLCapabilities caps = new GLCapabilities(profile);
+        caps.setAlphaBits(8);
+        caps.setStencilBits(16);
+        // caps.setSampleBuffers(true);
+        // caps.setNumSamples(4);
+        return caps;
+    }
 }

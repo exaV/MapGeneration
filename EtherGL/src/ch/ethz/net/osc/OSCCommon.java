@@ -29,117 +29,117 @@ package ch.ethz.net.osc;
 import java.nio.ByteBuffer;
 
 public class OSCCommon {
-	public static final long TIMETAG_IMMEDIATE = 1;
+    public static final long TIMETAG_IMMEDIATE = 1;
 
-	static final String HEX = "0123456789ABCDEF";
+    static final String HEX = "0123456789ABCDEF";
 
-	static ExceptionHandler handler = new ExceptionHandler() {
-		@Override
-		public void exception(Throwable t, Object source) {
-			System.err.println("### " + source);
-			t.printStackTrace();
-		}
-	};
+    static ExceptionHandler handler = new ExceptionHandler() {
+        @Override
+        public void exception(Throwable t, Object source) {
+            System.err.println("### " + source);
+            t.printStackTrace();
+        }
+    };
 
-	public static String toHex(ByteBuffer buffer) {
-		StringBuilder result = new StringBuilder();
-		int pos = buffer.position();
-		buffer.position(0);
+    public static String toHex(ByteBuffer buffer) {
+        StringBuilder result = new StringBuilder();
+        int pos = buffer.position();
+        buffer.position(0);
 
-		for (int i = buffer.limit(); --i >= 0;) {
-			byte b = buffer.get();
-			result.append(HEX.charAt((b >> 4) & 0xF));
-			result.append(HEX.charAt(b & 0xF));
-			result.append(' ');
-		}
+        for (int i = buffer.limit(); --i >= 0; ) {
+            byte b = buffer.get();
+            result.append(HEX.charAt((b >> 4) & 0xF));
+            result.append(HEX.charAt(b & 0xF));
+            result.append(' ');
+        }
 
-		buffer.position(pos);
+        buffer.position(pos);
 
-		return result.toString();
-	}
+        return result.toString();
+    }
 
-	public static String toHex(byte[] buffer) {
-		StringBuilder result = new StringBuilder();
+    public static String toHex(byte[] buffer) {
+        StringBuilder result = new StringBuilder();
 
-		for (int i = 0; i < buffer.length; i++) {
-			result.append(HEX.charAt((buffer[i] >> 4) & 0xF));
-			result.append(HEX.charAt(buffer[i] & 0xF));
-			result.append(' ');
-		}
+        for (byte b : buffer) {
+            result.append(HEX.charAt((b >> 4) & 0xF));
+            result.append(HEX.charAt(b & 0xF));
+            result.append(' ');
+        }
 
-		return result.toString();
-	}
+        return result.toString();
+    }
 
-	public final static void setExceptionHandler(ExceptionHandler ehandler) {
-		handler = ehandler;
-	}
+    public static void setExceptionHandler(ExceptionHandler ehandler) {
+        handler = ehandler;
+    }
 
-	final static void handleException(Throwable t, Object source) {
-		handler.exception(t, source);
-	}
+    static void handleException(Throwable t, Object source) {
+        handler.exception(t, source);
+    }
 
-	final static void append(ByteBuffer buffer, String s) {
-		int len = s.length();
-		for (int i = 0; i < len; i++)
-			buffer.put((byte) s.charAt(i));
-		buffer.put((byte) 0);
-		align(buffer);
-	}
+    static void append(ByteBuffer buffer, String s) {
+        int len = s.length();
+        for (int i = 0; i < len; i++)
+            buffer.put((byte) s.charAt(i));
+        buffer.put((byte) 0);
+        align(buffer);
+    }
 
-	final static void append(ByteBuffer buffer, byte[] data) {
-		buffer.putInt(data.length);
-		buffer.put(data);
-		align(buffer);
-	}
+    static void append(ByteBuffer buffer, byte[] data) {
+        buffer.putInt(data.length);
+        buffer.put(data);
+        align(buffer);
+    }
 
-	final static void append(ByteBuffer buffer, Object o) {
-		if (o instanceof Integer)
-			buffer.putInt((Integer) o);
-		else if (o instanceof Float)
-			buffer.putFloat((Float) o);
-		else if (o instanceof Double)
-			buffer.putDouble((Double) o);
-		else if (o instanceof String)
-			append(buffer, (String) o);
-		else if (o instanceof byte[])
-			append(buffer, (byte[]) o);
-		else if (o instanceof Boolean) {
-			// Nothing to do. The value (true or false) is already sent in the
-			// type string
-		} else if (o == null) {
-			// Nothing to do. The type string alreday specifies a null
-		} else
-			throw new IllegalArgumentException("Unsupported OSC Type:" + o.getClass().getName());
-	}
+    static void append(ByteBuffer buffer, Object o) {
+        if (o instanceof Integer) {
+            buffer.putInt((Integer) o);
+        } else if (o instanceof Float) {
+            buffer.putFloat((Float) o);
+        } else if (o instanceof Double) {
+            buffer.putDouble((Double) o);
+        } else if (o instanceof String) {
+            append(buffer, (String) o);
+        } else if (o instanceof byte[]) {
+            append(buffer, (byte[]) o);
+        } else if (o instanceof Boolean) {
+            // Nothing to do. The value (true or false) is already sent in the
+            // type string
+        } else if (o == null) {
+            // Nothing to do. The type string alreday specifies a null
+        } else
+            throw new IllegalArgumentException("Unsupported OSC Type:" + o.getClass().getName());
+    }
 
-	final static void align(ByteBuffer buffer) {
-		buffer.position(((buffer.position() + 3) / 4) * 4);
-	}
+    static void align(ByteBuffer buffer) {
+        buffer.position(((buffer.position() + 3) / 4) * 4);
+    }
 
-	private static final String[] EMPTY_STR_A = new String[0];
-	private static final String EMPTY_STR = "";
+    private static final String[] EMPTY_STR_A = new String[0];
+    private static final String EMPTY_STR = "";
 
-	public static String[] split(String str, char splitchar) {
-		if (str == null)
-			return EMPTY_STR_A;
+    public static String[] split(String str, char splitchar) {
+        if (str == null)
+            return EMPTY_STR_A;
 
-		int len = str.length();
-		int count = 1;
-		for (int i = 0; i < len; i++)
-			if (str.charAt(i) == splitchar)
-				count++;
+        int len = str.length();
+        int count = 1;
+        for (int i = 0; i < len; i++)
+            if (str.charAt(i) == splitchar)
+                count++;
 
-		String[] result = new String[count];
+        String[] result = new String[count];
 
-		count = 0;
-		int start = 0;
-		for (int i = 0; i < len; i++)
-			if (str.charAt(i) == splitchar) {
-				result[count++] = start == i ? EMPTY_STR : str.substring(start, i);
-				start = i + 1;
-			}
-		result[count] = str.substring(start, len);
+        count = 0;
+        int start = 0;
+        for (int i = 0; i < len; i++)
+            if (str.charAt(i) == splitchar) {
+                result[count++] = start == i ? EMPTY_STR : str.substring(start, i);
+                start = i + 1;
+            }
+        result[count] = str.substring(start, len);
 
-		return result;
-	}
+        return result;
+    }
 }

@@ -45,231 +45,230 @@ import ch.ethz.ether.view.IView.ViewType;
 /**
  * Abstract scene class that implements some basic common functionality. Use as
  * base for common implementations.
- * 
+ *
  * @author radar
- * 
  */
 // TODO: we should probably move UI event handling to UI...
 public abstract class AbstractScene implements IScene {
-	private IModel model;
-	private final ArrayList<IView> views = new ArrayList<>();
-	private final IRenderer renderer;
-	private final UI ui = new UI(this);
-	
-	private final NavigationTool navigationTool = new NavigationTool(this);
+    private IModel model;
+    private final ArrayList<IView> views = new ArrayList<>();
+    private final IRenderer renderer;
+    private final UI ui = new UI(this);
 
-	private IView currentView = null;
-	private ITool activeTool = null;
-	
-	
-	protected AbstractScene(IRenderer renderer) {
-		this.renderer = renderer;
-	}
+    private final NavigationTool navigationTool = new NavigationTool(this);
 
-	@Override
-	public IModel getModel() {
-		return model;
-	}
+    private IView currentView = null;
+    private ITool activeTool = null;
 
-	@Override
-	public final void setModel(IModel model) {
-		this.model = model;
-	}
 
-	@Override
-	public final void addView(IView view) {
-		views.add(view);
-		if (currentView == null)
-			currentView = view;
-	}
+    protected AbstractScene(IRenderer renderer) {
+        this.renderer = renderer;
+    }
 
-	@Override
-	public final List<IView> getViews() {
-		return Collections.unmodifiableList(views);
-	}
-	
-	@Override
-	public final IView getCurrentView() {
-		return currentView;
-	}
-	
-	@Override
-	public final void enableViews(Collection<IView> views) {
-		if (views != null) {
-			for (IView view : this.views) {
-				view.setEnabled(views.contains(view));
-			}
-		} else {
-			for (IView view : this.views) {
-				view.setEnabled(true);
-			}
-		}
-	}
+    @Override
+    public IModel getModel() {
+        return model;
+    }
 
-	@Override
-	public final void repaintViews() {
-		for (IView view : views)
-			view.repaint();
-	}
+    @Override
+    public final void setModel(IModel model) {
+        this.model = model;
+    }
 
-	@Override
-	public final ITool getCurrentTool() {
-		return activeTool;
-	}
+    @Override
+    public final void addView(IView view) {
+        views.add(view);
+        if (currentView == null)
+            currentView = view;
+    }
 
-	@Override
-	public final void setCurrentTool(ITool tool) {
-		if (activeTool == tool)
-			return;
-		
-		if (activeTool != null)
-			activeTool.deactivate();
-		
-		activeTool = tool;
-		
-		if (activeTool != null) {
-			activeTool.activate();
-			activeTool.viewChanged(getCurrentView());
-		}
+    @Override
+    public final List<IView> getViews() {
+        return Collections.unmodifiableList(views);
+    }
 
-		repaintViews();
-	}
+    @Override
+    public final IView getCurrentView() {
+        return currentView;
+    }
 
-	@Override
-	public final NavigationTool getNavigationTool() {
-		return navigationTool;
-	}
-	
-	@Override
-	public final IRenderer getRenderer() {
-		return renderer;
-	}
-	
-	@Override
-	public final UI getUI() {
-		return ui;
-	}
+    @Override
+    public final void enableViews(Collection<IView> views) {
+        if (views != null) {
+            for (IView view : this.views) {
+                view.setEnabled(views.contains(view));
+            }
+        } else {
+            for (IView view : this.views) {
+                view.setEnabled(true);
+            }
+        }
+    }
 
-	// key listener
+    @Override
+    public final void repaintViews() {
+        for (IView view : views)
+            view.repaint();
+    }
 
-	@Override
-	public void keyPressed(KeyEvent e, IView view) {
-		setCurrentView(view);
+    @Override
+    public final ITool getCurrentTool() {
+        return activeTool;
+    }
 
-		// buttons have precedence over tools
-		for (Button button : ui.getButtons()) {
-			if (button.getKey() == e.getKeyCode()) {
-				button.fire(view);
-				view.getScene().repaintViews();
-				return;
-			}
-		}
+    @Override
+    public final void setCurrentTool(ITool tool) {
+        if (activeTool == tool)
+            return;
 
-		// always handle ESC (if not handled by button)
-		if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
-			System.exit(0);
+        if (activeTool != null)
+            activeTool.deactivate();
 
-		// finally, pass on to tool
-		activeTool.keyPressed(e, view);
-	}
+        activeTool = tool;
 
-	@Override
-	public void keyReleased(KeyEvent e, IView view) {
-	}
+        if (activeTool != null) {
+            activeTool.activate();
+            activeTool.viewChanged(getCurrentView());
+        }
 
-	@Override
-	public void keyTyped(KeyEvent e, IView view) {
-	}
+        repaintViews();
+    }
 
-	// mouse listener
+    @Override
+    public final NavigationTool getNavigationTool() {
+        return navigationTool;
+    }
 
-	@Override
-	public void mouseEntered(MouseEvent e, IView view) {
-	}
+    @Override
+    public final IRenderer getRenderer() {
+        return renderer;
+    }
 
-	@Override
-	public void mouseExited(MouseEvent e, IView view) {
-	}
+    @Override
+    public final UI getUI() {
+        return ui;
+    }
 
-	@Override
-	public void mousePressed(MouseEvent e, IView view) {
-		setCurrentView(view);
+    // key listener
 
-		// buttons have precedence over tools
-		if (view.getViewType() == ViewType.INTERACTIVE_VIEW) {
-			for (Button button : ui.getButtons()) {
-				if (button.hit(e.getPoint().x, e.getPoint().y, view)) {
-					button.fire(view);
-					view.getScene().repaintViews();
-					return;
-				}
-			}
-		}
+    @Override
+    public void keyPressed(KeyEvent e, IView view) {
+        setCurrentView(view);
 
-		// handle tools (with active navigation when modifier is pressed)
-		if (!isModifierDown(e))
-			activeTool.mousePressed(e, view);
-		else
-			navigationTool.mousePressed(e, view);
-	}
+        // buttons have precedence over tools
+        for (Button button : ui.getButtons()) {
+            if (button.getKey() == e.getKeyCode()) {
+                button.fire(view);
+                view.getScene().repaintViews();
+                return;
+            }
+        }
 
-	@Override
-	public void mouseReleased(MouseEvent e, IView view) {
-		if (!isModifierDown(e))
-			activeTool.mouseReleased(e, view);
-		else
-			navigationTool.mouseReleased(e, view);
-	}
+        // always handle ESC (if not handled by button)
+        if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
+            System.exit(0);
 
-	@Override
-	public void mouseClicked(MouseEvent e, IView view) {
-	}
+        // finally, pass on to tool
+        activeTool.keyPressed(e, view);
+    }
 
-	// mouse motion listener
+    @Override
+    public void keyReleased(KeyEvent e, IView view) {
+    }
 
-	@Override
-	public void mouseMoved(MouseEvent e, IView view) {
-		if (view.getViewType() == ViewType.INTERACTIVE_VIEW) {
-			Button button = null;
-			for (Button b : ui.getButtons()) {
-				if (b.hit(e.getPoint().x, e.getPoint().y, view)) {
-					button = b;
-					break;
-				}
-			}
-			String message = button != null ? button.getHelp() : null;
-			view.getScene().getUI().setMessage(message);
-		}
-		activeTool.mouseMoved(e, view);
-		navigationTool.mouseMoved(e, view);
-	}
+    @Override
+    public void keyTyped(KeyEvent e, IView view) {
+    }
 
-	@Override
-	public void mouseDragged(MouseEvent e, IView view) {
-		if (!isModifierDown(e))
-			activeTool.mouseDragged(e, view);
-		else
-			navigationTool.mouseDragged(e, view);
-	}
+    // mouse listener
 
-	// mouse wheel listener
+    @Override
+    public void mouseEntered(MouseEvent e, IView view) {
+    }
 
-	@Override
-	public void mouseWheelMoved(MouseWheelEvent e, IView view) {
-		navigationTool.mouseWheelMoved(e, view);
-	}
+    @Override
+    public void mouseExited(MouseEvent e, IView view) {
+    }
 
-	// private stuff
+    @Override
+    public void mousePressed(MouseEvent e, IView view) {
+        setCurrentView(view);
 
-	private boolean isModifierDown(MouseEvent e) {
-		return e.isShiftDown() || e.isControlDown() || e.isAltDown() || e.isMetaDown();
-	}
+        // buttons have precedence over tools
+        if (view.getViewType() == ViewType.INTERACTIVE_VIEW) {
+            for (Button button : ui.getButtons()) {
+                if (button.hit(e.getPoint().x, e.getPoint().y, view)) {
+                    button.fire(view);
+                    view.getScene().repaintViews();
+                    return;
+                }
+            }
+        }
 
-	private void setCurrentView(IView view) {
-		if (currentView != view) {
-			currentView = view;
-			getCurrentTool().viewChanged(currentView);
-			repaintViews();
-		}
-	}
+        // handle tools (with active navigation when modifier is pressed)
+        if (!isModifierDown(e))
+            activeTool.mousePressed(e, view);
+        else
+            navigationTool.mousePressed(e, view);
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e, IView view) {
+        if (!isModifierDown(e))
+            activeTool.mouseReleased(e, view);
+        else
+            navigationTool.mouseReleased(e, view);
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e, IView view) {
+    }
+
+    // mouse motion listener
+
+    @Override
+    public void mouseMoved(MouseEvent e, IView view) {
+        if (view.getViewType() == ViewType.INTERACTIVE_VIEW) {
+            Button button = null;
+            for (Button b : ui.getButtons()) {
+                if (b.hit(e.getPoint().x, e.getPoint().y, view)) {
+                    button = b;
+                    break;
+                }
+            }
+            String message = button != null ? button.getHelp() : null;
+            view.getScene().getUI().setMessage(message);
+        }
+        activeTool.mouseMoved(e, view);
+        navigationTool.mouseMoved(e, view);
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e, IView view) {
+        if (!isModifierDown(e))
+            activeTool.mouseDragged(e, view);
+        else
+            navigationTool.mouseDragged(e, view);
+    }
+
+    // mouse wheel listener
+
+    @Override
+    public void mouseWheelMoved(MouseWheelEvent e, IView view) {
+        navigationTool.mouseWheelMoved(e, view);
+    }
+
+    // private stuff
+
+    private boolean isModifierDown(MouseEvent e) {
+        return e.isShiftDown() || e.isControlDown() || e.isAltDown() || e.isMetaDown();
+    }
+
+    private void setCurrentView(IView view) {
+        if (currentView != view) {
+            currentView = view;
+            getCurrentTool().viewChanged(currentView);
+            repaintViews();
+        }
+    }
 }

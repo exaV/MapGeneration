@@ -41,209 +41,208 @@ import ch.ethz.ether.scene.IScene;
 /**
  * Abstract view class that implements some basic functionality. Use as base for
  * implementations.
- * 
+ *
  * @author radar
- * 
  */
 public abstract class AbstractView implements IView {
-	private final Frame frame;
-	private final IScene scene;
+    private final Frame frame;
+    private final IScene scene;
 
-	private final ViewType viewType;
+    private final ViewType viewType;
 
-	private final Camera camera = new Camera(this);
+    private final Camera camera = new Camera(this);
 
-	private final int[] viewport = new int[4];
-	
-	private boolean enabled = true;
+    private final int[] viewport = new int[4];
 
-	protected AbstractView(IScene scene, int x, int y, int w, int h, ViewType viewType, String title) {
-		this.frame = new Frame(w, h, title);
-		this.scene = scene;
-		this.viewType = viewType;
-		frame.setView(this);
-		Point p = frame.getJFrame().getLocation();
-		if (x != -1)
-			p.x = x;
-		if (y != -1)
-			p.y = y;
-		frame.getJFrame().setLocation(p);
-	}
+    private boolean enabled = true;
 
-	@Override
-	public final IScene getScene() {
-		return scene;
-	}
+    protected AbstractView(IScene scene, int x, int y, int w, int h, ViewType viewType, String title) {
+        this.frame = new Frame(w, h, title);
+        this.scene = scene;
+        this.viewType = viewType;
+        frame.setView(this);
+        Point p = frame.getJFrame().getLocation();
+        if (x != -1)
+            p.x = x;
+        if (y != -1)
+            p.y = y;
+        frame.getJFrame().setLocation(p);
+    }
 
-	@Override
-	public final Camera getCamera() {
-		return camera;
-	}
+    @Override
+    public final IScene getScene() {
+        return scene;
+    }
 
-	@Override
-	public final int getWidth() {
-		return viewport[2];
-	}
+    @Override
+    public final Camera getCamera() {
+        return camera;
+    }
 
-	@Override
-	public final int getHeight() {
-		return viewport[3];
-	}
+    @Override
+    public final int getWidth() {
+        return viewport[2];
+    }
 
-	@Override
-	public final int[] getViewport() {
-		return viewport;
-	}
+    @Override
+    public final int getHeight() {
+        return viewport[3];
+    }
 
-	@Override
-	public final ViewType getViewType() {
-		return viewType;
-	}
+    @Override
+    public final int[] getViewport() {
+        return viewport;
+    }
 
-	@Override
-	public final Frame getFrame() {
-		return frame;
-	}
+    @Override
+    public final ViewType getViewType() {
+        return viewType;
+    }
 
-	@Override
-	public final boolean isEnabled() {
-		return enabled;
-	}
-	
-	@Override
-	public final void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
+    @Override
+    public final Frame getFrame() {
+        return frame;
+    }
 
-	@Override
-	public final boolean isCurrent() {
-		return getScene().getCurrentView() == this;
-	}
-	
-	@Override
-	public final void update() {
-		getScene().getCurrentTool().viewChanged(this);
-	}
+    @Override
+    public final boolean isEnabled() {
+        return enabled;
+    }
 
-	@Override
-	public final void repaint() {
-		frame.repaint();
-	}
+    @Override
+    public final void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
 
-	
-	// GLEventListener implementation
+    @Override
+    public final boolean isCurrent() {
+        return getScene().getCurrentView() == this;
+    }
 
-	@Override
-	public final void init(GLAutoDrawable drawable) {
-		GL gl = drawable.getGL();
-		
-		gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-		gl.glClearDepth(1.0f);
+    @Override
+    public final void update() {
+        getScene().getCurrentTool().viewChanged(this);
+    }
 
-		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-	}
+    @Override
+    public final void repaint() {
+        frame.repaint();
+    }
 
-	@Override
-	public final void display(GLAutoDrawable drawable) {
-		GL gl = drawable.getGL();
-		
-		gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT | GL.GL_STENCIL_BUFFER_BIT);
 
-		if (!isEnabled())
-			return;
+    // GLEventListener implementation
 
-		// fetch viewport
-		gl.glGetIntegerv(GL.GL_VIEWPORT, viewport, 0);
-		
-		// repaint UI surface if necessary
-		getScene().getUI().update();
-		
-		// render everything
-		try {
-			getScene().getRenderer().render(gl.getGL3(), this);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+    @Override
+    public final void init(GLAutoDrawable drawable) {
+        GL gl = drawable.getGL();
 
-	@Override
-	public final void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
-		GL gl = drawable.getGL();
+        gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        gl.glClearDepth(1.0f);
 
-		if (height == 0)
-			height = 1; // prevent divide by zero
-		viewport[2] = width;
-		viewport[3] = height;
-		gl.glViewport(0, 0, width, height);
-		camera.update();
-	}
+        gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+    }
 
-	@Override
-	public final void dispose(GLAutoDrawable drawable) {
-		// TODO
-	}
+    @Override
+    public final void display(GLAutoDrawable drawable) {
+        GL gl = drawable.getGL();
 
-	// key listener
+        gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT | GL.GL_STENCIL_BUFFER_BIT);
 
-	@Override
-	public void keyPressed(KeyEvent e) {
-		scene.keyPressed(e, this);
-	}
+        if (!isEnabled())
+            return;
 
-	@Override
-	public void keyReleased(KeyEvent e) {
-		scene.keyReleased(e, this);
-	}
+        // fetch viewport
+        gl.glGetIntegerv(GL.GL_VIEWPORT, viewport, 0);
 
-	@Override
-	public void keyTyped(KeyEvent e) {
-		scene.keyTyped(e, this);
-	}
+        // repaint UI surface if necessary
+        getScene().getUI().update();
 
-	// mouse listener
+        // render everything
+        try {
+            getScene().getRenderer().render(gl.getGL3(), this);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-	@Override
-	public void mouseEntered(MouseEvent e) {
-		scene.mouseEntered(e, this);
-	}
+    @Override
+    public final void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
+        GL gl = drawable.getGL();
 
-	@Override
-	public void mouseExited(MouseEvent e) {
-		scene.mouseExited(e, this);
-	}
+        if (height == 0)
+            height = 1; // prevent divide by zero
+        viewport[2] = width;
+        viewport[3] = height;
+        gl.glViewport(0, 0, width, height);
+        camera.update();
+    }
 
-	@Override
-	public void mousePressed(MouseEvent e) {
-		frame.requestFocus();
-		scene.mousePressed(e, this);
-	}
+    @Override
+    public final void dispose(GLAutoDrawable drawable) {
+        // TODO
+    }
 
-	@Override
-	public void mouseReleased(MouseEvent e) {
-		scene.mouseReleased(e, this);
-	}
+    // key listener
 
-	@Override
-	public void mouseClicked(MouseEvent e) {
-		scene.mouseClicked(e, this);
-	}
+    @Override
+    public void keyPressed(KeyEvent e) {
+        scene.keyPressed(e, this);
+    }
 
-	// mouse motion listener
+    @Override
+    public void keyReleased(KeyEvent e) {
+        scene.keyReleased(e, this);
+    }
 
-	@Override
-	public void mouseMoved(MouseEvent e) {
-		scene.mouseMoved(e, this);
-	}
+    @Override
+    public void keyTyped(KeyEvent e) {
+        scene.keyTyped(e, this);
+    }
 
-	@Override
-	public void mouseDragged(MouseEvent e) {
-		scene.mouseDragged(e, this);
-	}
+    // mouse listener
 
-	// mouse wheel listener
+    @Override
+    public void mouseEntered(MouseEvent e) {
+        scene.mouseEntered(e, this);
+    }
 
-	@Override
-	public void mouseWheelMoved(MouseWheelEvent e) {
-		scene.mouseWheelMoved(e, this);
-	}
+    @Override
+    public void mouseExited(MouseEvent e) {
+        scene.mouseExited(e, this);
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        frame.requestFocus();
+        scene.mousePressed(e, this);
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        scene.mouseReleased(e, this);
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        scene.mouseClicked(e, this);
+    }
+
+    // mouse motion listener
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+        scene.mouseMoved(e, this);
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
+        scene.mouseDragged(e, this);
+    }
+
+    // mouse wheel listener
+
+    @Override
+    public void mouseWheelMoved(MouseWheelEvent e) {
+        scene.mouseWheelMoved(e, this);
+    }
 }

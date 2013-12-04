@@ -15,114 +15,114 @@ import ch.ethz.ether.render.util.FloatList;
 import ch.ethz.ether.view.IView;
 
 public class RenderEntryUnshadedVCT extends AbstractRenderEntry {
-	VertexAttribute vertices = new VertexAttribute();
-	VertexAttribute colors = new VertexAttribute();
-	VertexAttribute texCoords = new VertexAttribute();
-	Texture texture = new Texture();
+    VertexAttribute vertices = new VertexAttribute();
+    VertexAttribute colors = new VertexAttribute();
+    VertexAttribute texCoords = new VertexAttribute();
+    Texture texture = new Texture();
 
-	public RenderEntryUnshadedVCT(Program program, IRenderGroup group) {
-		super(program, group);
-	}
-	
-	@Override
-	public void dispose(GL3 gl) {
-		if (vertices != null)
-			vertices.dispose(gl);
-		if (colors != null)
-			colors.dispose(gl);
-		if (texCoords != null)
-			texCoords.dispose(gl);
+    public RenderEntryUnshadedVCT(Program program, IRenderGroup group) {
+        super(program, group);
+    }
 
-		vertices = colors = texCoords = null;
-		
-		if (texture != null)
-			texture.dispose(gl);
-		texture = null;
-		super.dispose(gl);
-	}
+    @Override
+    public void dispose(GL3 gl) {
+        if (vertices != null)
+            vertices.dispose(gl);
+        if (colors != null)
+            colors.dispose(gl);
+        if (texCoords != null)
+            texCoords.dispose(gl);
 
-	@Override
-	public void update(GL3 gl, IRenderer renderer, IView view, FloatList data) {
-		IRenderGroup group = getGroup();
-		ITextureData texData = group.getTextureData();
-		boolean needsTextureUpdate = group.needsTextureUpdate();
+        vertices = colors = texCoords = null;
 
-		if (!group.needsUpdate() && !needsTextureUpdate)
-			return;
-		
-		data.clear();
-		group.getVertices(data);
-		vertices.load(gl, data.buffer());
-		if (vertices.isEmpty())
-			return;
+        if (texture != null)
+            texture.dispose(gl);
+        texture = null;
+        super.dispose(gl);
+    }
 
-		data.clear();
-		group.getColors(data);
-		colors.load(gl, data.buffer());
+    @Override
+    public void update(GL3 gl, IRenderer renderer, IView view, FloatList data) {
+        IRenderGroup group = getGroup();
+        ITextureData texData = group.getTextureData();
+        boolean needsTextureUpdate = group.needsTextureUpdate();
 
-		data.clear();
-		group.getTexCoords(data);
-		texCoords.load(gl, data.buffer());
+        if (!group.needsUpdate() && !needsTextureUpdate)
+            return;
 
-		if (texData != null && needsTextureUpdate ) {
-			texture.load(gl, texData.getWidth(), texData.getHeight(), texData.getBuffer(), texData.getFormat());
-		}
-	}
+        data.clear();
+        group.getVertices(data);
+        vertices.load(gl, data.buffer());
+        if (vertices.isEmpty())
+            return;
 
-	@Override
-	public void render(GL3 gl, IRenderer renderer, IView view, float[] projMatrix, float[] viewMatrix) {
-		if (vertices.isEmpty())
-			return;
-		
-		Program program = getProgram();
-		IRenderGroup group = getGroup();
-		
-		program.enable(gl);
+        data.clear();
+        group.getColors(data);
+        colors.load(gl, data.buffer());
 
-		program.setUniformMat4(gl, "projMatrix", projMatrix);
-		program.setUniformMat4(gl, "viewMatrix", viewMatrix);
+        data.clear();
+        group.getTexCoords(data);
+        texCoords.load(gl, data.buffer());
 
-		int verticesIndex = program.getAttributeLocation(gl, "vertexPosition");
-		int colorsIndex = program.getAttributeLocation(gl, "vertexColor");
-		int texCoordsIndex = program.getAttributeLocation(gl, "vertexTexCoord");
+        if (texData != null && needsTextureUpdate) {
+            texture.load(gl, texData.getWidth(), texData.getHeight(), texData.getBuffer(), texData.getFormat());
+        }
+    }
 
-		vertices.enable(gl, 3, verticesIndex);
-		
-		if (!colors.isEmpty()) {
-			program.setUniform(gl, "hasColor", true);
-			colors.enable(gl, 4, colorsIndex);
-		} else {
-			program.setUniform(gl, "hasColor", false);
-			program.setUniformVec4(gl, "color", group.getColor());
-			colors.disable(gl, colorsIndex);
-		}
-		
-		ITextureData texData = group.getTextureData();
-		if (!texCoords.isEmpty() && texData != null) {
-			texture.enable(gl);
-			program.setUniform(gl, "hasTexture", true);
-			program.setUniformSampler(gl, "texture", 0);
-			texCoords.enable(gl, 2, texCoordsIndex);
-		} else {
-			texture.disable(gl);
-			program.setUniform(gl, "hasTexture", false);
-			program.setUniformSampler(gl, "texture", 0);
-			texCoords.disable(gl, texCoordsIndex);
-		}
-		
-		if (group.getType() == Type.LINES) {
-			gl.glLineWidth(group.getLineWidth());
-			gl.glDrawArrays(GL.GL_LINES, 0, vertices.size() / 3);
-		} else {
-			gl.glDrawArrays(GL.GL_TRIANGLES, 0, vertices.size() / 3);
-		}
-		
-		vertices.disable(gl, verticesIndex);		
-		colors.disable(gl, colorsIndex);
-		texCoords.disable(gl, texCoordsIndex);
+    @Override
+    public void render(GL3 gl, IRenderer renderer, IView view, float[] projMatrix, float[] viewMatrix) {
+        if (vertices.isEmpty())
+            return;
 
-		texture.disable(gl);
+        Program program = getProgram();
+        IRenderGroup group = getGroup();
 
-		program.disable(gl);
-	}
+        program.enable(gl);
+
+        program.setUniformMat4(gl, "projMatrix", projMatrix);
+        program.setUniformMat4(gl, "viewMatrix", viewMatrix);
+
+        int verticesIndex = program.getAttributeLocation(gl, "vertexPosition");
+        int colorsIndex = program.getAttributeLocation(gl, "vertexColor");
+        int texCoordsIndex = program.getAttributeLocation(gl, "vertexTexCoord");
+
+        vertices.enable(gl, 3, verticesIndex);
+
+        if (!colors.isEmpty()) {
+            program.setUniform(gl, "hasColor", true);
+            colors.enable(gl, 4, colorsIndex);
+        } else {
+            program.setUniform(gl, "hasColor", false);
+            program.setUniformVec4(gl, "color", group.getColor());
+            colors.disable(gl, colorsIndex);
+        }
+
+        ITextureData texData = group.getTextureData();
+        if (!texCoords.isEmpty() && texData != null) {
+            texture.enable(gl);
+            program.setUniform(gl, "hasTexture", true);
+            program.setUniformSampler(gl, "texture", 0);
+            texCoords.enable(gl, 2, texCoordsIndex);
+        } else {
+            texture.disable(gl);
+            program.setUniform(gl, "hasTexture", false);
+            program.setUniformSampler(gl, "texture", 0);
+            texCoords.disable(gl, texCoordsIndex);
+        }
+
+        if (group.getType() == Type.LINES) {
+            gl.glLineWidth(group.getLineWidth());
+            gl.glDrawArrays(GL.GL_LINES, 0, vertices.size() / 3);
+        } else {
+            gl.glDrawArrays(GL.GL_TRIANGLES, 0, vertices.size() / 3);
+        }
+
+        vertices.disable(gl, verticesIndex);
+        colors.disable(gl, colorsIndex);
+        texCoords.disable(gl, texCoordsIndex);
+
+        texture.disable(gl);
+
+        program.disable(gl);
+    }
 }

@@ -34,65 +34,63 @@ import java.awt.event.MouseWheelEvent;
 import ch.ethz.ether.view.IView;
 
 public abstract class AbstractTool implements ITool {
-	public static final int SNAP_SIZE = 4;
+    public static final int SNAP_SIZE = 4;
 
-	private IScene scene;
+    private IScene scene;
 
-	protected AbstractTool(IScene scene) {
-		this.scene = scene;
-	}
+    protected AbstractTool(IScene scene) {
+        this.scene = scene;
+    }
 
-	protected final IScene getScene() {
-		return scene;
-	}
+    protected final IScene getScene() {
+        return scene;
+    }
 
-	@Override
-	public void activate() {
-	}
+    @Override
+    public void activate() {
+    }
 
-	@Override
-	public void deactivate() {
-	}
+    @Override
+    public void deactivate() {
+    }
 
-	@Override
-	public void viewChanged(IView view) {
-	}
+    @Override
+    public void viewChanged(IView view) {
+    }
 
-	// key listener
+    // key listener
 
-	@Override
-	public void keyPressed(KeyEvent e, IView view) {
-	}
+    @Override
+    public void keyPressed(KeyEvent e, IView view) {
+    }
 
-	// mouse listener
+    // mouse listener
 
-	@Override
-	public void mousePressed(MouseEvent e, IView view) {
-	}
+    @Override
+    public void mousePressed(MouseEvent e, IView view) {
+    }
 
-	@Override
-	public void mouseReleased(MouseEvent e, IView view) {
-	}
+    @Override
+    public void mouseReleased(MouseEvent e, IView view) {
+    }
 
-	// mouse motion listener
+    // mouse motion listener
 
-	@Override
-	public void mouseMoved(MouseEvent e, IView view) {
-	}
+    @Override
+    public void mouseMoved(MouseEvent e, IView view) {
+    }
 
-	@Override
-	public void mouseDragged(MouseEvent e, IView view) {
-	}
+    @Override
+    public void mouseDragged(MouseEvent e, IView view) {
+    }
 
-	// mouse wheel listener
+    // mouse wheel listener
 
-	@Override
-	public void mouseWheelMoved(MouseWheelEvent e, IView view) {
-	}
+    @Override
+    public void mouseWheelMoved(MouseWheelEvent e, IView view) {
+    }
 
-	public static final boolean snap2D(int mx, int my, int x, int y) {
-		if ((mx >= x - SNAP_SIZE) && (mx <= x + SNAP_SIZE) && (my >= y - SNAP_SIZE) && (my < y + SNAP_SIZE))
-			return true;
-		return false;
-	}
+    public static boolean snap2D(int mx, int my, int x, int y) {
+        return (mx >= x - SNAP_SIZE) && (mx <= x + SNAP_SIZE) && (my >= y - SNAP_SIZE) && (my < y + SNAP_SIZE);
+    }
 }

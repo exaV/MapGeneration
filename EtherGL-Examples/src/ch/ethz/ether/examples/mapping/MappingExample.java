@@ -33,44 +33,42 @@ import ch.ethz.ether.model.IModel;
 import ch.ethz.ether.view.IView.ViewType;
 
 public final class MappingExample {
-	private MappingScene scene;
+    public static void main(String[] args) {
+        // Make sure everything runs on GUI thread...
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new MappingExample();
+            }
+        });
+    }
 
-	public static void main(String[] args) {
-		// Make sure everything runs on GUI thread...
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				new MappingExample();
-			}
-		});
-	}
+    /*
+     * Creates a sample scene with 1 control view and 4 projector views, each
+     * with 90 degrees rotation around the scene. Uses the sample calibration
+     * model with a calibration rig of 0.5 units (~meters) edge lenght, and an
+     * additional square 4 points at 0.8 units.
+     */
+    public MappingExample() {
+        final MappingScene scene = new MappingScene();
 
-	/*
-	 * Creates a sample scene with 1 control view and 4 projector views, each
-	 * with 90 degrees rotation around the scene. Uses the sample calibration
-	 * model with a calibration rig of 0.5 units (~meters) edge lenght, and an
-	 * additional square 4 points at 0.8 units.
-	 */
-	public MappingExample() {
-		scene = new MappingScene();
-		
-		IModel model = new MappingTriangleModel(scene);
+        IModel model = new MappingTriangleModel(scene);
 
-		scene.setModel(model);
+        scene.setModel(model);
 
-		scene.addView(new MappingView(scene, 0, 10, 512, 512, ViewType.INTERACTIVE_VIEW, "View 0", 0.0f));
-		scene.addView(new MappingView(scene, 530, 0, 400, 400, ViewType.MAPPED_VIEW, "View 1", 0.0f));
-		//scene.addView(new MappingView(scene, 940, 0, 400, 400, ViewType.MAPPED_VIEW, "View 2", 90.0f));
-		//scene.addView(new MappingView(scene, 530, 410, 400, 400, ViewType.MAPPED_VIEW, "View 3", 180.0f));
-		//scene.addView(new MappingView(scene, 940, 410, 400, 400, ViewType.MAPPED_VIEW, "View 4", 270.0f));
+        scene.addView(new MappingView(scene, 0, 10, 512, 512, ViewType.INTERACTIVE_VIEW, "View 0", 0.0f));
+        scene.addView(new MappingView(scene, 530, 0, 400, 400, ViewType.MAPPED_VIEW, "View 1", 0.0f));
+        //scene.addView(new MappingView(scene, 940, 0, 400, 400, ViewType.MAPPED_VIEW, "View 2", 90.0f));
+        //scene.addView(new MappingView(scene, 530, 410, 400, 400, ViewType.MAPPED_VIEW, "View 3", 180.0f));
+        //scene.addView(new MappingView(scene, 940, 410, 400, 400, ViewType.MAPPED_VIEW, "View 4", 270.0f));
 
-		//try {
-		//	new TUIO(scene);
-		//} catch (Exception e) {
-		//	e.printStackTrace();
-		//}
-		
-		// XXX geometry server currently disabled
-		// new GeometryServer(scene);
-	}
+        //try {
+        //	new TUIO(scene);
+        //} catch (Exception e) {
+        //	e.printStackTrace();
+        //}
+
+        // XXX geometry server currently disabled
+        // new GeometryServer(scene);
+    }
 }

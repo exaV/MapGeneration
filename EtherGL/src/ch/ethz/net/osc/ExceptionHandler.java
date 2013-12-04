@@ -27,5 +27,5 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package ch.ethz.net.osc;
 
 public interface ExceptionHandler {
-	public void exception(Throwable t, Object source);
+    public void exception(Throwable t, Object source);
 }

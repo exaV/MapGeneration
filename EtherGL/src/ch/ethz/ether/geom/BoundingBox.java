@@ -33,97 +33,121 @@ import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
 /**
  * Axis aligned bounding box.
- * 
+ *
  * @author radar
- * 
  */
 public final class BoundingBox {
-	boolean valid;
-	float minX;
-	float maxX;
-	float minY;
-	float maxY;
+    boolean valid;
+    float minX;
+    float maxX;
+    float minY;
+    float maxY;
 
-	public BoundingBox() {
-		reset();
-	}
+    public BoundingBox() {
+        reset();
+    }
 
-	public void reset() {
-		valid = false;
-		minX = Float.POSITIVE_INFINITY;
-		maxX = Float.NEGATIVE_INFINITY;
-		minY = Float.POSITIVE_INFINITY;
-		maxY = Float.NEGATIVE_INFINITY;
-	}
+    public void reset() {
+        valid = false;
+        minX = Float.POSITIVE_INFINITY;
+        maxX = Float.NEGATIVE_INFINITY;
+        minY = Float.POSITIVE_INFINITY;
+        maxY = Float.NEGATIVE_INFINITY;
+    }
 
-	public boolean isValid() {
-		return valid;
-	}
+    public boolean isValid() {
+        return valid;
+    }
 
-	public float getMinX() {
-		return minX;
-	}
+    public Vector2D getMin() {
+        return new Vector2D(minX, minY);
+    }
 
-	public float getMaxX() {
-		return maxX;
-	}
+    public Vector2D getMax() {
+        return new Vector2D(maxX, maxY);
+    }
 
-	public float getMinY() {
-		return minY;
-	}
+    public Vector2D getCenter() {
+        return new Vector2D(getCenterX(), getCenterY());
+    }
 
-	public float getMaxY() {
-		return maxY;
-	}
+    public Vector2D getExtent() {
+        return new Vector2D(getExtentX(), getExtentY());
+    }
 
-	public float getExtentX() {
-		return maxX - minX;
-	}
+    public float getMinX() {
+        return minX;
+    }
 
-	public float getExtentY() {
-		return maxY - minY;
-	}
+    public float getMinY() {
+        return minY;
+    }
 
-	public void add(float x, float y) {
-		minX = Math.min(minX, x);
-		maxX = Math.max(maxX, x);
-		minY = Math.min(minY, y);
-		maxY = Math.max(maxY, y);
-		valid = true;
-	}
 
-	public void add(double x, double y) {
-		add((float) x, (float) y);
-	}
+    public float getMaxX() {
+        return maxX;
+    }
 
-	public void add(Vector2D vertex) {
-		add(vertex.getX(), vertex.getY());
-	}
+    public float getMaxY() {
+        return maxY;
+    }
 
-	public void add(Collection<Vector2D> vertices) {
-		for (Vector2D point : vertices)
-			add(point);
-	}
+    public float getCenterX() {
+        return minX + getExtentX() / 2;
+    }
 
-	public void add(float[] vertices) {
-		for (int i = 0; i < vertices.length; i += 2) {
-			add(vertices[i], vertices[i + 1]);
-		}
-	}
+    public float getCenterY() {
+        return minY + getExtentY() / 2;
+    }
 
-	public void add(double[] vertices) {
-		for (int i = 0; i < vertices.length; i += 2) {
-			add(vertices[i], vertices[i + 1]);
-		}
-	}
+    public float getExtentX() {
+        return maxX - minX;
+    }
 
-	public void add(BoundingBox b) {
-		add(b.minX, b.minY);
-		add(b.maxX, b.maxY);
-	}
+    public float getExtentY() {
+        return maxY - minY;
+    }
 
-	@Override
-	public String toString() {
-		return valid ? "[" + minX + "," + maxX + "][" + minY + "," + maxY + "]" : "invalid";
-	}
+    public void add(float x, float y) {
+        minX = Math.min(minX, x);
+        maxX = Math.max(maxX, x);
+        minY = Math.min(minY, y);
+        maxY = Math.max(maxY, y);
+        valid = true;
+    }
+
+    public void add(double x, double y) {
+        add((float) x, (float) y);
+    }
+
+    public void add(Vector2D vertex) {
+        add(vertex.getX(), vertex.getY());
+    }
+
+    public void add(Collection<Vector2D> vertices) {
+        for (Vector2D point : vertices)
+            add(point);
+    }
+
+    public void add(float[] vertices) {
+        for (int i = 0; i < vertices.length; i += 2) {
+            add(vertices[i], vertices[i + 1]);
+        }
+    }
+
+    public void add(double[] vertices) {
+        for (int i = 0; i < vertices.length; i += 2) {
+            add(vertices[i], vertices[i + 1]);
+        }
+    }
+
+    public void add(BoundingBox b) {
+        add(b.minX, b.minY);
+        add(b.maxX, b.maxY);
+    }
+
+    @Override
+    public String toString() {
+        return valid ? "[" + minX + "," + maxX + "][" + minY + "," + maxY + "]" : "invalid";
+    }
 }

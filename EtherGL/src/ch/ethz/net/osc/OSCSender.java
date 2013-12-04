@@ -31,5 +31,5 @@ import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 
 public interface OSCSender {
-	public void send(SocketAddress destination, ByteBuffer packet) throws IOException;
+    public void send(SocketAddress destination, ByteBuffer packet) throws IOException;
 }

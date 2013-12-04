@@ -40,64 +40,64 @@ import ch.ethz.ether.view.IView;
 
 // XXX light position currently not implemented
 public class MappingScene extends AbstractScene {
-	private float[] lightPosition = { 10.0f, 6.0f, 8.0f };
+    private float[] lightPosition = {10.0f, 6.0f, 8.0f};
 
-	private final ITool defaultTool = new AbstractTool(this) {
-		// @formatter:off
-		private final String[] help = {
-			"Simple Mapping Example (Without Content)",
-			"",
-			"[1] Default Tool / View",
-			"[2] Mapping Calibration",
-			"[3] Projector Adjustment",
-			"",
-			"Use Mouse Buttons + Shift or Mouse Wheel to Navigate"
-		};
-		// @formatter:on
-	};
-	
-	private final CalibrationTool calibrationTool = new CalibrationTool(this, new BoxCalibrationModel(0.5f, 0.5f, 0.5f, 0.8f, 0.8f));
-	private final FillTool fillTool = new FillTool(this);
-	
-	public MappingScene() {
-		super(new ForwardRenderer());
-		setLightPosition(lightPosition);
-		setCurrentTool(defaultTool);
-	}
+    private final ITool defaultTool = new AbstractTool(this) {
+        // @formatter:off
+        private final String[] help = {
+                "Simple Mapping Example (Without Content)",
+                "",
+                "[1] Default Tool / View",
+                "[2] Mapping Calibration",
+                "[3] Projector Adjustment",
+                "",
+                "Use Mouse Buttons + Shift or Mouse Wheel to Navigate"
+        };
+        // @formatter:on
+    };
 
-	public void modelChanged() {
-		repaintViews();
-	}
+    private final CalibrationTool calibrationTool = new CalibrationTool(this, new BoxCalibrationModel(0.5f, 0.5f, 0.5f, 0.8f, 0.8f));
+    private final FillTool fillTool = new FillTool(this);
 
-	@Override
-	public void keyPressed(KeyEvent e, IView view) {
-		switch (e.getKeyCode()) {
-		case KeyEvent.VK_0:
-		case KeyEvent.VK_1:
-			setCurrentTool(defaultTool);
-			break;
-		case KeyEvent.VK_2:
-			setCurrentTool(calibrationTool);
-			break;
-		case KeyEvent.VK_3:
-			setCurrentTool(fillTool);
-			break;
-		default:
-			super.keyPressed(e, view);
-		}
-		repaintViews();
-	}
+    public MappingScene() {
+        super(new ForwardRenderer());
+        setLightPosition(lightPosition);
+        setCurrentTool(defaultTool);
+    }
 
-	public float[] getLightPosition() {
-		return lightPosition.clone();
-	}
+    public void modelChanged() {
+        repaintViews();
+    }
 
-	public void setLightPosition(float[] position) {
-		lightPosition = position;
-	}
-	
-	@Override
-	public MappingTriangleModel getModel() {
-		return (MappingTriangleModel)super.getModel();
-	}
+    @Override
+    public void keyPressed(KeyEvent e, IView view) {
+        switch (e.getKeyCode()) {
+            case KeyEvent.VK_0:
+            case KeyEvent.VK_1:
+                setCurrentTool(defaultTool);
+                break;
+            case KeyEvent.VK_2:
+                setCurrentTool(calibrationTool);
+                break;
+            case KeyEvent.VK_3:
+                setCurrentTool(fillTool);
+                break;
+            default:
+                super.keyPressed(e, view);
+        }
+        repaintViews();
+    }
+
+    public float[] getLightPosition() {
+        return lightPosition.clone();
+    }
+
+    public void setLightPosition(float[] position) {
+        lightPosition = position;
+    }
+
+    @Override
+    public MappingTriangleModel getModel() {
+        return (MappingTriangleModel) super.getModel();
+    }
 }

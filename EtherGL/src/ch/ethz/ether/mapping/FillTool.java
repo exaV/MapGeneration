@@ -35,50 +35,50 @@ import ch.ethz.ether.render.IRenderGroup.Pass;
 import ch.ethz.ether.render.IRenderGroup.Source;
 import ch.ethz.ether.render.IRenderGroup.Type;
 import ch.ethz.ether.render.IRenderer;
-import ch.ethz.ether.render.util.IAddOnlyFloatList;
 import ch.ethz.ether.render.util.Primitives;
 import ch.ethz.ether.scene.AbstractTool;
 import ch.ethz.ether.scene.IScene;
 import ch.ethz.ether.view.IView;
+import ch.ethz.util.IAddOnlyFloatList;
 
 public final class FillTool extends AbstractTool {
-	// @formatter:off
-	private static final String[] FILL_HELP = {
-		"Fill Tool for Projector Adjustment",
-		"",
-		"[0] Return"
-	};
-	// @formatter:on
-	
-	private IRenderGroup quads = new AbstractRenderGroup(Source.TOOL, Type.TRIANGLES, Pass.DEVICE_SPACE_OVERLAY) {
-		@Override
-		public void getVertices(IAddOnlyFloatList dst) {
-			Primitives.addRectangle(dst, -1.0f, -1.0f, -0.1f, -0.1f);
-			Primitives.addRectangle(dst, 0.1f, -1.0f, 1.0f, -0.1f);
-			Primitives.addRectangle(dst, 0.1f, 0.1f, 1.0f, 1.0f);
-			Primitives.addRectangle(dst, -1.0f, 0.1f, -0.1f, 1.0f);
-		};
-	};
-	
-	public FillTool(IScene scene) {
-		super(scene);
-	}
-	
-	@Override
-	public void activate() {
-		IRenderer.GROUPS.add(quads);
-		IRenderer.GROUPS.setSource(Source.TOOL);
-	}
-	
-	@Override
-	public void deactivate() {
-		IRenderer.GROUPS.remove(quads);
-		IRenderer.GROUPS.setSource(null);
-		getScene().enableViews(null);
-	}	
-	
-	@Override
-	public void viewChanged(IView view) {
-		getScene().enableViews(Collections.singleton(view));
-	}
+    // @formatter:off
+    private static final String[] FILL_HELP = {
+            "Fill Tool for Projector Adjustment",
+            "",
+            "[0] Return"
+    };
+    // @formatter:on
+
+    private IRenderGroup quads = new AbstractRenderGroup(Source.TOOL, Type.TRIANGLES, Pass.DEVICE_SPACE_OVERLAY) {
+        @Override
+        public void getVertices(IAddOnlyFloatList dst) {
+            Primitives.addRectangle(dst, -1.0f, -1.0f, -0.1f, -0.1f);
+            Primitives.addRectangle(dst, 0.1f, -1.0f, 1.0f, -0.1f);
+            Primitives.addRectangle(dst, 0.1f, 0.1f, 1.0f, 1.0f);
+            Primitives.addRectangle(dst, -1.0f, 0.1f, -0.1f, 1.0f);
+        }
+    };
+
+    public FillTool(IScene scene) {
+        super(scene);
+    }
+
+    @Override
+    public void activate() {
+        IRenderer.GROUPS.add(quads);
+        IRenderer.GROUPS.setSource(Source.TOOL);
+    }
+
+    @Override
+    public void deactivate() {
+        IRenderer.GROUPS.remove(quads);
+        IRenderer.GROUPS.setSource(null);
+        getScene().enableViews(null);
+    }
+
+    @Override
+    public void viewChanged(IView view) {
+        getScene().enableViews(Collections.singleton(view));
+    }
 }

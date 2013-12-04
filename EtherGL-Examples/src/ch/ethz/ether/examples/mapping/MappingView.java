@@ -30,30 +30,20 @@ package ch.ethz.ether.examples.mapping;
 import ch.ethz.ether.view.AbstractView;
 
 public class MappingView extends AbstractView {
-	/**
-	 * Create a MPM control or projection view.
-	 * 
-	 * @param scene
-	 *            scene to add the view to
-	 * @param x
-	 *            view x coordinate
-	 * @param y
-	 *            view y coordinate
-	 * @param w
-	 *            view width
-	 * @param h
-	 *            view height
-	 * @param id
-	 *            view id
-	 * @param viewType
-	 *            view type
-	 * @param title
-	 *            view title (control view only)
-	 * @param initialCamRotateZ
-	 *            initial z angle of view
-	 */
-	public MappingView(MappingScene scene, int x, int y, int w, int h, ViewType viewType, String title, float initialCamRotateZ) {
-		super(scene, x, y, w, h, viewType, viewType == ViewType.MAPPED_VIEW ? null : title);
-		getCamera().setRotateZ(initialCamRotateZ);
-	}
+    /**
+     * Create a MPM control or projection view.
+     *
+     * @param scene             scene to add the view to
+     * @param x                 view x coordinate
+     * @param y                 view y coordinate
+     * @param w                 view width
+     * @param h                 view height
+     * @param viewType          view type
+     * @param title             view title (control view only)
+     * @param initialCamRotateZ initial z angle of view
+     */
+    public MappingView(MappingScene scene, int x, int y, int w, int h, ViewType viewType, String title, float initialCamRotateZ) {
+        super(scene, x, y, w, h, viewType, viewType == ViewType.MAPPED_VIEW ? null : title);
+        getCamera().setRotateZ(initialCamRotateZ);
+    }
 }

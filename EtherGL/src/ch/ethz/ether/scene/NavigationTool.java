@@ -35,92 +35,92 @@ import ch.ethz.ether.render.IRenderGroup;
 import ch.ethz.ether.render.IRenderGroup.Source;
 import ch.ethz.ether.render.IRenderGroup.Type;
 import ch.ethz.ether.render.IRenderer;
-import ch.ethz.ether.render.util.IAddOnlyFloatList;
 import ch.ethz.ether.render.util.Primitives;
 import ch.ethz.ether.view.IView;
+import ch.ethz.util.IAddOnlyFloatList;
 
 public class NavigationTool extends AbstractTool {
-	public static final float[] GRID_COLOR = { 0.5f, 0.5f, 0.5f, 1.0f };
+    public static final float[] GRID_COLOR = {0.5f, 0.5f, 0.5f, 1.0f};
 
-	private static final float CAMERA_ROTATE_SCALE = 1.0f;
-	private static final float CAMERA_TRANSLATE_SCALE = 0.01f;
+    private static final float CAMERA_ROTATE_SCALE = 1.0f;
+    private static final float CAMERA_TRANSLATE_SCALE = 0.01f;
 
-	private int button;
-	private int mouseX;
-	private int mouseY;
+    private int button;
+    private int mouseX;
+    private int mouseY;
 
-	// TODO: make grid dynamic/configurable
-	private IRenderGroup grid = new AbstractRenderGroup(Source.TOOL, Type.LINES) {
-		@Override
-		public void getVertices(IAddOnlyFloatList dst) {
-			int gridNumLines = 12;
-			float gridSpacing = 0.1f;
+    // TODO: make grid dynamic/configurable
+    private IRenderGroup grid = new AbstractRenderGroup(Source.TOOL, Type.LINES) {
+        @Override
+        public void getVertices(IAddOnlyFloatList dst) {
+            int gridNumLines = 12;
+            float gridSpacing = 0.1f;
 
-			// add axis lines
-			float e = 0.5f * gridSpacing * (gridNumLines + 1);
-			Primitives.addLine(dst, -e, 0, e, 0);
-			Primitives.addLine(dst, 0, -e, 0, e);
+            // add axis lines
+            float e = 0.5f * gridSpacing * (gridNumLines + 1);
+            Primitives.addLine(dst, -e, 0, e, 0);
+            Primitives.addLine(dst, 0, -e, 0, e);
 
-			// add grid lines
-			int n = gridNumLines / 2;
-			for (int i = 1; i <= n; ++i) {
-				Primitives.addLine(dst, i * gridSpacing, -e, i * gridSpacing, e);
-				Primitives.addLine(dst, -i * gridSpacing, -e, -i * gridSpacing, e);
-				Primitives.addLine(dst, -e, i * gridSpacing, e, i * gridSpacing);
-				Primitives.addLine(dst, -e, -i * gridSpacing, e, -i * gridSpacing);
-			}
-		}
+            // add grid lines
+            int n = gridNumLines / 2;
+            for (int i = 1; i <= n; ++i) {
+                Primitives.addLine(dst, i * gridSpacing, -e, i * gridSpacing, e);
+                Primitives.addLine(dst, -i * gridSpacing, -e, -i * gridSpacing, e);
+                Primitives.addLine(dst, -e, i * gridSpacing, e, i * gridSpacing);
+                Primitives.addLine(dst, -e, -i * gridSpacing, e, -i * gridSpacing);
+            }
+        }
 
-		@Override
-		public float[] getColor() {
-			return GRID_COLOR;
-		}
-	};
+        @Override
+        public float[] getColor() {
+            return GRID_COLOR;
+        }
+    };
 
-	public NavigationTool(IScene scene) {
-		super(scene);
-		// XXX hack: currently grid is always enabled
-		activate();
-	}
+    public NavigationTool(IScene scene) {
+        super(scene);
+        // XXX hack: currently grid is always enabled
+        activate();
+    }
 
-	@Override
-	public void activate() {
-		IRenderer.GROUPS.add(grid);
-	}
-	
-	@Override
-	public void deactivate() {
-		IRenderer.GROUPS.remove(grid);
-	}
+    @Override
+    public void activate() {
+        IRenderer.GROUPS.add(grid);
+    }
 
-	@Override
-	public void mousePressed(MouseEvent e, IView view) {
-		button = e.getButton();
-	}
+    @Override
+    public void deactivate() {
+        IRenderer.GROUPS.remove(grid);
+    }
 
-	@Override
-	public void mouseMoved(MouseEvent e, IView view) {
-		mouseX = e.getX();
-		mouseY = e.getY();
-	}
+    @Override
+    public void mousePressed(MouseEvent e, IView view) {
+        button = e.getButton();
+    }
 
-	@Override
-	public void mouseDragged(MouseEvent e, IView view) {
-		if (button == MouseEvent.BUTTON1) {
-			view.getCamera().addToRotateZ(CAMERA_ROTATE_SCALE * (e.getX() - mouseX));
-			view.getCamera().addToRotateX(CAMERA_ROTATE_SCALE * (e.getY() - mouseY));
-		} else if (e.getButton() == MouseEvent.BUTTON3) {
-			view.getCamera().addToTranslateX(CAMERA_TRANSLATE_SCALE * (e.getX() - mouseX));
-			view.getCamera().addToTranslateY(CAMERA_TRANSLATE_SCALE * (mouseY - e.getY()));
-		}
-		view.repaint();
-		mouseX = e.getX();
-		mouseY = e.getY();
-	}
+    @Override
+    public void mouseMoved(MouseEvent e, IView view) {
+        mouseX = e.getX();
+        mouseY = e.getY();
+    }
 
-	@Override
-	public void mouseWheelMoved(MouseWheelEvent e, IView view) {
-		view.getCamera().addToDistance(0.25f * e.getWheelRotation());
-		view.repaint();
-	}
+    @Override
+    public void mouseDragged(MouseEvent e, IView view) {
+        if (button == MouseEvent.BUTTON1) {
+            view.getCamera().addToRotateZ(CAMERA_ROTATE_SCALE * (e.getX() - mouseX));
+            view.getCamera().addToRotateX(CAMERA_ROTATE_SCALE * (e.getY() - mouseY));
+        } else if (e.getButton() == MouseEvent.BUTTON3) {
+            view.getCamera().addToTranslateX(CAMERA_TRANSLATE_SCALE * (e.getX() - mouseX));
+            view.getCamera().addToTranslateY(CAMERA_TRANSLATE_SCALE * (mouseY - e.getY()));
+        }
+        view.repaint();
+        mouseX = e.getX();
+        mouseY = e.getY();
+    }
+
+    @Override
+    public void mouseWheelMoved(MouseWheelEvent e, IView view) {
+        view.getCamera().addToDistance(0.25f * e.getWheelRotation());
+        view.repaint();
+    }
 }

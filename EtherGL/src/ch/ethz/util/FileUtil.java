@@ -29,19 +29,20 @@ package ch.ethz.util;
 
 import java.io.File;
 
-public class FileUtilities {
-	/**
-	 * Get file extension.
-	 * @param file file to get the extension from
-	 * @return file extension (without '.')
-	 */
-	public static String getExtension(File file) {
+public class FileUtil {
+    /**
+     * Get file extension.
+     *
+     * @param file file to get the extension from
+     * @return file extension (without '.')
+     */
+    public static String getExtension(File file) {
         String ext = "";
         String s = file.getName();
         int i = s.lastIndexOf('.');
 
-        if (i > 0 &&  i < s.length() - 1) {
-            ext = s.substring(i+1).toLowerCase();
+        if (i > 0 && i < s.length() - 1) {
+            ext = s.substring(i + 1).toLowerCase();
         }
         return ext;
     }

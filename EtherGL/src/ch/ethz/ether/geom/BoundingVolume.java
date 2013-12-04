@@ -33,114 +33,142 @@ import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
 /**
  * Axis aligned bounding volume.
- * @author radar
  *
+ * @author radar
  */
 public final class BoundingVolume {
-	boolean valid;
-	float minX;
-	float maxX;
-	float minY;
-	float maxY;
-	float minZ;
-	float maxZ;
+    boolean valid;
+    float minX;
+    float maxX;
+    float minY;
+    float maxY;
+    float minZ;
+    float maxZ;
 
-	public BoundingVolume() {
-		reset();
-	}
+    public BoundingVolume() {
+        reset();
+    }
 
-	public void reset() {
-		valid = false;
-		minX = Float.POSITIVE_INFINITY;
-		maxX = Float.NEGATIVE_INFINITY;
-		minY = Float.POSITIVE_INFINITY;
-		maxY = Float.NEGATIVE_INFINITY;
-		minZ = Float.POSITIVE_INFINITY;
-		maxZ = Float.NEGATIVE_INFINITY;
-	}
+    public void reset() {
+        valid = false;
+        minX = Float.POSITIVE_INFINITY;
+        maxX = Float.NEGATIVE_INFINITY;
+        minY = Float.POSITIVE_INFINITY;
+        maxY = Float.NEGATIVE_INFINITY;
+        minZ = Float.POSITIVE_INFINITY;
+        maxZ = Float.NEGATIVE_INFINITY;
+    }
 
-	public boolean isValid() {
-		return valid;
-	}
+    public boolean isValid() {
+        return valid;
+    }
 
-	public float getMinX() {
-		return minX;
-	}
+    public Vector3D getMin() {
+        return new Vector3D(minX, minY, minZ);
+    }
 
-	public float getMaxX() {
-		return maxX;
-	}
+    public Vector3D getMax() {
+        return new Vector3D(maxX, maxY, maxZ);
+    }
 
-	public float getMinY() {
-		return minY;
-	}
+    public Vector3D getCenter() {
+        return new Vector3D(getCenterX(), getCenterY(), getCenterZ());
+    }
 
-	public float getMaxY() {
-		return maxY;
-	}
+    public Vector3D getExtent() {
+        return new Vector3D(getExtentX(), getExtentY(), getExtentZ());
+    }
 
-	public float getMinZ() {
-		return minZ;
-	}
+    public float getMinX() {
+        return minX;
+    }
 
-	public float getMaxZ() {
-		return maxZ;
-	}
+    public float getMinY() {
+        return minY;
+    }
 
-	public float getExtentX() {
-		return maxX - minX;
-	}
+    public float getMinZ() {
+        return minZ;
+    }
 
-	public float getExtentY() {
-		return maxY - minY;
-	}
+    public float getMaxX() {
+        return maxX;
+    }
 
-	public float getExtentZ() {
-		return maxZ - minZ;
-	}
+    public float getMaxY() {
+        return maxY;
+    }
 
-	public void add(float x, float y, float z) {
-		minX = Math.min(minX, x);
-		maxX = Math.max(maxX, x);
-		minY = Math.min(minY, y);
-		maxY = Math.max(maxY, y);
-		minZ = Math.min(minZ, z);
-		maxZ = Math.max(maxZ, z);
-		valid = true;
-	}
+    public float getMaxZ() {
+        return maxZ;
+    }
 
-	public void add(double x, double y, double z) {
-		add((float)x, (float)y, (float)z);
-	}
+    public float getCenterX() {
+        return minX + getExtentX() / 2;
+    }
 
-	public void add(Vector3D vertex) {
-		add(vertex.getX(), vertex.getY(), vertex.getZ());
-	}
-	
-	public void add(Collection<Vector3D> vertices) {
-		for (Vector3D vertex : vertices)
-			add(vertex);
-	}
-	
-	public void add(float[] vertices) {
-		for (int i = 0; i < vertices.length; i += 3) {
-			add(vertices[i], vertices[i+1], vertices[i+2]);
-		}
-	}
+    public float getCenterY() {
+        return minY + getExtentY() / 2;
+    }
 
-	public void add(double[] vertices) {
-		for (int i = 0; i < vertices.length; i += 3) {
-			add(vertices[i], vertices[i+1], vertices[i+2]);
-		}
-	}
+    public float getCenterZ() {
+        return minZ + getExtentZ() / 2;
+    }
 
-	public void add(BoundingVolume b) {
-		add(b.minX, b.minY, b.minZ);
-		add(b.maxX, b.maxY, b.maxZ);
-	}
-	
-	@Override
-	public String toString() {
-		return valid ? "[" + minX + "," + maxX + "][" + minY + "," + maxY + "][" + minZ + "," + maxZ + "]" : "invalid";
-	}
+    public float getExtentX() {
+        return maxX - minX;
+    }
+
+    public float getExtentY() {
+        return maxY - minY;
+    }
+
+    public float getExtentZ() {
+        return maxZ - minZ;
+    }
+
+    public void add(float x, float y, float z) {
+        minX = Math.min(minX, x);
+        maxX = Math.max(maxX, x);
+        minY = Math.min(minY, y);
+        maxY = Math.max(maxY, y);
+        minZ = Math.min(minZ, z);
+        maxZ = Math.max(maxZ, z);
+        valid = true;
+    }
+
+    public void add(double x, double y, double z) {
+        add((float) x, (float) y, (float) z);
+    }
+
+    public void add(Vector3D vertex) {
+        add(vertex.getX(), vertex.getY(), vertex.getZ());
+    }
+
+    public void add(Collection<Vector3D> vertices) {
+        for (Vector3D vertex : vertices)
+            add(vertex);
+    }
+
+    public void add(float[] vertices) {
+        for (int i = 0; i < vertices.length; i += 3) {
+            add(vertices[i], vertices[i + 1], vertices[i + 2]);
+        }
+    }
+
+    public void add(double[] vertices) {
+        for (int i = 0; i < vertices.length; i += 3) {
+            add(vertices[i], vertices[i + 1], vertices[i + 2]);
+        }
+    }
+
+    public void add(BoundingVolume b) {
+        add(b.minX, b.minY, b.minZ);
+        add(b.maxX, b.maxY, b.maxZ);
+    }
+
+    @Override
+    public String toString() {
+        return valid ? "[" + minX + "," + maxX + "][" + minY + "," + maxY + "][" + minZ + "," + maxZ + "]" : "invalid";
+    }
 }

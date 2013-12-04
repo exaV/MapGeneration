@@ -30,14 +30,14 @@ package ch.ethz.ether.render;
 
 /**
  * Very basic shadow volume renderer.
+ *
  * @author radar
- * 
  */
 // XXX work in progress (silhouettes, shader optimizations, etc...)
 
 public class ShadowVolumeRenderer /*implements IRenderer*/ {
 /*
-	private enum StencilShadowMethod {
+    private enum StencilShadowMethod {
 		ZPASS,
 		ZFAIL
 	}

@@ -34,51 +34,51 @@ import java.util.List;
 import java.util.prefs.Preferences;
 
 public class CalibrationContext {
-	public boolean calibrated = false;
-	public int currentSelection = -1;
-	public List<float[]> modelVertices = new ArrayList<>();
-	public List<float[]> projectedVertices = new ArrayList<>();
+    public boolean calibrated = false;
+    public int currentSelection = -1;
+    public List<float[]> modelVertices = new ArrayList<>();
+    public List<float[]> projectedVertices = new ArrayList<>();
 
-	public void load(Preferences p, int index) {
-		byte[] mv = p.getByteArray("modelVertices_" + index, null);
-		byte[] pv = p.getByteArray("projectedVertices_" + index, null);
-		if (mv != null) {
-			modelVertices = fromByteArray(mv);
-			projectedVertices = fromByteArray(pv);
-			calibrated = true;
-		} else {
-			modelVertices = new ArrayList<>();
-			projectedVertices = new ArrayList<>();
-			calibrated = false;
-		}
-	}
+    public void load(Preferences p, int index) {
+        byte[] mv = p.getByteArray("modelVertices_" + index, null);
+        byte[] pv = p.getByteArray("projectedVertices_" + index, null);
+        if (mv != null) {
+            modelVertices = fromByteArray(mv);
+            projectedVertices = fromByteArray(pv);
+            calibrated = true;
+        } else {
+            modelVertices = new ArrayList<>();
+            projectedVertices = new ArrayList<>();
+            calibrated = false;
+        }
+    }
 
-	public void save(Preferences p, int index) {
-		if (calibrated) {
-			p.putByteArray("modelVertices_" + index, toByteArray(modelVertices));
-			p.putByteArray("projectedVertices_" + index, toByteArray(projectedVertices));
-		} else {
-			p.remove("modelVertices_" + index);
-			p.remove("projectedVertices_" + index);
-		}		
-	}
-	
-	private byte[] toByteArray(List<float[]> vertices) {
-		ByteBuffer bb = ByteBuffer.allocate(vertices.size() * 3 * 8);
-		FloatBuffer fb = bb.asFloatBuffer();
-		for (float[] v : vertices) {
-			fb.put(v);
-		}
-		return bb.array();
-	}
-	
-	private List<float[]> fromByteArray(byte[] bytes) {
-		List<float[]> list = new ArrayList<>();
-		ByteBuffer bb = ByteBuffer.wrap(bytes);
-		FloatBuffer dd = bb.asFloatBuffer();
-		for (int i = 0; i < dd.capacity(); i+=3) {
-			list.add(new float[] { dd.get(), dd.get(), dd.get() });
-		}
-		return list;
-	}
+    public void save(Preferences p, int index) {
+        if (calibrated) {
+            p.putByteArray("modelVertices_" + index, toByteArray(modelVertices));
+            p.putByteArray("projectedVertices_" + index, toByteArray(projectedVertices));
+        } else {
+            p.remove("modelVertices_" + index);
+            p.remove("projectedVertices_" + index);
+        }
+    }
+
+    private byte[] toByteArray(List<float[]> vertices) {
+        ByteBuffer bb = ByteBuffer.allocate(vertices.size() * 3 * 8);
+        FloatBuffer fb = bb.asFloatBuffer();
+        for (float[] v : vertices) {
+            fb.put(v);
+        }
+        return bb.array();
+    }
+
+    private List<float[]> fromByteArray(byte[] bytes) {
+        List<float[]> list = new ArrayList<>();
+        ByteBuffer bb = ByteBuffer.wrap(bytes);
+        FloatBuffer dd = bb.asFloatBuffer();
+        for (int i = 0; i < dd.capacity(); i += 3) {
+            list.add(new float[]{dd.get(), dd.get(), dd.get()});
+        }
+        return list;
+    }
 }

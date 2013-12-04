@@ -28,7 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package ch.ethz.ether.mapping;
 
 public interface ICalibrationModel {
-	float[] getCalibrationVertices();
+    float[] getCalibrationVertices();
 
-	float[] getCalibrationLines();
+    float[] getCalibrationLines();
 }

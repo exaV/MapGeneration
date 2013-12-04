@@ -42,60 +42,52 @@ import ch.ethz.ether.view.IView;
 
 /**
  * Simple rendering interface.
- * 
+ *
  * @author radar
- * 
  */
 public interface IRenderer {
-	static final IRenderGroups GROUPS = new RenderGroups();
+    static final IRenderGroups GROUPS = new RenderGroups();
 
-	interface IRenderGroups {
-		/**
-		 * Add render group to renderer.
-		 * 
-		 * @param group
-		 *            the group to be added
-		 */
-		void add(IRenderGroup group);
+    interface IRenderGroups {
+        /**
+         * Add render group to renderer.
+         *
+         * @param group the group to be added
+         */
+        void add(IRenderGroup group);
 
-		/**
-		 * Add multiple groups to renderer.
-		 * 
-		 * @param group
-		 *            first group
-		 * @param groups
-		 *            all other groups
-		 */
-		void add(IRenderGroup group, IRenderGroup... groups);
+        /**
+         * Add multiple groups to renderer.
+         *
+         * @param group  first group
+         * @param groups all other groups
+         */
+        void add(IRenderGroup group, IRenderGroup... groups);
 
-		/**
-		 * Remove render group from renderer.
-		 * 
-		 * @param group
-		 *            the group to be removed
-		 */
-		void remove(IRenderGroup group);
+        /**
+         * Remove render group from renderer.
+         *
+         * @param group the group to be removed
+         */
+        void remove(IRenderGroup group);
 
-		/**
-		 * Remove multiple groups from renderer.
-		 * 
-		 * @param group
-		 *            first group
-		 * @param groups
-		 *            all other groups
-		 */
-		void remove(IRenderGroup group, IRenderGroup... groups);
+        /**
+         * Remove multiple groups from renderer.
+         *
+         * @param group  first group
+         * @param groups all other groups
+         */
+        void remove(IRenderGroup group, IRenderGroup... groups);
 
-		/**
-		 * Restrict renderer to render only groups with specific source.
-		 * 
-		 * @param source
-		 *            source groups to be rendered or NULL to render all sources
-		 */
-		void setSource(Source source);
-	}
+        /**
+         * Restrict renderer to render only groups with specific source.
+         *
+         * @param source source groups to be rendered or NULL to render all sources
+         */
+        void setSource(Source source);
+    }
 
-	void render(GL3 gl, IView view);
+    void render(GL3 gl, IView view);
 
-	IRenderEntry getEntry(GL3 gl, IRenderGroup group);
+    IRenderEntry getEntry(GL3 gl, IRenderGroup group);
 }

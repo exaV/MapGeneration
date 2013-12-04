@@ -35,21 +35,21 @@ import ch.ethz.ether.render.IRenderer;
 import ch.ethz.ether.scene.IScene;
 
 public class SimpleTriangleModel implements IModel {
-	private final GenericRenderGroup triangles = new GenericRenderGroup(Source.MODEL, Type.TRIANGLES);
-	private final BoundingVolume bounds = new BoundingVolume();
+    private final GenericRenderGroup triangles = new GenericRenderGroup(Source.MODEL, Type.TRIANGLES);
+    private final BoundingVolume bounds = new BoundingVolume();
 
-	public SimpleTriangleModel(IScene scene) {
-		IRenderer.GROUPS.add(triangles);
-	}
+    public SimpleTriangleModel(IScene scene) {
+        IRenderer.GROUPS.add(triangles);
+    }
 
-	@Override
-	public BoundingVolume getBounds() {
-		return bounds;
-	}
-	
-	public void setTriangles(float[] vertices, float[] colors) {
-		triangles.set(vertices, null, colors, null, 0, 0, null);
-		bounds.reset();
-		bounds.add(vertices);
-	}
+    @Override
+    public BoundingVolume getBounds() {
+        return bounds;
+    }
+
+    public void setTriangles(float[] vertices, float[] colors) {
+        triangles.set(vertices, null, colors, null, 0, 0, null);
+        bounds.reset();
+        bounds.add(vertices);
+    }
 }

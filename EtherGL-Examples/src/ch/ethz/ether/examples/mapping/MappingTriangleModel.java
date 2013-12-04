@@ -27,23 +27,23 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package ch.ethz.ether.examples.mapping;
 
-import ch.ethz.ether.geom.GeometryUtilities;
 import ch.ethz.ether.model.SimpleTriangleModel;
 import ch.ethz.ether.render.util.FloatList;
+import ch.ethz.ether.render.util.Primitives;
 import ch.ethz.ether.scene.IScene;
 
 public class MappingTriangleModel extends SimpleTriangleModel {
-	public MappingTriangleModel(IScene scene) {
-		super(scene);
-		reset();
-	}
+    public MappingTriangleModel(IScene scene) {
+        super(scene);
+        reset();
+    }
 
-	public void reset() {
-		FloatList vertices = new FloatList();
-		GeometryUtilities.addCube(vertices, -0.3f, -0.3f, 0.1f, 0.1f, 0.1f);
-		GeometryUtilities.addCube(vertices, 0.1f, -0.2f, 0.2f, 0.1f, 0.2f);
-		GeometryUtilities.addCube(vertices, 0f, 0f, 0.1f, 0.2f, 0.1f);
-		GeometryUtilities.addCube(vertices, 0.2f, 0.1f, 0.1f, 0.1f, 0.2f);
-		setTriangles(vertices.toArray(), null);
-	}
+    public void reset() {
+        FloatList vertices = new FloatList();
+        Primitives.addCube(vertices, -0.3f, -0.3f, 0.0f, 0.1f, 0.1f, 0.1f);
+        Primitives.addCube(vertices, 0.1f, -0.2f, 0.0f, 0.2f, 0.1f, 0.2f);
+        Primitives.addCube(vertices, 0.0f, 0.0f, 0.0f, 0.1f, 0.2f, 0.1f);
+        Primitives.addCube(vertices, 0.2f, 0.1f, 0.0f, 0.1f, 0.1f, 0.2f);
+        setTriangles(vertices.toArray(), null);
+    }
 }

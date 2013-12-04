@@ -31,10 +31,9 @@ import ch.ethz.ether.geom.BoundingVolume;
 
 /**
  * Interface for all models to be rendered / interacted with.
- * 
+ *
  * @author radar
- * 
  */
 public interface IModel {
-	BoundingVolume getBounds();
+    BoundingVolume getBounds();
 }

@@ -29,47 +29,47 @@ package ch.ethz.ether.mapping;
 
 
 public class BoxCalibrationModel implements ICalibrationModel {
-	private float boxExtentX;
-	private float boxExtentY;
-	private float boxExtentZ;
-	private float planeExtentX;
-	private float planeExtentY;
+    private float boxExtentX;
+    private float boxExtentY;
+    private float boxExtentZ;
+    private float planeExtentX;
+    private float planeExtentY;
 
-	public BoxCalibrationModel(float boxExtentX, float boxExtentY, float boxExtentZ, float planeExtentX, float planeExtentY) {
-		this.boxExtentX = boxExtentX;
-		this.boxExtentY = boxExtentY;
-		this.boxExtentZ = boxExtentZ;
-		this.planeExtentX = planeExtentX;
-		this.planeExtentY = planeExtentY;
-	}
+    public BoxCalibrationModel(float boxExtentX, float boxExtentY, float boxExtentZ, float planeExtentX, float planeExtentY) {
+        this.boxExtentX = boxExtentX;
+        this.boxExtentY = boxExtentY;
+        this.boxExtentZ = boxExtentZ;
+        this.planeExtentX = planeExtentX;
+        this.planeExtentY = planeExtentY;
+    }
 
-	@Override
-	public float[] getCalibrationVertices() {
-		float bx = boxExtentX / 2;
-		float by = boxExtentY / 2;
-		float bz = boxExtentZ;
-		float px = planeExtentX / 2;
-		float py = planeExtentY / 2;
-		return new float[] {
-				// box bottom
-				bx, by, 0, -bx, by, 0, -bx, -by, 0, bx, -by, 0,
-				// box top
-				bx, by, bz, -bx, by, bz, -bx, -by, bz, bx, -by, bz,
-				// plane
-				px, py, 0, -px, py, 0, -px, -py, 0, px, -py, 0 };
-	}
+    @Override
+    public float[] getCalibrationVertices() {
+        float bx = boxExtentX / 2;
+        float by = boxExtentY / 2;
+        float bz = boxExtentZ;
+        float px = planeExtentX / 2;
+        float py = planeExtentY / 2;
+        return new float[]{
+                // box bottom
+                bx, by, 0, -bx, by, 0, -bx, -by, 0, bx, -by, 0,
+                // box top
+                bx, by, bz, -bx, by, bz, -bx, -by, bz, bx, -by, bz,
+                // plane
+                px, py, 0, -px, py, 0, -px, -py, 0, px, -py, 0};
+    }
 
-	@Override
-	public float[] getCalibrationLines() {
-		float bx = boxExtentX / 2;
-		float by = boxExtentY / 2;
-		float bz = boxExtentZ;
-		return new float[] {
-				// bottom
-				bx, by, 0, -bx, by, 0, -bx, by, 0, -bx, -by, 0, -bx, -by, 0, bx, -by, 0, bx, -by, 0, bx, by, 0,
-				// top
-				bx, by, bz, -bx, by, bz, -bx, by, bz, -bx, -by, bz, -bx, -by, bz, bx, -by, bz, bx, -by, bz, bx, by, bz,
-				// side
-				bx, by, 0, bx, by, bz, -bx, by, 0, -bx, by, bz, -bx, -by, 0, -bx, -by, bz, bx, -by, 0, bx, -by, bz };
-	}
+    @Override
+    public float[] getCalibrationLines() {
+        float bx = boxExtentX / 2;
+        float by = boxExtentY / 2;
+        float bz = boxExtentZ;
+        return new float[]{
+                // bottom
+                bx, by, 0, -bx, by, 0, -bx, by, 0, -bx, -by, 0, -bx, -by, 0, bx, -by, 0, bx, -by, 0, bx, by, 0,
+                // top
+                bx, by, bz, -bx, by, bz, -bx, by, bz, -bx, -by, bz, -bx, -by, bz, bx, -by, bz, bx, -by, bz, bx, by, bz,
+                // side
+                bx, by, 0, bx, by, bz, -bx, by, 0, -bx, by, bz, -bx, -by, 0, -bx, -by, bz, bx, -by, 0, bx, -by, bz};
+    }
 }

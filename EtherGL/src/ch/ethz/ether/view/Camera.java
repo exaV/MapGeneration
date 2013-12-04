@@ -29,211 +29,211 @@ package ch.ethz.ether.view;
 
 import ch.ethz.ether.geom.BoundingVolume;
 import ch.ethz.ether.gl.Matrix4x4;
-import ch.ethz.util.MathUtils;
+import ch.ethz.util.MathUtil;
 
 /**
  * OpenGL-aligned camera model
- * @author radar
  *
+ * @author radar
  */
 public class Camera {
-	private static final boolean KEEP_ROT_X_POSITIVE = true;
+    private static final boolean KEEP_ROT_X_POSITIVE = true;
 
-	private final IView view;
-	
-	private boolean locked = false;
+    private final IView view;
 
-	private float near = 0.1f;
-	// public float far = 1000.0f;
-	private float far = Float.POSITIVE_INFINITY;
+    private boolean locked = false;
 
-	private float fov = 45.0f;
-	private float distance = 2.0f;
-	private float rotateZ = 0.0f;
-	private float rotateX = 45.0f;
-	private float translateX = 0.0f;
-	private float translateY = 0.0f;
+    private float near = 0.1f;
+    // public float far = 1000.0f;
+    private float far = Float.POSITIVE_INFINITY;
 
-	private float[] projectionMatrix = Matrix4x4.identity();
-	private float[] viewMatrix = Matrix4x4.identity();
+    private float fov = 45.0f;
+    private float distance = 2.0f;
+    private float rotateZ = 0.0f;
+    private float rotateX = 45.0f;
+    private float translateX = 0.0f;
+    private float translateY = 0.0f;
 
-	public Camera(IView view) {
-		this.view = view;
-	}
+    private float[] projectionMatrix = Matrix4x4.identity();
+    private float[] viewMatrix = Matrix4x4.identity();
 
-	public boolean isLocked() {
-		return locked;
-	}
+    public Camera(IView view) {
+        this.view = view;
+    }
 
-	public float getNearClippingPlane() {
-		return near;
-	}
+    public boolean isLocked() {
+        return locked;
+    }
 
-	public void setNearClippingPlane(float near) {
-		if (locked)
-			return;
-		this.near = near;
-		update();
-	}
+    public float getNearClippingPlane() {
+        return near;
+    }
 
-	public float getFarClippingPlane() {
-		return far;
-	}
+    public void setNearClippingPlane(float near) {
+        if (locked)
+            return;
+        this.near = near;
+        update();
+    }
 
-	public void setFarClippingPlane(float far) {
-		if (locked)
-			return;
-		this.far = far;
-		update();
-	}
+    public float getFarClippingPlane() {
+        return far;
+    }
 
-	public float getFOV() {
-		return fov;
-	}
+    public void setFarClippingPlane(float far) {
+        if (locked)
+            return;
+        this.far = far;
+        update();
+    }
 
-	public void setFOV(float fov) {
-		if (locked)
-			return;
-		this.fov = fov;
-		update();
-	}
+    public float getFOV() {
+        return fov;
+    }
 
-	public float getDistance() {
-		return distance;
-	}
+    public void setFOV(float fov) {
+        if (locked)
+            return;
+        this.fov = fov;
+        update();
+    }
 
-	public void setDistance(float distance) {
-		if (locked)
-			return;
-		this.distance = MathUtils.clamp(distance, near, far);
-		update();
-	}
+    public float getDistance() {
+        return distance;
+    }
 
-	public void addToDistance(float delta) {
-		if (locked)
-			return;
-		this.distance = MathUtils.clamp(distance + distance / 10.0f * delta, near, far);
-		update();
-	}
+    public void setDistance(float distance) {
+        if (locked)
+            return;
+        this.distance = MathUtil.clamp(distance, near, far);
+        update();
+    }
 
-	public float getRotateZ() {
-		return rotateZ;
-	}
+    public void addToDistance(float delta) {
+        if (locked)
+            return;
+        this.distance = MathUtil.clamp(distance + distance / 10.0f * delta, near, far);
+        update();
+    }
 
-	public void setRotateZ(float rotateZ) {
-		if (locked)
-			return;
-		this.rotateZ = rotateZ;
-		update();
-	}
+    public float getRotateZ() {
+        return rotateZ;
+    }
 
-	public void addToRotateZ(float delta) {
-		if (locked)
-			return;
-		rotateZ += delta;
-		update();
-	}
+    public void setRotateZ(float rotateZ) {
+        if (locked)
+            return;
+        this.rotateZ = rotateZ;
+        update();
+    }
 
-	public float getRotateX() {
-		return rotateX;
-	}
+    public void addToRotateZ(float delta) {
+        if (locked)
+            return;
+        rotateZ += delta;
+        update();
+    }
 
-	public void setRotateX(float rotateX) {
-		if (locked)
-			return;
-		this.rotateX = MathUtils.clamp(rotateX, KEEP_ROT_X_POSITIVE ? 0 : -90, 90);
-		update();
-	}
+    public float getRotateX() {
+        return rotateX;
+    }
 
-	public void addToRotateX(float delta) {
-		if (locked)
-			return;
-		this.rotateX = MathUtils.clamp(rotateX + delta, KEEP_ROT_X_POSITIVE ? 0 : -90, 90);
-		update();
-	}
+    public void setRotateX(float rotateX) {
+        if (locked)
+            return;
+        this.rotateX = MathUtil.clamp(rotateX, KEEP_ROT_X_POSITIVE ? 0 : -90, 90);
+        update();
+    }
 
-	public float getTranslateX() {
-		return translateX;
-	}
+    public void addToRotateX(float delta) {
+        if (locked)
+            return;
+        this.rotateX = MathUtil.clamp(rotateX + delta, KEEP_ROT_X_POSITIVE ? 0 : -90, 90);
+        update();
+    }
 
-	public void setTranslateX(float translateX) {
-		if (locked)
-			return;
-		this.translateX = translateX;
-		update();
-	}
+    public float getTranslateX() {
+        return translateX;
+    }
 
-	public void addToTranslateX(float delta) {
-		if (locked)
-			return;
-		translateX += distance / 10 * delta;
-		update();
-	}
+    public void setTranslateX(float translateX) {
+        if (locked)
+            return;
+        this.translateX = translateX;
+        update();
+    }
 
-	public float getTranslateY() {
-		return translateY;
-	}
+    public void addToTranslateX(float delta) {
+        if (locked)
+            return;
+        translateX += distance / 10 * delta;
+        update();
+    }
 
-	public void setTranslateY(float translateY) {
-		if (locked)
-			return;
-		this.translateY = translateY;
-		update();
-	}
+    public float getTranslateY() {
+        return translateY;
+    }
 
-	public void addToTranslateY(float delta) {
-		if (locked)
-			return;
-		translateY += distance / 10 * delta;
-		update();
-	}
+    public void setTranslateY(float translateY) {
+        if (locked)
+            return;
+        this.translateY = translateY;
+        update();
+    }
 
-	public void frame(BoundingVolume bounds) {
-		if (locked)
-			return;
-		// FIXME hack, assume centered model for now
-		float extent = 1.5f * Math.max(Math.max(bounds.getExtentX(), bounds.getExtentY()), bounds.getExtentZ());
-		float d = 0.5f * extent / (float) Math.tan(Math.toRadians(fov / 2));
-		distance = MathUtils.clamp(d, near, far);
-		translateX = 0;
-		translateY = 0;
-		update();
-	}
-	
-	public float[] getProjectionMatrix() {
-		if (projectionMatrix == null) {
-			projectionMatrix = Matrix4x4.perspective(fov, (float)view.getWidth() / (float)view.getHeight(), near, far, null);			
-		}
-		return projectionMatrix;
-	}
+    public void addToTranslateY(float delta) {
+        if (locked)
+            return;
+        translateY += distance / 10 * delta;
+        update();
+    }
 
-	public float[] getViewMatrix() {
-		if (viewMatrix == null) {
-			viewMatrix = Matrix4x4.identity();
-			Matrix4x4.translate(translateX, translateY, -distance, viewMatrix);
-			Matrix4x4.rotate(rotateX - 90, 1, 0, 0, viewMatrix);
-			Matrix4x4.rotate(rotateZ, 0, 0, 1, viewMatrix);
-		}
-		return viewMatrix;
-	}	
-	
-	public void setMatrices(float[] projectionMatrix, float[] viewMatrix) {
-		if (projectionMatrix == null) {
-			this.locked = false;
-			update();
-		} else {
-			this.locked = true;
-			this.projectionMatrix = projectionMatrix;
-			this.viewMatrix = viewMatrix;
-			update();
-		}
-	}
+    public void frame(BoundingVolume bounds) {
+        if (locked)
+            return;
+        // FIXME hack, assume centered model for now
+        float extent = 1.5f * Math.max(Math.max(bounds.getExtentX(), bounds.getExtentY()), bounds.getExtentZ());
+        float d = 0.5f * extent / (float) Math.tan(Math.toRadians(fov / 2));
+        distance = MathUtil.clamp(d, near, far);
+        translateX = 0;
+        translateY = 0;
+        update();
+    }
 
-	public void update() {
-		if (!locked) {
-			viewMatrix = null;
-			projectionMatrix = null;
-		}
-		view.update();
-	}
+    public float[] getProjectionMatrix() {
+        if (projectionMatrix == null) {
+            projectionMatrix = Matrix4x4.perspective(fov, (float) view.getWidth() / (float) view.getHeight(), near, far, null);
+        }
+        return projectionMatrix;
+    }
+
+    public float[] getViewMatrix() {
+        if (viewMatrix == null) {
+            viewMatrix = Matrix4x4.identity();
+            Matrix4x4.translate(translateX, translateY, -distance, viewMatrix);
+            Matrix4x4.rotate(rotateX - 90, 1, 0, 0, viewMatrix);
+            Matrix4x4.rotate(rotateZ, 0, 0, 1, viewMatrix);
+        }
+        return viewMatrix;
+    }
+
+    public void setMatrices(float[] projectionMatrix, float[] viewMatrix) {
+        if (projectionMatrix == null) {
+            this.locked = false;
+            update();
+        } else {
+            this.locked = true;
+            this.projectionMatrix = projectionMatrix;
+            this.viewMatrix = viewMatrix;
+            update();
+        }
+    }
+
+    public void update() {
+        if (!locked) {
+            viewMatrix = null;
+            projectionMatrix = null;
+        }
+        view.update();
+    }
 }

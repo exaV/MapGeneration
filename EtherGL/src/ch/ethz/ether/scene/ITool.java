@@ -34,43 +34,42 @@ import java.awt.event.MouseWheelEvent;
 import ch.ethz.ether.view.IView;
 
 public interface ITool {
-	/**
-	 * Called when tool is activated. Note that this call is always followed by
-	 * {@link #viewChanged(IView)}.
-	 */
-	void activate();
+    /**
+     * Called when tool is activated. Note that this call is always followed by
+     * {@link #viewChanged(IView)}.
+     */
+    void activate();
 
-	/**
-	 * Called when tool is deactivated.
-	 */
-	void deactivate();
+    /**
+     * Called when tool is deactivated.
+     */
+    void deactivate();
 
-	/**
-	 * Called when current view has changed. Tools should use this to update
-	 * view-dependent buffers (e.g. screen-space buffers).
-	 * 
-	 * @param view
-	 *            the new current view
-	 */
-	void viewChanged(IView view);
+    /**
+     * Called when current view has changed. Tools should use this to update
+     * view-dependent buffers (e.g. screen-space buffers).
+     *
+     * @param view the new current view
+     */
+    void viewChanged(IView view);
 
-	// key listener
+    // key listener
 
-	void keyPressed(KeyEvent e, IView view);
+    void keyPressed(KeyEvent e, IView view);
 
-	// mouse listener
+    // mouse listener
 
-	void mousePressed(MouseEvent e, IView view);
+    void mousePressed(MouseEvent e, IView view);
 
-	void mouseReleased(MouseEvent e, IView view);
+    void mouseReleased(MouseEvent e, IView view);
 
-	// mouse motion listener
+    // mouse motion listener
 
-	void mouseMoved(MouseEvent e, IView view);
+    void mouseMoved(MouseEvent e, IView view);
 
-	void mouseDragged(MouseEvent e, IView view);
+    void mouseDragged(MouseEvent e, IView view);
 
-	// mouse wheel listener
+    // mouse wheel listener
 
-	void mouseWheelMoved(MouseWheelEvent e, IView view);
+    void mouseWheelMoved(MouseWheelEvent e, IView view);
 }

@@ -33,7 +33,6 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
 import java.net.SocketAddress;
-import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,121 +42,121 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.SwingUtilities;
 
-import ch.ethz.net.util.AddressUtilities;
+import ch.ethz.net.util.AddressUtil;
 
 public final class OSCServer extends OSCDispatcher implements OSCSender {
-	private static final int RECEIVE_BUFFER_SIZE = 1024 * 1024;
-	private static final int SEND_BUFFER_SIZE = 1024 * 1024;
+    private static final int RECEIVE_BUFFER_SIZE = 1024 * 1024;
+    private static final int SEND_BUFFER_SIZE = 1024 * 1024;
 
-	private final InetSocketAddress address;
-	private final DatagramSocket socket;
+    private final InetSocketAddress address;
+    private final DatagramSocket socket;
 
-	private final BlockingQueue<DatagramPacket> receiveQueue = new LinkedBlockingQueue<>();
-	private final BlockingQueue<DatagramPacket> sendQueue = new LinkedBlockingQueue<>();
+    private final BlockingQueue<DatagramPacket> receiveQueue = new LinkedBlockingQueue<>();
+    private final BlockingQueue<DatagramPacket> sendQueue = new LinkedBlockingQueue<>();
 
-	private final AtomicBoolean awtPending = new AtomicBoolean();
+    private final AtomicBoolean awtPending = new AtomicBoolean();
 
-	private final Map<String, SocketAddress> remotePeers = new HashMap<>();
+    private final Map<String, SocketAddress> remotePeers = new HashMap<>();
 
-	public OSCServer(int port) throws UnknownHostException, IOException {
-		this(port, null);
-	}
-	
-	public OSCServer(int port, String multicastAddress) throws UnknownHostException, IOException {
-		address = new InetSocketAddress(AddressUtilities.getDefaultInterface(), port);
-		if (multicastAddress == null) {
-			socket = new DatagramSocket(address.getPort());
-		} else {
-			MulticastSocket multicastSocket = new MulticastSocket(address.getPort());
-			multicastSocket.joinGroup(InetAddress.getByName(multicastAddress));
-			socket = multicastSocket;
-		}
-		int dec = socket.getReceiveBufferSize();
-		for (int size = RECEIVE_BUFFER_SIZE; socket.getReceiveBufferSize() < size; size -= dec) {
-			socket.setReceiveBufferSize(size);
-		}
-		dec = socket.getSendBufferSize();
-		for (int size = SEND_BUFFER_SIZE; socket.getSendBufferSize() < size; size -= dec) {
-			socket.setSendBufferSize(size);
-		}
+    public OSCServer(int port) throws IOException {
+        this(port, null);
+    }
 
-		final Runnable awtHandler = new Runnable() {
-			@Override
-			public void run() {
-				try {
-					while (!receiveQueue.isEmpty()) {
-						DatagramPacket packet = receiveQueue.take();
-						ByteBuffer buffer = ByteBuffer.wrap(packet.getData(), 0, packet.getLength());
-						process(packet.getSocketAddress(), buffer, OSCCommon.TIMETAG_IMMEDIATE, OSCServer.this);
-					}
-				} catch (Exception ex) {
-					OSCCommon.handleException(ex, this);
-				}
-				awtPending.set(false);
-			}
-		};
+    public OSCServer(int port, String multicastAddress) throws IOException {
+        address = new InetSocketAddress(AddressUtil.getDefaultInterface(), port);
+        if (multicastAddress == null) {
+            socket = new DatagramSocket(address.getPort());
+        } else {
+            MulticastSocket multicastSocket = new MulticastSocket(address.getPort());
+            multicastSocket.joinGroup(InetAddress.getByName(multicastAddress));
+            socket = multicastSocket;
+        }
+        int dec = socket.getReceiveBufferSize();
+        for (int size = RECEIVE_BUFFER_SIZE; socket.getReceiveBufferSize() < size; size -= dec) {
+            socket.setReceiveBufferSize(size);
+        }
+        dec = socket.getSendBufferSize();
+        for (int size = SEND_BUFFER_SIZE; socket.getSendBufferSize() < size; size -= dec) {
+            socket.setSendBufferSize(size);
+        }
 
-		final Thread receiveThread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				for (;;) {
-					try {
-						byte[] buffer = new byte[socket.getReceiveBufferSize()];
-						DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-						socket.receive(packet);
-						receiveQueue.add(packet);
-						if (!awtPending.getAndSet(true))
-							SwingUtilities.invokeLater(awtHandler);
-					} catch (Exception e) {
-					}
-				}
-			}
-		});
-		receiveThread.setDaemon(true);
-		receiveThread.setPriority(Thread.MAX_PRIORITY);
-		receiveThread.start();
+        final Runnable awtHandler = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    while (!receiveQueue.isEmpty()) {
+                        DatagramPacket packet = receiveQueue.take();
+                        ByteBuffer buffer = ByteBuffer.wrap(packet.getData(), 0, packet.getLength());
+                        process(packet.getSocketAddress(), buffer, OSCCommon.TIMETAG_IMMEDIATE, OSCServer.this);
+                    }
+                } catch (Exception ex) {
+                    OSCCommon.handleException(ex, this);
+                }
+                awtPending.set(false);
+            }
+        };
 
-		final Thread sendThread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				// every 10 packets wait 10ms to avoid UDP packet drops.
-				int count = 10;
-				int i = count;
-				for (;;) {
-					try {
-						DatagramPacket packet = sendQueue.take();
-						socket.send(packet);
-						if (i-- == 0) {
-							i = count;
-							Thread.sleep(10);
-						}
-					} catch (Exception e) {
-					}
-				}
-			}
-		});
-		sendThread.setDaemon(true);
-		sendThread.start();
+        final Thread receiveThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for (; ; ) {
+                    try {
+                        byte[] buffer = new byte[socket.getReceiveBufferSize()];
+                        DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+                        socket.receive(packet);
+                        receiveQueue.add(packet);
+                        if (!awtPending.getAndSet(true))
+                            SwingUtilities.invokeLater(awtHandler);
+                    } catch (Exception ignored) {
+                    }
+                }
+            }
+        });
+        receiveThread.setDaemon(true);
+        receiveThread.setPriority(Thread.MAX_PRIORITY);
+        receiveThread.start();
 
-		OSCCommon.setExceptionHandler(new ExceptionHandler() {
-			@Override
-			public void exception(Throwable t, Object source) {
-				System.out.println(source == null ? "OSC Exception (without source)" : "OSC Exception: " + source.toString());
-			}
-		});
-	}
+        final Thread sendThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                // every 10 packets wait 10ms to avoid UDP packet drops.
+                int count = 10;
+                int i = count;
+                for (; ; ) {
+                    try {
+                        DatagramPacket packet = sendQueue.take();
+                        socket.send(packet);
+                        if (i-- == 0) {
+                            i = count;
+                            Thread.sleep(10);
+                        }
+                    } catch (Exception ignored) {
+                    }
+                }
+            }
+        });
+        sendThread.setDaemon(true);
+        sendThread.start();
 
-	public void send(String address, Object... args) throws IOException {
-		ByteBuffer packet = OSCMessage.getBytes(address, args);
-		for (SocketAddress destination : remotePeers.values()) {
-			send(destination, packet);
-		}
-	}
+        OSCCommon.setExceptionHandler(new ExceptionHandler() {
+            @Override
+            public void exception(Throwable t, Object source) {
+                System.out.println(source == null ? "OSC Exception (without source)" : "OSC Exception: " + source.toString());
+            }
+        });
+    }
 
-	@Override
-	public void send(SocketAddress destination, ByteBuffer packet) throws IOException {
-		DatagramPacket p = new DatagramPacket(packet.array(), packet.capacity());
-		p.setSocketAddress(destination);
-		sendQueue.add(p);
-	}
+    public void send(String address, Object... args) throws IOException {
+        ByteBuffer packet = OSCMessage.getBytes(address, args);
+        for (SocketAddress destination : remotePeers.values()) {
+            send(destination, packet);
+        }
+    }
+
+    @Override
+    public void send(SocketAddress destination, ByteBuffer packet) {
+        DatagramPacket p = new DatagramPacket(packet.array(), packet.capacity());
+        p.setSocketAddress(destination);
+        sendQueue.add(p);
+    }
 }

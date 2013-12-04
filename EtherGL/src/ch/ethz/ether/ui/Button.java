@@ -32,119 +32,119 @@ import java.awt.Color;
 import ch.ethz.ether.view.IView;
 
 public class Button {
-	public static final int BUTTON_WIDTH = 48;
-	public static final int BUTTON_HEIGHT = 48;
+    public static final int BUTTON_WIDTH = 48;
+    public static final int BUTTON_HEIGHT = 48;
 
-	public static final int BUTTON_GAP = 8;
+    public static final int BUTTON_GAP = 8;
 
-	public enum State {
-		DEFAULT(0.6f, 0, 0, 0.75f), PRESSED(1, 0.2f, 0.2f, 0.75f), DISABLED(0.5f, 0.5f, 0.5f, 0.75f);
+    public enum State {
+        DEFAULT(0.6f, 0, 0, 0.75f), PRESSED(1, 0.2f, 0.2f, 0.75f), DISABLED(0.5f, 0.5f, 0.5f, 0.75f);
 
-		State(float r, float g, float b, float a) {
-			this.color = new Color(r, g, b, a);
-		}
+        State(float r, float g, float b, float a) {
+            this.color = new Color(r, g, b, a);
+        }
 
-		public Color getColor() {
-			return color;
-		}
+        public Color getColor() {
+            return color;
+        }
 
-		private final Color color;
-	}
+        private final Color color;
+    }
 
-	public interface IButtonAction {
-		void execute(Button button, IView view);
-	}
+    public interface IButtonAction {
+        void execute(Button button, IView view);
+    }
 
 
-	private UI ui;
-	private int x;
-	private int y;
-	private String label;
-	private String help;
-	private int key;
-	private State state = State.DEFAULT;
-	private IButtonAction action;
+    private UI ui;
+    private int x;
+    private int y;
+    private String label;
+    private String help;
+    private int key;
+    private State state = State.DEFAULT;
+    private IButtonAction action;
 
-	public Button(int x, int y, String label, String help, int key) {
-		this(x, y, label, help, key, null);
-	}
+    public Button(int x, int y, String label, String help, int key) {
+        this(x, y, label, help, key, null);
+    }
 
-	public Button(int x, int y, String label, String help, int key, IButtonAction action) {
-		this.x = x;
-		this.y = y;
-		this.label = label;
-		this.help = help;
-		this.key = key;
-		this.action = action;
-	}
+    public Button(int x, int y, String label, String help, int key, IButtonAction action) {
+        this.x = x;
+        this.y = y;
+        this.label = label;
+        this.help = help;
+        this.key = key;
+        this.action = action;
+    }
 
-	public Button(int x, int y, String label, String help, int key, State state, IButtonAction action) {
-		this(x, y, label, help, key, action);
-		setState(state);
-	}
+    public Button(int x, int y, String label, String help, int key, State state, IButtonAction action) {
+        this(x, y, label, help, key, action);
+        setState(state);
+    }
 
-	public Button(int x, int y, String label, String help, int key, boolean pressed, IButtonAction action) {
-		this(x, y, label, help, key, action);
-		setState(pressed);
-	}
-	
-	void setUI(UI ui) {
-		this.ui = ui;
-	}
+    public Button(int x, int y, String label, String help, int key, boolean pressed, IButtonAction action) {
+        this(x, y, label, help, key, action);
+        setState(pressed);
+    }
 
-	public int getX() {
-		return x;
-	}
+    void setUI(UI ui) {
+        this.ui = ui;
+    }
 
-	public int getY() {
-		return y;
-	}
+    public int getX() {
+        return x;
+    }
 
-	public String getLabel() {
-		return label;
-	}
+    public int getY() {
+        return y;
+    }
 
-	public String getHelp() {
-		return help;
-	}
+    public String getLabel() {
+        return label;
+    }
 
-	public int getKey() {
-		return key;
-	}
+    public String getHelp() {
+        return help;
+    }
 
-	public State getState() {
-		return state;
-	}
+    public int getKey() {
+        return key;
+    }
 
-	public void setState(State state) {
-		this.state = state;
-		if (ui != null) ui.requestUpdate();
-	}
+    public State getState() {
+        return state;
+    }
 
-	public void setState(boolean pressed) {
-		setState(pressed ? State.PRESSED : State.DEFAULT);
-		if (ui != null) ui.requestUpdate();
-	}
+    public void setState(State state) {
+        this.state = state;
+        if (ui != null) ui.requestUpdate();
+    }
 
-	public IButtonAction getAction() {
-		return action;
-	}
+    public void setState(boolean pressed) {
+        setState(pressed ? State.PRESSED : State.DEFAULT);
+        if (ui != null) ui.requestUpdate();
+    }
 
-	public void setAction(IButtonAction action) {
-		this.action = action;
-	}
+    public IButtonAction getAction() {
+        return action;
+    }
 
-	public boolean hit(int x, int y, IView view) {
-		float bx = ui.getX() + this.x * (BUTTON_GAP + BUTTON_WIDTH);
-		float by = ui.getY() + this.y * (BUTTON_GAP + BUTTON_HEIGHT);
-		return x >= bx && x <= bx + BUTTON_WIDTH && y >= by && y <= by + BUTTON_HEIGHT;
-	}
+    public void setAction(IButtonAction action) {
+        this.action = action;
+    }
 
-	public void fire(IView view) {
-		if (state == State.DISABLED)
-			return;
-		if (action == null)
-			throw new UnsupportedOperationException("button '" + label + "' has no action defined");
-		action.execute(this, view);
-	}
+    public boolean hit(int x, int y, IView view) {
+        float bx = ui.getX() + this.x * (BUTTON_GAP + BUTTON_WIDTH);
+        float by = ui.getY() + this.y * (BUTTON_GAP + BUTTON_HEIGHT);
+        return x >= bx && x <= bx + BUTTON_WIDTH && y >= by && y <= by + BUTTON_HEIGHT;
+    }
+
+    public void fire(IView view) {
+        if (state == State.DISABLED)
+            return;
+        if (action == null)
+            throw new UnsupportedOperationException("button '" + label + "' has no action defined");
+        action.execute(this, view);
+    }
 }

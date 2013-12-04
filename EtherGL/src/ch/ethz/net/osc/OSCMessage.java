@@ -29,80 +29,80 @@ package ch.ethz.net.osc;
 import java.nio.ByteBuffer;
 
 public class OSCMessage {
-	private static int buildTypeTagString(byte[] typeTag, int ttidx, int size, Object[] args) {
-		for (Object o : args) {
-			if (o instanceof Integer) {
-				size++;
-				typeTag[ttidx++] = 'i';
-			} else if (o instanceof Float) {
-				size++;
-				typeTag[ttidx++] = 'f';
-			} else if (o instanceof Double) {
-				size += 2;
-				typeTag[ttidx++] = 'd';
-			} else if (o instanceof String) {
-				size += (((String) o).length() / 4) + 1;
-				typeTag[ttidx++] = 's';
-			} else if (o instanceof byte[]) {
-				size += ((((byte[]) o).length + 3) / 4) + 1;
-				typeTag[ttidx++] = 'b';
-			} else if (o instanceof Boolean) {
-				boolean value = ((Boolean) o).booleanValue();
-				if (value)
-					typeTag[ttidx++] = 'T';
-				else
-					typeTag[ttidx++] = 'F';
-			} else if (o == null) {
-				typeTag[ttidx++] = 'N';
-			} else
-				throw new IllegalArgumentException("Unsupported OSC Type:" + o.getClass().getName());
-		}
-		return size;
-	}
+    private static int buildTypeTagString(byte[] typeTag, int ttidx, int size, Object[] args) {
+        for (Object o : args) {
+            if (o instanceof Integer) {
+                size++;
+                typeTag[ttidx++] = 'i';
+            } else if (o instanceof Float) {
+                size++;
+                typeTag[ttidx++] = 'f';
+            } else if (o instanceof Double) {
+                size += 2;
+                typeTag[ttidx++] = 'd';
+            } else if (o instanceof String) {
+                size += (((String) o).length() / 4) + 1;
+                typeTag[ttidx++] = 's';
+            } else if (o instanceof byte[]) {
+                size += ((((byte[]) o).length + 3) / 4) + 1;
+                typeTag[ttidx++] = 'b';
+            } else if (o instanceof Boolean) {
+                boolean value = (Boolean) o;
+                if (value)
+                    typeTag[ttidx++] = 'T';
+                else
+                    typeTag[ttidx++] = 'F';
+            } else if (o == null) {
+                typeTag[ttidx++] = 'N';
+            } else
+                throw new IllegalArgumentException("Unsupported OSC Type:" + o.getClass().getName());
+        }
+        return size;
+    }
 
-	// generic case
-	static public ByteBuffer getBytes(String address, Object... args) {
-		int size = (address.length() / 4) + 1;
+    // generic case
+    static public ByteBuffer getBytes(String address, Object... args) {
+        int size = (address.length() / 4) + 1;
 
-		byte[] typeTag = new byte[args.length + 1];
-		typeTag[0] = ',';
-		size = buildTypeTagString(typeTag, 1, size, args);
-		size += (typeTag.length / 4) + 1;
+        byte[] typeTag = new byte[args.length + 1];
+        typeTag[0] = ',';
+        size = buildTypeTagString(typeTag, 1, size, args);
+        size += (typeTag.length / 4) + 1;
 
-		ByteBuffer result = header(size, address, typeTag);
+        ByteBuffer result = header(size, address, typeTag);
 
-		for (Object o : args)
-			OSCCommon.append(result, o);
-		return result;
-	}
+        for (Object o : args)
+            OSCCommon.append(result, o);
+        return result;
+    }
 
-	// generic case for reply
-	static public ByteBuffer getBytes(String address, byte[] request, Object[] args) {
-		int size = (address.length() / 4) + 1;
+    // generic case for reply
+    static public ByteBuffer getBytes(String address, byte[] request, Object[] args) {
+        int size = (address.length() / 4) + 1;
 
-		byte[] typeTag = new byte[args.length + 2];
-		typeTag[0] = ',';
-		typeTag[1] = 'b';
-		size += ((request.length + 3) / 4) + 1;
-		size = buildTypeTagString(typeTag, 2, size, args);
-		size += (typeTag.length / 4) + 1;
+        byte[] typeTag = new byte[args.length + 2];
+        typeTag[0] = ',';
+        typeTag[1] = 'b';
+        size += ((request.length + 3) / 4) + 1;
+        size = buildTypeTagString(typeTag, 2, size, args);
+        size += (typeTag.length / 4) + 1;
 
-		ByteBuffer result = header(size, address, typeTag);
+        ByteBuffer result = header(size, address, typeTag);
 
-		OSCCommon.append(result, request);
-		for (Object o : args)
-			OSCCommon.append(result, o);
-		return result;
-	}
+        OSCCommon.append(result, request);
+        for (Object o : args)
+            OSCCommon.append(result, o);
+        return result;
+    }
 
-	final private static ByteBuffer header(int size, String address, byte[] typeTag) {
-		ByteBuffer result = ByteBuffer.allocate(size * 4);
+    private static ByteBuffer header(int size, String address, byte[] typeTag) {
+        ByteBuffer result = ByteBuffer.allocate(size * 4);
 
-		OSCCommon.append(result, address);
-		result.put(typeTag);
-		result.put((byte) 0); // End of type tag string
-		OSCCommon.align(result);
+        OSCCommon.append(result, address);
+        result.put(typeTag);
+        result.put((byte) 0); // End of type tag string
+        OSCCommon.align(result);
 
-		return result;
-	}
+        return result;
+    }
 }

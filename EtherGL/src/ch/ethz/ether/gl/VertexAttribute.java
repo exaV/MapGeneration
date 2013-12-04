@@ -35,74 +35,74 @@ import javax.media.opengl.GL3;
 import com.jogamp.common.nio.Buffers;
 
 // FIXME: this is not an attribute, this is just a vertex buffer
+
 /**
  * Very simple vertex attribute wrapper.
- * 
+ *
  * @author radar
- * 
  */
 public class VertexAttribute {
-	private static final FloatBuffer EMPTY_BUFFER = Buffers.newDirectFloatBuffer(0);
+    private static final FloatBuffer EMPTY_BUFFER = Buffers.newDirectFloatBuffer(0);
 
-	private int[] vbo;
-	private int size;
+    private int[] vbo;
+    private int size;
 
-	public VertexAttribute() {
-	}
+    public VertexAttribute() {
+    }
 
-	public void dispose(GL gl) {
-		if (vbo != null) {
-			gl.glDeleteBuffers(1, vbo, 0);
-			vbo = null;
-		}
-	}
+    public void dispose(GL gl) {
+        if (vbo != null) {
+            gl.glDeleteBuffers(1, vbo, 0);
+            vbo = null;
+        }
+    }
 
-	public void load(GL gl, FloatBuffer vertices) {
-		if (vbo == null) {
-			vbo = new int[1];
-			gl.glGenBuffers(1, vbo, 0);
-		}
+    public void load(GL gl, FloatBuffer vertices) {
+        if (vbo == null) {
+            vbo = new int[1];
+            gl.glGenBuffers(1, vbo, 0);
+        }
 
-		int bytesPerFloat = Float.SIZE / Byte.SIZE;
+        int bytesPerFloat = Float.SIZE / Byte.SIZE;
 
-		gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vbo[0]);
-		if (vertices != null && vertices.limit() != 0) {
-			size = vertices.limit();
-			vertices.rewind();
+        gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vbo[0]);
+        if (vertices != null && vertices.limit() != 0) {
+            size = vertices.limit();
+            vertices.rewind();
 
-			// transfer data to VBO
-			int numBytes = vertices.limit() * bytesPerFloat;
-			gl.glBufferData(GL.GL_ARRAY_BUFFER, numBytes, vertices, GL.GL_STATIC_DRAW);
-		} else {
-			size = 0;
-			gl.glBufferData(GL.GL_ARRAY_BUFFER, 0, EMPTY_BUFFER, GL.GL_STATIC_DRAW);
-		}
-		gl.glBindBuffer(GL.GL_ARRAY_BUFFER, 0);
-	}
+            // transfer data to VBO
+            int numBytes = vertices.limit() * bytesPerFloat;
+            gl.glBufferData(GL.GL_ARRAY_BUFFER, numBytes, vertices, GL.GL_STATIC_DRAW);
+        } else {
+            size = 0;
+            gl.glBufferData(GL.GL_ARRAY_BUFFER, 0, EMPTY_BUFFER, GL.GL_STATIC_DRAW);
+        }
+        gl.glBindBuffer(GL.GL_ARRAY_BUFFER, 0);
+    }
 
-	public void clear(GL gl) {
-		load(gl, null);
-	}
+    public void clear(GL gl) {
+        load(gl, null);
+    }
 
-	public void enable(GL3 gl, int size, int index) {
-		if (size > 0) {
-			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vbo[0]);
-			gl.glEnableVertexAttribArray(index);
-			gl.glVertexAttribPointer(index, size, GL.GL_FLOAT, false, 0, 0);
-		}
-	}
+    public void enable(GL3 gl, int size, int index) {
+        if (size > 0) {
+            gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vbo[0]);
+            gl.glEnableVertexAttribArray(index);
+            gl.glVertexAttribPointer(index, size, GL.GL_FLOAT, false, 0, 0);
+        }
+    }
 
-	public void disable(GL3 gl, int index) {
-		if (size > 0) {
-			gl.glDisableVertexAttribArray(index);
-		}
-	}
+    public void disable(GL3 gl, int index) {
+        if (size > 0) {
+            gl.glDisableVertexAttribArray(index);
+        }
+    }
 
-	public int size() {
-		return size;
-	}
-	
-	public boolean isEmpty() {
-		return size == 0;
-	}
+    public int size() {
+        return size;
+    }
+
+    public boolean isEmpty() {
+        return size == 0;
+    }
 }
