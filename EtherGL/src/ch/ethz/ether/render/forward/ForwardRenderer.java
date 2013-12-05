@@ -46,8 +46,8 @@ import ch.ethz.ether.view.IView;
  * @author radar
  */
 public class ForwardRenderer extends AbstractRenderer {
-    private final Mat4 projMatrix2D = Mat4.identity();
-    private final Mat4 viewMatrix2D = Mat4.identity();
+    private final Mat4 projMatrix2D = Mat4.identityMatrix();
+    private final Mat4 viewMatrix2D = Mat4.identityMatrix();
 
     public ForwardRenderer() {
     }
@@ -79,7 +79,7 @@ public class ForwardRenderer extends AbstractRenderer {
         renderGroups(gl, this, view, projMatrix, viewMatrix, Pass.OVERLAY);
 
         // ---- 4. DEVICE SPACE OVERLAY (DEPTH WRITE&TEST DISABLED, BLEND ON)
-        projMatrix2D.setIdentity();
+        projMatrix2D.identity();
         renderGroups(gl, this, view, projMatrix2D, viewMatrix2D, Pass.DEVICE_SPACE_OVERLAY);
 
         // ---- 5. SCREEN SPACE OVERLAY (DEPTH WRITE&TEST DISABLED, BLEND ON)

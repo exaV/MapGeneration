@@ -12,17 +12,19 @@ import java.util.Map;
 public abstract class AbstractMesh implements IMesh {
     private class TransformCache {
         TransformCache() {
-
+            triangleVertices = transform.transformVertices(AbstractMesh.this.triangleVertices);
+            triangleNormals = transform.transformNormals(AbstractMesh.this.triangleNormals);
+            edgeVertices = transform.transformVertices(AbstractMesh.this.edgeVertices);
+            pointVertices = transform.transformVertices(AbstractMesh.this.pointVertices);
         }
 
-        float[] triangleVertices;
-        float[] triangleNormals;
-        float[] edgeVertices;
-        float[] pointVertices;
+        final float[] triangleVertices;
+        final float[] triangleNormals;
+        final float[] edgeVertices;
+        final float[] pointVertices;
     }
 
     private BoundingVolume bounds;
-    private Vec3 origin;
     private Transform transform = new Transform();
     private float[] triangleVertices;
     private float[] triangleNormals;
@@ -35,73 +37,79 @@ public abstract class AbstractMesh implements IMesh {
     private TransformCache cache;
 
     protected AbstractMesh() {
-        this.origin = Vec3.ZERO;
+        this(Vec3.ZERO);
     }
 
     protected AbstractMesh(Vec3 origin) {
-        this.origin = origin;
+        transform.setOrigin(origin);
     }
 
     protected void setTriangles(float[] vertices, float[] normals, float[] colors) {
         triangleVertices = vertices;
         triangleNormals = normals;
         triangleColors = colors;
-
+        invalidateCache();
     }
 
     protected void setEdges(float[] vertices, float[] colors) {
         edgeVertices = vertices;
         edgeColors = colors;
+        invalidateCache();
     }
 
     protected void setPoints(float[] vertices, float[] colors) {
         pointVertices = vertices;
         pointColors = colors;
+        invalidateCache();
     }
 
     @Override
     public BoundingVolume getBounds() {
-        validateBounds();
+        validateCache();
         return bounds;
     }
 
     @Override
     public Vec3 getOrigin() {
-        return origin;
+        return transform.getOrigin();
     }
 
     public void setOrigin(Vec3 origin) {
-        this.origin = origin;
+        transform.setOrigin(origin);
+        invalidateCache();
     }
 
     @Override
     public Vec3 getTranslation() {
-        return null;
+        return transform.getTranslation();
     }
 
     @Override
     public void setTranslation(Vec3 translation) {
-
+        transform.setTranslation(translation);
+        invalidateCache();
     }
 
     @Override
     public Vec3 getRotation() {
-        return null;
+        return transform.getRotation();
     }
 
     @Override
     public void setRotation(Vec3 rotation) {
-
+        transform.setRotation(rotation);
+        invalidateCache();
     }
 
     @Override
     public Vec3 getScale() {
-        return null;
+        return transform.getScale();
     }
 
     @Override
     public void setScale(Vec3 scale) {
-
+        transform.setScale(scale);
+        invalidateCache();
     }
 
     @Override
@@ -111,13 +119,13 @@ public abstract class AbstractMesh implements IMesh {
 
     @Override
     public boolean getTriangleVertices(IAddOnlyFloatList dst) {
-        validateTransformCache();
+        validateCache();
         return dst.addAll(cache.triangleVertices);
     }
 
     @Override
     public boolean getTriangleNormals(IAddOnlyFloatList dst) {
-        validateTransformCache();
+        validateCache();
         return dst.addAll(cache.triangleNormals);
     }
 
@@ -128,6 +136,7 @@ public abstract class AbstractMesh implements IMesh {
 
     @Override
     public boolean getEdgeVertices(IAddOnlyFloatList dst) {
+        validateCache();
         return dst.addAll(cache.edgeVertices);
     }
 
@@ -138,6 +147,7 @@ public abstract class AbstractMesh implements IMesh {
 
     @Override
     public boolean getPointVertices(IAddOnlyFloatList dst) {
+        validateCache();
         return dst.addAll(cache.pointVertices);
     }
 
@@ -146,22 +156,14 @@ public abstract class AbstractMesh implements IMesh {
         return dst.addAll(pointColors);
     }
 
-    private void clearTransformCache() {
+    private void invalidateCache() {
         cache = null;
-    }
-
-    private void validateTransformCache() {
-        if (cache == null) {
-            cache = new TransformCache();
-        }
-    }
-
-    private void clearBounds() {
         bounds = null;
     }
 
-    private void validateBounds() {
-        if (bounds == null) {
+    private void validateCache() {
+        if (cache == null) {
+            cache = new TransformCache();
             bounds = new BoundingVolume();
             bounds.add(cache.triangleVertices);
             bounds.add(cache.edgeVertices);

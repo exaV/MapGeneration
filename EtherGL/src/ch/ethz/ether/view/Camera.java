@@ -54,8 +54,8 @@ public class Camera {
     private float translateX = 0.0f;
     private float translateY = 0.0f;
 
-    private Mat4 projMatrix = Mat4.identity();
-    private Mat4 viewMatrix = Mat4.identity();
+    private Mat4 projMatrix = Mat4.identityMatrix();
+    private Mat4 viewMatrix = Mat4.identityMatrix();
 
     public Camera(IView view) {
         this.view = view;
@@ -210,7 +210,7 @@ public class Camera {
 
     public Mat4 getViewMatrix() {
         if (viewMatrix == null) {
-            viewMatrix = Mat4.identity();
+            viewMatrix = Mat4.identityMatrix();
             viewMatrix.translate(translateX, translateY, -distance);
             viewMatrix.rotate(rotateX - 90, 1, 0, 0);
             viewMatrix.rotate(rotateZ, 0, 0, 1);

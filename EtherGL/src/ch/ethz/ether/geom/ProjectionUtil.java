@@ -61,8 +61,6 @@ public final class ProjectionUtil {
         if (proj.w == 0)
             return null;
 
-        float w = 1 / proj.w * 0.5f;
-
         // map x, y and z to range [0, 1]
         float x = 0.5f * (proj.x / proj.w + 1);
         float y = 0.5f * (proj.y / proj.w + 1);
@@ -104,7 +102,7 @@ public final class ProjectionUtil {
     }
 
     public static Vec3 unprojectFromScreen(Mat4 viewMatrix, Mat4 projMatrix, Viewport viewport, Vec3 v) {
-        Mat4 inverse = Mat4.multiply(projMatrix, viewMatrix).inverse();
+        Mat4 inverse = Mat4.product(projMatrix, viewMatrix).inverse();
         if (inverse == null)
             return null;
 

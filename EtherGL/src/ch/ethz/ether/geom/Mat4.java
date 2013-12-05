@@ -55,13 +55,13 @@ public final class Mat4 {
     /**
      * Set matrix to identity matrix.
      */
-    public void setIdentity() {
+    public void identity() {
         zero();
         m[0] = m[5] = m[10] = m[15] = 1;
     }
 
     /**
-     * Assign other matrix to this.
+     * Assign other matrix to this matrix.
      *
      * @param mat matrix to be assigned
      */
@@ -107,11 +107,15 @@ public final class Mat4 {
      * @param tz z translation
      */
     public void translate(float tx, float ty, float tz) {
-        final Mat4 t = identity();
+        final Mat4 t = identityMatrix();
         t.m[12] = tx;
         t.m[13] = ty;
         t.m[14] = tz;
         multiply(t);
+    }
+
+    public void translate(Vec3 t) {
+        translate(t.x, t.y, t.z);
     }
 
 
@@ -144,7 +148,7 @@ public final class Mat4 {
         float yz = y * z;
         float zs = z * s;
 
-        final Mat4 r = identity();
+        final Mat4 r = identityMatrix();
         r.m[0] = x * x * ic + c;
         r.m[1] = xy * ic + zs;
         r.m[2] = xz * ic - ys;
@@ -158,6 +162,9 @@ public final class Mat4 {
         multiply(r);
     }
 
+    public void rotate(float angle, Vec3 axis) {
+        rotate(angle, axis.x, axis.y, axis.z);
+    }
 
     /**
      * Multiplies matrix m with scale matrix s. m = m * s
@@ -172,6 +179,9 @@ public final class Mat4 {
         m[10] *= sz;
     }
 
+    public void scale(Vec3 s) {
+        scale(s.x, s.y, s.z);
+    }
 
     /**
      * Set perspective projection. Supports far plane at infinity.
@@ -185,7 +195,7 @@ public final class Mat4 {
     public void perspective(float fovy, float aspect, float near, float far) {
         double radians = fovy / 2 * Math.PI / 180;
         double sine = Math.sin(radians);
-        double deltaZ = far - near;
+        float deltaZ = far - near;
 
         if ((deltaZ == 0) || (sine == 0) || (aspect == 0)) {
             throw new IllegalArgumentException("illegal arguments (fovy=" + fovy + " aspect=" + aspect + " near=" + near + " far=" + far);
@@ -196,9 +206,9 @@ public final class Mat4 {
         zero();
         m[0] = (float) (cotangent / aspect);
         m[5] = (float) cotangent;
-        m[10] = far >= Double.POSITIVE_INFINITY ? -1 : (float) (-(far + near) / deltaZ);
+        m[10] = ((far >= Double.POSITIVE_INFINITY) ? -1 : (-(far + near) / deltaZ));
         m[11] = -1;
-        m[14] = far >= Double.POSITIVE_INFINITY ? (float) (-2 * near) : (float) (-2 * near * far / deltaZ);
+        m[14] = ((far >= Double.POSITIVE_INFINITY) ? (-2 * near) : (-2 * near * far / deltaZ));
     }
 
 
@@ -238,7 +248,6 @@ public final class Mat4 {
      * @return the transformed vector
      */
     public Vec4 transform(Vec4 vec) {
-        // (one matrix row in column-major order) X (column vector)
         float x = vec.x * m[0] + vec.y * m[4 + 0] + vec.z * m[8 + 0] + vec.w * m[12 + 0];
         float y = vec.x * m[1] + vec.y * m[4 + 1] + vec.z * m[8 + 1] + vec.w * m[12 + 1];
         float z = vec.x * m[2] + vec.y * m[4 + 2] + vec.z * m[8 + 2] + vec.w * m[12 + 2];
@@ -254,7 +263,6 @@ public final class Mat4 {
      * @return the transformed vector
      */
     public Vec3 transform(Vec3 vec) {
-        // (one matrix row in column-major order) X (column vector)
         float x = vec.x * m[0] + vec.y * m[4 + 0] + vec.z * m[8 + 0] + m[12 + 0];
         float y = vec.x * m[1] + vec.y * m[4 + 1] + vec.z * m[8 + 1] + m[12 + 1];
         float z = vec.x * m[2] + vec.y * m[4 + 2] + vec.z * m[8 + 2] + m[12 + 2];
@@ -285,11 +293,46 @@ public final class Mat4 {
         return result;
     }
 
+    /**
+     * Transform a float array of xyz vectors.
+     *
+     * @param xyz the input array of vectors to be transformed
+     * @return new array containing the transformed result
+     */
+    public float[] transform(float[] xyz) {
+        return transform(xyz, null);
+    }
 
     /**
-     * Get inverse
+     * Get transposed matrix.
+     * @return the transposed matrix
+     */
+    // FIXME: verify
+    public Mat4 transposed() {
+        Mat4 result = new Mat4();
+        result.m[0] = m[0];
+        result.m[1] = m[4];
+        result.m[2] = m[8];
+        result.m[3] = m[12];
+        result.m[4] = m[1];
+        result.m[5] = m[5];
+        result.m[6] = m[9];
+        result.m[7] = m[13];
+        result.m[8] = m[2];
+        result.m[9] = m[6];
+        result.m[10] = m[10];
+        result.m[11] = m[15];
+        result.m[12] = m[3];
+        result.m[13] = m[7];
+        result.m[14] = m[11];
+        result.m[15] = m[15];
+        return result;
+    }
+
+    /**
+     * Get inverse matrix.
      *
-     * @return the inverse of a or null if a is singular
+     * @return the inverse or null if a is singular
      */
     public Mat4 inverse() {
         final float[][] temp = new float[4][4];
@@ -298,7 +341,7 @@ public final class Mat4 {
             System.arraycopy(m, i * 4, temp[i], 0, 4);
         }
 
-        Mat4 inv = identity();
+        Mat4 inv = identityMatrix();
 
         for (int i = 0; i < 4; i++) {
             // look for largest element in column
@@ -351,7 +394,7 @@ public final class Mat4 {
      *
      * @return the new identity matrix
      */
-    public static Mat4 identity() {
+    public static Mat4 identityMatrix() {
         Mat4 mat = new Mat4();
         mat.m[0] = mat.m[5] = mat.m[10] = mat.m[15] = 1;
         return mat;
@@ -359,17 +402,14 @@ public final class Mat4 {
 
 
     /**
-     * Multiplies two matrices result = a * b. The first matrix passed (a) can
-     * be used as result for in place operations, i.e. a=multiply(a,b,a).
+     * Multiplies two matrices result = a * b.
      *
-     * @param a      4x4 matrix in column-major order
-     * @param b      4x4 matrix in column-major order
-     * @param result 4x4 matrix for result = a * b, or null to create new matrix
+     * @param a 4x4 matrix in column-major order
+     * @param b 4x4 matrix in column-major order
      * @return multiplied column-major matrix
      */
-    private static Mat4 multiply(final Mat4 a, final Mat4 b, Mat4 result) {
-        if (result == null)
-            result = new Mat4();
+    public static Mat4 product(Mat4 a, Mat4 b) {
+        Mat4 result = new Mat4();
         for (int i = 0; i < 4; i++) {
             float ai0 = a.m[i];
             float ai1 = a.m[i + 4];
@@ -381,16 +421,5 @@ public final class Mat4 {
             result.m[i + 3 * 4] = ai0 * b.m[(3 * 4)] + ai1 * b.m[1 + 3 * 4] + ai2 * b.m[2 + 3 * 4] + ai3 * b.m[3 + 3 * 4];
         }
         return result;
-    }
-
-    /**
-     * Multiplies two matrices result = a * b.
-     *
-     * @param a      4x4 matrix in column-major order
-     * @param b      4x4 matrix in column-major order
-     * @return multiplied column-major matrix
-     */
-    public static Mat4 multiply(Mat4 a, Mat4 b) {
-        return multiply(a, b, null);
     }
 }
