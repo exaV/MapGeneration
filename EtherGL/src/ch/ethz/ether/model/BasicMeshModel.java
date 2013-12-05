@@ -27,14 +27,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package ch.ethz.ether.model;
 
-import ch.ethz.ether.geom.BoundingVolume;
 import ch.ethz.ether.render.GenericRenderGroup;
 import ch.ethz.ether.render.IRenderGroup.Source;
 import ch.ethz.ether.render.IRenderGroup.Type;
 import ch.ethz.ether.render.IRenderer;
-import ch.ethz.ether.scene.IScene;
-
-import java.util.List;
 
 public class BasicMeshModel extends AbstractModel {
     private final GenericRenderGroup triangles = new GenericRenderGroup(Source.MODEL, Type.TRIANGLES);

@@ -27,8 +27,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package ch.ethz.ether.mapping;
 
-import java.util.Collections;
-
 import ch.ethz.ether.render.AbstractRenderGroup;
 import ch.ethz.ether.render.IRenderGroup;
 import ch.ethz.ether.render.IRenderGroup.Pass;
@@ -40,6 +38,8 @@ import ch.ethz.ether.scene.AbstractTool;
 import ch.ethz.ether.scene.IScene;
 import ch.ethz.ether.view.IView;
 import ch.ethz.util.IAddOnlyFloatList;
+
+import java.util.Collections;
 
 public final class FillTool extends AbstractTool {
     // @formatter:off

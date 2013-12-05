@@ -35,6 +35,7 @@ import java.awt.event.MouseWheelListener;
 import javax.media.opengl.GLEventListener;
 
 import ch.ethz.ether.gl.Frame;
+import ch.ethz.ether.gl.Viewport;
 import ch.ethz.ether.scene.IScene;
 
 /**
@@ -63,27 +64,11 @@ public interface IView extends GLEventListener, KeyListener, MouseListener, Mous
     Camera getCamera();
 
     /**
-     * Get viewport width.
-     *
-     * @return viewport width
-     */
-    int getWidth();
-
-    /**
-     * Get viewport height.
-     *
-     * @return viewport height
-     */
-    int getHeight();
-
-    /**
-     * Get viewport [x, y, w, h]. Note: This returns a reference to an internal
-     * array. Writing to the array has no effect, except for a messed up
-     * viewport until the next redraw cycle.
+     * Get viewport [x, y, w, h].
      *
      * @return the viewport.
      */
-    int[] getViewport();
+    Viewport getViewport();
 
     /**
      * Get view type.

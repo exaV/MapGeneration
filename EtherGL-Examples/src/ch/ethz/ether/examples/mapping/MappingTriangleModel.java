@@ -30,7 +30,6 @@ package ch.ethz.ether.examples.mapping;
 import ch.ethz.ether.model.BasicMeshModel;
 import ch.ethz.ether.render.util.FloatList;
 import ch.ethz.ether.render.util.Primitives;
-import ch.ethz.ether.scene.IScene;
 
 public class MappingTriangleModel extends BasicMeshModel {
     public MappingTriangleModel() {

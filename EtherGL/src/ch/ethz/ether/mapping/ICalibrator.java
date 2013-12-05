@@ -27,6 +27,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package ch.ethz.ether.mapping;
 
+import ch.ethz.ether.geom.Mat4;
+
 import java.util.List;
 
 /**
@@ -37,7 +39,7 @@ import java.util.List;
 public interface ICalibrator {
     double calibrate(List<float[]> modelVertices, List<float[]> projectedVertices, float near, float far);
 
-    float[] getProjectionMatrix();
+    Mat4 getProjMatrix();
 
-    float[] getModelMatrix();
+    Mat4 getViewMatrix();
 }

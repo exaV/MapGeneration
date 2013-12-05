@@ -1,17 +1,17 @@
 package ch.ethz.ether.model;
 
-import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+import ch.ethz.ether.geom.Vec3;
 
 /**
  * Created by radar on 05/12/13.
  */
 public interface ITransformable {
-    Vector3D getTranslation();
-    void setTranslation(Vector3D translation);
+    Vec3 getTranslation();
+    void setTranslation(Vec3 translation);
 
-    Vector3D getRotation();
-    void setRotation(Vector3D rotation);
+    Vec3 getRotation();
+    void setRotation(Vec3 rotation);
 
-    Vector3D getScale();
-    void setScale(Vector3D scale);
+    Vec3 getScale();
+    void setScale(Vec3 scale);
 }

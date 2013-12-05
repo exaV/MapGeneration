@@ -32,7 +32,7 @@ import java.io.PrintStream;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL3;
 
-import ch.ethz.ether.geom.Matrix4x4;
+import ch.ethz.ether.geom.Mat4;
 import ch.ethz.ether.gl.Program;
 import ch.ethz.ether.render.AbstractRenderer;
 import ch.ethz.ether.render.IRenderEntry;
@@ -46,8 +46,8 @@ import ch.ethz.ether.view.IView;
  * @author radar
  */
 public class ForwardRenderer extends AbstractRenderer {
-    private final float[] projMatrix2D = Matrix4x4.identity();
-    private final float[] viewMatrix2D = Matrix4x4.identity();
+    private final Mat4 projMatrix2D = Mat4.identity();
+    private final Mat4 viewMatrix2D = Mat4.identity();
 
     public ForwardRenderer() {
     }
@@ -61,8 +61,8 @@ public class ForwardRenderer extends AbstractRenderer {
         gl.glEnable(GL.GL_POLYGON_OFFSET_FILL);
         gl.glPolygonOffset(1, 3);
 
-        float[] projMatrix = view.getCamera().getProjectionMatrix();
-        float[] viewMatrix = view.getCamera().getViewMatrix();
+        Mat4 projMatrix = view.getCamera().getProjMatrix();
+        Mat4 viewMatrix = view.getCamera().getViewMatrix();
 
         renderGroups(gl, this, view, projMatrix, viewMatrix, Pass.DEPTH);
 
@@ -79,11 +79,11 @@ public class ForwardRenderer extends AbstractRenderer {
         renderGroups(gl, this, view, projMatrix, viewMatrix, Pass.OVERLAY);
 
         // ---- 4. DEVICE SPACE OVERLAY (DEPTH WRITE&TEST DISABLED, BLEND ON)
-        Matrix4x4.identity(projMatrix2D);
+        projMatrix2D.setIdentity();
         renderGroups(gl, this, view, projMatrix2D, viewMatrix2D, Pass.DEVICE_SPACE_OVERLAY);
 
         // ---- 5. SCREEN SPACE OVERLAY (DEPTH WRITE&TEST DISABLED, BLEND ON)
-        Matrix4x4.ortho(0, view.getWidth(), view.getHeight(), 0, -1, 1, projMatrix2D);
+        projMatrix2D.ortho(0, view.getViewport().w, view.getViewport().h, 0, -1, 1);
         renderGroups(gl, this, view, projMatrix2D, viewMatrix2D, Pass.SCREEN_SPACE_OVERLAY);
 
         // ---- 6. CLEANUP: RETURN TO DEFAULTS

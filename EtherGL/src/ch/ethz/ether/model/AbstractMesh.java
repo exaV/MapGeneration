@@ -1,8 +1,8 @@
 package ch.ethz.ether.model;
 
 import ch.ethz.ether.geom.BoundingVolume;
+import ch.ethz.ether.geom.Vec3;
 import ch.ethz.util.IAddOnlyFloatList;
-import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
 import java.util.Map;
 
@@ -22,7 +22,7 @@ public abstract class AbstractMesh implements IMesh {
     }
 
     private BoundingVolume bounds;
-    private Vector3D origin;
+    private Vec3 origin;
     private Transform transform = new Transform();
     private float[] triangleVertices;
     private float[] triangleNormals;
@@ -35,10 +35,10 @@ public abstract class AbstractMesh implements IMesh {
     private TransformCache cache;
 
     protected AbstractMesh() {
-        this.origin = Vector3D.ZERO;
+        this.origin = Vec3.ZERO;
     }
 
-    protected AbstractMesh(Vector3D origin) {
+    protected AbstractMesh(Vec3 origin) {
         this.origin = origin;
     }
 
@@ -66,41 +66,41 @@ public abstract class AbstractMesh implements IMesh {
     }
 
     @Override
-    public Vector3D getOrigin() {
+    public Vec3 getOrigin() {
         return origin;
     }
 
-    public void setOrigin(Vector3D origin) {
+    public void setOrigin(Vec3 origin) {
         this.origin = origin;
     }
 
     @Override
-    public Vector3D getTranslation() {
+    public Vec3 getTranslation() {
         return null;
     }
 
     @Override
-    public void setTranslation(Vector3D translation) {
+    public void setTranslation(Vec3 translation) {
 
     }
 
     @Override
-    public Vector3D getRotation() {
+    public Vec3 getRotation() {
         return null;
     }
 
     @Override
-    public void setRotation(Vector3D rotation) {
+    public void setRotation(Vec3 rotation) {
 
     }
 
     @Override
-    public Vector3D getScale() {
+    public Vec3 getScale() {
         return null;
     }
 
     @Override
-    public void setScale(Vector3D scale) {
+    public void setScale(Vec3 scale) {
 
     }
 

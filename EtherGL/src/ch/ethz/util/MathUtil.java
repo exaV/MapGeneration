@@ -27,19 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package ch.ethz.util;
 
-import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
-import org.apache.commons.math3.linear.ArrayRealVector;
-import org.apache.commons.math3.linear.RealVector;
-
 public final class MathUtil {
-    public static Vector3D toVector3D(RealVector v) {
-        return new Vector3D(v.getEntry(0), v.getEntry(1), v.getEntry(2));
-    }
-
-    public static RealVector toRealVector(Vector3D v) {
-        return new ArrayRealVector(v.toArray(), false);
-    }
-
     public static float map(float value, float sourceMin, float sourceMax, float targetMin, float targetMax) {
         if (sourceMax - sourceMin == 0)
             return 0;

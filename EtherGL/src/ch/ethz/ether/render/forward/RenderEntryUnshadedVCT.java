@@ -3,6 +3,7 @@ package ch.ethz.ether.render.forward;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL3;
 
+import ch.ethz.ether.geom.Mat4;
 import ch.ethz.ether.gl.Program;
 import ch.ethz.ether.gl.Texture;
 import ch.ethz.ether.gl.VertexAttribute;
@@ -70,7 +71,7 @@ public class RenderEntryUnshadedVCT extends AbstractRenderEntry {
     }
 
     @Override
-    public void render(GL3 gl, IRenderer renderer, IView view, float[] projMatrix, float[] viewMatrix) {
+    public void render(GL3 gl, IRenderer renderer, IView view, Mat4 projMatrix, Mat4 viewMatrix) {
         if (vertices.isEmpty())
             return;
 
@@ -79,8 +80,8 @@ public class RenderEntryUnshadedVCT extends AbstractRenderEntry {
 
         program.enable(gl);
 
-        program.setUniformMat4(gl, "projMatrix", projMatrix);
-        program.setUniformMat4(gl, "viewMatrix", viewMatrix);
+        program.setUniformMat4(gl, "projMatrix", projMatrix.m);
+        program.setUniformMat4(gl, "viewMatrix", viewMatrix.m);
 
         int verticesIndex = program.getAttributeLocation(gl, "vertexPosition");
         int colorsIndex = program.getAttributeLocation(gl, "vertexColor");

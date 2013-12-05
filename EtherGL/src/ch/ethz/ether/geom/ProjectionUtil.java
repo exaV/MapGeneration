@@ -24,128 +24,100 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
 ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+*/
 package ch.ethz.ether.geom;
 
+import ch.ethz.ether.gl.Viewport;
+import ch.ethz.ether.view.IView;
 import org.apache.commons.math3.geometry.euclidean.threed.Line;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
-import ch.ethz.ether.view.IView;
-
-import com.jogamp.opengl.math.FloatUtil;
-
 public final class ProjectionUtil {
-    public static boolean projectToDevice(IView view, float x, float y, float z, float[] v) {
-        if (!projectToScreen(view, x, y, z, v))
-            return false;
-        v[0] = screenToDeviceX(view, (int) v[0]);
-        v[1] = screenToDeviceY(view, (int) v[1]);
-        v[2] = 0;
-        return true;
+    public static Vec3 projectToDevice(IView view, Vec3 v) {
+        return projectToDevice(view.getCamera().getViewMatrix(), view.getCamera().getProjMatrix(), v);
     }
 
-    public static boolean projectToScreen(IView view, float x, float y, float z, float[] v) {
-        return projectToScreen(view.getCamera().getViewMatrix(), view.getCamera().getProjectionMatrix(), view.getViewport(), x, y, z, v);
+    public static Vec3 projectToDevice(Mat4 viewMatrix, Mat4 projMatrix, Vec3 v) {
+        Vec4 proj = projMatrix.transform(viewMatrix.transform(new Vec4(v)));
+
+        if (proj.w == 0)
+            return null;
+
+        // map x, y and z to range [-1, 1]
+        float x = proj.x / proj.w;
+        float y = proj.y / proj.w;
+        float z = proj.z / proj.w;
+
+        return new Vec3(x, y, z);
     }
 
-    private static boolean projectToScreen(float[] viewMatrix, float[] projMatrix, int[] viewport, float x, float y, float z, float[] v) {
-        final float[] in = new float[4];
-        final float[] out = new float[4];
+    public static Vec3 projectToScreen(IView view, Vec3 v) {
+        return projectToScreen(view.getCamera().getViewMatrix(), view.getCamera().getProjMatrix(), view.getViewport(), v);
+    }
 
-        in[0] = x;
-        in[1] = y;
-        in[2] = z;
-        in[3] = 1.0f;
+    public static Vec3 projectToScreen(Mat4 viewMatrix, Mat4 projMatrix, Viewport viewport, Vec3 v) {
+        Vec4 proj = projMatrix.transform(viewMatrix.transform(new Vec4(v)));
 
-        Matrix4x4.multiplyVector(viewMatrix, in, out);
-        Matrix4x4.multiplyVector(projMatrix, out, in);
+        if (proj.w == 0)
+            return null;
 
-        if (in[3] == 0.0f)
-            return false;
-
-        in[3] = (1.0f / in[3]) * 0.5f;
+        float w = 1 / proj.w * 0.5f;
 
         // map x, y and z to range [0, 1]
-        in[0] = in[0] * in[3] + 0.5f;
-        in[1] = in[1] * in[3] + 0.5f;
-        in[2] = in[2] * in[3] + 0.5f;
+        float x = 0.5f * (proj.x / proj.w + 1);
+        float y = 0.5f * (proj.y / proj.w + 1);
+        float z = 0.5f * (proj.z / proj.w + 1);
 
-        // map x,y to viewport
-        v[0] = in[0] * viewport[2] + viewport[0];
-        v[1] = in[1] * viewport[3] + viewport[1];
-        v[2] = in[2];
-        return true;
+        // map x and y to viewport
+        x = x * viewport.w + viewport.x;
+        y = y * viewport.h + viewport.y;
+        return new Vec3(x, y, z);
     }
 
     public static int deviceToScreenX(IView view, float x) {
-        return (int) ((1.0 + x) / 2.0 * view.getWidth());
+        return (int) ((1.0 + x) / 2.0 * view.getViewport().w);
     }
 
     public static int deviceToScreenY(IView view, float y) {
-        return (int) ((1.0 + y) / 2.0 * view.getHeight());
+        return (int) ((1.0 + y) / 2.0 * view.getViewport().h);
     }
 
     public static float screenToDeviceX(IView view, int x) {
-        return 2f * x / view.getWidth() - 1f;
+        return 2f * x / view.getViewport().w - 1f;
     }
 
     public static float screenToDeviceY(IView view, int y) {
-        return 2f * y / view.getHeight() - 1f;
+        return 2f * y / view.getViewport().h - 1f;
     }
 
     public static Line getRay(IView view, float x, float y) {
-        float[] p0 = new float[4];
-        float[] p1 = new float[4];
-        float[] vm = view.getCamera().getViewMatrix();
-        float[] pm = view.getCamera().getProjectionMatrix();
-        int[] vp = view.getViewport();
-        unprojectFromScreen(vm, pm, vp, x, y, 0.1f, p0);
-        unprojectFromScreen(vm, pm, vp, x, y, 0.9f, p1);
-        return new Line(new Vector3D(p0[0], p0[1], p0[2]), new Vector3D(p1[0], p1[1], p1[2]));
+        Mat4 vm = view.getCamera().getViewMatrix();
+        Mat4 pm = view.getCamera().getProjMatrix();
+        Viewport vp = view.getViewport();
+        Vec3 p0 = unprojectFromScreen(vm, pm, vp, new Vec3(x, y, 0.1f));
+        Vec3 p1 = unprojectFromScreen(vm, pm, vp, new Vec3(x, y, 0.9f));
+        return new Line(new Vector3D(p0.x, p0.y, p0.z), new Vector3D(p1.x, p1.y, p1.z));
     }
 
-    public static boolean unprojectFromScreen(IView view, float x, float y, float z, float[] v) {
-        return unprojectFromScreen(view.getCamera().getViewMatrix(), view.getCamera().getProjectionMatrix(), view.getViewport(), x, y, z, v);
+    public static Vec3 unprojectFromScreen(IView view, Vec3 v) {
+        return unprojectFromScreen(view.getCamera().getViewMatrix(), view.getCamera().getProjMatrix(), view.getViewport(), v);
     }
 
-    public static boolean unprojectFromScreen(float[] viewMatrix, float[] projectionMatrix, int[] viewport, float x, float y, float z, float[] v) {
-        final float[] in = new float[4];
-        final float[] out = new float[4];
-        final float[] matrix = new float[16];
+    public static Vec3 unprojectFromScreen(Mat4 viewMatrix, Mat4 projMatrix, Viewport viewport, Vec3 v) {
+        Mat4 inverse = Mat4.multiply(projMatrix, viewMatrix).inverse();
+        if (inverse == null)
+            return null;
 
-        Matrix4x4.multiply(projectionMatrix, viewMatrix, matrix);
-        FloatUtil.multMatrixf(projectionMatrix, 0, viewMatrix, 0, matrix, 0);
+        // map x and y from window coordinates
+        float x = (v.x - viewport.x) / viewport.w;
+        float y = (v.y - viewport.y) / viewport.h;
 
-        if (Matrix4x4.invert(matrix, matrix) == null) {
-            return false;
+        Vec4 result = inverse.transform(new Vec4(x, y, v.z, 1));
+
+        if (result.w == 0) {
+            return null;
         }
 
-        in[0] = x;
-        in[1] = y;
-        in[2] = z;
-        in[3] = 1.0f;
-
-        // Map x and y from window coordinates
-        in[0] = (in[0] - viewport[0]) / viewport[2];
-        in[1] = (in[1] - viewport[1]) / viewport[3];
-
-        // Map to range -1 to 1
-        in[0] = in[0] * 2 - 1;
-        in[1] = in[1] * 2 - 1;
-        in[2] = in[2] * 2 - 1;
-
-        FloatUtil.multMatrixVecf(matrix, in, out);
-
-        if (out[3] == 0.0) {
-            return false;
-        }
-
-        out[3] = 1.0f / out[3];
-
-        v[0] = out[0] * out[3];
-        v[1] = out[1] * out[3];
-        v[2] = out[2] * out[3];
-
-        return true;
+        return new Vec3(result.x / result.w, result.y / result.w, result.z / result.w);
     }
 }

@@ -1,6 +1,5 @@
 package ch.ethz.ether.model;
 
-import ch.ethz.ether.geom.BoundingBox;
 import ch.ethz.ether.geom.BoundingVolume;
 
 import java.util.ArrayList;
