@@ -34,22 +34,18 @@ import ch.ethz.ether.render.IRenderGroup.Type;
 import ch.ethz.ether.render.IRenderer;
 import ch.ethz.ether.scene.IScene;
 
-public class SimpleTriangleModel implements IModel {
+import java.util.List;
+
+public class BasicMeshModel extends AbstractModel {
     private final GenericRenderGroup triangles = new GenericRenderGroup(Source.MODEL, Type.TRIANGLES);
-    private final BoundingVolume bounds = new BoundingVolume();
 
-    public SimpleTriangleModel(IScene scene) {
+    public BasicMeshModel() {
         IRenderer.GROUPS.add(triangles);
-    }
-
-    @Override
-    public BoundingVolume getBounds() {
-        return bounds;
     }
 
     public void setTriangles(float[] vertices, float[] colors) {
         triangles.set(vertices, null, colors, null, 0, 0, null);
-        bounds.reset();
-        bounds.add(vertices);
+        getBounds().reset();
+        getBounds().add(vertices);
     }
 }

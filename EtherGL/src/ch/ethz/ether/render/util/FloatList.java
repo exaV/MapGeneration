@@ -48,10 +48,13 @@ public final class FloatList implements IAddOnlyFloatList {
     }
 
     @Override
-    public void addAll(float[] values) {
-        if (values != null) {
+    public boolean addAll(float[] values) {
+        if ((values != null) && (values.length > 0)) {
             ensureCapacity(buffer.limit() + values.length);
             buffer.put(values);
+            return true;
+        } else {
+            return false;
         }
     }
 

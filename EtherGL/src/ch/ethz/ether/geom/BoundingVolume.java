@@ -142,29 +142,40 @@ public final class BoundingVolume {
     }
 
     public void add(Vector3D vertex) {
-        add(vertex.getX(), vertex.getY(), vertex.getZ());
+        if (vertex != null) {
+            add(vertex.getX(), vertex.getY(), vertex.getZ());
+        }
     }
 
     public void add(Collection<Vector3D> vertices) {
-        for (Vector3D vertex : vertices)
-            add(vertex);
+        if (vertices != null) {
+            for (Vector3D vertex : vertices) {
+                add(vertex);
+            }
+        }
     }
 
     public void add(float[] vertices) {
-        for (int i = 0; i < vertices.length; i += 3) {
-            add(vertices[i], vertices[i + 1], vertices[i + 2]);
+        if (vertices != null) {
+            for (int i = 0; i < vertices.length; i += 3) {
+                add(vertices[i], vertices[i + 1], vertices[i + 2]);
+            }
         }
     }
 
     public void add(double[] vertices) {
-        for (int i = 0; i < vertices.length; i += 3) {
-            add(vertices[i], vertices[i + 1], vertices[i + 2]);
+        if (vertices != null) {
+            for (int i = 0; i < vertices.length; i += 3) {
+                add(vertices[i], vertices[i + 1], vertices[i + 2]);
+            }
         }
     }
 
     public void add(BoundingVolume b) {
-        add(b.minX, b.minY, b.minZ);
-        add(b.maxX, b.maxY, b.maxZ);
+        if (b != null) {
+            add(b.minX, b.minY, b.minZ);
+            add(b.maxX, b.maxY, b.maxZ);
+        }
     }
 
     @Override

@@ -27,14 +27,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package ch.ethz.ether.examples.mapping;
 
-import ch.ethz.ether.model.SimpleTriangleModel;
+import ch.ethz.ether.model.BasicMeshModel;
 import ch.ethz.ether.render.util.FloatList;
 import ch.ethz.ether.render.util.Primitives;
 import ch.ethz.ether.scene.IScene;
 
-public class MappingTriangleModel extends SimpleTriangleModel {
-    public MappingTriangleModel(IScene scene) {
-        super(scene);
+public class MappingTriangleModel extends BasicMeshModel {
+    public MappingTriangleModel() {
         reset();
     }
 

@@ -32,7 +32,7 @@ import java.io.PrintStream;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL3;
 
-import ch.ethz.ether.gl.Matrix4x4;
+import ch.ethz.ether.geom.Matrix4x4;
 import ch.ethz.ether.gl.Program;
 import ch.ethz.ether.render.AbstractRenderer;
 import ch.ethz.ether.render.IRenderEntry;

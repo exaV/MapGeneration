@@ -28,7 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package ch.ethz.ether.view;
 
 import ch.ethz.ether.geom.BoundingVolume;
-import ch.ethz.ether.gl.Matrix4x4;
+import ch.ethz.ether.geom.Matrix4x4;
 import ch.ethz.util.MathUtil;
 
 /**

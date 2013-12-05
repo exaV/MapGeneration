@@ -34,7 +34,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.prefs.Preferences;
 
-import ch.ethz.ether.gl.ProjectionUtil;
+import ch.ethz.ether.geom.ProjectionUtil;
 import ch.ethz.ether.render.AbstractRenderGroup;
 import ch.ethz.ether.render.IRenderGroup;
 import ch.ethz.ether.render.IRenderGroup.Pass;

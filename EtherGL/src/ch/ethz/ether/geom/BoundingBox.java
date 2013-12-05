@@ -121,29 +121,40 @@ public final class BoundingBox {
     }
 
     public void add(Vector2D vertex) {
-        add(vertex.getX(), vertex.getY());
+        if (vertex != null) {
+            add(vertex.getX(), vertex.getY());
+        }
     }
 
     public void add(Collection<Vector2D> vertices) {
-        for (Vector2D point : vertices)
-            add(point);
+        if (vertices != null) {
+            for (Vector2D point : vertices) {
+                add(point);
+            }
+        }
     }
 
     public void add(float[] vertices) {
-        for (int i = 0; i < vertices.length; i += 2) {
-            add(vertices[i], vertices[i + 1]);
+        if (vertices != null) {
+            for (int i = 0; i < vertices.length; i += 2) {
+                add(vertices[i], vertices[i + 1]);
+            }
         }
     }
 
     public void add(double[] vertices) {
-        for (int i = 0; i < vertices.length; i += 2) {
-            add(vertices[i], vertices[i + 1]);
+        if (vertices != null) {
+            for (int i = 0; i < vertices.length; i += 2) {
+                add(vertices[i], vertices[i + 1]);
+            }
         }
     }
 
     public void add(BoundingBox b) {
-        add(b.minX, b.minY);
-        add(b.maxX, b.maxY);
+        if (b != null) {
+            add(b.minX, b.minY);
+            add(b.maxX, b.maxY);
+        }
     }
 
     @Override

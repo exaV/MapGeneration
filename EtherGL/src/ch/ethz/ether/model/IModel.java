@@ -29,6 +29,8 @@ package ch.ethz.ether.model;
 
 import ch.ethz.ether.geom.BoundingVolume;
 
+import java.util.List;
+
 /**
  * Interface for all models to be rendered / interacted with.
  *
@@ -36,4 +38,6 @@ import ch.ethz.ether.geom.BoundingVolume;
  */
 public interface IModel {
     BoundingVolume getBounds();
+
+    List<IGeometry> getGeometries();
 }

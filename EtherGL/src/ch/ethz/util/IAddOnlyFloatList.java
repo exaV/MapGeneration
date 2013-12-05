@@ -9,7 +9,7 @@ public interface IAddOnlyFloatList {
 
     void add(float value0, float value1, float value2, float value3);
 
-    void addAll(float[] values);
+    boolean addAll(float[] values);
 
     int size();
 
