@@ -125,7 +125,7 @@ public class TextRenderGroup extends AbstractRenderGroup {
 
     @Override
     public final void getTexCoords(IAddOnlyFloatList dst) {
-        dst.addAll(DEFAULT_QUAD_TEX_COORDS);
+        dst.add(DEFAULT_QUAD_TEX_COORDS);
     }
 
     @Override

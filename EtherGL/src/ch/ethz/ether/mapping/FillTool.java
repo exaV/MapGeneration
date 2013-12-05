@@ -42,13 +42,11 @@ import ch.ethz.util.IAddOnlyFloatList;
 import java.util.Collections;
 
 public final class FillTool extends AbstractTool {
-    // @formatter:off
     private static final String[] FILL_HELP = {
             "Fill Tool for Projector Adjustment",
             "",
             "[0] Return"
     };
-    // @formatter:on
 
     private IRenderGroup quads = new AbstractRenderGroup(Source.TOOL, Type.TRIANGLES, Pass.DEVICE_SPACE_OVERLAY) {
         @Override

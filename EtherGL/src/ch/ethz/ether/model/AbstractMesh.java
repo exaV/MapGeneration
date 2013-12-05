@@ -120,40 +120,40 @@ public abstract class AbstractMesh implements IMesh {
     @Override
     public boolean getTriangleVertices(IAddOnlyFloatList dst) {
         validateCache();
-        return dst.addAll(cache.triangleVertices);
+        return dst.add(cache.triangleVertices);
     }
 
     @Override
     public boolean getTriangleNormals(IAddOnlyFloatList dst) {
         validateCache();
-        return dst.addAll(cache.triangleNormals);
+        return dst.add(cache.triangleNormals);
     }
 
     @Override
     public boolean getTriangleColors(IAddOnlyFloatList dst) {
-        return dst.addAll(triangleColors);
+        return dst.add(triangleColors);
     }
 
     @Override
     public boolean getEdgeVertices(IAddOnlyFloatList dst) {
         validateCache();
-        return dst.addAll(cache.edgeVertices);
+        return dst.add(cache.edgeVertices);
     }
 
     @Override
     public boolean getEdgeColors(IAddOnlyFloatList dst) {
-        return dst.addAll(edgeColors);
+        return dst.add(edgeColors);
     }
 
     @Override
     public boolean getPointVertices(IAddOnlyFloatList dst) {
         validateCache();
-        return dst.addAll(cache.pointVertices);
+        return dst.add(cache.pointVertices);
     }
 
     @Override
     public boolean getPointColors(IAddOnlyFloatList dst) {
-        return dst.addAll(pointColors);
+        return dst.add(pointColors);
     }
 
     private void invalidateCache() {

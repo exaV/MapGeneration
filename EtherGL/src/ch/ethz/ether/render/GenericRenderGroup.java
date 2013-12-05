@@ -27,22 +27,22 @@ public class GenericRenderGroup extends AbstractRenderGroup {
 
     @Override
     public void getVertices(IAddOnlyFloatList dst) {
-        dst.addAll(vertices);
+        dst.add(vertices);
     }
 
     @Override
     public void getNormals(IAddOnlyFloatList dst) {
-        dst.addAll(normals);
+        dst.add(normals);
     }
 
     @Override
     public void getColors(IAddOnlyFloatList dst) {
-        dst.addAll(colors);
+        dst.add(colors);
     }
 
     @Override
     public void getTexCoords(IAddOnlyFloatList dst) {
-        dst.addAll(texCoords);
+        dst.add(texCoords);
     }
 
     @Override

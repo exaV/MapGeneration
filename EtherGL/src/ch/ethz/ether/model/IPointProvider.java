@@ -7,5 +7,6 @@ import ch.ethz.util.IAddOnlyFloatList;
  */
 public interface IPointProvider {
     boolean getPointVertices(IAddOnlyFloatList dst);
+
     boolean getPointColors(IAddOnlyFloatList dst);
 }

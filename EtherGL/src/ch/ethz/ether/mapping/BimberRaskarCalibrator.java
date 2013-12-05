@@ -28,6 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package ch.ethz.ether.mapping;
 
 import ch.ethz.ether.geom.Mat4;
+import ch.ethz.ether.geom.Vec3;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.math3.linear.*;
 
@@ -43,7 +44,7 @@ public final class BimberRaskarCalibrator implements ICalibrator {
     }
 
     @Override
-    public double calibrate(List<float[]> modelVertices, List<float[]> projectedVertices, float near, float far) {
+    public double calibrate(List<Vec3> modelVertices, List<Vec3> projectedVertices, float near, float far) {
         if (modelVertices.size() < 6) {
             return Double.POSITIVE_INFINITY;
         }
@@ -54,13 +55,13 @@ public final class BimberRaskarCalibrator implements ICalibrator {
 
         RealMatrix lhs = MatrixUtils.createRealMatrix(2 * modelVertices.size(), 12);
         for (int i = 0; i < modelVertices.size(); ++i) {
-            float[] mp = modelVertices.get(i);
-            float[] dp = projectedVertices.get(i);
-            double x = mp[0];
-            double y = mp[1];
-            double z = mp[2];
-            double u = dp[0];
-            double v = dp[1];
+            Vec3 mp = modelVertices.get(i);
+            Vec3 dp = projectedVertices.get(i);
+            double x = mp.x;
+            double y = mp.y;
+            double z = mp.z;
+            double u = dp.x;
+            double v = dp.y;
 
             lhs.setEntry(2 * i, 0, x);
             lhs.setEntry(2 * i, 1, y);
@@ -201,27 +202,26 @@ public final class BimberRaskarCalibrator implements ICalibrator {
         return toMat4(viewMatrix);
     }
 
-    private double getError(RealMatrix projMatrix, RealMatrix viewMatrix, List<float[]> modelVertices, List<float[]> projectedVertices) {
+    private double getError(RealMatrix projMatrix, RealMatrix viewMatrix, List<Vec3> modelVertices, List<Vec3> projectedVertices) {
         if (modelVertices.size() != projectedVertices.size())
             throw new IllegalArgumentException("lists of vectors do not have same size");
 
         RealMatrix pm = projMatrix.multiply(viewMatrix);
-        ArrayList<Vector3D> projectedPoints = new ArrayList<>(modelVertices.size());
+        ArrayList<Vec3> projectedPoints = new ArrayList<>(modelVertices.size());
         RealVector rp = new ArrayRealVector(4);
-        for (float[] p : modelVertices) {
-            rp.setEntry(0, p[0]);
-            rp.setEntry(1, p[1]);
-            rp.setEntry(2, p[2]);
+        for (Vec3 p : modelVertices) {
+            rp.setEntry(0, p.x);
+            rp.setEntry(1, p.y);
+            rp.setEntry(2, p.z);
             rp.setEntry(3, 1.0);
             RealVector pp = pm.operate(rp);
             pp = pp.mapDivide(pp.getEntry(3));
-            projectedPoints.add(new Vector3D(pp.getEntry(0), pp.getEntry(1), 0.0));
+            projectedPoints.add(new Vec3(pp.getEntry(0), pp.getEntry(1), 0.0));
         }
 
         double error = 0.0;
         for (int i = 0; i < projectedPoints.size(); ++i) {
-            float[] p = projectedVertices.get(i);
-            error += projectedPoints.get(i).distance(new Vector3D(p[0], p[1], p[2]));
+            error += projectedPoints.get(i).distance(projectedVertices.get(i));
         }
         return error;
     }

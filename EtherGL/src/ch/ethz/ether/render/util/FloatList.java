@@ -1,7 +1,10 @@
 package ch.ethz.ether.render.util;
 
 import java.nio.FloatBuffer;
+import java.util.Collection;
 
+import ch.ethz.ether.geom.Vec3;
+import ch.ethz.ether.geom.Vec4;
 import ch.ethz.util.IAddOnlyFloatList;
 
 import com.jogamp.common.nio.Buffers;
@@ -48,7 +51,7 @@ public final class FloatList implements IAddOnlyFloatList {
     }
 
     @Override
-    public boolean addAll(float[] values) {
+    public boolean add(float[] values) {
         if ((values != null) && (values.length > 0)) {
             ensureCapacity(buffer.limit() + values.length);
             buffer.put(values);

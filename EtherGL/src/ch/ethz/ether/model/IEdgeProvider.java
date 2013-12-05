@@ -7,5 +7,6 @@ import ch.ethz.util.IAddOnlyFloatList;
  */
 public interface IEdgeProvider {
     boolean getEdgeVertices(IAddOnlyFloatList dst);
+
     boolean getEdgeColors(IAddOnlyFloatList dst);
 }

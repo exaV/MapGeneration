@@ -43,7 +43,6 @@ public class MappingScene extends AbstractScene {
     private float[] lightPosition = {10.0f, 6.0f, 8.0f};
 
     private final ITool defaultTool = new AbstractTool(this) {
-        // @formatter:off
         private final String[] help = {
                 "Simple Mapping Example (Without Content)",
                 "",
@@ -53,7 +52,6 @@ public class MappingScene extends AbstractScene {
                 "",
                 "Use Mouse Buttons + Shift or Mouse Wheel to Navigate"
         };
-        // @formatter:on
     };
 
     private final CalibrationTool calibrationTool = new CalibrationTool(this, new BoxCalibrationModel(0.5f, 0.5f, 0.5f, 0.8f, 0.8f));

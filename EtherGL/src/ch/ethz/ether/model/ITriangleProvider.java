@@ -7,6 +7,8 @@ import ch.ethz.util.IAddOnlyFloatList;
  */
 public interface ITriangleProvider {
     boolean getTriangleVertices(IAddOnlyFloatList dst);
+
     boolean getTriangleNormals(IAddOnlyFloatList dst);
+
     boolean getTriangleColors(IAddOnlyFloatList dst);
 }

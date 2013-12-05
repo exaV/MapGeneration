@@ -3,7 +3,6 @@ package ch.ethz.ether.render.util;
 import ch.ethz.util.IAddOnlyFloatList;
 
 public final class Primitives {
-    // @formatter:off
     private static final float[] UNIT_CUBE_FACES = {
             1, 1, 0, 0, 1, 0, 1, 1, 1,
             0, 1, 0, 0, 1, 1, 1, 1, 1,
@@ -19,8 +18,9 @@ public final class Primitives {
 
             0, 0, 1, 1, 0, 1, 1, 1, 1,
             0, 0, 1, 1, 1, 1, 0, 1, 1,
+
+            // FIXME bottom missing...
     };
-    // @formatter:on
 
     public static void addLine(IAddOnlyFloatList dst, float x0, float y0, float x1, float y1) {
         dst.add(x0, y0, 0);
