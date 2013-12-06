@@ -80,7 +80,7 @@ public class Transform implements ITransformable {
             vertexTransform.rotate(rotation.z, Vec3.Z);
             vertexTransform.rotate(rotation.y, Vec3.Y);
             vertexTransform.rotate(rotation.x, Vec3.X);
-            vertexTransform.transform(translation);
+            vertexTransform.translate(translation);
         }
     }
 

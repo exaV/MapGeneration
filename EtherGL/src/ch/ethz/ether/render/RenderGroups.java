@@ -30,7 +30,6 @@ final class RenderGroups implements IRenderGroups {
     private final FloatList data = new FloatList();
 
     public RenderGroups() {
-
     }
 
     @Override

@@ -211,9 +211,9 @@ public class Camera {
     public Mat4 getViewMatrix() {
         if (viewMatrix == null) {
             viewMatrix = Mat4.identityMatrix();
-            viewMatrix.translate(translateX, translateY, -distance);
-            viewMatrix.rotate(rotateX - 90, 1, 0, 0);
             viewMatrix.rotate(rotateZ, 0, 0, 1);
+            viewMatrix.rotate(rotateX - 90, 1, 0, 0);
+            viewMatrix.translate(translateX, translateY, -distance);
         }
         return viewMatrix;
     }

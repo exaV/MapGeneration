@@ -1,36 +1,34 @@
 package ch.ethz.ether.model;
 
+import ch.ethz.ether.geom.Vec3;
+import ch.ethz.ether.render.util.Primitives;
+
 /**
  * Created by radar on 05/12/13.
  */
 public final class CubeMesh extends GenericMesh {
-    private static final float[] UNIT_CUBE_FACES = {
-            // bottom
-            -0.5f, -0.5f, -0.5f, -0.5f, +0.5f, -0.5f, +0.5f, +0.5f, -0.5f,
-            -0.5f, -0.5f, -0.5f, +0.5f, +0.5f, -0.5f, +0.5f, -0.5f, -0.5f,
-            
-            // top
-            +0.5f, -0.5f, +0.5f, +0.5f, +0.5f, +0.5f, -0.5f, +0.5f, +0.5f,
-            +0.5f, -0.5f, +0.5f, -0.5f, +0.5f, +0.5f, -0.5f, -0.5f, +0.5f,
-            
-            // front
-            -0.5f, -0.5f, -0.5f, +0.5f, -0.5f, -0.5f, +0.5f, -0.5f, +0.5f,
-            -0.5f, -0.5f, -0.5f, +0.5f, -0.5f, +0.5f, -0.5f, -0.5f, +0.5f,
-            
-            // back
-            +0.5f, +0.5f, -0.5f, -0.5f, +0.5f, -0.5f, -0.5f, +0.5f, +0.5f,
-            +0.5f, +0.5f, -0.5f, -0.5f, +0.5f, +0.5f, +0.5f, +0.5f, +0.5f,
-            
-            // left
-            -0.5f, +0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, +0.5f,
-            -0.5f, +0.5f, -0.5f, -0.5f, -0.5f, +0.5f, -0.5f, +0.5f, +0.5f,
-            
-            // right
-            +0.5f, -0.5f, -0.5f, +0.5f, +0.5f, -0.5f, +0.5f, +0.5f, +0.5f,
-            +0.5f, -0.5f, -0.5f, +0.5f, +0.5f, +0.5f, +0.5f, -0.5f, +0.5f
-    };
+    public enum Origin {
+        CENTER(Vec3.ZERO),
+        BOTTOM_CENTER(new Vec3(0, 0, -0.5)),
+        ZERO(new Vec3(-0.5, -0.5, -0.5));
+
+        Origin(Vec3 origin) {
+            this.origin = origin;
+        }
+
+        Vec3 origin;
+    }
 
     public CubeMesh() {
-        setTriangles(UNIT_CUBE_FACES, null, null);
+        this(Origin.CENTER);
+    }
+
+    public CubeMesh(Origin origin) {
+        this(origin.origin);
+    }
+
+    public CubeMesh(Vec3 origin) {
+        super(origin);
+        setTriangles(Primitives.UNIT_CUBE_TRIANGLES, null, null);
     }
 }

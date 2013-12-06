@@ -83,24 +83,41 @@ public final class Mat4 {
     /**
      * Post-multiply this matrix this = this * mat;
      *
-     * @param mat the post matrix
+     * @param mat the second factor of the matrix product
      */
-    public void multiply(final Mat4 mat) {
+    public void postMultiply(final Mat4 mat) {
         for (int i = 0; i < 4; i++) {
-            float ai0 = m[i];
-            float ai1 = m[i + 4];
-            float ai2 = m[i + 8];
-            float ai3 = m[i + 12];
-            m[i] = ai0 * mat.m[0] + ai1 * mat.m[1] + ai2 * mat.m[2] + ai3 * mat.m[3];
-            m[i + 4] = ai0 * mat.m[4] + ai1 * mat.m[5] + ai2 * mat.m[6] + ai3 * mat.m[7];
-            m[i + 8] = ai0 * mat.m[8] + ai1 * mat.m[9] + ai2 * mat.m[10] + ai3 * mat.m[11];
-            m[i + 12] = ai0 * mat.m[12] + ai1 * mat.m[13] + ai2 * mat.m[14] + ai3 * mat.m[15];
+            float mi0 = m[i];
+            float mi4 = m[i + 4];
+            float mi8 = m[i + 8];
+            float mi12 = m[i + 12];
+            m[i] = mi0 * mat.m[0] + mi4 * mat.m[1] + mi8 * mat.m[2] + mi12 * mat.m[3];
+            m[i + 4] = mi0 * mat.m[4] + mi4 * mat.m[5] + mi8 * mat.m[6] + mi12 * mat.m[7];
+            m[i + 8] = mi0 * mat.m[8] + mi4 * mat.m[9] + mi8 * mat.m[10] + mi12 * mat.m[11];
+            m[i + 12] = mi0 * mat.m[12] + mi4 * mat.m[13] + mi8 * mat.m[14] + mi12 * mat.m[15];
         }
     }
 
+    /**
+     * Pre-multiply this matrix this = mat * this;
+     *
+     * @param mat the first factor of the matrix product
+     */
+    public void preMultiply(final Mat4 mat) {
+        for (int i = 0; i < 16; i += 4) {
+            float mi0 = m[i];
+            float mi1 = m[i + 1];
+            float mi2 = m[i + 2];
+            float mi3 = m[i + 3];
+            m[i] = mi0 * mat.m[0] + mi1 * mat.m[4] + mi2 * mat.m[8] + mi3 * mat.m[12];
+            m[i + 1] = mi0 * mat.m[1] + mi1 * mat.m[5] + mi2 * mat.m[9] + mi3 * mat.m[13];
+            m[i + 2] = mi0 * mat.m[2] + mi1 * mat.m[6] + mi2 * mat.m[10] + mi3 * mat.m[14];
+            m[i + 3] = mi0 * mat.m[3] + mi1 * mat.m[7] + mi2 * mat.m[11] + mi3 * mat.m[15];
+        }
+    }
 
     /**
-     * Multiplies matrix m with translation matrix t. m = m * t
+     * Pre-multiplies matrix m with translation matrix t (m = t * m)
      *
      * @param tx x translation
      * @param ty y translation
@@ -111,7 +128,7 @@ public final class Mat4 {
         t.m[12] = tx;
         t.m[13] = ty;
         t.m[14] = tz;
-        multiply(t);
+        preMultiply(t);
     }
 
     public void translate(Vec3 t) {
@@ -120,7 +137,7 @@ public final class Mat4 {
 
 
     /**
-     * Multiplies matrix m with rotation matrix r. m = m * r
+     * Pre-multiplies matrix m with rotation matrix r (m = r * m).
      *
      * @param angle rotation angle in degrees
      * @param x     rotation axis x
@@ -159,7 +176,7 @@ public final class Mat4 {
         r.m[9] = yz * ic - xs;
         r.m[10] = z * z * ic + c;
 
-        multiply(r);
+        preMultiply(r);
     }
 
     public void rotate(float angle, Vec3 axis) {
@@ -167,7 +184,7 @@ public final class Mat4 {
     }
 
     /**
-     * Multiplies matrix m with scale matrix s. m = m * s
+     * Multiplies matrix m with scale matrix s (m = s * m equal to m = m * s).
      *
      * @param sx scale x factor
      * @param sy scale y factor
@@ -177,6 +194,9 @@ public final class Mat4 {
         m[0] *= sx;
         m[5] *= sy;
         m[10] *= sz;
+        m[12] *= sx;
+        m[13] *= sy;
+        m[14] *= sz;
     }
 
     public void scale(Vec3 s) {
@@ -307,6 +327,7 @@ public final class Mat4 {
 
     /**
      * Get transposed matrix.
+     *
      * @return the transposed matrix
      */
     // FIXME: verify

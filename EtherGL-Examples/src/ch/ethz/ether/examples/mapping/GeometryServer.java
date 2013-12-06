@@ -182,7 +182,8 @@ public class GeometryServer {
                         }
                         if (vertices.length > 0) {
                             System.out.println("udp: scene updated");
-                            scene.getModel().setTriangles(vertices, colors);
+                            // FIXME DISABLED
+                            //scene.getModel().setTriangles(vertices, colors);
                             scene.modelChanged();
                         } else {
                             System.out.println("udp: no data received");
@@ -238,7 +239,8 @@ public class GeometryServer {
             i += triangles.length;
         }
         if (allTriangles.length > 0) {
-            scene.getModel().setTriangles(allTriangles, null);
+            // FIXME DISABLED
+            //scene.getModel().setTriangles(allTriangles, null);
         } else {
             System.out.println("empty scene");
         }
