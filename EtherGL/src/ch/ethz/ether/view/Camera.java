@@ -166,7 +166,7 @@ public class Camera {
     public void addToTranslateX(float delta) {
         if (locked)
             return;
-        translateX += distance / 10 * delta;
+        translateX += distance * delta / view.getViewport().w;
         update();
     }
 
@@ -184,7 +184,7 @@ public class Camera {
     public void addToTranslateY(float delta) {
         if (locked)
             return;
-        translateY += distance / 10 * delta;
+        translateY += distance * delta / view.getViewport().h;
         update();
     }
 

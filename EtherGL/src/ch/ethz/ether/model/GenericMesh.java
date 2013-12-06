@@ -9,13 +9,13 @@ import java.util.Map;
 /**
  * Created by radar on 05/12/13.
  */
-public abstract class AbstractMesh implements IMesh {
+public class GenericMesh implements IMesh {
     private class TransformCache {
         TransformCache() {
-            triangleVertices = transform.transformVertices(AbstractMesh.this.triangleVertices);
-            triangleNormals = transform.transformNormals(AbstractMesh.this.triangleNormals);
-            edgeVertices = transform.transformVertices(AbstractMesh.this.edgeVertices);
-            pointVertices = transform.transformVertices(AbstractMesh.this.pointVertices);
+            triangleVertices = transform.transformVertices(GenericMesh.this.triangleVertices);
+            triangleNormals = transform.transformNormals(GenericMesh.this.triangleNormals);
+            edgeVertices = transform.transformVertices(GenericMesh.this.edgeVertices);
+            pointVertices = transform.transformVertices(GenericMesh.this.pointVertices);
         }
 
         final float[] triangleVertices;
@@ -36,11 +36,11 @@ public abstract class AbstractMesh implements IMesh {
 
     private TransformCache cache;
 
-    protected AbstractMesh() {
+    protected GenericMesh() {
         this(Vec3.ZERO);
     }
 
-    protected AbstractMesh(Vec3 origin) {
+    protected GenericMesh(Vec3 origin) {
         transform.setOrigin(origin);
     }
 

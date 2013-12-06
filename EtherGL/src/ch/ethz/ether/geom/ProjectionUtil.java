@@ -109,8 +109,14 @@ public final class ProjectionUtil {
         // map x and y from window coordinates
         float x = (v.x - viewport.x) / viewport.w;
         float y = (v.y - viewport.y) / viewport.h;
+        float z = v.z;
 
-        Vec4 result = inverse.transform(new Vec4(x, y, v.z, 1));
+        // map to range -1 to 1
+        x = x * 2 - 1;
+        y = y * 2 - 1;
+        z = z * 2 - 1;
+
+        Vec4 result = inverse.transform(new Vec4(x, y, z, 1));
 
         if (result.w == 0) {
             return null;

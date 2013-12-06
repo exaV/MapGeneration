@@ -27,4 +27,8 @@ public abstract class AbstractModel implements IModel {
     public List<IGeometry> getGeometries() {
         return Collections.unmodifiableList(geometries);
     }
+
+    protected void addGeometry(IGeometry geometry) {
+        geometries.add(geometry);
+    }
 }

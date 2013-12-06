@@ -89,12 +89,12 @@ public final class Mat4 {
         for (int i = 0; i < 4; i++) {
             float ai0 = m[i];
             float ai1 = m[i + 4];
-            float ai2 = m[i + 2 * 4];
-            float ai3 = m[i + 3 * 4];
-            m[i] = ai0 * mat.m[(0)] + ai1 * mat.m[1] + ai2 * mat.m[2] + ai3 * mat.m[3];
-            m[i + 4] = ai0 * mat.m[(4)] + ai1 * mat.m[1 + 4] + ai2 * mat.m[2 + 4] + ai3 * mat.m[3 + 4];
-            m[i + 2 * 4] = ai0 * mat.m[(2 * 4)] + ai1 * mat.m[1 + 2 * 4] + ai2 * mat.m[2 + 2 * 4] + ai3 * mat.m[3 + 2 * 4];
-            m[i + 3 * 4] = ai0 * mat.m[(3 * 4)] + ai1 * mat.m[1 + 3 * 4] + ai2 * mat.m[2 + 3 * 4] + ai3 * mat.m[3 + 3 * 4];
+            float ai2 = m[i + 8];
+            float ai3 = m[i + 12];
+            m[i] = ai0 * mat.m[0] + ai1 * mat.m[1] + ai2 * mat.m[2] + ai3 * mat.m[3];
+            m[i + 4] = ai0 * mat.m[4] + ai1 * mat.m[5] + ai2 * mat.m[6] + ai3 * mat.m[7];
+            m[i + 8] = ai0 * mat.m[8] + ai1 * mat.m[9] + ai2 * mat.m[10] + ai3 * mat.m[11];
+            m[i + 12] = ai0 * mat.m[12] + ai1 * mat.m[13] + ai2 * mat.m[14] + ai3 * mat.m[15];
         }
     }
 
@@ -279,6 +279,8 @@ public final class Mat4 {
      * @return the transformed result
      */
     public float[] transform(float[] xyz, float[] result) {
+        if (xyz == null)
+            return null;
         if (result == null)
             result = new float[xyz.length];
         for (int i = 0; i < xyz.length; i += 3) {
@@ -413,12 +415,12 @@ public final class Mat4 {
         for (int i = 0; i < 4; i++) {
             float ai0 = a.m[i];
             float ai1 = a.m[i + 4];
-            float ai2 = a.m[i + 2 * 4];
-            float ai3 = a.m[i + 3 * 4];
-            result.m[i] = ai0 * b.m[(0)] + ai1 * b.m[1] + ai2 * b.m[2] + ai3 * b.m[3];
-            result.m[i + 4] = ai0 * b.m[(4)] + ai1 * b.m[1 + 4] + ai2 * b.m[2 + 4] + ai3 * b.m[3 + 4];
-            result.m[i + 2 * 4] = ai0 * b.m[(2 * 4)] + ai1 * b.m[1 + 2 * 4] + ai2 * b.m[2 + 2 * 4] + ai3 * b.m[3 + 2 * 4];
-            result.m[i + 3 * 4] = ai0 * b.m[(3 * 4)] + ai1 * b.m[1 + 3 * 4] + ai2 * b.m[2 + 3 * 4] + ai3 * b.m[3 + 3 * 4];
+            float ai2 = a.m[i + 8];
+            float ai3 = a.m[i + 12];
+            result.m[i] = ai0 * b.m[0] + ai1 * b.m[1] + ai2 * b.m[2] + ai3 * b.m[3];
+            result.m[i + 4] = ai0 * b.m[4] + ai1 * b.m[5] + ai2 * b.m[6] + ai3 * b.m[7];
+            result.m[i + 8] = ai0 * b.m[8] + ai1 * b.m[9] + ai2 * b.m[10] + ai3 * b.m[11];
+            result.m[i + 12] = ai0 * b.m[12] + ai1 * b.m[13] + ai2 * b.m[14] + ai3 * b.m[15];
         }
         return result;
     }

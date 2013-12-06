@@ -27,21 +27,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package ch.ethz.ether.examples.mapping;
 
-import ch.ethz.ether.model.BasicMeshModel;
+import ch.ethz.ether.model.CubeMesh;
+import ch.ethz.ether.model.GenericMeshModel;
 import ch.ethz.ether.render.util.FloatList;
 import ch.ethz.ether.render.util.Primitives;
 
-public class MappingTriangleModel extends BasicMeshModel {
+public class MappingTriangleModel extends GenericMeshModel {
     public MappingTriangleModel() {
-        reset();
+        addGeometry(new CubeMesh());
     }
 
-    public void reset() {
-        FloatList vertices = new FloatList();
-        Primitives.addCube(vertices, -0.3f, -0.3f, 0.0f, 0.1f, 0.1f, 0.1f);
-        Primitives.addCube(vertices, 0.1f, -0.2f, 0.0f, 0.2f, 0.1f, 0.2f);
-        Primitives.addCube(vertices, 0.0f, 0.0f, 0.0f, 0.1f, 0.2f, 0.1f);
-        Primitives.addCube(vertices, 0.2f, 0.1f, 0.0f, 0.1f, 0.1f, 0.2f);
-        setTriangles(vertices.toArray(), null);
+    // FIXME remove this (currently called from geometry server)
+    public void setTriangles(float[] allTriangles, Object o) {
+
     }
 }

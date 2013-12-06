@@ -3,7 +3,7 @@ package ch.ethz.ether.gl;
 /**
  * Created by radar on 05/12/13.
  */
-public class Viewport {
+public final class Viewport {
     public final int x;
     public final int y;
     public final int w;

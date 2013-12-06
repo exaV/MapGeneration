@@ -27,21 +27,26 @@
  */
 package ch.ethz.ether.model;
 
-import ch.ethz.ether.render.GenericRenderGroup;
+import ch.ethz.ether.render.AbstractRenderGroup;
+import ch.ethz.ether.render.IRenderGroup;
 import ch.ethz.ether.render.IRenderGroup.Source;
 import ch.ethz.ether.render.IRenderGroup.Type;
 import ch.ethz.ether.render.IRenderer;
+import ch.ethz.util.IAddOnlyFloatList;
 
-public class BasicMeshModel extends AbstractModel {
-    private final GenericRenderGroup triangles = new GenericRenderGroup(Source.MODEL, Type.TRIANGLES);
+public class GenericMeshModel extends AbstractModel {
+    private final IRenderGroup triangles = new AbstractRenderGroup(Source.MODEL, Type.TRIANGLES) {
+        @Override
+        public void getVertices(IAddOnlyFloatList dst) {
+            for (IGeometry mesh : getGeometries()) {
+                if (mesh instanceof ITriangleProvider) {
+                    ((ITriangleProvider) mesh).getTriangleVertices(dst);
+                }
+            }
+        }
+    };
 
-    public BasicMeshModel() {
+    public GenericMeshModel() {
         IRenderer.GROUPS.add(triangles);
-    }
-
-    public void setTriangles(float[] vertices, float[] colors) {
-        triangles.set(vertices, null, colors, null, 0, 0, null);
-        getBounds().reset();
-        getBounds().add(vertices);
     }
 }
