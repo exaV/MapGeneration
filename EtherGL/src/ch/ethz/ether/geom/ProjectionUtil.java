@@ -34,11 +34,19 @@ import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
 public final class ProjectionUtil {
     public static Vec3 projectToDevice(IView view, Vec3 v) {
+        return projectToDevice(view, new Vec4(v));
+    }
+
+    public static Vec3 projectToDevice(IView view, Vec4 v) {
         return projectToDevice(view.getCamera().getViewMatrix(), view.getCamera().getProjMatrix(), v);
     }
 
     public static Vec3 projectToDevice(Mat4 viewMatrix, Mat4 projMatrix, Vec3 v) {
-        Vec4 proj = projMatrix.transform(viewMatrix.transform(new Vec4(v)));
+        return projectToDevice(viewMatrix, projMatrix, new Vec4(v));
+    }
+
+    public static Vec3 projectToDevice(Mat4 viewMatrix, Mat4 projMatrix, Vec4 v) {
+        Vec4 proj = projMatrix.transform(viewMatrix.transform(v));
 
         if (proj.w == 0)
             return null;
@@ -52,11 +60,19 @@ public final class ProjectionUtil {
     }
 
     public static Vec3 projectToScreen(IView view, Vec3 v) {
+        return projectToScreen(view, new Vec4(v));
+    }
+
+    public static Vec3 projectToScreen(IView view, Vec4 v) {
         return projectToScreen(view.getCamera().getViewMatrix(), view.getCamera().getProjMatrix(), view.getViewport(), v);
     }
 
     public static Vec3 projectToScreen(Mat4 viewMatrix, Mat4 projMatrix, Viewport viewport, Vec3 v) {
-        Vec4 proj = projMatrix.transform(viewMatrix.transform(new Vec4(v)));
+        return projectToScreen(viewMatrix, projMatrix, viewport, new Vec4(v));
+    }
+
+    public static Vec3 projectToScreen(Mat4 viewMatrix, Mat4 projMatrix, Viewport viewport, Vec4 v) {
+        Vec4 proj = projMatrix.transform(viewMatrix.transform(v));
 
         if (proj.w == 0)
             return null;

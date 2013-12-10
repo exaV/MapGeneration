@@ -1,15 +1,15 @@
 package ch.ethz.ether.model;
 
 import ch.ethz.ether.geom.BoundingVolume;
+import ch.ethz.ether.geom.PickUtil;
 import ch.ethz.ether.geom.Vec3;
+import ch.ethz.ether.view.IView;
 import ch.ethz.util.IAddOnlyFloatList;
-
-import java.util.Map;
 
 /**
  * Created by radar on 05/12/13.
  */
-public class GenericMesh implements IMesh {
+public class GenericMesh extends AbstractMesh {
     private class TransformCache {
         TransformCache() {
             triangleVertices = transform.transformVertices(GenericMesh.this.triangleVertices);
@@ -113,7 +113,12 @@ public class GenericMesh implements IMesh {
     }
 
     @Override
-    public boolean pick(int x, int y, float[] viewMatrix, float[] projMatrix, Map<Float, IGeometry> geometries) {
+    public boolean pick(int x, int y, int w, int h, IView view, IPickState state) {
+        float z = PickUtil.pickBoundingVolume(x, y, w, h, view, getBounds());
+        if (z != Float.NaN) {
+            // TODO: implement triangle / line / point picking
+            state.add(z, this);
+        }
         return false;
     }
 

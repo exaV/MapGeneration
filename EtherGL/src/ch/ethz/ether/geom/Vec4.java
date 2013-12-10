@@ -18,6 +18,10 @@ public final class Vec4 {
         this.w = w;
     }
 
+    public Vec4(float x, float y, float z) {
+        this(x, y, z, 1);
+    }
+
     public Vec4(Vec3 v) {
         this(v.x, v.y, v.z, 1);
     }
