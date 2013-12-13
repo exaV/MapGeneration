@@ -21,6 +21,21 @@ public class GeometryUtil {
         return normals;
     }
 
+
+
+    public static boolean isPointInTriangle(float x, float y, float[] triangle) {
+        boolean b1 = sign(x, y, triangle[0], triangle[1], triangle[3], triangle[4]) < 0.0f;
+        boolean b2 = sign(x, y, triangle[3], triangle[4], triangle[6], triangle[7]) < 0.0f;
+        boolean b3 = sign(x, y, triangle[6], triangle[7], triangle[0], triangle[1]) < 0.0f;
+        return ((b1 == b2) && (b2 == b3));
+    }
+
+    private static float sign(float p1x, float p1y, float p2x, float p2y, float p3x, float p3y) {
+        return (p1x - p3x) * (p2y - p3y) - (p2x - p3x) * (p1y - p3y);
+    }
+
+
+
     public static boolean isPointInPolygon(float x, float y, List<Vec3> polygon) {
         boolean oddNodes = false;
         int j = polygon.size() - 1;

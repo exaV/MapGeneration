@@ -54,8 +54,11 @@ public class Camera {
     private float translateX = 0.0f;
     private float translateY = 0.0f;
 
-    private Mat4 projMatrix = Mat4.identityMatrix();
-    private Mat4 viewMatrix = Mat4.identityMatrix();
+    private Mat4 projMatrix;
+    private Mat4 viewMatrix;
+    private Mat4 viewProjMatrix;
+    private Mat4 viewProjInvMatrix;
+    private Mat4 viewProjInvTpMatrix;
 
     public Camera(IView view) {
         this.view = view;
@@ -218,16 +221,36 @@ public class Camera {
         return viewMatrix;
     }
 
+    public Mat4 getViewProjMatrix() {
+        if (viewProjMatrix == null) {
+            viewProjMatrix = Mat4.product(projMatrix, viewMatrix);
+        }
+        return viewProjMatrix;
+    }
+
+    public Mat4 getViewProjInvMatrix() {
+        if (viewProjInvMatrix == null) {
+            viewProjInvMatrix = getViewProjMatrix().inverse();
+        }
+        return viewProjInvMatrix;
+    }
+
+    public Mat4 getViewProjInvTpMatrix() {
+        if (viewProjInvTpMatrix == null) {
+            viewProjInvTpMatrix = getViewProjInvMatrix().transposed();
+        }
+        return viewProjInvTpMatrix;
+    }
+
     public void setMatrices(Mat4 projMatrix, Mat4 viewMatrix) {
         if (projMatrix == null) {
             this.locked = false;
-            update();
         } else {
             this.locked = true;
             this.projMatrix = projMatrix;
             this.viewMatrix = viewMatrix;
-            update();
         }
+        update();
     }
 
     public void update() {
@@ -235,6 +258,9 @@ public class Camera {
             viewMatrix = null;
             projMatrix = null;
         }
+        viewProjMatrix = null;
+        viewProjInvMatrix = null;
+        viewProjInvTpMatrix = null;
         view.update();
     }
 }
