@@ -52,7 +52,7 @@ public final class MappingExample {
     public MappingExample() {
         final MappingScene scene = new MappingScene();
 
-        IModel model = new MappingTriangleModel(scene);
+        IModel model = new MappingTriangleModel();
 
         scene.setModel(model);
 

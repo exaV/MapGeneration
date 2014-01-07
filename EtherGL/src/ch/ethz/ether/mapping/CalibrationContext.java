@@ -27,6 +27,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package ch.ethz.ether.mapping;
 
+import ch.ethz.ether.geom.Vec3;
+
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
@@ -36,8 +38,8 @@ import java.util.prefs.Preferences;
 public class CalibrationContext {
     public boolean calibrated = false;
     public int currentSelection = -1;
-    public List<float[]> modelVertices = new ArrayList<>();
-    public List<float[]> projectedVertices = new ArrayList<>();
+    public List<Vec3> modelVertices = new ArrayList<>();
+    public List<Vec3> projectedVertices = new ArrayList<>();
 
     public void load(Preferences p, int index) {
         byte[] mv = p.getByteArray("modelVertices_" + index, null);
@@ -63,21 +65,23 @@ public class CalibrationContext {
         }
     }
 
-    private byte[] toByteArray(List<float[]> vertices) {
+    private byte[] toByteArray(List<Vec3> vertices) {
         ByteBuffer bb = ByteBuffer.allocate(vertices.size() * 3 * 8);
         FloatBuffer fb = bb.asFloatBuffer();
-        for (float[] v : vertices) {
-            fb.put(v);
+        for (Vec3 v : vertices) {
+            fb.put(v.x);
+            fb.put(v.y);
+            fb.put(v.z);
         }
         return bb.array();
     }
 
-    private List<float[]> fromByteArray(byte[] bytes) {
-        List<float[]> list = new ArrayList<>();
+    private List<Vec3> fromByteArray(byte[] bytes) {
+        List<Vec3> list = new ArrayList<>();
         ByteBuffer bb = ByteBuffer.wrap(bytes);
         FloatBuffer dd = bb.asFloatBuffer();
         for (int i = 0; i < dd.capacity(); i += 3) {
-            list.add(new float[]{dd.get(), dd.get(), dd.get()});
+            list.add(new Vec3(dd.get(), dd.get(), dd.get()));
         }
         return list;
     }

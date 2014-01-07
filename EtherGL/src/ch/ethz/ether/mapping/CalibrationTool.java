@@ -27,14 +27,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package ch.ethz.ether.mapping;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.prefs.Preferences;
-
-import ch.ethz.ether.gl.ProjectionUtil;
+import ch.ethz.ether.geom.ProjectionUtil;
+import ch.ethz.ether.geom.Vec3;
+import ch.ethz.ether.gl.Viewport;
 import ch.ethz.ether.render.AbstractRenderGroup;
 import ch.ethz.ether.render.IRenderGroup;
 import ch.ethz.ether.render.IRenderGroup.Pass;
@@ -48,8 +43,14 @@ import ch.ethz.ether.view.IView;
 import ch.ethz.util.IAddOnlyFloatList;
 import ch.ethz.util.PreferencesStore;
 
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.prefs.Preferences;
+
 public final class CalibrationTool extends AbstractTool {
-    // @formatter:off
     private static final String[] CALIBRATION_HELP = {
             "Calibration Tool for 3D Mapping",
             "",
@@ -60,7 +61,6 @@ public final class CalibrationTool extends AbstractTool {
             "[S] Save Calibration",
             "[DEL] Clear Current Calibration Point",
     };
-    // @formatter:on
 
     public static final double MAX_CALIBRATION_ERROR = 0.5;
 
@@ -79,7 +79,7 @@ public final class CalibrationTool extends AbstractTool {
     private IRenderGroup modelPoints = new AbstractRenderGroup(Source.TOOL, Type.POINTS, Pass.OVERLAY) {
         @Override
         public void getVertices(IAddOnlyFloatList dst) {
-            dst.addAll(model.getCalibrationVertices());
+            dst.add(model.getCalibrationVertices());
         }
 
         @Override
@@ -96,7 +96,7 @@ public final class CalibrationTool extends AbstractTool {
     private IRenderGroup modelLines = new AbstractRenderGroup(Source.TOOL, Type.LINES, Pass.OVERLAY) {
         @Override
         public void getVertices(IAddOnlyFloatList dst) {
-            dst.addAll(model.getCalibrationLines());
+            dst.add(model.getCalibrationLines());
         }
 
         @Override
@@ -111,8 +111,8 @@ public final class CalibrationTool extends AbstractTool {
             IView view = getScene().getCurrentView();
             if (view == null)
                 return;
-            for (float[] v : getContext(view).projectedVertices) {
-                dst.addAll(v);
+            for (Vec3 v : getContext(view).projectedVertices) {
+                dst.add(v.x, v.y, v.z);
             }
         }
 
@@ -131,8 +131,6 @@ public final class CalibrationTool extends AbstractTool {
     };
 
     private IRenderGroup calibrationLines = new AbstractRenderGroup(Source.TOOL, Type.LINES, Pass.DEVICE_SPACE_OVERLAY) {
-        private float[] v = new float[3];
-
         @Override
         public void getVertices(IAddOnlyFloatList dst) {
             IView view = getScene().getCurrentView();
@@ -141,15 +139,17 @@ public final class CalibrationTool extends AbstractTool {
 
             CalibrationContext context = getContext(view);
             for (int i = 0; i < context.projectedVertices.size(); ++i) {
-                float[] a = context.modelVertices.get(i);
-                if (!ProjectionUtil.projectToDevice(view, a[0], a[1], a[2], v))
+                Vec3 a = context.modelVertices.get(i);
+                Vec3 v = ProjectionUtil.projectToDevice(view, a);
+                if (v == null)
                     continue;
                 a = context.projectedVertices.get(i);
-                Primitives.addLine(dst, v[0], v[1], v[2], a[0], a[1], a[2]);
+                Primitives.addLine(dst, v.x, v.y, v.z, a.x, a.y, a.z);
 
                 if (i == context.currentSelection) {
-                    Primitives.addLine(dst, a[0] - CROSSHAIR_SIZE / view.getWidth(), a[1], a[2], a[0] + CROSSHAIR_SIZE / view.getWidth(), a[1], a[2]);
-                    Primitives.addLine(dst, a[0], a[1] - CROSSHAIR_SIZE / view.getHeight(), a[2], a[0], a[1] + CROSSHAIR_SIZE / view.getHeight(), a[2]);
+                    Viewport viewport = view.getViewport();
+                    Primitives.addLine(dst, a.x - CROSSHAIR_SIZE / viewport.w, a.y, a.z, a.x + CROSSHAIR_SIZE / viewport.w, a.y, a.z);
+                    Primitives.addLine(dst, a.x, a.y - CROSSHAIR_SIZE / viewport.h, a.z, a.x, a.y + CROSSHAIR_SIZE / viewport.h, a.z);
                 }
             }
         }
@@ -229,9 +229,9 @@ public final class CalibrationTool extends AbstractTool {
 
         // first, try to hit calibration point
         for (int i = 0; i < context.projectedVertices.size(); ++i) {
-            int x = ProjectionUtil.deviceToScreenX(view, context.projectedVertices.get(i)[0]);
-            int y = ProjectionUtil.deviceToScreenY(view, context.projectedVertices.get(i)[1]);
-            if (snap2D(e.getX(), view.getHeight() - e.getY(), x, y)) {
+            int x = ProjectionUtil.deviceToScreenX(view, context.projectedVertices.get(i).x);
+            int y = ProjectionUtil.deviceToScreenY(view, context.projectedVertices.get(i).y);
+            if (snap2D(e.getX(), view.getViewport().h - e.getY(), x, y)) {
                 // we got a point to move!
                 context.currentSelection = i;
                 calibrate(view);
@@ -241,19 +241,19 @@ public final class CalibrationTool extends AbstractTool {
 
         // second, try to hit model point
         float[] mv = model.getCalibrationVertices();
-        float[] vv = new float[3];
         for (int i = 0; i < mv.length; i += 3) {
-            if (!ProjectionUtil.projectToScreen(view, mv[i], mv[i + 1], mv[i + 2], vv))
+            Vec3 vv = ProjectionUtil.projectToScreen(view, new Vec3(mv[i], mv[i + 1], mv[i + 2]));
+            if (vv == null)
                 continue;
-            if (snap2D(e.getX(), view.getHeight() - e.getY(), (int) vv[0], (int) vv[1])) {
-                float[] a = new float[]{mv[i], mv[i + 1], mv[i + 2]};
+            if (snap2D(e.getX(), view.getViewport().h - e.getY(), (int) vv.x, (int) vv.y)) {
+                Vec3 a = new Vec3(mv[i], mv[i + 1], mv[i + 2]);
                 int index = context.modelVertices.indexOf(a);
                 if (index != -1) {
                     context.currentSelection = index;
                 } else {
                     context.currentSelection = context.modelVertices.size();
                     context.modelVertices.add(a);
-                    context.projectedVertices.add(new float[]{ProjectionUtil.screenToDeviceX(view, (int) vv[0]), ProjectionUtil.screenToDeviceY(view, (int) vv[1]), 0});
+                    context.projectedVertices.add(new Vec3(ProjectionUtil.screenToDeviceX(view, (int) vv.x), ProjectionUtil.screenToDeviceY(view, (int) vv.y), 0));
                 }
                 calibrate(view);
                 return;
@@ -265,7 +265,7 @@ public final class CalibrationTool extends AbstractTool {
     public void mouseDragged(MouseEvent e, IView view) {
         CalibrationContext context = getContext(view);
         if (context.currentSelection != -1) {
-            float[] a = new float[]{ProjectionUtil.screenToDeviceX(view, e.getX()), ProjectionUtil.screenToDeviceY(view, view.getHeight() - e.getY()), 0};
+            Vec3 a = new Vec3(ProjectionUtil.screenToDeviceX(view, e.getX()), ProjectionUtil.screenToDeviceY(view, view.getViewport().h - e.getY()), 0);
             context.projectedVertices.set(context.currentSelection, a);
             calibrate(view);
         }
@@ -283,8 +283,8 @@ public final class CalibrationTool extends AbstractTool {
     private void cursorAdjust(IView view, float dx, float dy) {
         CalibrationContext context = getContext(view);
         if (context.currentSelection != -1) {
-            float[] p = context.projectedVertices.get(context.currentSelection);
-            float[] a = new float[]{p[0] + dx / view.getWidth(), p[1] + dy / view.getHeight(), 0};
+            Vec3 p = context.projectedVertices.get(context.currentSelection);
+            Vec3 a = new Vec3(p.x + dx / view.getViewport().w, p.y + dy / view.getViewport().h, 0);
             context.projectedVertices.set(context.currentSelection, a);
             calibrate(view);
         }
@@ -336,7 +336,7 @@ public final class CalibrationTool extends AbstractTool {
         } catch (Throwable ignored) {
         }
         if (context.calibrated)
-            view.getCamera().setMatrices(calibrator.getProjectionMatrix(), calibrator.getModelMatrix());
+            view.getCamera().setMatrices(calibrator.getProjMatrix(), calibrator.getViewMatrix());
         else
             view.getCamera().setMatrices(null, null);
 

@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.media.opengl.GL3;
 
+import ch.ethz.ether.geom.Mat4;
 import ch.ethz.ether.render.IRenderGroup.Flag;
 import ch.ethz.ether.render.IRenderGroup.Pass;
 import ch.ethz.ether.render.IRenderGroup.Source;
@@ -29,7 +30,6 @@ final class RenderGroups implements IRenderGroups {
     private final FloatList data = new FloatList();
 
     public RenderGroups() {
-
     }
 
     @Override
@@ -90,7 +90,7 @@ final class RenderGroups implements IRenderGroups {
         }
     }
 
-    void render(GL3 gl, IRenderer renderer, IView view, float[] projMatrix, float[] viewMatrix, Pass pass) {
+    void render(GL3 gl, IRenderer renderer, IView view, Mat4 projMatrix, Mat4 viewMatrix, Pass pass) {
         for (IRenderEntry entry : groups.values()) {
             if (!sources.contains(entry.getGroup().getSource()))
                 continue;

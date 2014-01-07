@@ -29,8 +29,6 @@ package ch.ethz.ether.geom;
 
 import java.util.Collection;
 
-import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
-
 /**
  * Axis aligned bounding volume.
  *
@@ -63,20 +61,20 @@ public final class BoundingVolume {
         return valid;
     }
 
-    public Vector3D getMin() {
-        return new Vector3D(minX, minY, minZ);
+    public Vec3 getMin() {
+        return new Vec3(minX, minY, minZ);
     }
 
-    public Vector3D getMax() {
-        return new Vector3D(maxX, maxY, maxZ);
+    public Vec3 getMax() {
+        return new Vec3(maxX, maxY, maxZ);
     }
 
-    public Vector3D getCenter() {
-        return new Vector3D(getCenterX(), getCenterY(), getCenterZ());
+    public Vec3 getCenter() {
+        return new Vec3(getCenterX(), getCenterY(), getCenterZ());
     }
 
-    public Vector3D getExtent() {
-        return new Vector3D(getExtentX(), getExtentY(), getExtentZ());
+    public Vec3 getExtent() {
+        return new Vec3(getExtentX(), getExtentY(), getExtentZ());
     }
 
     public float getMinX() {
@@ -141,30 +139,41 @@ public final class BoundingVolume {
         add((float) x, (float) y, (float) z);
     }
 
-    public void add(Vector3D vertex) {
-        add(vertex.getX(), vertex.getY(), vertex.getZ());
+    public void add(Vec3 vertex) {
+        if (vertex != null) {
+            add(vertex.x, vertex.y, vertex.z);
+        }
     }
 
-    public void add(Collection<Vector3D> vertices) {
-        for (Vector3D vertex : vertices)
-            add(vertex);
+    public void add(Collection<Vec3> vertices) {
+        if (vertices != null) {
+            for (Vec3 vertex : vertices) {
+                add(vertex);
+            }
+        }
     }
 
     public void add(float[] vertices) {
-        for (int i = 0; i < vertices.length; i += 3) {
-            add(vertices[i], vertices[i + 1], vertices[i + 2]);
+        if (vertices != null) {
+            for (int i = 0; i < vertices.length; i += 3) {
+                add(vertices[i], vertices[i + 1], vertices[i + 2]);
+            }
         }
     }
 
     public void add(double[] vertices) {
-        for (int i = 0; i < vertices.length; i += 3) {
-            add(vertices[i], vertices[i + 1], vertices[i + 2]);
+        if (vertices != null) {
+            for (int i = 0; i < vertices.length; i += 3) {
+                add(vertices[i], vertices[i + 1], vertices[i + 2]);
+            }
         }
     }
 
     public void add(BoundingVolume b) {
-        add(b.minX, b.minY, b.minZ);
-        add(b.maxX, b.maxY, b.maxZ);
+        if (b != null) {
+            add(b.minX, b.minY, b.minZ);
+            add(b.maxX, b.maxY, b.maxZ);
+        }
     }
 
     @Override

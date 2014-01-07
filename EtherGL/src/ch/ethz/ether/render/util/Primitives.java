@@ -3,24 +3,31 @@ package ch.ethz.ether.render.util;
 import ch.ethz.util.IAddOnlyFloatList;
 
 public final class Primitives {
-    // @formatter:off
-    private static final float[] UNIT_CUBE_FACES = {
-            1, 1, 0, 0, 1, 0, 1, 1, 1,
-            0, 1, 0, 0, 1, 1, 1, 1, 1,
+    public static final float[] UNIT_CUBE_TRIANGLES = {
+            // bottom
+            -0.5f, -0.5f, -0.5f, -0.5f, +0.5f, -0.5f, +0.5f, +0.5f, -0.5f,
+            -0.5f, -0.5f, -0.5f, +0.5f, +0.5f, -0.5f, +0.5f, -0.5f, -0.5f,
 
-            0, 1, 0, 0, 0, 0, 0, 0, 1,
-            0, 1, 0, 0, 0, 1, 0, 1, 1,
+            // top
+            +0.5f, -0.5f, +0.5f, +0.5f, +0.5f, +0.5f, -0.5f, +0.5f, +0.5f,
+            +0.5f, -0.5f, +0.5f, -0.5f, +0.5f, +0.5f, -0.5f, -0.5f, +0.5f,
 
-            0, 0, 0, 1, 0, 0, 1, 0, 1,
-            0, 0, 0, 1, 0, 1, 0, 0, 1,
+            // front
+            -0.5f, -0.5f, -0.5f, +0.5f, -0.5f, -0.5f, +0.5f, -0.5f, +0.5f,
+            -0.5f, -0.5f, -0.5f, +0.5f, -0.5f, +0.5f, -0.5f, -0.5f, +0.5f,
 
-            1, 0, 0, 1, 1, 0, 1, 1, 1,
-            1, 0, 0, 1, 1, 1, 1, 0, 1,
+            // back
+            +0.5f, +0.5f, -0.5f, -0.5f, +0.5f, -0.5f, -0.5f, +0.5f, +0.5f,
+            +0.5f, +0.5f, -0.5f, -0.5f, +0.5f, +0.5f, +0.5f, +0.5f, +0.5f,
 
-            0, 0, 1, 1, 0, 1, 1, 1, 1,
-            0, 0, 1, 1, 1, 1, 0, 1, 1,
+            // left
+            -0.5f, +0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, +0.5f,
+            -0.5f, +0.5f, -0.5f, -0.5f, -0.5f, +0.5f, -0.5f, +0.5f, +0.5f,
+
+            // right
+            +0.5f, -0.5f, -0.5f, +0.5f, +0.5f, -0.5f, +0.5f, +0.5f, +0.5f,
+            +0.5f, -0.5f, -0.5f, +0.5f, +0.5f, +0.5f, +0.5f, -0.5f, +0.5f
     };
-    // @formatter:on
 
     public static void addLine(IAddOnlyFloatList dst, float x0, float y0, float x1, float y1) {
         dst.add(x0, y0, 0);
@@ -47,11 +54,11 @@ public final class Primitives {
     }
 
     public static void addCube(FloatList dst, float tx, float ty, float tz, float sx, float sy, float sz) {
-        dst.ensureCapacity(dst.size() + UNIT_CUBE_FACES.length * 3);
-        for (int i = 0; i < UNIT_CUBE_FACES.length; i += 3) {
-            dst.add((UNIT_CUBE_FACES[i] * sx) + tx);
-            dst.add((UNIT_CUBE_FACES[i + 1] * sy) + ty);
-            dst.add((UNIT_CUBE_FACES[i + 2] * sz) + tz);
+        dst.ensureCapacity(dst.size() + UNIT_CUBE_TRIANGLES.length * 3);
+        for (int i = 0; i < UNIT_CUBE_TRIANGLES.length; i += 3) {
+            dst.add((UNIT_CUBE_TRIANGLES[i] * sx) + tx);
+            dst.add((UNIT_CUBE_TRIANGLES[i + 1] * sy) + ty);
+            dst.add((UNIT_CUBE_TRIANGLES[i + 2] * sz) + tz);
         }
     }
 

@@ -28,7 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package ch.ethz.ether.view;
 
 import ch.ethz.ether.geom.BoundingVolume;
-import ch.ethz.ether.gl.Matrix4x4;
+import ch.ethz.ether.geom.Mat4;
 import ch.ethz.util.MathUtil;
 
 /**
@@ -54,8 +54,11 @@ public class Camera {
     private float translateX = 0.0f;
     private float translateY = 0.0f;
 
-    private float[] projectionMatrix = Matrix4x4.identity();
-    private float[] viewMatrix = Matrix4x4.identity();
+    private Mat4 projMatrix;
+    private Mat4 viewMatrix;
+    private Mat4 viewProjMatrix;
+    private Mat4 viewProjInvMatrix;
+    private Mat4 viewProjInvTpMatrix;
 
     public Camera(IView view) {
         this.view = view;
@@ -166,7 +169,7 @@ public class Camera {
     public void addToTranslateX(float delta) {
         if (locked)
             return;
-        translateX += distance / 10 * delta;
+        translateX += distance * delta / view.getViewport().w;
         update();
     }
 
@@ -184,7 +187,7 @@ public class Camera {
     public void addToTranslateY(float delta) {
         if (locked)
             return;
-        translateY += distance / 10 * delta;
+        translateY += distance * delta / view.getViewport().h;
         update();
     }
 
@@ -200,40 +203,64 @@ public class Camera {
         update();
     }
 
-    public float[] getProjectionMatrix() {
-        if (projectionMatrix == null) {
-            projectionMatrix = Matrix4x4.perspective(fov, (float) view.getWidth() / (float) view.getHeight(), near, far, null);
+    public Mat4 getProjMatrix() {
+        if (projMatrix == null) {
+            projMatrix = new Mat4();
+            projMatrix.perspective(fov, (float) view.getViewport().w / (float) view.getViewport().h, near, far);
         }
-        return projectionMatrix;
+        return projMatrix;
     }
 
-    public float[] getViewMatrix() {
+    public Mat4 getViewMatrix() {
         if (viewMatrix == null) {
-            viewMatrix = Matrix4x4.identity();
-            Matrix4x4.translate(translateX, translateY, -distance, viewMatrix);
-            Matrix4x4.rotate(rotateX - 90, 1, 0, 0, viewMatrix);
-            Matrix4x4.rotate(rotateZ, 0, 0, 1, viewMatrix);
+            viewMatrix = Mat4.identityMatrix();
+            viewMatrix.rotate(rotateZ, 0, 0, 1);
+            viewMatrix.rotate(rotateX - 90, 1, 0, 0);
+            viewMatrix.translate(translateX, translateY, -distance);
         }
         return viewMatrix;
     }
 
-    public void setMatrices(float[] projectionMatrix, float[] viewMatrix) {
-        if (projectionMatrix == null) {
+    public Mat4 getViewProjMatrix() {
+        if (viewProjMatrix == null) {
+            viewProjMatrix = Mat4.product(projMatrix, viewMatrix);
+        }
+        return viewProjMatrix;
+    }
+
+    public Mat4 getViewProjInvMatrix() {
+        if (viewProjInvMatrix == null) {
+            viewProjInvMatrix = getViewProjMatrix().inverse();
+        }
+        return viewProjInvMatrix;
+    }
+
+    public Mat4 getViewProjInvTpMatrix() {
+        if (viewProjInvTpMatrix == null) {
+            viewProjInvTpMatrix = getViewProjInvMatrix().transposed();
+        }
+        return viewProjInvTpMatrix;
+    }
+
+    public void setMatrices(Mat4 projMatrix, Mat4 viewMatrix) {
+        if (projMatrix == null) {
             this.locked = false;
-            update();
         } else {
             this.locked = true;
-            this.projectionMatrix = projectionMatrix;
+            this.projMatrix = projMatrix;
             this.viewMatrix = viewMatrix;
-            update();
         }
+        update();
     }
 
     public void update() {
         if (!locked) {
             viewMatrix = null;
-            projectionMatrix = null;
+            projMatrix = null;
         }
+        viewProjMatrix = null;
+        viewProjInvMatrix = null;
+        viewProjInvTpMatrix = null;
         view.update();
     }
 }

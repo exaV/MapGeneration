@@ -42,9 +42,6 @@ import ch.ethz.util.IAddOnlyFloatList;
 public class NavigationTool extends AbstractTool {
     public static final float[] GRID_COLOR = {0.5f, 0.5f, 0.5f, 1.0f};
 
-    private static final float CAMERA_ROTATE_SCALE = 1.0f;
-    private static final float CAMERA_TRANSLATE_SCALE = 0.01f;
-
     private int button;
     private int mouseX;
     private int mouseY;
@@ -107,11 +104,11 @@ public class NavigationTool extends AbstractTool {
     @Override
     public void mouseDragged(MouseEvent e, IView view) {
         if (button == MouseEvent.BUTTON1) {
-            view.getCamera().addToRotateZ(CAMERA_ROTATE_SCALE * (e.getX() - mouseX));
-            view.getCamera().addToRotateX(CAMERA_ROTATE_SCALE * (e.getY() - mouseY));
+            view.getCamera().addToRotateZ(e.getX() - mouseX);
+            view.getCamera().addToRotateX(e.getY() - mouseY);
         } else if (e.getButton() == MouseEvent.BUTTON3) {
-            view.getCamera().addToTranslateX(CAMERA_TRANSLATE_SCALE * (e.getX() - mouseX));
-            view.getCamera().addToTranslateY(CAMERA_TRANSLATE_SCALE * (mouseY - e.getY()));
+            view.getCamera().addToTranslateX(e.getX() - mouseX);
+            view.getCamera().addToTranslateY(mouseY - e.getY());
         }
         view.repaint();
         mouseX = e.getX();

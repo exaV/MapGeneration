@@ -1,12 +1,17 @@
 package ch.ethz.ether.render.util;
 
 import java.nio.FloatBuffer;
+import java.util.Collection;
 
+import ch.ethz.ether.geom.Vec3;
+import ch.ethz.ether.geom.Vec4;
 import ch.ethz.util.IAddOnlyFloatList;
 
 import com.jogamp.common.nio.Buffers;
 
 public final class FloatList implements IAddOnlyFloatList {
+    private static final int OVER_ALLOCATE = 100000;
+
     FloatBuffer buffer;
 
     public FloatList() {
@@ -48,10 +53,13 @@ public final class FloatList implements IAddOnlyFloatList {
     }
 
     @Override
-    public void addAll(float[] values) {
-        if (values != null) {
+    public boolean add(float[] values) {
+        if ((values != null) && (values.length > 0)) {
             ensureCapacity(buffer.limit() + values.length);
             buffer.put(values);
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -87,12 +95,11 @@ public final class FloatList implements IAddOnlyFloatList {
         if (buffer == null) {
             buffer = Buffers.newDirectFloatBuffer(capacity);
         } else if (buffer.capacity() < capacity) {
-            FloatBuffer b = Buffers.newDirectFloatBuffer(capacity);
+            FloatBuffer b = Buffers.newDirectFloatBuffer(capacity + OVER_ALLOCATE);
             buffer.rewind();
             b.put(buffer);
             buffer = b;
         }
         buffer.limit(capacity);
     }
-
 }

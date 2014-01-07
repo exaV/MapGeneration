@@ -36,6 +36,7 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
 
 import ch.ethz.ether.gl.Frame;
+import ch.ethz.ether.gl.Viewport;
 import ch.ethz.ether.scene.IScene;
 
 /**
@@ -52,7 +53,7 @@ public abstract class AbstractView implements IView {
 
     private final Camera camera = new Camera(this);
 
-    private final int[] viewport = new int[4];
+    private Viewport viewport = new Viewport(0, 0, 1, 1);
 
     private boolean enabled = true;
 
@@ -80,17 +81,7 @@ public abstract class AbstractView implements IView {
     }
 
     @Override
-    public final int getWidth() {
-        return viewport[2];
-    }
-
-    @Override
-    public final int getHeight() {
-        return viewport[3];
-    }
-
-    @Override
-    public final int[] getViewport() {
+    public final Viewport getViewport() {
         return viewport;
     }
 
@@ -152,7 +143,9 @@ public abstract class AbstractView implements IView {
             return;
 
         // fetch viewport
-        gl.glGetIntegerv(GL.GL_VIEWPORT, viewport, 0);
+        int[] vp = new int[4];
+        gl.glGetIntegerv(GL.GL_VIEWPORT, vp, 0);
+        viewport = new Viewport(vp[0], vp[1], vp[2], vp[3]);
 
         // repaint UI surface if necessary
         getScene().getUI().update();
@@ -171,9 +164,8 @@ public abstract class AbstractView implements IView {
 
         if (height == 0)
             height = 1; // prevent divide by zero
-        viewport[2] = width;
-        viewport[3] = height;
         gl.glViewport(0, 0, width, height);
+        viewport = new Viewport(0, 0, width, height);
         camera.update();
     }
 

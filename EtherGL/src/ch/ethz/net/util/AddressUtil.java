@@ -59,7 +59,7 @@ public class AddressUtil {
     private static InetAddress getLocalHost(boolean ipv4only) throws UnknownHostException, SocketException {
         InetAddress result = InetAddress.getLocalHost();
         if (ipv4only && !(result instanceof Inet4Address)) {
-            for (InetAddress addr : AddressUtil.getLocalAddresses(ipv4only)) {
+            for (InetAddress addr : AddressUtil.getLocalAddresses(true)) {
                 if (isPrivate(addr)) {
                     result = addr;
                     break;

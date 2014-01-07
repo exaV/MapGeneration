@@ -37,7 +37,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import ch.ethz.ether.geom.BoundingBox;
+import ch.ethz.ether.geom.BoundingVolume;
 import ch.ethz.ether.scene.IScene;
 import ch.ethz.ether.view.IView;
 import ch.ethz.ether.view.IView.ViewType;
@@ -133,7 +133,7 @@ public class TUIO {
 
     private long startTime;
 
-    private BoundingBox bounds = new BoundingBox();
+    private BoundingVolume bounds = new BoundingVolume();
 
     public TUIO(IScene scene, int port) throws IOException {
         for (IView view : scene.getViews()) {
@@ -154,8 +154,8 @@ public class TUIO {
         GraphicsEnvironment g = GraphicsEnvironment.getLocalGraphicsEnvironment();
         for (GraphicsDevice device : g.getScreenDevices()) {
             Rectangle rect = device.getDefaultConfiguration().getBounds();
-            bounds.add(rect.getMinX(), rect.getMinY());
-            bounds.add(rect.getMaxX(), rect.getMaxY());
+            bounds.add(rect.getMinX(), rect.getMinY(), 0);
+            bounds.add(rect.getMaxX(), rect.getMaxY(), 0);
         }
     }
 
