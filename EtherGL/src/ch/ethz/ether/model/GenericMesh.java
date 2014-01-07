@@ -113,7 +113,7 @@ public class GenericMesh extends AbstractMesh {
     }
 
     @Override
-    public boolean pick(int x, int y, int w, int h, IView view, IPickState state) {
+    public boolean pick(PickMode mode, int x, int y, int w, int h, IView view, IPickState state) {
         float z = PickUtil.pickBoundingVolume(x, y, w, h, view, getBounds());
         if (z != Float.NaN) {
             // TODO: implement triangle / line / point picking

@@ -4,7 +4,7 @@ uniform mat4 projMatrix;
 uniform mat4 viewMatrix;
 
 uniform bool hasColor;
-uniform bool hasTexture;
+uniform bool hasTex;
 
 uniform vec4 color;
 
@@ -17,7 +17,7 @@ out vec2 vsTexCoord;
 
 void main() {
 	vsColor = hasColor ? vertexColor : color;
-	if (hasTexture)
+	if (hasTex)
 		vsTexCoord = vertexTexCoord;
 	gl_Position = projMatrix * viewMatrix * vertexPosition;
 }

@@ -101,13 +101,13 @@ public class RenderEntryUnshadedVCT extends AbstractRenderEntry {
         ITextureData texData = group.getTextureData();
         if (!texCoords.isEmpty() && texData != null) {
             texture.enable(gl);
-            program.setUniform(gl, "hasTexture", true);
-            program.setUniformSampler(gl, "texture", 0);
+            program.setUniform(gl, "hasTex", true);
+            program.setUniformSampler(gl, "tex", 0);
             texCoords.enable(gl, 2, texCoordsIndex);
         } else {
             texture.disable(gl);
-            program.setUniform(gl, "hasTexture", false);
-            program.setUniformSampler(gl, "texture", 0);
+            program.setUniform(gl, "hasTex", false);
+            program.setUniformSampler(gl, "tex", 0);
             texCoords.disable(gl, texCoordsIndex);
         }
 

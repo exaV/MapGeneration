@@ -298,6 +298,7 @@ public final class Mat4 {
      * @param result the array where to store the transformed vectors or NULL to create a new array
      * @return the transformed result
      */
+    // TODO: correct code so in-place transform is possible
     public float[] transform(float[] xyz, float[] result) {
         if (xyz == null)
             return null;
