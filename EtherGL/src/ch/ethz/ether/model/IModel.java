@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package ch.ethz.ether.model;
 
-import ch.ethz.ether.geom.BoundingVolume;
+import ch.ethz.ether.geom.BoundingBox;
 
 import java.util.List;
 
@@ -37,7 +37,7 @@ import java.util.List;
  * @author radar
  */
 public interface IModel {
-    BoundingVolume getBounds();
+    BoundingBox getBounds();
 
     List<IGeometry> getGeometries();
 }

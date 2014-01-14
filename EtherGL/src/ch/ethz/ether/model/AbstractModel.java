@@ -1,6 +1,6 @@
 package ch.ethz.ether.model;
 
-import ch.ethz.ether.geom.BoundingVolume;
+import ch.ethz.ether.geom.BoundingBox;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,13 +10,13 @@ import java.util.List;
  * Created by radar on 05/12/13.
  */
 public abstract class AbstractModel implements IModel {
-    private BoundingVolume bounds;
+    private BoundingBox bounds;
     private List<IGeometry> geometries = new ArrayList<>();
 
     @Override
-    public BoundingVolume getBounds() {
+    public BoundingBox getBounds() {
         if (bounds == null) {
-            bounds = new BoundingVolume();
+            bounds = new BoundingBox();
             for (IGeometry geometry : geometries)
                 bounds.add(geometry.getBounds());
         }

@@ -54,7 +54,7 @@ public class ShadowVolumeRenderer /*implements IRenderer*/ {
 
 	@Override
 	public void renderModel(GL2 gl, IModel model, IView view) {
-		BoundingVolume bounds = model.getBounds();
+		BoundingBox bounds = model.getBounds();
 		IRenderGroup group = model.getRenderGroups().get(0);
 			
 		// enable depth test

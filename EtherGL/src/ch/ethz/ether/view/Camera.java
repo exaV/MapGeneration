@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package ch.ethz.ether.view;
 
-import ch.ethz.ether.geom.BoundingVolume;
+import ch.ethz.ether.geom.BoundingBox;
 import ch.ethz.ether.geom.Mat4;
 import ch.ethz.util.MathUtil;
 
@@ -191,7 +191,7 @@ public class Camera {
         update();
     }
 
-    public void frame(BoundingVolume bounds) {
+    public void frame(BoundingBox bounds) {
         if (locked)
             return;
         // FIXME hack, assume centered model for now

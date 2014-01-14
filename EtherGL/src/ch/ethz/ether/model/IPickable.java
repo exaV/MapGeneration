@@ -10,8 +10,8 @@ import java.util.Map;
  */
 public interface IPickable {
     public enum PickMode {
-        SINGLE,
-        WITHIN,
+        POINT,
+        INSIDE,
         INTERSECT
     }
 

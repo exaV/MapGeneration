@@ -1,6 +1,6 @@
 package ch.ethz.ether.model;
 
-import ch.ethz.ether.geom.BoundingVolume;
+import ch.ethz.ether.geom.BoundingBox;
 import ch.ethz.ether.geom.PickUtil;
 import ch.ethz.ether.geom.Vec3;
 import ch.ethz.ether.view.IView;
@@ -24,7 +24,7 @@ public class GenericMesh extends AbstractMesh {
         final float[] pointVertices;
     }
 
-    private BoundingVolume bounds;
+    private BoundingBox bounds;
     private Transform transform = new Transform();
     private float[] triangleVertices;
     private float[] triangleNormals;
@@ -64,7 +64,7 @@ public class GenericMesh extends AbstractMesh {
     }
 
     @Override
-    public BoundingVolume getBounds() {
+    public BoundingBox getBounds() {
         validateCache();
         return bounds;
     }
@@ -169,7 +169,7 @@ public class GenericMesh extends AbstractMesh {
     private void validateCache() {
         if (cache == null) {
             cache = new TransformCache();
-            bounds = new BoundingVolume();
+            bounds = new BoundingBox();
             bounds.add(cache.triangleVertices);
             bounds.add(cache.edgeVertices);
             bounds.add(cache.pointVertices);
