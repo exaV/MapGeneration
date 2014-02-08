@@ -37,12 +37,12 @@ public final class ProjectionUtil {
         return projectToDevice(view, new Vec4(v));
     }
 
-    public static Vec3 projectToDevice(IView view, Vec4 v) {
-        return projectToDevice(view.getCamera().getViewProjMatrix(), v);
-    }
-
     public static Vec3 projectToDevice(Mat4 viewProjMatrix, Vec3 v) {
         return projectToDevice(viewProjMatrix, new Vec4(v));
+    }
+
+    public static Vec3 projectToDevice(IView view, Vec4 v) {
+        return projectToDevice(view.getCamera().getViewProjMatrix(), v);
     }
 
     public static Vec3 projectToDevice(Mat4 viewProjMatrix, Vec4 v) {
@@ -59,16 +59,32 @@ public final class ProjectionUtil {
         return new Vec3(x, y, z);
     }
 
+    public static float[] projectToDevice(IView view, float[] v) {
+        return projectToDevice(view.getCamera().getViewProjMatrix(), v);
+    }
+
+    public static float[] projectToDevice(Mat4 viewProjMatrix, float[] v) {
+        float[] proj = viewProjMatrix.transform(v);
+        for (int i = 0; i < v.length; i += 3) {
+            proj[i] = proj[i];
+            proj[i + 1] = proj[i + 1];
+            proj[i + 2] = proj[i + 2];
+        }
+        return proj;
+    }
+
+
+
     public static Vec3 projectToScreen(IView view, Vec3 v) {
         return projectToScreen(view, new Vec4(v));
     }
 
-    public static Vec3 projectToScreen(IView view, Vec4 v) {
-        return projectToScreen(view.getCamera().getViewProjMatrix(), view.getViewport(), v);
-    }
-
     public static Vec3 projectToScreen(Mat4 viewProjMatrix, Viewport viewport, Vec3 v) {
         return projectToScreen(viewProjMatrix, viewport, new Vec4(v));
+    }
+
+    public static Vec3 projectToScreen(IView view, Vec4 v) {
+        return projectToScreen(view.getCamera().getViewProjMatrix(), view.getViewport(), v);
     }
 
     public static Vec3 projectToScreen(Mat4 viewProjMatrix, Viewport viewport, Vec4 v) {
@@ -88,27 +104,20 @@ public final class ProjectionUtil {
         return new Vec3(x, y, z);
     }
 
-    public static int deviceToScreenX(IView view, float x) {
-        return (int) ((1.0 + x) / 2.0 * view.getViewport().w);
+    public static float[] projectToScreen(IView view, float[] v) {
+        return projectToScreen(view.getCamera().getViewProjMatrix(), view.getViewport(), v);
     }
 
-    public static int deviceToScreenY(IView view, float y) {
-        return (int) ((1.0 + y) / 2.0 * view.getViewport().h);
+    public static float[] projectToScreen(Mat4 viewProjMatrix, Viewport viewport, float[] v) {
+        float[] proj = viewProjMatrix.transform(v);
+        for (int i = 0; i < v.length; i += 3) {
+            proj[i] = 0.5f * (proj[i] + 1) * viewport.w + viewport.x;
+            proj[i + 1] = 0.5f * (proj[i + 1] + 1) * viewport.h + viewport.y;
+            proj[i + 2] = 0.5f * (proj[i + 2] + 1);
+        }
+        return proj;
     }
 
-    public static float screenToDeviceX(IView view, int x) {
-        return 2f * x / view.getViewport().w - 1f;
-    }
-
-    public static float screenToDeviceY(IView view, int y) {
-        return 2f * y / view.getViewport().h - 1f;
-    }
-
-    public static Line getRay(IView view, float x, float y) {
-        Vec3 p0 = unprojectFromScreen(view, new Vec3(x, y, 0.1f));
-        Vec3 p1 = unprojectFromScreen(view, new Vec3(x, y, 0.9f));
-        return new Line(new Vector3D(p0.x, p0.y, p0.z), new Vector3D(p1.x, p1.y, p1.z));
-    }
 
     public static Vec3 unprojectFromScreen(IView view, Vec3 v) {
         return unprojectFromScreen(view.getCamera().getViewProjInvMatrix(), view.getViewport(), v);
@@ -132,5 +141,29 @@ public final class ProjectionUtil {
         }
 
         return new Vec3(result.x / result.w, result.y / result.w, result.z / result.w);
+    }
+
+
+
+    public static int deviceToScreenX(IView view, float x) {
+        return (int) ((1.0 + x) / 2.0 * view.getViewport().w);
+    }
+
+    public static int deviceToScreenY(IView view, float y) {
+        return (int) ((1.0 + y) / 2.0 * view.getViewport().h);
+    }
+
+    public static float screenToDeviceX(IView view, int x) {
+        return 2f * x / view.getViewport().w - 1f;
+    }
+
+    public static float screenToDeviceY(IView view, int y) {
+        return 2f * y / view.getViewport().h - 1f;
+    }
+
+    public static Line getRay(IView view, float x, float y) {
+        Vec3 p0 = unprojectFromScreen(view, new Vec3(x, y, 0.1f));
+        Vec3 p1 = unprojectFromScreen(view, new Vec3(x, y, 0.9f));
+        return new Line(new Vector3D(p0.x, p0.y, p0.z), new Vector3D(p1.x, p1.y, p1.z));
     }
 }

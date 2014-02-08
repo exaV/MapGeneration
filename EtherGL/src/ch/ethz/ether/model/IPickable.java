@@ -8,8 +8,8 @@ import ch.ethz.ether.view.IView;
 public interface IPickable {
     public enum PickMode {
         POINT,
-        INSIDE,
-        INTERSECT
+        //INSIDE,       // XXX UNSUPPORTED YET - TO BE IMPLEMENTED
+        //INTERSECT
     }
 
     public interface IPickState {

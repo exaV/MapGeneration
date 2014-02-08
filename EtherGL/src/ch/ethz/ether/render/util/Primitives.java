@@ -29,6 +29,32 @@ public final class Primitives {
             +0.5f, -0.5f, -0.5f, +0.5f, +0.5f, +0.5f, +0.5f, -0.5f, +0.5f
     };
 
+    public static final float[] UNIT_CUBE_EDGES = {
+            // bottom
+            -0.5f, -0.5f, -0.5f, -0.5f, +0.5f, -0.5f,
+            -0.5f, +0.5f, -0.5f, +0.5f, +0.5f, -0.5f,
+            +0.5f, +0.5f, -0.5f, +0.5f, -0.5f, -0.5f,
+            +0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f,
+
+            // top
+            +0.5f, -0.5f, +0.5f, +0.5f, +0.5f, +0.5f,
+            +0.5f, +0.5f, +0.5f, -0.5f, +0.5f, +0.5f,
+            -0.5f, +0.5f, +0.5f, -0.5f, -0.5f, +0.5f,
+            -0.5f, -0.5f, +0.5f, +0.5f, -0.5f, +0.5f,
+
+            // vertical
+            -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, +0.5f,
+            +0.5f, -0.5f, -0.5f, +0.5f, -0.5f, +0.5f,
+            +0.5f, +0.5f, -0.5f, +0.5f, +0.5f, +0.5f,
+            -0.5f, +0.5f, -0.5f, -0.5f, +0.5f, +0.5f
+    };
+
+    public static final float[] UNIT_CUBE_POINTS = {
+            -0.5f, -0.5f, -0.5f, -0.5f, +0.5f, -0.5f, +0.5f, +0.5f, -0.5f, +0.5f, -0.5f, -0.5f,
+            +0.5f, -0.5f, +0.5f, +0.5f, +0.5f, +0.5f, -0.5f, +0.5f, +0.5f, -0.5f, -0.5f, +0.5f,
+    };
+
+
     public static void addLine(IAddOnlyFloatList dst, float x0, float y0, float x1, float y1) {
         dst.add(x0, y0, 0);
         dst.add(x1, y1, 0);

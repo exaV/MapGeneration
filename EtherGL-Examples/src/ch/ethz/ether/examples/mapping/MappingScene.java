@@ -60,7 +60,7 @@ public class MappingScene extends AbstractScene {
     public MappingScene() {
         super(new ForwardRenderer());
         setLightPosition(lightPosition);
-        setCurrentTool(defaultTool);
+        //setCurrentTool(defaultTool);
     }
 
     public void modelChanged() {

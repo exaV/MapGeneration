@@ -142,6 +142,10 @@ public final class BoundingBox {
     }
 
     public void add(float x, float y, float z) {
+        // skip illegal values
+        if (Float.isInfinite(x) || Float.isInfinite(y) || Float.isInfinite(z) || Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
+            return;
+
         minX = Math.min(minX, x);
         maxX = Math.max(maxX, x);
         minY = Math.min(minY, y);
@@ -191,6 +195,19 @@ public final class BoundingBox {
             add(b.maxX, b.maxY, b.maxZ);
         }
     }
+
+    public void grow(float x, float y, float z) {
+        if (!isValid())
+            return;
+
+        minX -= x;
+        maxX += x;
+        minY -= y;
+        maxY += y;
+        minZ -= z;
+        maxZ += z;
+    }
+
 
     public boolean intersects(BoundingBox b) {
         assert valid && b.valid;
@@ -242,4 +259,6 @@ public final class BoundingBox {
     public String toString() {
         return valid ? "[" + minX + "," + maxX + "][" + minY + "," + maxY + "][" + minZ + "," + maxZ + "]" : "invalid";
     }
+
+
 }

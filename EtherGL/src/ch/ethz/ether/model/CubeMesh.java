@@ -30,5 +30,7 @@ public final class CubeMesh extends GenericMesh {
     public CubeMesh(Vec3 origin) {
         super(origin);
         setTriangles(Primitives.UNIT_CUBE_TRIANGLES, null, null);
+        setEdges(Primitives.UNIT_CUBE_EDGES, null);
+        setPoints(Primitives.UNIT_CUBE_POINTS, null);
     }
 }

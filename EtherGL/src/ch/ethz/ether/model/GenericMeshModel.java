@@ -27,6 +27,7 @@
  */
 package ch.ethz.ether.model;
 
+import ch.ethz.ether.geom.BoundingBox;
 import ch.ethz.ether.render.AbstractRenderGroup;
 import ch.ethz.ether.render.IRenderGroup;
 import ch.ethz.ether.render.IRenderGroup.Source;
@@ -34,6 +35,7 @@ import ch.ethz.ether.render.IRenderGroup.Type;
 import ch.ethz.ether.render.IRenderer;
 import ch.ethz.util.IAddOnlyFloatList;
 
+// TODO: this class is doomed, mainly for testing right now
 public class GenericMeshModel extends AbstractModel {
     private final IRenderGroup triangles = new AbstractRenderGroup(Source.MODEL, Type.TRIANGLES) {
         @Override
@@ -46,7 +48,88 @@ public class GenericMeshModel extends AbstractModel {
         }
     };
 
+    private final IRenderGroup edges = new AbstractRenderGroup(Source.MODEL, Type.LINES) {
+        @Override
+        public void getVertices(IAddOnlyFloatList dst) {
+            for (IGeometry mesh : getGeometries()) {
+                if (mesh instanceof IEdgeProvider) {
+                    ((IEdgeProvider) mesh).getEdgeVertices(dst);
+                }
+            }
+        }
+    };
+
+    private final IRenderGroup points = new AbstractRenderGroup(Source.MODEL, Type.POINTS) {
+        @Override
+        public void getVertices(IAddOnlyFloatList dst) {
+            for (IGeometry mesh : getGeometries()) {
+                if (mesh instanceof IPointProvider) {
+                    ((IPointProvider) mesh).getPointVertices(dst);
+                }
+            }
+        }
+    };
+
+    private final IRenderGroup bounds = new AbstractRenderGroup(Source.MODEL, Type.LINES) {
+        @Override
+        public void getVertices(IAddOnlyFloatList dst) {
+            for (IGeometry mesh : getGeometries()) {
+                BoundingBox bounds = mesh.getBounds();
+                float xmin = bounds.getMinX();
+                float xmax = bounds.getMaxX();
+                float ymin = bounds.getMinY();
+                float ymax = bounds.getMaxY();
+                float zmin = bounds.getMinZ();
+                float zmax = bounds.getMaxZ();
+
+                dst.add(xmin, ymin, zmin);
+                dst.add(xmax, ymin, zmin);
+
+                dst.add(xmin, ymax, zmin);
+                dst.add(xmax, ymax, zmin);
+
+                dst.add(xmin, ymin, zmin);
+                dst.add(xmin, ymax, zmin);
+
+                dst.add(xmax, ymin, zmin);
+                dst.add(xmax, ymax, zmin);
+
+                dst.add(xmin, ymin, zmax);
+                dst.add(xmax, ymin, zmax);
+
+                dst.add(xmin, ymax, zmax);
+                dst.add(xmax, ymax, zmax);
+
+                dst.add(xmin, ymin, zmax);
+                dst.add(xmin, ymax, zmax);
+
+                dst.add(xmax, ymin, zmax);
+                dst.add(xmax, ymax, zmax);
+
+                dst.add(xmin, ymin, zmin);
+                dst.add(xmin, ymin, zmax);
+
+                dst.add(xmax, ymin, zmin);
+                dst.add(xmax, ymin, zmax);
+
+                dst.add(xmax, ymax, zmin);
+                dst.add(xmax, ymax, zmax);
+
+                dst.add(xmin, ymax, zmin);
+                dst.add(xmin, ymax, zmax);
+            }
+        }
+
+        @Override
+        public float[] getColor() {
+            return new float[] { 1, 1, 0, 0 };
+        }
+    };
+
     public GenericMeshModel() {
         IRenderer.GROUPS.add(triangles);
+        IRenderer.GROUPS.add(edges);
+        IRenderer.GROUPS.add(points);
+        IRenderer.GROUPS.add(bounds);
     }
 }

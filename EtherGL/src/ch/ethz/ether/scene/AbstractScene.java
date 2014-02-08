@@ -56,9 +56,10 @@ public abstract class AbstractScene implements IScene {
     private final UI ui = new UI(this);
 
     private final NavigationTool navigationTool = new NavigationTool(this);
+    private final PickTool pickTool = new PickTool(this);
 
     private IView currentView = null;
-    private ITool activeTool = null;
+    private ITool activeTool = pickTool;
 
 
     protected AbstractScene(IRenderer renderer) {
@@ -118,18 +119,16 @@ public abstract class AbstractScene implements IScene {
 
     @Override
     public final void setCurrentTool(ITool tool) {
+        if (tool == null)
+            tool = pickTool;
+
         if (activeTool == tool)
             return;
 
-        if (activeTool != null)
-            activeTool.deactivate();
-
+        activeTool.deactivate();
         activeTool = tool;
-
-        if (activeTool != null) {
-            activeTool.activate();
-            activeTool.viewChanged(getCurrentView());
-        }
+        activeTool.activate();
+        activeTool.viewChanged(getCurrentView());
 
         repaintViews();
     }
@@ -197,7 +196,7 @@ public abstract class AbstractScene implements IScene {
         // buttons have precedence over tools
         if (view.getViewType() == ViewType.INTERACTIVE_VIEW) {
             for (Button button : ui.getButtons()) {
-                if (button.hit(e.getPoint().x, e.getPoint().y, view)) {
+                if (button.hit(e.getX(), e.getY(), view)) {
                     button.fire(view);
                     view.getScene().repaintViews();
                     return;
@@ -231,7 +230,7 @@ public abstract class AbstractScene implements IScene {
         if (view.getViewType() == ViewType.INTERACTIVE_VIEW) {
             Button button = null;
             for (Button b : ui.getButtons()) {
-                if (b.hit(e.getPoint().x, e.getPoint().y, view)) {
+                if (b.hit(e.getX(), e.getY(), view)) {
                     button = b;
                     break;
                 }

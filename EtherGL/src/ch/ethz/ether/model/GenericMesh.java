@@ -117,12 +117,33 @@ public class GenericMesh extends AbstractMesh {
 
     @Override
     public boolean pick(PickMode mode, int x, int y, int w, int h, IView view, IPickState state) {
-        float z = PickUtil.pickBoundingBox(x, y, w, h, view, getBounds());
-        if (z != Float.NaN) {
-            // TODO: implement triangle / line / point picking
-            state.add(z, this);
+        validateCache();
+
+        float zMin = Float.POSITIVE_INFINITY;
+        float z = PickUtil.pickBoundingBox(mode, x, y, w, h, view, getBounds());
+        if (Float.isInfinite(z))
+            return false;
+
+        if (cache.triangleVertices != null) {
+            z = PickUtil.pickTriangles(mode, x, y, w, h, view, cache.triangleVertices);
+            zMin = Math.min(zMin, z);
         }
-        return false;
+
+        if (cache.edgeVertices != null) {
+            z = PickUtil.pickEdges(mode, x, y, w, h, view, cache.edgeVertices);
+            zMin = Math.min(zMin, z);
+        }
+
+        if (cache.pointVertices != null) {
+            z = PickUtil.pickPoints(mode, x, y, w, h, view, cache.pointVertices);
+            zMin = Math.min(zMin, z);
+        }
+
+        if (Float.isInfinite(zMin))
+            return false;
+
+        state.add(zMin, this);
+        return true;
     }
 
     @Override
@@ -150,7 +171,6 @@ public class GenericMesh extends AbstractMesh {
 
     @Override
     public boolean getEdgeColors(IAddOnlyFloatList dst) {
-        Objects.requireNonNull(dst);
         return dst.add(edgeColors);
     }
 

@@ -222,6 +222,8 @@ public final class CalibrationTool extends AbstractTool {
 
     @Override
     public void mousePressed(MouseEvent e, IView view) {
+        int mx = e.getX();
+        int my = view.getViewport().h - e.getY();
         CalibrationContext context = getContext(view);
 
         // reset first
@@ -231,7 +233,7 @@ public final class CalibrationTool extends AbstractTool {
         for (int i = 0; i < context.projectedVertices.size(); ++i) {
             int x = ProjectionUtil.deviceToScreenX(view, context.projectedVertices.get(i).x);
             int y = ProjectionUtil.deviceToScreenY(view, context.projectedVertices.get(i).y);
-            if (snap2D(e.getX(), view.getViewport().h - e.getY(), x, y)) {
+            if (snap2D(mx, my, x, y)) {
                 // we got a point to move!
                 context.currentSelection = i;
                 calibrate(view);
@@ -245,7 +247,7 @@ public final class CalibrationTool extends AbstractTool {
             Vec3 vv = ProjectionUtil.projectToScreen(view, new Vec3(mv[i], mv[i + 1], mv[i + 2]));
             if (vv == null)
                 continue;
-            if (snap2D(e.getX(), view.getViewport().h - e.getY(), (int) vv.x, (int) vv.y)) {
+            if (snap2D(mx, my, (int) vv.x, (int) vv.y)) {
                 Vec3 a = new Vec3(mv[i], mv[i + 1], mv[i + 2]);
                 int index = context.modelVertices.indexOf(a);
                 if (index != -1) {
@@ -263,9 +265,12 @@ public final class CalibrationTool extends AbstractTool {
 
     @Override
     public void mouseDragged(MouseEvent e, IView view) {
+        int mx = e.getX();
+        int my = view.getViewport().h - e.getY();
         CalibrationContext context = getContext(view);
+
         if (context.currentSelection != -1) {
-            Vec3 a = new Vec3(ProjectionUtil.screenToDeviceX(view, e.getX()), ProjectionUtil.screenToDeviceY(view, view.getViewport().h - e.getY()), 0);
+            Vec3 a = new Vec3(ProjectionUtil.screenToDeviceX(view, mx), ProjectionUtil.screenToDeviceY(view, my), 0);
             context.projectedVertices.set(context.currentSelection, a);
             calibrate(view);
         }

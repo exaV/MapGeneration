@@ -25,4 +25,9 @@ public final class Vec4 {
     public Vec4(Vec3 v) {
         this(v.x, v.y, v.z, 1);
     }
+
+    @Override
+    public String toString() {
+        return "[" + x + ", " + y + ", " + z + ", " + w + "]";
+    }
 }
