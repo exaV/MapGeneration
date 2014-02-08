@@ -7,7 +7,7 @@ import ch.ethz.ether.geom.Vec3;
  * Created by radar on 05/12/13.
  */
 // MV = T * R * S * T-Origin
-// MN = transposed((T * R)^-1)
+// MN = transposed((R * S)^-1)
 public class Transform implements ITransformable {
     private Vec3 origin = Vec3.ZERO;
     private Vec3 translation = Vec3.ZERO;

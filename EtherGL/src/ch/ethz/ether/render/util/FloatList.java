@@ -1,10 +1,6 @@
 package ch.ethz.ether.render.util;
 
 import java.nio.FloatBuffer;
-import java.util.Collection;
-
-import ch.ethz.ether.geom.Vec3;
-import ch.ethz.ether.geom.Vec4;
 import ch.ethz.util.IAddOnlyFloatList;
 
 import com.jogamp.common.nio.Buffers;

@@ -6,6 +6,8 @@ import ch.ethz.ether.geom.Vec3;
 import ch.ethz.ether.view.IView;
 import ch.ethz.util.IAddOnlyFloatList;
 
+import java.util.Objects;
+
 /**
  * Created by radar on 05/12/13.
  */
@@ -74,7 +76,8 @@ public class GenericMesh extends AbstractMesh {
         return transform.getOrigin();
     }
 
-    public void setOrigin(Vec3 origin) {
+    @Override
+	public void setOrigin(Vec3 origin) {
         transform.setOrigin(origin);
         invalidateCache();
     }
@@ -114,7 +117,7 @@ public class GenericMesh extends AbstractMesh {
 
     @Override
     public boolean pick(PickMode mode, int x, int y, int w, int h, IView view, IPickState state) {
-        float z = PickUtil.pickBoundingVolume(x, y, w, h, view, getBounds());
+        float z = PickUtil.pickBoundingBox(x, y, w, h, view, getBounds());
         if (z != Float.NaN) {
             // TODO: implement triangle / line / point picking
             state.add(z, this);
@@ -147,6 +150,7 @@ public class GenericMesh extends AbstractMesh {
 
     @Override
     public boolean getEdgeColors(IAddOnlyFloatList dst) {
+        Objects.requireNonNull(dst);
         return dst.add(edgeColors);
     }
 

@@ -34,7 +34,7 @@ import ch.ethz.ether.view.IView;
  * File created by radar on 10/12/13.
  */
 public final class PickUtil {
-    public static float pickBoundingVolume(int x, int y, int w, int h, IView view, BoundingBox bounds) {
+    public static float pickBoundingBox(int x, int y, int w, int h, IView view, BoundingBox bounds) {
         y = view.getViewport().h - y;
         BoundingBox b = new BoundingBox();
         float xmin = bounds.getMinX();
