@@ -28,15 +28,38 @@
 
 package ch.ethz.ether.geom;
 
+import ch.ethz.ether.model.IGeometry;
+import ch.ethz.ether.model.IPickable;
 import ch.ethz.ether.view.IView;
+
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * File created by radar on 10/12/13.
  */
 public final class PickUtil {
-    public static float pickBoundingVolume(int x, int y, int w, int h, IView view, BoundingVolume bounds) {
-        y = view.getViewport().h - y;
-        BoundingVolume b = new BoundingVolume();
+    public static final float PICK_DISTANCE = 5;
+
+    public static Map<Float, IPickable> pickFromModel(IPickable.PickMode mode, int x, int y, int w, int h, IView view) {
+        final Map<Float, IPickable> pickables = new TreeMap<>();
+        IPickable.IPickState state = new IPickable.IPickState() {
+            @Override
+            public void add(float z, IPickable pickable) {
+                pickables.put(z, pickable);
+            }
+        };
+        for (IGeometry geometry : view.getScene().getModel().getGeometries()) {
+            if (geometry instanceof IPickable)
+                ((IPickable) geometry).pick(IPickable.PickMode.POINT, x, y, 0, 0, view, state);
+        }
+        return pickables;
+    }
+
+    // TODO: pickFromUI (basically same as above, but need to define UI geometry access) (in case we need this)
+
+    public static float pickBoundingBox(IPickable.PickMode mode, int x, int y, int w, int h, IView view, BoundingBox bounds) {
+        BoundingBox b = new BoundingBox();
         float xmin = bounds.getMinX();
         float xmax = bounds.getMaxX();
         float ymin = bounds.getMinY();
@@ -44,17 +67,78 @@ public final class PickUtil {
         float zmin = bounds.getMinZ();
         float zmax = bounds.getMaxZ();
 
-        b.add(ProjectionUtil.projectToScreen(view, new Vec4(xmin, ymin, zmin)));
-        b.add(ProjectionUtil.projectToScreen(view, new Vec4(xmin, ymin, zmax)));
-        b.add(ProjectionUtil.projectToScreen(view, new Vec4(xmin, ymax, zmin)));
-        b.add(ProjectionUtil.projectToScreen(view, new Vec4(xmin, ymax, zmax)));
-        b.add(ProjectionUtil.projectToScreen(view, new Vec4(xmax, ymin, zmin)));
-        b.add(ProjectionUtil.projectToScreen(view, new Vec4(xmax, ymin, zmax)));
-        b.add(ProjectionUtil.projectToScreen(view, new Vec4(xmax, ymax, zmin)));
-        b.add(ProjectionUtil.projectToScreen(view, new Vec4(xmax, ymax, zmax)));
-        if (b.getMinZ() > 0 && x > b.getMinX() && x < b.getMaxX() && y > b.getMinY() && y < b.getMaxY())
-            return b.getMinZ();
-        else
-            return Float.NaN;
+        float[] v = new float[] {
+                xmin, ymin, zmin,
+                xmin, ymin, zmax,
+                xmin, ymax, zmin,
+                xmin, ymax, zmax,
+                xmax, ymin, zmin,
+                xmax, ymin, zmax,
+                xmax, ymax, zmin,
+                xmax, ymax, zmax,
+        };
+        b.add(ProjectionUtil.projectToScreen(view, v));
+        b.grow(PICK_DISTANCE, PICK_DISTANCE, 0);
+
+        if (b.getMaxZ() > 0 && x > b.getMinX() && x < b.getMaxX() && y > b.getMinY() && y < b.getMaxY())
+            return Math.max(0, b.getMinZ());
+
+        return Float.POSITIVE_INFINITY;
+    }
+
+    public static float pickTriangles(IPickable.PickMode mode, int x, int y, int w, int h, IView view, float[] triangles) {
+        triangles = ProjectionUtil.projectToScreen(view, triangles);
+
+        Vec3 o = new Vec3(x, y, 0);
+        Vec3 d = Vec3.Z;
+        float zMin = Float.POSITIVE_INFINITY;
+        for (int i = 0; i < triangles.length; i += 9) {
+            float z = GeometryUtil.intersectRayWithTriangle(o, d, triangles, i);
+            zMin = Math.min(zMin, z);
+        }
+        return zMin;
+    }
+
+    public static float pickEdges(IPickable.PickMode mode, int x, int y, int w, int h, IView view, float[] edges) {
+        edges = ProjectionUtil.projectToScreen(view, edges);
+
+        float zMin = Float.POSITIVE_INFINITY;
+        for (int i = 0; i < edges.length; i += 6) {
+            float dx = edges[i + 3] - edges[i];
+            float dy = edges[i + 4] - edges[i + 1];
+            float dl2 = dx * dx + dy * dy;
+            if (dl2 == 0)
+                continue;
+
+            float mx = (float)x - edges[i];
+            float my = (float)y - edges[i + 1];
+
+            float t = (mx * dx + my * dy) / dl2;
+            if (t < 0 || t > 1)
+                continue;
+
+            float px = t * dx;
+            float py = t * dy;
+
+            float d2 = (mx - px) * (mx - px) + (my - py) * (my - py);
+            if (d2 > PICK_DISTANCE * PICK_DISTANCE)
+                continue;
+
+            float z = edges[i + 2] + t * (edges[i + 5] - edges[i + 2]);
+            zMin = Math.min(zMin, z);
+        }
+        return zMin;
+    }
+
+    public static float pickPoints(IPickable.PickMode mode, int x, int y, int w, int h, IView view, float[] points) {
+        points = ProjectionUtil.projectToScreen(view, points);
+
+        float zMin = Float.POSITIVE_INFINITY;
+        for (int i = 0; i < points.length; i += 3) {
+            float d = (float)Math.sqrt((points[i] - x) * (points[i] - x) + (points[i + 1] - y) * (points[i + 1] - y));
+            if (d < PICK_DISTANCE)
+                zMin = Math.min(zMin, points[i + 2]);
+        }
+        return zMin;
     }
 }

@@ -22,11 +22,10 @@ public class GeometryUtil {
     }
 
 
-
-    public static boolean isPointInTriangle(float x, float y, float[] triangle) {
-        boolean b1 = sign(x, y, triangle[0], triangle[1], triangle[3], triangle[4]) < 0.0f;
-        boolean b2 = sign(x, y, triangle[3], triangle[4], triangle[6], triangle[7]) < 0.0f;
-        boolean b3 = sign(x, y, triangle[6], triangle[7], triangle[0], triangle[1]) < 0.0f;
+    public static boolean is2DPointInTriangle(float x, float y, float[] triangle, int index) {
+        boolean b1 = sign(x, y, triangle[index + 0], triangle[index + 1], triangle[index + 3], triangle[index + 4]) < 0.0f;
+        boolean b2 = sign(x, y, triangle[index + 3], triangle[index + 4], triangle[index + 6], triangle[index + 7]) < 0.0f;
+        boolean b3 = sign(x, y, triangle[index + 6], triangle[index + 7], triangle[index + 0], triangle[index + 1]) < 0.0f;
         return ((b1 == b2) && (b2 == b3));
     }
 
@@ -35,7 +34,79 @@ public class GeometryUtil {
     }
 
 
+    public static float intersectRayWithTriangle(Vec3 rayOrigin, Vec3 rayDirection, float[] triangle, int index) {
+        return intersectRayWithTriangleOrPlane(rayOrigin, rayDirection, triangle, index, true);
+    }
 
+    public static float intersect2DPointWithTriangle(float x, float y, float[] triangle, int index) {
+        return intersectRayWithTriangleOrPlane(new Vec3(x, y, 0), new Vec3(0, 0, -1), triangle, index, true);
+    }
+
+    public static float intersectRayWithPlane(Vec3 rayOrigin, Vec3 rayDirection, float[] triangle, int index) {
+        return intersectRayWithTriangleOrPlane(rayOrigin, rayDirection, triangle, index, false);
+    }
+
+    // http://en.wikipedia.org/wiki/Möller–Trumbore_intersection_algorithm
+    private static final float EPSILON = 0.000001f;
+
+    private static float intersectRayWithTriangleOrPlane(Vec3 rayOrigin, Vec3 rayDirection, float[] triangle, int index, boolean testBounds) {
+        Vec3 o = rayOrigin;
+        Vec3 d = rayDirection;
+
+        // edge e1 = p2 - p1
+        float e1x = triangle[index + 3] - triangle[index + 0];
+        float e1y = triangle[index + 4] - triangle[index + 1];
+        float e1z = triangle[index + 5] - triangle[index + 2];
+
+        // edge e2 = p3 - p1
+        float e2x = triangle[index + 6] - triangle[index + 0];
+        float e2y = triangle[index + 7] - triangle[index + 1];
+        float e2z = triangle[index + 8] - triangle[index + 2];
+
+        // Vec3 p = d x e2
+        float px = d.y * e2z - d.z * e2y;
+        float py = d.z * e2x - d.x * e2z;
+        float pz = d.x * e2y - d.y * e2x;
+
+        // float det = e1 * p
+        float det = e1x * px + e1y * py + e1z * pz;
+
+
+        if (det > -EPSILON && det < EPSILON)
+            return Float.POSITIVE_INFINITY;
+        float detInv = 1f / det;
+
+        // Vec3 t = o - p1 (distance from p1 to ray origin)
+        float tx = o.x - triangle[index + 0];
+        float ty = o.y - triangle[index + 1];
+        float tz = o.z - triangle[index + 2];
+
+        // float u = (t * p) * detInv
+        float u = (tx * px + ty * py + tz * pz) * detInv;
+
+        if (testBounds && (u < 0 || u > 1))
+            return Float.POSITIVE_INFINITY;
+
+        // Vec3 q = t x e1
+        float qx = ty * e1z - tz * e1y;
+        float qy = tz * e1x - tx * e1z;
+        float qz = tx * e1y - ty * e1x;
+
+        // float v = (d, q) * detInv
+        float v = (d.x * qx + d.y * qy + d.z * qz) * detInv;
+
+        if (testBounds && (v < 0 || u + v > 1))
+            return Float.POSITIVE_INFINITY;
+
+        // t = (e2 * q) * detInv;
+        float t = (e2x * qx + e2y * qy + e2z * qz) * detInv;
+
+        // done
+        return (t > EPSILON) ? t : Float.POSITIVE_INFINITY;
+    }
+
+
+    // TODO: revise API (float[] vertices?)
     public static boolean isPointInPolygon(float x, float y, List<Vec3> polygon) {
         boolean oddNodes = false;
         int j = polygon.size() - 1;

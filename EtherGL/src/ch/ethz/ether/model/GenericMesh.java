@@ -1,10 +1,12 @@
 package ch.ethz.ether.model;
 
-import ch.ethz.ether.geom.BoundingVolume;
+import ch.ethz.ether.geom.BoundingBox;
 import ch.ethz.ether.geom.PickUtil;
 import ch.ethz.ether.geom.Vec3;
 import ch.ethz.ether.view.IView;
 import ch.ethz.util.IAddOnlyFloatList;
+
+import java.util.Objects;
 
 /**
  * Created by radar on 05/12/13.
@@ -24,7 +26,7 @@ public class GenericMesh extends AbstractMesh {
         final float[] pointVertices;
     }
 
-    private BoundingVolume bounds;
+    private BoundingBox bounds;
     private Transform transform = new Transform();
     private float[] triangleVertices;
     private float[] triangleNormals;
@@ -64,7 +66,7 @@ public class GenericMesh extends AbstractMesh {
     }
 
     @Override
-    public BoundingVolume getBounds() {
+    public BoundingBox getBounds() {
         validateCache();
         return bounds;
     }
@@ -74,7 +76,8 @@ public class GenericMesh extends AbstractMesh {
         return transform.getOrigin();
     }
 
-    public void setOrigin(Vec3 origin) {
+    @Override
+	public void setOrigin(Vec3 origin) {
         transform.setOrigin(origin);
         invalidateCache();
     }
@@ -114,12 +117,33 @@ public class GenericMesh extends AbstractMesh {
 
     @Override
     public boolean pick(PickMode mode, int x, int y, int w, int h, IView view, IPickState state) {
-        float z = PickUtil.pickBoundingVolume(x, y, w, h, view, getBounds());
-        if (z != Float.NaN) {
-            // TODO: implement triangle / line / point picking
-            state.add(z, this);
+        validateCache();
+
+        float zMin = Float.POSITIVE_INFINITY;
+        float z = PickUtil.pickBoundingBox(mode, x, y, w, h, view, getBounds());
+        if (Float.isInfinite(z))
+            return false;
+
+        if (cache.triangleVertices != null) {
+            z = PickUtil.pickTriangles(mode, x, y, w, h, view, cache.triangleVertices);
+            zMin = Math.min(zMin, z);
         }
-        return false;
+
+        if (cache.edgeVertices != null) {
+            z = PickUtil.pickEdges(mode, x, y, w, h, view, cache.edgeVertices);
+            zMin = Math.min(zMin, z);
+        }
+
+        if (cache.pointVertices != null) {
+            z = PickUtil.pickPoints(mode, x, y, w, h, view, cache.pointVertices);
+            zMin = Math.min(zMin, z);
+        }
+
+        if (Float.isInfinite(zMin))
+            return false;
+
+        state.add(zMin, this);
+        return true;
     }
 
     @Override
@@ -169,7 +193,7 @@ public class GenericMesh extends AbstractMesh {
     private void validateCache() {
         if (cache == null) {
             cache = new TransformCache();
-            bounds = new BoundingVolume();
+            bounds = new BoundingBox();
             bounds.add(cache.triangleVertices);
             bounds.add(cache.edgeVertices);
             bounds.add(cache.pointVertices);

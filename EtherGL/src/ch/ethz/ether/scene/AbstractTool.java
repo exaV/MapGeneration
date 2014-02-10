@@ -90,6 +90,7 @@ public abstract class AbstractTool implements ITool {
     public void mouseWheelMoved(MouseWheelEvent e, IView view) {
     }
 
+    // TODO: get rid of this or move to PickUtil
     public static boolean snap2D(int mx, int my, int x, int y) {
         return (mx >= x - SNAP_SIZE) && (mx <= x + SNAP_SIZE) && (my >= y - SNAP_SIZE) && (my < y + SNAP_SIZE);
     }

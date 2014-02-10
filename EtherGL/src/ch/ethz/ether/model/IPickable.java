@@ -1,18 +1,15 @@
 package ch.ethz.ether.model;
 
-import ch.ethz.ether.geom.Mat4;
 import ch.ethz.ether.view.IView;
-
-import java.util.Map;
 
 /**
  * Created by radar on 05/12/13.
  */
 public interface IPickable {
     public enum PickMode {
-        SINGLE,
-        WITHIN,
-        INTERSECT
+        POINT,
+        //INSIDE,       // XXX UNSUPPORTED YET - TO BE IMPLEMENTED
+        //INTERSECT
     }
 
     public interface IPickState {

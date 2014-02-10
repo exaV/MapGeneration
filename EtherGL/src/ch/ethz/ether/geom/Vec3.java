@@ -37,6 +37,9 @@ public final class Vec3 {
     public static final Vec3 X = new Vec3(1, 0, 0);
     public static final Vec3 Y = new Vec3(0, 1, 0);
     public static final Vec3 Z = new Vec3(0, 0, 1);
+    public static final Vec3 X_NEG = new Vec3(-1, 0, 0);
+    public static final Vec3 Y_NEG = new Vec3(0, -1, 0);
+    public static final Vec3 Z_NEG = new Vec3(0, 0, -1);
 
     public final float x;
     public final float y;
@@ -105,10 +108,14 @@ public final class Vec3 {
     }
 
     public static Vec3 cross(Vec3 a, Vec3 b) {
-        // FIXME: verify!!!
         float x = a.y * b.z - a.z * b.y;
-        float y = a.x * b.z - a.z * b.x;
+        float y = a.z * b.x - a.x * b.z;
         float z = a.x * b.y - a.y * b.x;
         return new Vec3(x, y, z);
+    }
+
+    @Override
+    public String toString() {
+        return "[" + x + ", " + y + ", " + z + "]";
     }
 }

@@ -1,9 +1,5 @@
 package ch.ethz.util;
 
-import ch.ethz.ether.geom.Vec3;
-import ch.ethz.ether.geom.Vec4;
-
-import java.util.Collection;
 
 public interface IAddOnlyFloatList {
     void add(float value);

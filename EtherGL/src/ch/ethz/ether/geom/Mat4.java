@@ -299,6 +299,7 @@ public final class Mat4 {
      * @return the transformed result
      */
     // TODO: correct code so in-place transform is possible
+    // TODO: how to deal with w = 0?
     public float[] transform(float[] xyz, float[] result) {
         if (xyz == null)
             return null;
@@ -445,5 +446,13 @@ public final class Mat4 {
             result.m[i + 12] = ai0 * b.m[12] + ai1 * b.m[13] + ai2 * b.m[14] + ai3 * b.m[15];
         }
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "[" + m[0] + ", " + m[4] + ", " + m[8] + ", " + m[12] + ",\n" +
+               " " + m[1] + ", " + m[5] + ", " + m[9] + ", " + m[13] + ",\n" +
+               " " + m[2] + ", " + m[6] + ", " + m[10] + ", " + m[14] + ",\n" +
+               " " + m[3] + ", " + m[7] + ", " + m[11] + ", " + m[15] + "]";
     }
 }

@@ -30,12 +30,10 @@ package ch.ethz.ether.examples.mapping;
 import ch.ethz.ether.geom.Vec3;
 import ch.ethz.ether.model.CubeMesh;
 import ch.ethz.ether.model.GenericMeshModel;
-import ch.ethz.ether.render.util.FloatList;
-import ch.ethz.ether.render.util.Primitives;
 
 public class MappingTriangleModel extends GenericMeshModel {
     public MappingTriangleModel() {
-        for (int i = 0; i < 100; ++i) {
+        for (int i = 0; i < 1; ++i) {
             CubeMesh mesh = new CubeMesh(CubeMesh.Origin.BOTTOM_CENTER);
             double s = 0.1 + 0.1 * Math.random();
             double tx = -1 + 2 * Math.random();

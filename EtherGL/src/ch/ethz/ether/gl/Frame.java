@@ -131,7 +131,6 @@ public final class Frame extends GLCanvas {
     }
 
     private static GLCapabilities getCapabilities() {
-        // TODO: switch to GL3/GL4 once we're getting there
         // TODO: make this configurable
         GLProfile profile = GLProfile.get(GLProfile.GL3);
         GLCapabilities caps = new GLCapabilities(profile);
