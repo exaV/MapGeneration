@@ -26,20 +26,46 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.ethz.ether.model;
+package ch.ethz.ether.render;
 
 /**
- * File created by radar on 10/12/13.
+ * File created by radar on 11/02/14.
  */
-public abstract class AbstractMesh implements IMesh {
-    private Object container;
+public interface IRenderGroups {
+    /**
+     * Add render group to renderer.
+     *
+     * @param group the group to be added
+     */
+    void add(IRenderGroup group);
 
-    @Override
-    public Object getContainer() {
-        return container;
-    }
+    /**
+     * Add multiple groups to renderer.
+     *
+     * @param group  first group
+     * @param groups all other groups
+     */
+    void add(IRenderGroup group, IRenderGroup... groups);
 
-    public void setContainer(Object container) {
-        this.container = container;
-    }
+    /**
+     * Remove render group from renderer.
+     *
+     * @param group the group to be removed
+     */
+    void remove(IRenderGroup group);
+
+    /**
+     * Remove multiple groups from renderer.
+     *
+     * @param group  first group
+     * @param groups all other groups
+     */
+    void remove(IRenderGroup group, IRenderGroup... groups);
+
+    /**
+     * Restrict renderer to render only groups with specific source.
+     *
+     * @param source source groups to be rendered or NULL to render all sources
+     */
+    void setSource(IRenderGroup.Source source);
 }

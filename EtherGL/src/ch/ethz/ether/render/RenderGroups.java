@@ -12,7 +12,6 @@ import ch.ethz.ether.geom.Mat4;
 import ch.ethz.ether.render.IRenderGroup.Flag;
 import ch.ethz.ether.render.IRenderGroup.Pass;
 import ch.ethz.ether.render.IRenderGroup.Source;
-import ch.ethz.ether.render.IRenderer.IRenderGroups;
 import ch.ethz.ether.render.util.FloatList;
 import ch.ethz.ether.view.IView;
 import ch.ethz.ether.view.IView.ViewType;

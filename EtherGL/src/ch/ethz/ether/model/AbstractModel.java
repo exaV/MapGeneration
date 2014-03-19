@@ -23,6 +23,10 @@ public abstract class AbstractModel implements IModel {
         return bounds;
     }
 
+    protected void invalidateBounds() {
+        bounds = null;
+    }
+
     @Override
     public List<IGeometry> getGeometries() {
         return Collections.unmodifiableList(geometries);
@@ -30,5 +34,9 @@ public abstract class AbstractModel implements IModel {
 
     protected void addGeometry(IGeometry geometry) {
         geometries.add(geometry);
+    }
+
+    protected void removeGeometry(IGeometry geometry) {
+        geometries.remove(geometry);
     }
 }
