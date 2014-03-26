@@ -110,8 +110,8 @@ public final class PickUtil {
             if (dl2 == 0)
                 continue;
 
-            float mx = (float)x - edges[i];
-            float my = (float)y - edges[i + 1];
+            float mx = x - edges[i];
+            float my = y - edges[i + 1];
 
             float t = (mx * dx + my * dy) / dl2;
             if (t < 0 || t > 1)
