@@ -268,7 +268,7 @@ public final class Mat4 {
      * @return the transformed vector
      */
     public Vec4 transform(Vec4 vec) {
-        float x = vec.x * m[0] + vec.y * m[4 + 0] + vec.z * m[8 + 0] + vec.w * m[12 + 0];
+        float x = vec.x * m[0] + vec.y * m[4] + vec.z * m[8] + vec.w * m[12];
         float y = vec.x * m[1] + vec.y * m[4 + 1] + vec.z * m[8 + 1] + vec.w * m[12 + 1];
         float z = vec.x * m[2] + vec.y * m[4 + 2] + vec.z * m[8 + 2] + vec.w * m[12 + 2];
         float w = vec.x * m[3] + vec.y * m[4 + 3] + vec.z * m[8 + 3] + vec.w * m[12 + 3];
@@ -283,7 +283,7 @@ public final class Mat4 {
      * @return the transformed vector
      */
     public Vec3 transform(Vec3 vec) {
-        float x = vec.x * m[0] + vec.y * m[4 + 0] + vec.z * m[8 + 0] + m[12 + 0];
+        float x = vec.x * m[0] + vec.y * m[4] + vec.z * m[8] + m[12];
         float y = vec.x * m[1] + vec.y * m[4 + 1] + vec.z * m[8 + 1] + m[12 + 1];
         float z = vec.x * m[2] + vec.y * m[4 + 2] + vec.z * m[8 + 2] + m[12 + 2];
         float w = vec.x * m[3] + vec.y * m[4 + 3] + vec.z * m[8 + 3] + m[12 + 3];
@@ -306,7 +306,7 @@ public final class Mat4 {
         if (result == null)
             result = new float[xyz.length];
         for (int i = 0; i < xyz.length; i += 3) {
-            float x = xyz[i] * m[0] + xyz[i + 1] * m[4 + 0] + xyz[i + 2] * m[8 + 0] + m[12 + 0];
+            float x = xyz[i] * m[0] + xyz[i + 1] * m[4] + xyz[i + 2] * m[8] + m[12];
             float y = xyz[i] * m[1] + xyz[i + 1] * m[4 + 1] + xyz[i + 2] * m[8 + 1] + m[12 + 1];
             float z = xyz[i] * m[2] + xyz[i + 1] * m[4 + 2] + xyz[i + 2] * m[8 + 2] + m[12 + 2];
             float w = xyz[i] * m[3] + xyz[i + 1] * m[4 + 3] + xyz[i + 2] * m[8 + 3] + m[12 + 3];

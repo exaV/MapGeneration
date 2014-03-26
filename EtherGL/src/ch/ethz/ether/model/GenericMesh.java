@@ -6,8 +6,6 @@ import ch.ethz.ether.geom.Vec3;
 import ch.ethz.ether.view.IView;
 import ch.ethz.util.IAddOnlyFloatList;
 
-import java.util.Objects;
-
 /**
  * Created by radar on 05/12/13.
  */

@@ -23,9 +23,9 @@ public class GeometryUtil {
 
 
     public static boolean is2DPointInTriangle(float x, float y, float[] triangle, int index) {
-        boolean b1 = sign(x, y, triangle[index + 0], triangle[index + 1], triangle[index + 3], triangle[index + 4]) < 0.0f;
+        boolean b1 = sign(x, y, triangle[index], triangle[index + 1], triangle[index + 3], triangle[index + 4]) < 0.0f;
         boolean b2 = sign(x, y, triangle[index + 3], triangle[index + 4], triangle[index + 6], triangle[index + 7]) < 0.0f;
-        boolean b3 = sign(x, y, triangle[index + 6], triangle[index + 7], triangle[index + 0], triangle[index + 1]) < 0.0f;
+        boolean b3 = sign(x, y, triangle[index + 6], triangle[index + 7], triangle[index], triangle[index + 1]) < 0.0f;
         return ((b1 == b2) && (b2 == b3));
     }
 
@@ -54,12 +54,12 @@ public class GeometryUtil {
         Vec3 d = rayDirection;
 
         // edge e1 = p2 - p1
-        float e1x = triangle[index + 3] - triangle[index + 0];
+        float e1x = triangle[index + 3] - triangle[index];
         float e1y = triangle[index + 4] - triangle[index + 1];
         float e1z = triangle[index + 5] - triangle[index + 2];
 
         // edge e2 = p3 - p1
-        float e2x = triangle[index + 6] - triangle[index + 0];
+        float e2x = triangle[index + 6] - triangle[index];
         float e2y = triangle[index + 7] - triangle[index + 1];
         float e2z = triangle[index + 8] - triangle[index + 2];
 
@@ -77,7 +77,7 @@ public class GeometryUtil {
         float detInv = 1f / det;
 
         // Vec3 t = o - p1 (distance from p1 to ray origin)
-        float tx = o.x - triangle[index + 0];
+        float tx = o.x - triangle[index];
         float ty = o.y - triangle[index + 1];
         float tz = o.z - triangle[index + 2];
 

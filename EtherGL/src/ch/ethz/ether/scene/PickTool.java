@@ -28,23 +28,11 @@
 package ch.ethz.ether.scene;
 
 import ch.ethz.ether.geom.PickUtil;
-import ch.ethz.ether.model.IGeometry;
 import ch.ethz.ether.model.IPickable;
-import ch.ethz.ether.render.AbstractRenderGroup;
-import ch.ethz.ether.render.IRenderGroup;
-import ch.ethz.ether.render.IRenderGroup.Source;
-import ch.ethz.ether.render.IRenderGroup.Type;
-import ch.ethz.ether.render.IRenderer;
-import ch.ethz.ether.render.util.Primitives;
 import ch.ethz.ether.view.IView;
-import ch.ethz.util.IAddOnlyFloatList;
 
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
-import java.util.Collection;
 import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 public class PickTool extends AbstractTool {
 

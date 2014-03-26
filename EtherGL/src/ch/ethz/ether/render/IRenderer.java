@@ -29,7 +29,6 @@ package ch.ethz.ether.render;
 
 import javax.media.opengl.GL3;
 
-import ch.ethz.ether.render.IRenderGroup.Source;
 import ch.ethz.ether.view.IView;
 
 /*

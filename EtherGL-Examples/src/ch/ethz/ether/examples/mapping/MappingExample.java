@@ -35,12 +35,7 @@ import ch.ethz.ether.view.IView.ViewType;
 public final class MappingExample {
     public static void main(String[] args) {
         // Make sure everything runs on GUI thread...
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new MappingExample();
-            }
-        });
+        SwingUtilities.invokeLater(MappingExample::new);
     }
 
     /*
