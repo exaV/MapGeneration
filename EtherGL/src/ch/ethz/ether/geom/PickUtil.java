@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, ETH Zurich (Stefan Mueller Arisona)
+ * Copyright (c) 2013 - 2014, ETH Zurich & FHNW (Stefan Muller Arisona)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,11 +36,12 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * File created by radar on 10/12/13.
+ * Utilities for 3D object picking
  */
 public final class PickUtil {
     public static final float PICK_DISTANCE = 5;
 
+    // TODO: this needs to be generalized when spatial indices are available (e.g. RTree based)
     public static Map<Float, IPickable> pickFromModel(IPickable.PickMode mode, int x, int y, int w, int h, IView view) {
         final Map<Float, IPickable> pickables = new TreeMap<>();
         IPickable.IPickState state = new IPickable.IPickState() {

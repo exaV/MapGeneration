@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, ETH Zurich (Stefan Mueller Arisona)
+ * Copyright (c) 2013 - 2014, ETH Zurich & FHNW (Stefan Muller Arisona)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,9 @@
 package ch.ethz.ether.geom;
 
 /**
- * Created by radar on 05/12/13.
+ * 3D vector for basic vector algebra.
+ *
+ * @author radar
  */
 public final class Vec3 {
     public static final Vec3 ZERO = new Vec3(0, 0, 0);
