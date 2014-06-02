@@ -49,7 +49,7 @@ public class MetroBuzz {
 	public MetroBuzz(String[] args) {
 		Model model = new Model();
 		System.out.println("Loading Data");
-		Loader.load(model, "/Users/radar/Desktop/sioux_osm", Integer.MAX_VALUE);
+		Loader.load(model, "/Users/radar/Desktop/sioux_osm", 100 /*Integer.MAX_VALUE*/);
 		System.out.println("Creating Geometry");
 		model.getAgentGeometries();
 		System.out.println("Done.");

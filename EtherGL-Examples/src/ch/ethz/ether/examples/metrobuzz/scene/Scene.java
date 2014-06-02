@@ -31,34 +31,20 @@ package ch.ethz.ether.examples.metrobuzz.scene;
 import java.awt.event.KeyEvent;
 
 import ch.ethz.ether.examples.metrobuzz.model.Model;
+import ch.ethz.ether.examples.metrobuzz.tools.AreaTool;
 import ch.ethz.ether.render.forward.ForwardRenderer;
 import ch.ethz.ether.scene.AbstractScene;
-import ch.ethz.ether.scene.AbstractTool;
 import ch.ethz.ether.scene.ITool;
 import ch.ethz.ether.ui.Button;
 import ch.ethz.ether.ui.Button.IButtonAction;
 import ch.ethz.ether.view.IView;
 
 public class Scene extends AbstractScene {
-    private final ITool defaultTool = new AbstractTool(this) {
-    };
+	private final ITool areaTool = new AreaTool(this);
     
     public Scene() {
         super(new ForwardRenderer());
         addUI();
-    }
-
-    @Override
-    public void keyPressed(KeyEvent e, IView view) {
-        switch (e.getKeyCode()) {
-            case KeyEvent.VK_0:
-            case KeyEvent.VK_1:
-                setCurrentTool(defaultTool);
-                break;
-            default:
-                super.keyPressed(e, view);
-        }
-        repaintViews();
     }
 
     @Override
@@ -67,7 +53,21 @@ public class Scene extends AbstractScene {
     }
     
     private void addUI() {
-        getUI().addButton(new Button(0, 0, "F", "Frame Scene (F)", KeyEvent.VK_F, new IButtonAction() {
+        getUI().addButton(new Button(0, 0, "PICK", "Pick Tool (1)", KeyEvent.VK_1, new IButtonAction() {
+            @Override
+            public void execute(Button button, IView view) {
+            	setCurrentTool(null);
+            }
+        }));
+
+        getUI().addButton(new Button(1, 0, "AREA", "AREA Tool (2)", KeyEvent.VK_2, new IButtonAction() {
+            @Override
+            public void execute(Button button, IView view) {
+            	setCurrentTool(areaTool);
+            }
+        }));
+
+        getUI().addButton(new Button(0, 1, "F", "Frame Scene (F)", KeyEvent.VK_F, new IButtonAction() {
             @Override
             public void execute(Button button, IView view) {
                 view.getCamera().frame(getModel().getBounds());
@@ -75,7 +75,7 @@ public class Scene extends AbstractScene {
             }
         }));
 
-        getUI().addButton(new Button(0, 1, "Quit", "Quit", KeyEvent.VK_ESCAPE, new IButtonAction() {
+        getUI().addButton(new Button(1, 1, "Quit", "Quit", KeyEvent.VK_ESCAPE, new IButtonAction() {
             @Override
             public void execute(Button button, IView view) {
                 System.exit(0);

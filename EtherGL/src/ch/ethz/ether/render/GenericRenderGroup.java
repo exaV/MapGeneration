@@ -32,6 +32,7 @@ import java.util.EnumSet;
 
 import ch.ethz.util.IAddOnlyFloatList;
 
+// TODO: this class isn't used currently, and likely can be removed
 public class GenericRenderGroup extends AbstractRenderGroup {
     private float[] vertices;
     private float[] normals;

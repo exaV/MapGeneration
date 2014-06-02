@@ -168,7 +168,8 @@ public class GenericMesh extends AbstractMesh {
         if (Float.isInfinite(zMin))
             return false;
 
-        state.add(zMin, this);
+        if (state != null) 
+        	state.add(zMin, this);
         return true;
     }
 

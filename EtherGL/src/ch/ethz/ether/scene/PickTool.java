@@ -36,19 +36,18 @@ import java.awt.event.MouseEvent;
 import java.util.Map;
 
 public class PickTool extends AbstractTool {
+	public PickTool(IScene scene) {
+		super(scene);
+	}
 
-    public PickTool(IScene scene) {
-        super(scene);
-    }
-
-    @Override
-    public void mousePressed(MouseEvent e, IView view) {
-        int x = e.getX();
-        int y = view.getViewport().h - e.getY();
-        Map<Float, IPickable> pickables = PickUtil.pickFromModel(IPickable.PickMode.POINT, x, y, 0, 0, view);
-        if (pickables.isEmpty())
-            System.out.println("no pick");
-        else
-            System.out.println(pickables.values().iterator().next());
-    }
+	@Override
+	public void mousePressed(MouseEvent e, IView view) {
+		int x = e.getX();
+		int y = view.getViewport().h - e.getY();
+		Map<Float, IPickable> pickables = PickUtil.pickFromModel(IPickable.PickMode.POINT, x, y, 0, 0, view);
+		if (pickables.isEmpty())
+			System.out.println("no pick");
+		else
+			System.out.println(pickables.values().iterator().next());
+	}
 }
