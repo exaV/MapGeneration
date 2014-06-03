@@ -26,51 +26,29 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.ethz.ether.scene;
+package ch.ethz.ether.tools;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
-
+import ch.ethz.ether.geom.PickUtil;
+import ch.ethz.ether.model.IPickable;
+import ch.ethz.ether.scene.IScene;
 import ch.ethz.ether.view.IView;
 
-public interface ITool {
-    /**
-     * Called when tool is activated. Note that this call is always followed by
-     * {@link #viewChanged(IView)}.
-     */
-    void activate();
+import java.awt.event.MouseEvent;
+import java.util.Map;
 
-    /**
-     * Called when tool is deactivated.
-     */
-    void deactivate();
+public class PickTool extends AbstractTool {
+	public PickTool(IScene scene) {
+		super(scene);
+	}
 
-    /**
-     * Called when current view has changed. Tools should use this to update
-     * view-dependent buffers (e.g. screen-space buffers).
-     *
-     * @param view the new current view
-     */
-    void viewChanged(IView view);
-
-    // key listener
-
-    void keyPressed(KeyEvent e, IView view);
-
-    // mouse listener
-
-    void mousePressed(MouseEvent e, IView view);
-
-    void mouseReleased(MouseEvent e, IView view);
-
-    // mouse motion listener
-
-    void mouseMoved(MouseEvent e, IView view);
-
-    void mouseDragged(MouseEvent e, IView view);
-
-    // mouse wheel listener
-
-    void mouseWheelMoved(MouseWheelEvent e, IView view);
+	@Override
+	public void mousePressed(MouseEvent e, IView view) {
+		int x = e.getX();
+		int y = view.getViewport().h - e.getY();
+		Map<Float, IPickable> pickables = PickUtil.pickFromModel(IPickable.PickMode.POINT, x, y, 0, 0, view);
+		if (pickables.isEmpty())
+			System.out.println("no pick");
+		else
+			System.out.println(pickables.values().iterator().next());
+	}
 }

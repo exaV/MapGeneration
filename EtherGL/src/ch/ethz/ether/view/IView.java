@@ -42,78 +42,81 @@ import ch.ethz.ether.scene.IScene;
 /**
  * A 'view' here is a view with some control functionality, i.e. it handles the
  * rendering of the model and also the user input specific to the view.
- *
+ * 
  * @author radar
  */
 public interface IView extends GLEventListener, KeyListener, MouseListener, MouseMotionListener, MouseWheelListener {
-    enum ViewType {
-        INTERACTIVE_VIEW, MAPPED_VIEW
-    }
+	enum ViewType {
+		INTERACTIVE_VIEW, MAPPED_VIEW
+	}
 
-    /**
-     * Get the scene this view belongs to.
-     *
-     * @return the scene
-     */
-    IScene getScene();
+	/**
+	 * Get the scene this view belongs to.
+	 * 
+	 * @return the scene
+	 */
+	IScene getScene();
 
-    /**
-     * Get associated camera.
-     *
-     * @return the camera
-     */
-    Camera getCamera();
+	/**
+	 * Get associated camera.
+	 * 
+	 * @return the camera
+	 */
+	Camera getCamera();
 
-    /**
-     * Get viewport [x, y, w, h].
-     *
-     * @return the viewport.
-     */
-    Viewport getViewport();
+	/**
+	 * Get viewport [x, y, w, h].
+	 * 
+	 * @return the viewport.
+	 */
+	Viewport getViewport();
 
-    /**
-     * Get view type.
-     *
-     * @return the view type
-     */
-    ViewType getViewType();
+	/**
+	 * Get view type.
+	 * 
+	 * @return the view type
+	 */
+	ViewType getViewType();
 
-    /**
-     * Get underlying Frame which allows access to native window etc. Use with
-     * caution.
-     *
-     * @return the frame
-     */
-    Frame getFrame();
+	/**
+	 * Get underlying Frame which allows access to native window etc. Use with
+	 * caution.
+	 * 
+	 * @return the frame
+	 */
+	Frame getFrame();
 
-    /**
-     * Check whether view is enabled for rendering.
-     *
-     * @return true if view is enabled, false otherwise
-     */
-    boolean isEnabled();
+	/**
+	 * Check whether view is enabled for rendering.
+	 * 
+	 * @return true if view is enabled, false otherwise
+	 */
+	boolean isEnabled();
 
-    /**
-     * Enable or disable view for rendering.
-     *
-     * @param enabled enables view if true, disables otherwise
-     */
-    void setEnabled(boolean enabled);
+	/**
+	 * Enable or disable view for rendering.
+	 * 
+	 * @param enabled
+	 *            enables view if true, disables otherwise
+	 */
+	void setEnabled(boolean enabled);
 
-    /**
-     * Check whether view currently receives events.
-     *
-     * @return true if view receives events, false otherwise
-     */
-    boolean isCurrent();
+	/**
+	 * Check whether view currently receives events.
+	 * 
+	 * @return true if view receives events, false otherwise
+	 */
+	boolean isCurrent();
 
-    /**
-     * Request to update view and its dependencies. Internally calls all view changed listeners
-     */
-    void update();
+	/**
+	 * Request to repaint this view.
+	 */
+	void repaint();
 
-    /**
-     * Request to repaint this view.
-     */
-    void repaint();
+	/**
+	 * Request to update view and its dependencies (e.g. tools) and then
+	 * repaint. For instance, this is called when the camera changed.
+	 */
+	void update();
+
 }

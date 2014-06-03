@@ -46,8 +46,8 @@ import ch.ethz.ether.render.IRenderGroup.Pass;
 import ch.ethz.ether.render.IRenderGroup.Source;
 import ch.ethz.ether.render.IRenderGroup.Type;
 import ch.ethz.ether.render.IRenderer;
-import ch.ethz.ether.scene.AbstractTool;
 import ch.ethz.ether.scene.IScene;
+import ch.ethz.ether.tools.AbstractTool;
 import ch.ethz.ether.view.IView;
 import ch.ethz.util.IAddOnlyFloatList;
 

@@ -38,6 +38,9 @@ import java.util.List;
 
 import ch.ethz.ether.model.IModel;
 import ch.ethz.ether.render.IRenderer;
+import ch.ethz.ether.tools.ITool;
+import ch.ethz.ether.tools.NavigationTool;
+import ch.ethz.ether.tools.PickTool;
 import ch.ethz.ether.ui.Button;
 import ch.ethz.ether.ui.UI;
 import ch.ethz.ether.view.IView;
@@ -50,6 +53,7 @@ import ch.ethz.ether.view.IView.ViewType;
  * @author radar
  */
 // TODO: we should probably move UI event handling to UI...
+// TODO: PickTool doesn't really belong here (any tools at all?)
 public abstract class AbstractScene implements IScene {
     private IModel model;
     private final ArrayList<IView> views = new ArrayList<>();
@@ -129,7 +133,7 @@ public abstract class AbstractScene implements IScene {
         activeTool.deactivate();
         activeTool = tool;
         activeTool.activate();
-        activeTool.viewChanged(getCurrentView());
+        activeTool.refresh(getCurrentView());
 
         repaintViews();
     }
@@ -267,7 +271,7 @@ public abstract class AbstractScene implements IScene {
     private void setCurrentView(IView view) {
         if (currentView != view) {
             currentView = view;
-            getCurrentTool().viewChanged(currentView);
+            getCurrentTool().refresh(currentView);
             repaintViews();
         }
     }

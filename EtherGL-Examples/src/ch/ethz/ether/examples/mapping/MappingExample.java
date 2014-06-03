@@ -57,7 +57,7 @@ public final class MappingExample {
         scene.setModel(model);
 
         scene.addView(new MappingView(scene, 0, 10, 512, 512, ViewType.INTERACTIVE_VIEW, "View 0", 0.0f));
-        //scene.addView(new MappingView(scene, 530, 0, 400, 400, ViewType.MAPPED_VIEW, "View 1", 0.0f));
+        scene.addView(new MappingView(scene, 530, 0, 400, 400, ViewType.MAPPED_VIEW, "View 1", 0.0f));
         //scene.addView(new MappingView(scene, 940, 0, 400, 400, ViewType.MAPPED_VIEW, "View 2", 90.0f));
         //scene.addView(new MappingView(scene, 530, 410, 400, 400, ViewType.MAPPED_VIEW, "View 3", 180.0f));
         //scene.addView(new MappingView(scene, 940, 410, 400, 400, ViewType.MAPPED_VIEW, "View 4", 270.0f));

@@ -38,8 +38,8 @@ import ch.ethz.ether.render.IRenderGroup.Source;
 import ch.ethz.ether.render.IRenderGroup.Type;
 import ch.ethz.ether.render.IRenderer;
 import ch.ethz.ether.render.util.Primitives;
-import ch.ethz.ether.scene.AbstractTool;
 import ch.ethz.ether.scene.IScene;
+import ch.ethz.ether.tools.AbstractTool;
 import ch.ethz.ether.view.IView;
 import ch.ethz.util.IAddOnlyFloatList;
 import ch.ethz.util.PreferencesStore;
@@ -183,7 +183,7 @@ public final class CalibrationTool extends AbstractTool {
     }
 
     @Override
-    public void viewChanged(IView view) {
+    public void refresh(IView view) {
         getScene().enableViews(Collections.singleton(view));
         calibrationPoints.requestUpdate();
         calibrationLines.requestUpdate();

@@ -112,13 +112,14 @@ public abstract class AbstractView implements IView {
     }
 
     @Override
-    public final void update() {
-        getScene().getCurrentTool().viewChanged(this);
+    public final void repaint() {
+        frame.repaint();
     }
 
     @Override
-    public final void repaint() {
-        frame.repaint();
+    public final void update() {
+        getScene().getCurrentTool().refresh(this);
+        repaint();
     }
 
 

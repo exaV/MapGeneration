@@ -26,12 +26,13 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.ethz.ether.scene;
+package ch.ethz.ether.tools;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 
+import ch.ethz.ether.scene.IScene;
 import ch.ethz.ether.view.IView;
 
 public abstract class AbstractTool implements ITool {
@@ -56,7 +57,7 @@ public abstract class AbstractTool implements ITool {
     }
 
     @Override
-    public void viewChanged(IView view) {
+    public void refresh(IView view) {
     }
 
     // key listener

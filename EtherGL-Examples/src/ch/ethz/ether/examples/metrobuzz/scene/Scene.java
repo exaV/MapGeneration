@@ -34,7 +34,7 @@ import ch.ethz.ether.examples.metrobuzz.model.Model;
 import ch.ethz.ether.examples.metrobuzz.tools.AreaTool;
 import ch.ethz.ether.render.forward.ForwardRenderer;
 import ch.ethz.ether.scene.AbstractScene;
-import ch.ethz.ether.scene.ITool;
+import ch.ethz.ether.tools.ITool;
 import ch.ethz.ether.ui.Button;
 import ch.ethz.ether.ui.Button.IButtonAction;
 import ch.ethz.ether.view.IView;

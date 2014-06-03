@@ -238,12 +238,10 @@ public class TUIO {
             view.getCamera().addToRotateZ(SCALE_ROTATE * swipeX);
             view.getCamera().addToRotateX(SCALE_ROTATE * swipeY);
         }
-        view.repaint();
     }
 
     private void handleSwipe3(float swipeX, float swipeY) {
         view.getCamera().addToTranslateX(SCALE_TRANSLATE * swipeX);
         view.getCamera().addToTranslateY(-SCALE_TRANSLATE * swipeY);
-        view.repaint();
     }
 }

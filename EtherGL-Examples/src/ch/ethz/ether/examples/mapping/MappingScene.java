@@ -34,8 +34,8 @@ import ch.ethz.ether.mapping.CalibrationTool;
 import ch.ethz.ether.mapping.FillTool;
 import ch.ethz.ether.render.forward.ForwardRenderer;
 import ch.ethz.ether.scene.AbstractScene;
-import ch.ethz.ether.scene.AbstractTool;
-import ch.ethz.ether.scene.ITool;
+import ch.ethz.ether.tools.AbstractTool;
+import ch.ethz.ether.tools.ITool;
 import ch.ethz.ether.view.IView;
 
 // XXX light position currently not implemented

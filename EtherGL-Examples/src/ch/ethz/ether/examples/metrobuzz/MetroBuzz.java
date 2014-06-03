@@ -61,7 +61,7 @@ public class MetroBuzz {
 		Scene scene = new Scene();
 		scene.setModel(model);
 		scene.addView(new View(scene, 0, 10, 512, 512));
-		//scene.addView(new View(scene, 512, 10, 512, 512));
+		scene.addView(new View(scene, 512, 10, 512, 512));
 	}
 
 }

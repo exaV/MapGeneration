@@ -36,6 +36,8 @@ import java.util.List;
 
 import ch.ethz.ether.model.IModel;
 import ch.ethz.ether.render.IRenderer;
+import ch.ethz.ether.tools.ITool;
+import ch.ethz.ether.tools.NavigationTool;
 import ch.ethz.ether.ui.UI;
 import ch.ethz.ether.view.IView;
 

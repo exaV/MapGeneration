@@ -164,6 +164,12 @@ public class Model implements IModel {
 		System.out.println();
 	}
 	
+	public void refreshAgentGeometries() {
+		agentGeometries = null;
+		bounds = null;
+		renderState.updateAgents();
+	}
+	
 	private void createGeometries() {
 		agentGeometries = new ArrayList<>();
 		

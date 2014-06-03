@@ -64,6 +64,10 @@ public class Camera {
     public Camera(IView view) {
         this.view = view;
     }
+    
+    public IView getView() {
+		return view;
+	}
 
     public boolean isLocked() {
         return locked;

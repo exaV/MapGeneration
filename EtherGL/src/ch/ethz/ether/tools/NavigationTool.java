@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.ethz.ether.scene;
+package ch.ethz.ether.tools;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
@@ -37,6 +37,7 @@ import ch.ethz.ether.render.IRenderGroup.Source;
 import ch.ethz.ether.render.IRenderGroup.Type;
 import ch.ethz.ether.render.IRenderer;
 import ch.ethz.ether.render.util.Primitives;
+import ch.ethz.ether.scene.IScene;
 import ch.ethz.ether.view.IView;
 import ch.ethz.util.IAddOnlyFloatList;
 
@@ -111,7 +112,6 @@ public class NavigationTool extends AbstractTool {
             view.getCamera().addToTranslateX(e.getX() - mouseX);
             view.getCamera().addToTranslateY(mouseY - e.getY());
         }
-        view.repaint();
         mouseX = e.getX();
         mouseY = e.getY();
     }
@@ -119,6 +119,5 @@ public class NavigationTool extends AbstractTool {
     @Override
     public void mouseWheelMoved(MouseWheelEvent e, IView view) {
         view.getCamera().addToDistance(0.25f * e.getWheelRotation());
-        view.repaint();
     }
 }
