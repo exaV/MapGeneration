@@ -41,10 +41,8 @@ import ch.ethz.ether.render.IRenderer;
 import ch.ethz.ether.tools.ITool;
 import ch.ethz.ether.tools.NavigationTool;
 import ch.ethz.ether.tools.PickTool;
-import ch.ethz.ether.ui.Button;
 import ch.ethz.ether.ui.UI;
 import ch.ethz.ether.view.IView;
-import ch.ethz.ether.view.IView.ViewType;
 
 /**
  * Abstract scene class that implements some basic common functionality. Use as
@@ -52,7 +50,6 @@ import ch.ethz.ether.view.IView.ViewType;
  *
  * @author radar
  */
-// TODO: we should probably move UI event handling to UI...
 // TODO: PickTool doesn't really belong here (any tools at all?)
 public abstract class AbstractScene implements IScene {
     private IModel model;
@@ -158,15 +155,10 @@ public abstract class AbstractScene implements IScene {
     @Override
     public void keyPressed(KeyEvent e, IView view) {
         setCurrentView(view);
-
-        // buttons have precedence over tools
-        for (Button button : ui.getButtons()) {
-            if (button.getKey() == e.getKeyCode()) {
-                button.fire(view);
-                view.getScene().repaintViews();
-                return;
-            }
-        }
+        
+        // ui has precedence over everything else
+        if (ui.keyPressed(e, view))
+        	return;
 
         // always handle ESC (if not handled by button)
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
@@ -188,26 +180,21 @@ public abstract class AbstractScene implements IScene {
 
     @Override
     public void mouseEntered(MouseEvent e, IView view) {
+    	ui.mouseEntered(e, view);
     }
 
     @Override
     public void mouseExited(MouseEvent e, IView view) {
+    	ui.mouseExited(e, view);
     }
 
     @Override
     public void mousePressed(MouseEvent e, IView view) {
         setCurrentView(view);
 
-        // buttons have precedence over tools
-        if (view.getViewType() == ViewType.INTERACTIVE_VIEW) {
-            for (Button button : ui.getButtons()) {
-                if (button.hit(e.getX(), e.getY(), view)) {
-                    button.fire(view);
-                    view.getScene().repaintViews();
-                    return;
-                }
-            }
-        }
+        // ui has precedence over everything else
+        if (ui.mousePressed(e, view))
+        	return;
 
         // handle tools (with active navigation when modifier is pressed)
         if (!isModifierDown(e))
@@ -232,23 +219,17 @@ public abstract class AbstractScene implements IScene {
 
     @Override
     public void mouseMoved(MouseEvent e, IView view) {
-        if (view.getViewType() == ViewType.INTERACTIVE_VIEW) {
-            Button button = null;
-            for (Button b : ui.getButtons()) {
-                if (b.hit(e.getX(), e.getY(), view)) {
-                    button = b;
-                    break;
-                }
-            }
-            String message = button != null ? button.getHelp() : null;
-            view.getScene().getUI().setMessage(message);
-        }
+    	ui.mouseMoved(e, view);
         activeTool.mouseMoved(e, view);
         navigationTool.mouseMoved(e, view);
     }
 
     @Override
     public void mouseDragged(MouseEvent e, IView view) {
+        // ui has precedence over everything else
+    	if (ui.mouseDragged(e, view))
+    		return;
+    	
         if (!isModifierDown(e))
             activeTool.mouseDragged(e, view);
         else

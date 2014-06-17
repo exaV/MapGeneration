@@ -37,6 +37,8 @@ import ch.ethz.ether.scene.AbstractScene;
 import ch.ethz.ether.tools.ITool;
 import ch.ethz.ether.ui.Button;
 import ch.ethz.ether.ui.Button.IButtonAction;
+import ch.ethz.ether.ui.Slider;
+import ch.ethz.ether.ui.Slider.ISliderAction;
 import ch.ethz.ether.view.IView;
 
 public class Scene extends AbstractScene {
@@ -53,21 +55,21 @@ public class Scene extends AbstractScene {
     }
     
     private void addUI() {
-        getUI().addButton(new Button(0, 0, "PICK", "Pick Tool (1)", KeyEvent.VK_1, new IButtonAction() {
+        getUI().addWidget(new Button(0, 0, "PICK", "Pick Tool (1)", KeyEvent.VK_1, new IButtonAction() {
             @Override
             public void execute(Button button, IView view) {
             	setCurrentTool(null);
             }
         }));
 
-        getUI().addButton(new Button(1, 0, "AREA", "AREA Tool (2)", KeyEvent.VK_2, new IButtonAction() {
+        getUI().addWidget(new Button(1, 0, "AREA", "AREA Tool (2)", KeyEvent.VK_2, new IButtonAction() {
             @Override
             public void execute(Button button, IView view) {
             	setCurrentTool(areaTool);
             }
         }));
 
-        getUI().addButton(new Button(0, 1, "F", "Frame Scene (F)", KeyEvent.VK_F, new IButtonAction() {
+        getUI().addWidget(new Button(0, 1, "F", "Frame Scene (F)", KeyEvent.VK_F, new IButtonAction() {
             @Override
             public void execute(Button button, IView view) {
                 view.getCamera().frame(getModel().getBounds());
@@ -75,10 +77,17 @@ public class Scene extends AbstractScene {
             }
         }));
 
-        getUI().addButton(new Button(1, 1, "Quit", "Quit", KeyEvent.VK_ESCAPE, new IButtonAction() {
+        getUI().addWidget(new Button(1, 1, "Quit", "Quit", KeyEvent.VK_ESCAPE, new IButtonAction() {
             @Override
             public void execute(Button button, IView view) {
                 System.exit(0);
+            }
+        }));
+
+        getUI().addWidget(new Slider(2, 0, "Slider", "Slider", 0.3f, new ISliderAction() {
+            @Override
+            public void execute(Slider slider, IView view) {
+            	System.out.println("I slide...");
             }
         }));
     }

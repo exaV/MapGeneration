@@ -29,93 +29,62 @@
 package ch.ethz.ether.ui;
 
 import java.awt.Color;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
 import ch.ethz.ether.render.TextRenderGroup;
 import ch.ethz.ether.view.IView;
+import ch.ethz.util.MathUtil;
 
-public class Button extends AbstractWidget {
-    public interface IButtonAction extends IWidgetAction<Button> {
+public class Slider extends AbstractWidget {
+    public interface ISliderAction extends IWidgetAction<Slider> {
         @Override
-		void execute(Button button, IView view);
+		void execute(Slider slider, IView view);
     }
 
-    public static final int BUTTON_WIDTH = 48;
-    public static final int BUTTON_HEIGHT = 48;
+    public static final int SLIDER_WIDTH = 96;
+    public static final int SLIDER_HEIGHT = 24;
 
-    public static final int BUTTON_GAP = 8;
+    public static final int SLIDER_GAP = 8;
+    
+    public static final Color SLIDER_BG = new Color(1f, 1f, 1f, 0.25f);
+    public static final Color SLIDER_FG = new Color(0.6f, 0, 0, 0.75f);
 
-    public enum State {
-        DEFAULT(0.6f, 0, 0, 0.75f), PRESSED(1, 0.2f, 0.2f, 0.75f), DISABLED(0.5f, 0.5f, 0.5f, 0.75f);
+    private float value;
 
-        State(float r, float g, float b, float a) {
-            this.color = new Color(r, g, b, a);
-        }
-
-        public Color getColor() {
-            return color;
-        }
-
-        private final Color color;
+    public Slider(int x, int y, String label, String help) {
+        this(x, y, label, help, 0, null);
     }
 
-    private int key;
-    private State state = State.DEFAULT;
-
-    public Button(int x, int y, String label, String help, int key) {
-        this(x, y, label, help, key, null);
+    public Slider(int x, int y, String label, String help, float value) {
+        this(x, y, label, help, value, null);
     }
 
-    public Button(int x, int y, String label, String help, int key, IButtonAction action) {
+    public Slider(int x, int y, String label, String help, float value, ISliderAction action) {
     	super(x, y, label, help, action);
-        this.key = key;
+        this.value = value;
     }
 
-    public Button(int x, int y, String label, String help, int key, State state, IButtonAction action) {
-        this(x, y, label, help, key, action);
-        setState(state);
+    public float getValue() {
+        return value;
     }
-
-    public Button(int x, int y, String label, String help, int key, boolean pressed, IButtonAction action) {
-        this(x, y, label, help, key, action);
-        setState(pressed);
-    }
-
-    public int getKey() {
-        return key;
-    }
-
-    public State getState() {
-        return state;
-    }
-
-    public void setState(State state) {
-        this.state = state;
-        requestUpdate();
-    }
-
-    public void setState(boolean pressed) {
-        setState(pressed ? State.PRESSED : State.DEFAULT);
-        requestUpdate();
-    }
-
+    
     @Override
 	public boolean hit(int x, int y, IView view) {
     	UI ui = getUI();
-        float bx = ui.getX() + getX() * (BUTTON_GAP + BUTTON_WIDTH);
-        float by = ui.getY() + getY() * (BUTTON_GAP + BUTTON_HEIGHT);
-        return x >= bx && x <= bx + BUTTON_WIDTH && y >= by && y <= by + BUTTON_HEIGHT;
+        float bx = ui.getX() + getX() * (SLIDER_GAP + SLIDER_WIDTH);
+        float by = ui.getY() + getY() * (SLIDER_GAP + SLIDER_HEIGHT);
+        return x >= bx && x <= bx + SLIDER_WIDTH && y >= by && y <= by + SLIDER_HEIGHT;
     }
     
     @Override
     public void draw(TextRenderGroup group) {
-        int bw = Button.BUTTON_WIDTH;
-        int bh = Button.BUTTON_HEIGHT;
-        int bg = Button.BUTTON_GAP;
+        int bw = Slider.SLIDER_WIDTH;
+        int bh = Slider.SLIDER_HEIGHT;
+        int bg = Slider.SLIDER_GAP;
         int bx = getX() * (bg + bw);
         int by = getY() * (bg + bh);
-        group.fillRect(getState().getColor(), bx, by, bw, bh);
+        group.fillRect(SLIDER_BG, bx, by, bw, bh);
+        group.fillRect(SLIDER_FG, bx, by, (int)(value * bw), bh);
         String label = getLabel();
         if (label != null)
             group.drawString(TEXT_COLOR, label, bx + 2, by + bh - 4);
@@ -124,31 +93,34 @@ public class Button extends AbstractWidget {
     
     @Override
     public void fire(IView view) {
-        if (state == State.DISABLED)
-            return;
-        
         if (getAction() == null)
             throw new UnsupportedOperationException("button '" + getLabel() + "' has no action defined");
-        ((IButtonAction)getAction()).execute(this, view);
-    }
-    
-    @Override
-    public boolean keyPressed(KeyEvent e, IView view) {
-    	if (getKey() == e.getKeyCode()) {
-    		fire(view);
-    		view.getScene().repaintViews();
-    		return true;
-    	}
-    	return false;
+        ((ISliderAction)getAction()).execute(this, view);
     }
     
     @Override
     public boolean mousePressed(MouseEvent e, IView view) {
         if (hit(e.getX(), e.getY(), view)) {
-            fire(view);
-            view.getScene().repaintViews();
+        	updateValue(e, view);
             return true;
         }
         return false;
     }
+    
+	@Override
+    public boolean mouseDragged(MouseEvent e, IView view) {
+        if (hit(e.getX(), e.getY(), view)) {
+        	updateValue(e, view);
+            return true;
+        }
+        return false;
+    }
+
+	private void updateValue(MouseEvent e, IView view) {
+    	UI ui = getUI();
+        float bx = ui.getX() + getX() * (SLIDER_GAP + SLIDER_WIDTH);
+        value = MathUtil.clamp((e.getX() - bx) / SLIDER_WIDTH, 0, 1);
+        requestUpdate();
+        fire(view);
+	}
 }

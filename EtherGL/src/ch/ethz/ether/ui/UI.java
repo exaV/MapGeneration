@@ -28,7 +28,8 @@
 
 package ch.ethz.ether.ui;
 
-import java.awt.Color;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -39,16 +40,16 @@ import ch.ethz.ether.render.IRenderGroup.Source;
 import ch.ethz.ether.render.IRenderer;
 import ch.ethz.ether.render.TextRenderGroup;
 import ch.ethz.ether.scene.IScene;
+import ch.ethz.ether.view.IView;
+import ch.ethz.ether.view.IView.ViewType;
 import ch.ethz.util.UpdateRequest;
 
 public final class UI {
-    private static final Color TEXT_COLOR = Color.WHITE;
-
     private final IScene scene;
     private final TextRenderGroup group = new TextRenderGroup(Source.TOOL, 0, 0, 512, 512);
     private final UpdateRequest updater = new UpdateRequest();
 
-    private final List<Button> buttons = new ArrayList<>();
+    private final List<IWidget> widgets = new ArrayList<>();
     private String message;
 
     public UI(IScene scene) {
@@ -72,35 +73,27 @@ public final class UI {
 
         group.clear();
 
-        int bw = Button.BUTTON_WIDTH;
-        int bh = Button.BUTTON_HEIGHT;
-        int bg = Button.BUTTON_GAP;
-        for (Button button : buttons) {
-            int bx = button.getX() * (bg + bw);
-            int by = button.getY() * (bg + bh);
-            group.fillRect(button.getState().getColor(), bx, by, bw, bh);
-            String label = button.getLabel();
-            if (label != null)
-                group.drawString(TEXT_COLOR, label, bx + 2, by + bh - 4);
+        for (IWidget widget : widgets) {
+        	widget.draw(group);
         }
 
         if (message != null)
             group.drawString(message, 0, group.getHeight() - TextRenderGroup.FONT.getSize());
     }
 
-    public List<Button> getButtons() {
-        return Collections.unmodifiableList(buttons);
+    public List<IWidget> getWidgets() {
+        return Collections.unmodifiableList(widgets);
     }
 
-    public void addButton(Button button) {
-        button.setUI(this);
-        buttons.add(button);
+    public void addWidget(IWidget widget) {
+        widget.setUI(this);
+        widgets.add(widget);
         requestUpdate();
     }
 
-    public void addButtons(Collection<? extends Button> buttons) {
-        for (Button button : buttons) {
-            addButton(button);
+    public void addWidgets(Collection<? extends IWidget> widgets) {
+        for (IWidget widget : widgets) {
+            addWidget(widget);
         }
     }
 
@@ -126,9 +119,64 @@ public final class UI {
     public int getHeight() {
         return group.getHeight();
     }
-
-    void requestUpdate() {
+    
+    public void requestUpdate() {
         updater.requestUpdate();
         scene.repaintViews();
+    }
+    
+    
+    // key listener
+
+    public boolean keyPressed(KeyEvent e, IView view) {
+        if (view.getViewType() == ViewType.INTERACTIVE_VIEW) {
+	        for (IWidget widget : getWidgets()) {
+	        	if (widget.keyPressed(e, view))
+	        		return true;
+	        }
+        }
+        return false;
+    }
+
+    // mouse listener
+
+    public void mouseEntered(MouseEvent e, IView view) {
+    }
+
+    public void mouseExited(MouseEvent e, IView view) {
+    }
+
+    public boolean mousePressed(MouseEvent e, IView view) {
+        if (view.getViewType() == ViewType.INTERACTIVE_VIEW) {
+            for (IWidget widget : getWidgets()) {
+            	if (widget.mousePressed(e, view))
+            		return true;
+            }
+        }
+        return false;
+    }
+
+    // mouse motion listener
+
+    public void mouseMoved(MouseEvent e, IView view) {
+        if (view.getViewType() == ViewType.INTERACTIVE_VIEW) {
+            for (IWidget widget : getWidgets()) {
+                if (widget.hit(e.getX(), e.getY(), view)) {
+                    String message = widget != null ? widget.getHelp() : null;
+                    setMessage(message);
+                    return;
+                }
+            }
+        }
+    }
+
+    public boolean mouseDragged(MouseEvent e, IView view) {
+        if (view.getViewType() == ViewType.INTERACTIVE_VIEW) {
+            for (IWidget widget : getWidgets()) {
+            	if (widget.mouseDragged(e, view))
+            		return true;
+            }
+        }
+        return false;
     }
 }

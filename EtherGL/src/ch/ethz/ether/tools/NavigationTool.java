@@ -108,7 +108,7 @@ public class NavigationTool extends AbstractTool {
         if (button == MouseEvent.BUTTON1) {
             view.getCamera().addToRotateZ(e.getX() - mouseX);
             view.getCamera().addToRotateX(e.getY() - mouseY);
-        } else if (e.getButton() == MouseEvent.BUTTON3) {
+        } else if (button == MouseEvent.BUTTON2 || button == MouseEvent.BUTTON3) {
             view.getCamera().addToTranslateX(e.getX() - mouseX);
             view.getCamera().addToTranslateY(mouseY - e.getY());
         }
