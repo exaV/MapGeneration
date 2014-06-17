@@ -40,6 +40,8 @@ public interface IWidget {
 	
 	boolean mousePressed(MouseEvent e, IView view);
 	
+	boolean mouseReleased(MouseEvent e, IView view);
+	
 	boolean mouseMoved(MouseEvent e, IView view);
 	
 	boolean mouseDragged(MouseEvent e, IView view);

@@ -205,6 +205,9 @@ public abstract class AbstractScene implements IScene {
 
     @Override
     public void mouseReleased(MouseEvent e, IView view) {
+    	if (ui.mouseReleased(e, view))
+    		return;
+    	
         if (!isModifierDown(e))
             activeTool.mouseReleased(e, view);
         else

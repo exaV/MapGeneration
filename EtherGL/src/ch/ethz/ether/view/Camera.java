@@ -45,8 +45,8 @@ public class Camera {
     private boolean locked = false;
 
     private float near = 0.001f;
-    // public float far = 1000.0f;
-    private float far = Float.POSITIVE_INFINITY;
+    public float far = 1000.0f;
+    //private float far = Float.POSITIVE_INFINITY;
 
     private float fov = 45.0f;
     private float distance = 2.0f;
@@ -54,6 +54,8 @@ public class Camera {
     private float rotateX = 45.0f;
     private float translateX = 0.0f;
     private float translateY = 0.0f;
+    
+    private boolean ortho = false;
 
     private Mat4 projMatrix;
     private Mat4 viewMatrix;
@@ -195,6 +197,15 @@ public class Camera {
         translateY += distance * delta / view.getViewport().h;
         update();
     }
+    
+    public boolean isOrtho() {
+		return ortho;
+	}
+    
+    public void setOrtho(boolean ortho) {
+    	this.ortho = ortho;
+    	update();
+    }
 
     public void frame(BoundingBox bounds) {
         if (locked)
@@ -211,7 +222,12 @@ public class Camera {
     public Mat4 getProjMatrix() {
         if (projMatrix == null) {
             projMatrix = new Mat4();
-            projMatrix.perspective(fov, (float) view.getViewport().w / (float) view.getViewport().h, near, far);
+            float aspect = (float) view.getViewport().w / (float) view.getViewport().h;
+            if (!ortho) {
+            	projMatrix.perspective(fov, aspect, near, far);
+            } else {
+            	projMatrix.ortho(-aspect * distance, aspect * distance, -distance, distance, -far, far);
+            }
         }
         return projMatrix;
     }

@@ -155,6 +155,17 @@ public final class UI {
         }
         return false;
     }
+    
+    public boolean mouseReleased(MouseEvent e, IView view) {
+        if (view.getViewType() == ViewType.INTERACTIVE_VIEW) {
+            for (IWidget widget : getWidgets()) {
+            	if (widget.mouseReleased(e, view))
+            		return true;
+            }
+        }
+        return false;
+    }
+
 
     // mouse motion listener
 

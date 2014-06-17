@@ -49,6 +49,7 @@ public class Slider extends AbstractWidget {
     public static final Color SLIDER_BG = new Color(1f, 1f, 1f, 0.25f);
     public static final Color SLIDER_FG = new Color(0.6f, 0, 0, 0.75f);
 
+    private boolean sliding;
     private float value;
 
     public Slider(int x, int y, String label, String help) {
@@ -101,6 +102,7 @@ public class Slider extends AbstractWidget {
     @Override
     public boolean mousePressed(MouseEvent e, IView view) {
         if (hit(e.getX(), e.getY(), view)) {
+        	sliding = true;
         	updateValue(e, view);
             return true;
         }
@@ -108,14 +110,23 @@ public class Slider extends AbstractWidget {
     }
     
 	@Override
+	public boolean mouseReleased(MouseEvent e, IView view) {
+		if (sliding) {
+			sliding = false;
+			return true;
+		}
+		return false;
+	}
+
+	@Override
     public boolean mouseDragged(MouseEvent e, IView view) {
-        if (hit(e.getX(), e.getY(), view)) {
+        if (sliding) {
         	updateValue(e, view);
             return true;
         }
         return false;
     }
-
+	
 	private void updateValue(MouseEvent e, IView view) {
     	UI ui = getUI();
         float bx = ui.getX() + getX() * (SLIDER_GAP + SLIDER_WIDTH);

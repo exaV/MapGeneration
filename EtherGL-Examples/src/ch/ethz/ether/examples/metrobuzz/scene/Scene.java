@@ -87,7 +87,7 @@ public class Scene extends AbstractScene {
         getUI().addWidget(new Slider(2, 0, "Slider", "Slider", 0.3f, new ISliderAction() {
             @Override
             public void execute(Slider slider, IView view) {
-            	System.out.println("I slide...");
+            	System.out.println("I slide... " + slider.getValue());
             }
         }));
     }
