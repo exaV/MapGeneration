@@ -259,4 +259,9 @@ public abstract class AbstractScene implements IScene {
             repaintViews();
         }
     }
+    
+    public static void printHelp(String[] help) {
+    	for(String s : help)
+    		System.out.println(s);
+    }
 }

@@ -38,6 +38,7 @@ import ch.ethz.ether.render.IRenderGroup.Source;
 import ch.ethz.ether.render.IRenderGroup.Type;
 import ch.ethz.ether.render.IRenderer;
 import ch.ethz.ether.render.util.Primitives;
+import ch.ethz.ether.scene.AbstractScene;
 import ch.ethz.ether.scene.IScene;
 import ch.ethz.ether.tools.AbstractTool;
 import ch.ethz.ether.view.IView;
@@ -52,7 +53,7 @@ import java.util.Map;
 import java.util.prefs.Preferences;
 
 public final class CalibrationTool extends AbstractTool {
-    private static final String[] CALIBRATION_HELP = {
+    private static final String[] HELP = {
             "Calibration Tool for 3D Mapping",
             "",
             "[0] Return",
@@ -217,6 +218,9 @@ public final class CalibrationTool extends AbstractTool {
             case KeyEvent.VK_DELETE:
                 deleteCurrent(view);
                 break;
+    		case KeyEvent.VK_H:
+    			AbstractScene.printHelp(HELP);
+    			break;
         }
         view.getScene().repaintViews();
     }

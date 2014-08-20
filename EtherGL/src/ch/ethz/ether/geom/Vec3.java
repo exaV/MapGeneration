@@ -33,7 +33,7 @@ package ch.ethz.ether.geom;
  *
  * @author radar
  */
-public final class Vec3 {
+public class Vec3 {
     public static final Vec3 ZERO = new Vec3(0, 0, 0);
     public static final Vec3 ONE = new Vec3(1, 1, 1);
     public static final Vec3 X = new Vec3(1, 0, 0);
@@ -59,10 +59,20 @@ public final class Vec3 {
         this.z = (float) z;
     }
 
-    public float length() {
-        return (float) Math.sqrt(x * x + y * y + z * z);
+    public Vec3(Vec4 v) {
+    	this.x = v.x;
+    	this.y = v.y;
+    	this.z = v.z;
+	}
+
+	public float length() {
+        return length(x, y, z);
     }
 
+	public static float length(final float x, final float y, final float z) {
+		return (float)Math.sqrt(x * x + y * y + z * z);
+	}
+	
     public float distance(Vec3 v) {
         return (float) Math.sqrt((v.x - x) * (v.x - x) + (v.y - y) * (v.y - y) + (v.z - z) * (v.z - z));
     }
@@ -105,10 +115,21 @@ public final class Vec3 {
         return false;
     }
 
-    public static float dot(Vec3 a, Vec3 b) {
-        return a.x * b.x + a.y * b.y + a.z * b.z;
+	/** @return The dot product between this vecotr and a */
+    public float dot(Vec3 a) {
+        return dot(x, y, z, a.x, a.y, a.z);
     }
 
+	/** @return The dot product between the two vectors */
+    public static float dot(Vec3 a, Vec3 b) {
+        return dot(a.x, a.y, a.z, b.x, b.y, b.z);
+    }
+
+	/** @return The dot product between the two vectors */
+	public static float dot (float ax, float ay, float az, float bx, float by, float bz) {
+		return ax * bx + ay * by + az * bz;
+	}
+	
     public static Vec3 cross(Vec3 a, Vec3 b) {
         float x = a.y * b.z - a.z * b.y;
         float y = a.z * b.x - a.x * b.z;

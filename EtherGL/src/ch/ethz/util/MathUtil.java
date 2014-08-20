@@ -29,7 +29,12 @@
 package ch.ethz.util;
 
 public final class MathUtil {
-    public static float map(float value, float sourceMin, float sourceMax, float targetMin, float targetMax) {
+	static public final float FLOAT_ROUNDING_ERROR = 0.000001f; // 32 bits
+	static public final float PI                   = (float)Math.PI;
+	static public final float radiansToDegrees     = 180f / PI;
+	static public final float degreesToRadians     = PI / 180;
+    
+	public static float map(float value, float sourceMin, float sourceMax, float targetMin, float targetMax) {
         if (sourceMax - sourceMin == 0)
             return 0;
         return (value - sourceMin) * (targetMax - targetMin) / (sourceMax - sourceMin) + targetMin;
@@ -52,4 +57,30 @@ public final class MathUtil {
     public static double clamp(double value, double min, double max) {
         return Math.max(min, Math.min(max, value));
     }
+    
+	/** Returns true if the value is zero (using the default tolerance as upper bound) */
+	static public boolean isZero (float value) {
+		return Math.abs(value) <= FLOAT_ROUNDING_ERROR;
+	}
+
+	/** Returns true if the value is zero.
+	 * @param tolerance represent an upper bound below which the value is considered zero. */
+	static public boolean isZero (float value, float tolerance) {
+		return Math.abs(value) <= tolerance;
+	}
+
+	/** Returns true if a is nearly equal to b. The function uses the default floating error tolerance.
+	 * @param a the first value.
+	 * @param b the second value. */
+	static public boolean isEqual (float a, float b) {
+		return Math.abs(a - b) <= FLOAT_ROUNDING_ERROR;
+	}
+
+	/** Returns true if a is nearly equal to b.
+	 * @param a the first value.
+	 * @param b the second value.
+	 * @param tolerance represent an upper bound below which the two values are considered equal. */
+	static public boolean isEqual (float a, float b, float tolerance) {
+		return Math.abs(a - b) <= tolerance;
+	}
 }

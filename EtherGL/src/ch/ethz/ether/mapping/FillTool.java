@@ -43,41 +43,41 @@ import ch.ethz.util.IAddOnlyFloatList;
 import java.util.Collections;
 
 public final class FillTool extends AbstractTool {
-    private static final String[] FILL_HELP = {
-            "Fill Tool for Projector Adjustment",
-            "",
-            "[0] Return"
-    };
+	static final String[] FILL_HELP = {
+		"Fill Tool for Projector Adjustment",
+		"",
+		"[0] Return"
+	};
 
-    private IRenderGroup quads = new AbstractRenderGroup(Source.TOOL, Type.TRIANGLES, Pass.DEVICE_SPACE_OVERLAY) {
-        @Override
-        public void getVertices(IAddOnlyFloatList dst) {
-            Primitives.addRectangle(dst, -1.0f, -1.0f, -0.1f, -0.1f);
-            Primitives.addRectangle(dst, 0.1f, -1.0f, 1.0f, -0.1f);
-            Primitives.addRectangle(dst, 0.1f, 0.1f, 1.0f, 1.0f);
-            Primitives.addRectangle(dst, -1.0f, 0.1f, -0.1f, 1.0f);
-        }
-    };
+	private IRenderGroup quads = new AbstractRenderGroup(Source.TOOL, Type.TRIANGLES, Pass.DEVICE_SPACE_OVERLAY) {
+		@Override
+		public void getVertices(IAddOnlyFloatList dst) {
+			Primitives.addRectangle(dst, -1.0f, -1.0f, -0.1f, -0.1f);
+			Primitives.addRectangle(dst, 0.1f, -1.0f, 1.0f, -0.1f);
+			Primitives.addRectangle(dst, 0.1f, 0.1f, 1.0f, 1.0f);
+			Primitives.addRectangle(dst, -1.0f, 0.1f, -0.1f, 1.0f);
+		}
+	};
 
-    public FillTool(IScene scene) {
-        super(scene);
-    }
+	public FillTool(IScene scene) {
+		super(scene);
+	}
 
-    @Override
-    public void activate() {
-        IRenderer.GROUPS.add(quads);
-        IRenderer.GROUPS.setSource(Source.TOOL);
-    }
+	@Override
+	public void activate() {
+		IRenderer.GROUPS.add(quads);
+		IRenderer.GROUPS.setSource(Source.TOOL);
+	}
 
-    @Override
-    public void deactivate() {
-        IRenderer.GROUPS.remove(quads);
-        IRenderer.GROUPS.setSource(null);
-        getScene().enableViews(null);
-    }
+	@Override
+	public void deactivate() {
+		IRenderer.GROUPS.remove(quads);
+		IRenderer.GROUPS.setSource(null);
+		getScene().enableViews(null);
+	}
 
-    @Override
-    public void refresh(IView view) {
-        getScene().enableViews(Collections.singleton(view));
-    }
+	@Override
+	public void refresh(IView view) {
+		getScene().enableViews(Collections.singleton(view));
+	}
 }

@@ -38,6 +38,8 @@ import ch.ethz.util.IAddOnlyFloatList;
  * Created by radar on 05/12/13.
  */
 public class GenericMesh extends AbstractMesh {
+	private String name = "GenericMesh";
+	
     private class TransformCache {
         TransformCache() {
             triangleVertices = transform.transformVertices(GenericMesh.this.triangleVertices);
@@ -79,9 +81,34 @@ public class GenericMesh extends AbstractMesh {
         invalidateCache();
     }
 
+    public void setTriangles(float[] vertices, float[] normals, float r, float g, float b, float a) {
+        triangleVertices = vertices;
+        triangleNormals  = normals;
+        triangleColors = new float[(triangleVertices.length / 3) * 4];
+        for(int i = 0; i < triangleColors.length; i += 4) {
+        	triangleColors[i + 0] = r;
+        	triangleColors[i + 1] = g;
+        	triangleColors[i + 2] = b;
+        	triangleColors[i + 3] = a;
+        }
+        invalidateCache();
+    }
+
     public void setEdges(float[] vertices, float[] colors) {
         edgeVertices = vertices;
         edgeColors = colors;
+        invalidateCache();
+    }
+
+    public void setEdges(float[] vertices, float r, float g, float b, float a) {
+        edgeVertices = vertices;
+        edgeColors = new float[(vertices.length / 3) * 4];
+        for(int i = 0; i < edgeColors.length; i += 4) {
+        	edgeColors[i + 0] = r;
+        	edgeColors[i + 1] = g;
+        	edgeColors[i + 2] = b;
+        	edgeColors[i + 3] = a;
+        }
         invalidateCache();
     }
 
@@ -226,4 +253,21 @@ public class GenericMesh extends AbstractMesh {
             bounds.add(cache.pointVertices);
         }
     }
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getName() {
+		return name;
+	}
+	
+	public boolean isEmpty() {
+		return triangleVertices == null && edgeVertices == null && pointVertices == null;
+	}
+	
+	@Override
+	public String toString() {
+		return getName();
+	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 - 2014, ETH Zurich & FHNW (Stefan Muller Arisona)
+ * Copyright (c) 2013 - 2014, ETH Zurich & FHNW (Stefan Muller Arisona, Simon Schubiger)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -10,7 +10,7 @@
  *  Redistributions in binary form must reproduce the above copyright notice,
  *   this list of conditions and the following disclaimer in the documentation
  *   and/or other materials provided with the distribution.
- *  Neither the name of ETH Zurich nor the names of its contributors may be
+ *  Neither the name of ETH Zurich, FHNW nor the names of its contributors may be
  *   used to endorse or promote products derived from this software without
  *   specific prior written permission.
  *
@@ -31,11 +31,29 @@ package ch.ethz.ether.geom;
 import java.util.Arrays;
 
 /**
- * 4x4 matrix for dealing with OpenGL 4x4 matrices.
+ * 4x4 matrix for dealing with OpenGL 4x4 matrices (column major).
  *
  * @author radar
  */
 public final class Mat4 {
+	public static final int M00 = 0;
+	public static final int M01 = 4;
+	public static final int M02 = 8;
+	public static final int M03 = 12;
+	public static final int M10 = 1;
+	public static final int M11 = 5;
+	public static final int M12 = 9;
+	public static final int M13 = 13;
+	public static final int M20 = 2;
+	public static final int M21 = 6;
+	public static final int M22 = 10;
+	public static final int M23 = 14;
+	public static final int M30 = 3;
+	public static final int M31 = 7;
+	public static final int M32 = 11;
+	public static final int M33 = 15;
+	
+	
     public final float[] m;
 
     public Mat4() {
@@ -58,7 +76,7 @@ public final class Mat4 {
      */
     public void identity() {
         zero();
-        m[0] = m[5] = m[10] = m[15] = 1;
+        m[M00] = m[M11] = m[M22] = m[M33] = 1;
     }
 
     /**
@@ -92,10 +110,10 @@ public final class Mat4 {
             float mi4 = m[i + 4];
             float mi8 = m[i + 8];
             float mi12 = m[i + 12];
-            m[i] = mi0 * mat.m[0] + mi4 * mat.m[1] + mi8 * mat.m[2] + mi12 * mat.m[3];
-            m[i + 4] = mi0 * mat.m[4] + mi4 * mat.m[5] + mi8 * mat.m[6] + mi12 * mat.m[7];
-            m[i + 8] = mi0 * mat.m[8] + mi4 * mat.m[9] + mi8 * mat.m[10] + mi12 * mat.m[11];
-            m[i + 12] = mi0 * mat.m[12] + mi4 * mat.m[13] + mi8 * mat.m[14] + mi12 * mat.m[15];
+            m[i]      = mi0 * mat.m[M00] + mi4 * mat.m[M10] + mi8 * mat.m[M20] + mi12 * mat.m[M30];
+            m[i + 4]  = mi0 * mat.m[M01] + mi4 * mat.m[M11] + mi8 * mat.m[M21] + mi12 * mat.m[M31];
+            m[i + 8]  = mi0 * mat.m[M02] + mi4 * mat.m[M12] + mi8 * mat.m[M22] + mi12 * mat.m[M32];
+            m[i + 12] = mi0 * mat.m[M03] + mi4 * mat.m[M13] + mi8 * mat.m[M23] + mi12 * mat.m[M33];
         }
     }
 
@@ -110,10 +128,10 @@ public final class Mat4 {
             float mi1 = m[i + 1];
             float mi2 = m[i + 2];
             float mi3 = m[i + 3];
-            m[i] = mi0 * mat.m[0] + mi1 * mat.m[4] + mi2 * mat.m[8] + mi3 * mat.m[12];
-            m[i + 1] = mi0 * mat.m[1] + mi1 * mat.m[5] + mi2 * mat.m[9] + mi3 * mat.m[13];
-            m[i + 2] = mi0 * mat.m[2] + mi1 * mat.m[6] + mi2 * mat.m[10] + mi3 * mat.m[14];
-            m[i + 3] = mi0 * mat.m[3] + mi1 * mat.m[7] + mi2 * mat.m[11] + mi3 * mat.m[15];
+            m[i]     = mi0 * mat.m[M00] + mi1 * mat.m[M01] + mi2 * mat.m[M02] + mi3 * mat.m[M03];
+            m[i + 1] = mi0 * mat.m[M10] + mi1 * mat.m[M11] + mi2 * mat.m[M12] + mi3 * mat.m[M13];
+            m[i + 2] = mi0 * mat.m[M20] + mi1 * mat.m[M21] + mi2 * mat.m[M22] + mi3 * mat.m[M23];
+            m[i + 3] = mi0 * mat.m[M30] + mi1 * mat.m[M31] + mi2 * mat.m[M32] + mi3 * mat.m[M33];
         }
     }
 
@@ -126,9 +144,9 @@ public final class Mat4 {
      */
     public void translate(float tx, float ty, float tz) {
         final Mat4 t = identityMatrix();
-        t.m[12] = tx;
-        t.m[13] = ty;
-        t.m[14] = tz;
+        t.m[M03] = tx;
+        t.m[M13] = ty;
+        t.m[M23] = tz;
         preMultiply(t);
     }
 
@@ -167,15 +185,15 @@ public final class Mat4 {
         float zs = z * s;
 
         final Mat4 r = identityMatrix();
-        r.m[0] = x * x * ic + c;
-        r.m[1] = xy * ic + zs;
-        r.m[2] = xz * ic - ys;
-        r.m[4] = xy * ic - zs;
-        r.m[5] = y * y * ic + c;
-        r.m[6] = yz * ic + xs;
-        r.m[8] = xz * ic + ys;
-        r.m[9] = yz * ic - xs;
-        r.m[10] = z * z * ic + c;
+        r.m[M00] = x * x * ic + c;
+        r.m[M10] = xy * ic + zs;
+        r.m[M20] = xz * ic - ys;
+        r.m[M01] = xy * ic - zs;
+        r.m[M11] = y * y * ic + c;
+        r.m[M21] = yz * ic + xs;
+        r.m[M02] = xz * ic + ys;
+        r.m[M12] = yz * ic - xs;
+        r.m[M22] = z * z * ic + c;
 
         preMultiply(r);
     }
@@ -192,12 +210,12 @@ public final class Mat4 {
      * @param sz scale z factor
      */
     public void scale(float sx, float sy, float sz) {
-        m[0] *= sx;
-        m[5] *= sy;
-        m[10] *= sz;
-        m[12] *= sx;
-        m[13] *= sy;
-        m[14] *= sz;
+        m[M00] *= sx;
+        m[M11] *= sy;
+        m[M22] *= sz;
+        m[M03] *= sx;
+        m[M13] *= sy;
+        m[M23] *= sz;
     }
 
     public void scale(Vec3 s) {
@@ -225,11 +243,11 @@ public final class Mat4 {
         double cotangent = (float) (Math.cos(radians) / sine);
 
         zero();
-        m[0] = (float) (cotangent / aspect);
-        m[5] = (float) cotangent;
-        m[10] = ((far >= Double.POSITIVE_INFINITY) ? -1 : (-(far + near) / deltaZ));
-        m[11] = -1;
-        m[14] = ((far >= Double.POSITIVE_INFINITY) ? (-2 * near) : (-2 * near * far / deltaZ));
+        m[M00] = (float) (cotangent / aspect);
+        m[M11] = (float) cotangent;
+        m[M22] = ((far >= Double.POSITIVE_INFINITY) ? -1 : (-(far + near) / deltaZ));
+        m[M32] = -1;
+        m[M23] = ((far >= Double.POSITIVE_INFINITY) ? (-2 * near) : (-2 * near * far / deltaZ));
     }
 
 
@@ -252,13 +270,13 @@ public final class Mat4 {
         float tz = -1.0f * (far + near) / dz;
 
         zero();
-        m[0] = 2.0f / dx;
-        m[5] = 2.0f / dy;
-        m[10] = -2.0f / dz;
-        m[12] = tx;
-        m[13] = ty;
-        m[14] = tz;
-        m[15] = 1;
+        m[M00] = 2.0f / dx;
+        m[M11] = 2.0f / dy;
+        m[M22] = -2.0f / dz;
+        m[M03] = tx;
+        m[M13] = ty;
+        m[M23] = tz;
+        m[M33] = 1;
     }
 
 
@@ -269,10 +287,10 @@ public final class Mat4 {
      * @return the transformed vector
      */
     public Vec4 transform(Vec4 vec) {
-        float x = vec.x * m[0] + vec.y * m[4] + vec.z * m[8] + vec.w * m[12];
-        float y = vec.x * m[1] + vec.y * m[4 + 1] + vec.z * m[8 + 1] + vec.w * m[12 + 1];
-        float z = vec.x * m[2] + vec.y * m[4 + 2] + vec.z * m[8 + 2] + vec.w * m[12 + 2];
-        float w = vec.x * m[3] + vec.y * m[4 + 3] + vec.z * m[8 + 3] + vec.w * m[12 + 3];
+        float x = vec.x * m[M00] + vec.y * m[M01] + vec.z * m[M02] + vec.w * m[M03];
+        float y = vec.x * m[M10] + vec.y * m[M11] + vec.z * m[M12] + vec.w * m[M13];
+        float z = vec.x * m[M20] + vec.y * m[M21] + vec.z * m[M22] + vec.w * m[M23];
+        float w = vec.x * m[M30] + vec.y * m[M31] + vec.z * m[M32] + vec.w * m[M33];
         return new Vec4(x, y, z, w);
     }
 
@@ -284,10 +302,10 @@ public final class Mat4 {
      * @return the transformed vector
      */
     public Vec3 transform(Vec3 vec) {
-        float x = vec.x * m[0] + vec.y * m[4] + vec.z * m[8] + m[12];
-        float y = vec.x * m[1] + vec.y * m[4 + 1] + vec.z * m[8 + 1] + m[12 + 1];
-        float z = vec.x * m[2] + vec.y * m[4 + 2] + vec.z * m[8 + 2] + m[12 + 2];
-        float w = vec.x * m[3] + vec.y * m[4 + 3] + vec.z * m[8 + 3] + m[12 + 3];
+        float x = vec.x * m[M00] + vec.y * m[M01] + vec.z * m[M02] + m[M03];
+        float y = vec.x * m[M10] + vec.y * m[M11] + vec.z * m[M12] + m[M13];
+        float z = vec.x * m[M20] + vec.y * m[M21] + vec.z * m[M22] + m[M23];
+        float w = vec.x * m[M30] + vec.y * m[M31] + vec.z * m[M32] + m[M33];
         return new Vec3(x / w, y / w, z / w);
     }
 
@@ -306,10 +324,10 @@ public final class Mat4 {
         if (result == null)
             result = new float[xyz.length];
         for (int i = 0; i < xyz.length; i += 3) {
-            float x = xyz[i] * m[0] + xyz[i + 1] * m[4] + xyz[i + 2] * m[8] + m[12];
-            float y = xyz[i] * m[1] + xyz[i + 1] * m[4 + 1] + xyz[i + 2] * m[8 + 1] + m[12 + 1];
-            float z = xyz[i] * m[2] + xyz[i + 1] * m[4 + 2] + xyz[i + 2] * m[8 + 2] + m[12 + 2];
-            float w = xyz[i] * m[3] + xyz[i + 1] * m[4 + 3] + xyz[i + 2] * m[8 + 3] + m[12 + 3];
+            float x = xyz[i] * m[M00] + xyz[i + 1] * m[M01] + xyz[i + 2] * m[M02] + m[M03];
+            float y = xyz[i] * m[M10] + xyz[i + 1] * m[M11] + xyz[i + 2] * m[M12] + m[M13];
+            float z = xyz[i] * m[M20] + xyz[i + 1] * m[M21] + xyz[i + 2] * m[M22] + m[M23];
+            float w = xyz[i] * m[M30] + xyz[i + 1] * m[M31] + xyz[i + 2] * m[M32] + m[M33];
             result[i] = x / w;
             result[i + 1] = y / w;
             result[i + 2] = z / w;
@@ -334,22 +352,22 @@ public final class Mat4 {
      */
     public Mat4 transposed() {
         Mat4 result = new Mat4();
-        result.m[0] = m[0];
-        result.m[1] = m[4];
-        result.m[2] = m[8];
-        result.m[3] = m[12];
-        result.m[4] = m[1];
-        result.m[5] = m[5];
-        result.m[6] = m[9];
-        result.m[7] = m[13];
-        result.m[8] = m[2];
-        result.m[9] = m[6];
-        result.m[10] = m[10];
-        result.m[11] = m[15];
-        result.m[12] = m[3];
-        result.m[13] = m[7];
-        result.m[14] = m[11];
-        result.m[15] = m[15];
+        result.m[M00] = m[M00];
+        result.m[M10] = m[M01];
+        result.m[M20] = m[M02];
+        result.m[M30] = m[M03];
+        result.m[M01] = m[M10];
+        result.m[M11] = m[M11];
+        result.m[M21] = m[M12];
+        result.m[M31] = m[M13];
+        result.m[M02] = m[M20];
+        result.m[M12] = m[M21];
+        result.m[M22] = m[M22];
+        result.m[M32] = m[M33];
+        result.m[M03] = m[M30];
+        result.m[M13] = m[M31];
+        result.m[M23] = m[M32];
+        result.m[M33] = m[M33];
         return result;
     }
 
@@ -420,7 +438,7 @@ public final class Mat4 {
      */
     public static Mat4 identityMatrix() {
         Mat4 mat = new Mat4();
-        mat.m[0] = mat.m[5] = mat.m[10] = mat.m[15] = 1;
+        mat.m[M00] = mat.m[M11] = mat.m[M22] = mat.m[M33] = 1;
         return mat;
     }
 
@@ -439,19 +457,19 @@ public final class Mat4 {
             float ai1 = a.m[i + 4];
             float ai2 = a.m[i + 8];
             float ai3 = a.m[i + 12];
-            result.m[i] = ai0 * b.m[0] + ai1 * b.m[1] + ai2 * b.m[2] + ai3 * b.m[3];
-            result.m[i + 4] = ai0 * b.m[4] + ai1 * b.m[5] + ai2 * b.m[6] + ai3 * b.m[7];
-            result.m[i + 8] = ai0 * b.m[8] + ai1 * b.m[9] + ai2 * b.m[10] + ai3 * b.m[11];
-            result.m[i + 12] = ai0 * b.m[12] + ai1 * b.m[13] + ai2 * b.m[14] + ai3 * b.m[15];
+            result.m[i]      = ai0 * b.m[M00] + ai1 * b.m[M10] + ai2 * b.m[M20] + ai3 * b.m[M30];
+            result.m[i + 4]  = ai0 * b.m[M01] + ai1 * b.m[M11] + ai2 * b.m[M21] + ai3 * b.m[M31];
+            result.m[i + 8]  = ai0 * b.m[M02] + ai1 * b.m[M12] + ai2 * b.m[M22] + ai3 * b.m[M32];
+            result.m[i + 12] = ai0 * b.m[M03] + ai1 * b.m[M13] + ai2 * b.m[M23] + ai3 * b.m[M33];
         }
         return result;
     }
 
     @Override
     public String toString() {
-        return "[" + m[0] + ", " + m[4] + ", " + m[8] + ", " + m[12] + ",\n" +
-               " " + m[1] + ", " + m[5] + ", " + m[9] + ", " + m[13] + ",\n" +
-               " " + m[2] + ", " + m[6] + ", " + m[10] + ", " + m[14] + ",\n" +
-               " " + m[3] + ", " + m[7] + ", " + m[11] + ", " + m[15] + "]";
+        return "[" + m[M00] + ", " + m[M01] + ", " + m[M02] + ", " + m[M03] + ",\n" +
+               " " + m[M10] + ", " + m[M11] + ", " + m[M12] + ", " + m[M13] + ",\n" +
+               " " + m[M20] + ", " + m[M21] + ", " + m[M22] + ", " + m[M23] + ",\n" +
+               " " + m[M30] + ", " + m[M31] + ", " + m[M32] + ", " + m[M33] + "]";
     }
 }

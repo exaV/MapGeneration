@@ -284,4 +284,14 @@ public class Camera {
         viewProjInvTpMatrix = null;
         view.update();
     }
+
+	public void setPosition(float worldX, float worldY, float wordlZ) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void setOrientation(float yaw, float pitch, float roll) {
+		// TODO Auto-generated method stub
+		
+	}
 }

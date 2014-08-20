@@ -34,7 +34,7 @@ package ch.ethz.ether.geom;
  *
  * @author radar
  */
-public final class Vec4 {
+public class Vec4 {
     public static final Vec4 ZERO = new Vec4(0, 0, 0, 0);
 
     public final float x;
@@ -60,5 +60,9 @@ public final class Vec4 {
     @Override
     public String toString() {
         return "[" + x + ", " + y + ", " + z + ", " + w + "]";
+    }
+    
+    float angle() {
+    	return w;
     }
 }
