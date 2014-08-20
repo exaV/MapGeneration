@@ -30,11 +30,12 @@
 package ch.fhnw.ether.ui;
 
 import java.awt.Color;
-import java.awt.event.MouseEvent;
 
 import ch.fhnw.ether.model.TextGeometry;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.util.MathUtil;
+
+import com.jogamp.newt.event.MouseEvent;
 
 public class Slider extends AbstractWidget {
     public interface ISliderAction extends IWidgetAction<Slider> {

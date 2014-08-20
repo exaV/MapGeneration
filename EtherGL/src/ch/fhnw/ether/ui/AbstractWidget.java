@@ -29,10 +29,10 @@
 
 package ch.fhnw.ether.ui;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-
 import ch.fhnw.ether.view.IView;
+
+import com.jogamp.newt.event.KeyEvent;
+import com.jogamp.newt.event.MouseEvent;
 
 public abstract class AbstractWidget implements IWidget {
 	private UI ui;

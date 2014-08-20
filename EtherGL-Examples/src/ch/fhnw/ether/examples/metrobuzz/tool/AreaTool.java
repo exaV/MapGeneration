@@ -27,9 +27,6 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */package ch.fhnw.ether.examples.metrobuzz.tool;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-
 import ch.fhnw.ether.geom.Line;
 import ch.fhnw.ether.geom.Plane;
 import ch.fhnw.ether.geom.ProjectionUtil;
@@ -44,6 +41,9 @@ import ch.fhnw.ether.render.shader.Triangles;
 import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.tool.AbstractTool;
 import ch.fhnw.ether.view.IView;
+
+import com.jogamp.newt.event.KeyEvent;
+import com.jogamp.newt.event.MouseEvent;
 
 public final class AreaTool extends AbstractTool {
 	private static final RGBA TOOL_COLOR = RGBA.YELLOW;

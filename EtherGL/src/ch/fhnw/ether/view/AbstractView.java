@@ -29,215 +29,213 @@
 
 package ch.fhnw.ether.view;
 
-import java.awt.Point;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
-
+import javax.media.nativewindow.util.Point;
 import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
 
-import ch.fhnw.ether.gl.Frame;
+import ch.fhnw.ether.gl.NEWTWindow;
 import ch.fhnw.ether.gl.Viewport;
 import ch.fhnw.ether.scene.IScene;
 
+import com.jogamp.newt.event.KeyEvent;
+import com.jogamp.newt.event.MouseEvent;
+
 /**
- * Abstract view class that implements some basic functionality. Use as base for
- * implementations.
+ * Abstract view class that implements some basic functionality. Use as base for implementations.
  *
  * @author radar
  */
 public abstract class AbstractView implements IView {
-    private final Frame frame;
-    private final IScene scene;
+	private final NEWTWindow window;
 
-    private final ViewType viewType;
+	private final IScene scene;
 
-    private final Camera camera = new Camera(this);
+	private final ViewType viewType;
 
-    private Viewport viewport = new Viewport(0, 0, 1, 1);
+	private final Camera camera = new Camera(this);
 
-    private boolean enabled = true;
+	private Viewport viewport = new Viewport(0, 0, 1, 1);
 
-    protected AbstractView(IScene scene, int x, int y, int w, int h, ViewType viewType, String title) {
-        this.frame = new Frame(w, h, title);
-        this.scene = scene;
-        this.viewType = viewType;
-        frame.setView(this);
-        Point p = frame.getJFrame().getLocation();
-        if (x != -1)
-            p.x = x;
-        if (y != -1)
-            p.y = y;
-        frame.getJFrame().setLocation(p);
-    }
+	private boolean enabled = true;
 
-    @Override
-    public final IScene getScene() {
-        return scene;
-    }
+	protected AbstractView(IScene scene, int x, int y, int w, int h, ViewType viewType, String title) {
+		this.window = new NEWTWindow(w, h, title);
+		this.scene = scene;
+		this.viewType = viewType;
+		window.setView(this);
+		Point p = window.getPosition();
+		if (x != -1)
+			p.setX(x);
+		if (y != -1)
+			p.setY(y);
+		window.setPosition(p);
+	}
 
-    @Override
-    public final Camera getCamera() {
-        return camera;
-    }
+	@Override
+	public GLAutoDrawable getDrawable() {
+		return window.getDrawable();
+	}
 
-    @Override
-    public final Viewport getViewport() {
-        return viewport;
-    }
+	@Override
+	public final IScene getScene() {
+		return scene;
+	}
 
-    @Override
-    public final ViewType getViewType() {
-        return viewType;
-    }
+	@Override
+	public final Camera getCamera() {
+		return camera;
+	}
 
-    @Override
-    public final Frame getFrame() {
-        return frame;
-    }
+	@Override
+	public final Viewport getViewport() {
+		return viewport;
+	}
 
-    @Override
-    public final boolean isEnabled() {
-        return enabled;
-    }
+	@Override
+	public final ViewType getViewType() {
+		return viewType;
+	}
 
-    @Override
-    public final void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
+	@Override
+	public final boolean isEnabled() {
+		return enabled;
+	}
 
-    @Override
-    public final boolean isCurrent() {
-        return getScene().getCurrentView() == this;
-    }
+	@Override
+	public final void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
 
-    @Override
-    public final void repaint() {
-        frame.repaint();
-    }
+	@Override
+	public final boolean isCurrent() {
+		return getScene().getCurrentView() == this;
+	}
 
-    @Override
-    public final void refresh() {
-        getScene().getCurrentTool().refresh(this);
-        repaint();
-    }
+	@Override
+	public final void repaint() {
+		getScene().repaintView(this);
+	}
 
+	@Override
+	public final void refresh() {
+		getScene().getCurrentTool().refresh(this);
+		repaint();
+	}
 
-    // GLEventListener implementation
+	// GLEventListener implementation
 
-    @Override
-    public final void init(GLAutoDrawable drawable) {
-        GL gl = drawable.getGL();
+	@Override
+	public final void init(GLAutoDrawable drawable) {
+		GL gl = drawable.getGL();
 
-        gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-        gl.glClearDepth(1.0f);
+		gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		gl.glClearDepth(1.0f);
 
-        gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-    }
+		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+	}
 
-    @Override
-    public final void display(GLAutoDrawable drawable) {
-        GL gl = drawable.getGL();
+	@Override
+	public final void display(GLAutoDrawable drawable) {
+		GL gl = drawable.getGL();
 
-        gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT | GL.GL_STENCIL_BUFFER_BIT);
+		gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT | GL.GL_STENCIL_BUFFER_BIT);
 
-        if (!isEnabled())
-            return;
+		if (!isEnabled())
+			return;
 
-        // fetch viewport
-        int[] vp = new int[4];
-        gl.glGetIntegerv(GL.GL_VIEWPORT, vp, 0);
-        viewport = new Viewport(vp[0], vp[1], vp[2], vp[3]);
+		// fetch viewport
+		int[] vp = new int[4];
+		gl.glGetIntegerv(GL.GL_VIEWPORT, vp, 0);
+		viewport = new Viewport(vp[0], vp[1], vp[2], vp[3]);
 
-        // repaint UI surface if necessary
-        getScene().getUI().update();
+		// FIXME testing
+		// getCamera().addToRotateZ(1);
+		// System.out.println("display" + this);
 
-        // render everything
-        try {
-            getScene().getRenderer().render(gl.getGL3(), this);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+		// repaint UI surface if necessary
+		getScene().getUI().update();
 
-    @Override
-    public final void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
-        GL gl = drawable.getGL();
+		// render everything
+		try {
+			getScene().getRenderer().render(gl.getGL3(), this);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
-        if (height == 0)
-            height = 1; // prevent divide by zero
-        gl.glViewport(0, 0, width, height);
-        viewport = new Viewport(0, 0, width, height);
-        camera.refresh();
-    }
+	@Override
+	public final void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
+		GL gl = drawable.getGL();
 
-    @Override
-    public final void dispose(GLAutoDrawable drawable) {
-        // FIXME implement
-    }
+		if (height == 0)
+			height = 1; // prevent divide by zero
+		gl.glViewport(0, 0, width, height);
+		viewport = new Viewport(0, 0, width, height);
+		camera.refresh();
+	}
 
-    // key listener
+	@Override
+	public final void dispose(GLAutoDrawable drawable) {
+		// FIXME implement
+	}
 
-    @Override
-    public void keyPressed(KeyEvent e) {
-        scene.keyPressed(e, this);
-    }
+	// key listener
 
-    @Override
-    public void keyReleased(KeyEvent e) {
-        scene.keyReleased(e, this);
-    }
+	@Override
+	public void keyPressed(KeyEvent e) {
+		scene.keyPressed(e, this);
+		// TODO: should we set e to "consumed", i.e. e.setConsumed(true)?
+	}
 
-    @Override
-    public void keyTyped(KeyEvent e) {
-        scene.keyTyped(e, this);
-    }
+	@Override
+	public void keyReleased(KeyEvent e) {
+		scene.keyReleased(e, this);
+	}
 
-    // mouse listener
+	// mouse listener
 
-    @Override
-    public void mouseEntered(MouseEvent e) {
-        scene.mouseEntered(e, this);
-    }
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		scene.mouseEntered(e, this);
+	}
 
-    @Override
-    public void mouseExited(MouseEvent e) {
-        scene.mouseExited(e, this);
-    }
+	@Override
+	public void mouseExited(MouseEvent e) {
+		scene.mouseExited(e, this);
+	}
 
-    @Override
-    public void mousePressed(MouseEvent e) {
-        frame.requestFocus();
-        scene.mousePressed(e, this);
-    }
+	@Override
+	public void mousePressed(MouseEvent e) {
+		window.requestFocus();
+		scene.mousePressed(e, this);
+	}
 
-    @Override
-    public void mouseReleased(MouseEvent e) {
-        scene.mouseReleased(e, this);
-    }
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		scene.mouseReleased(e, this);
+	}
 
-    @Override
-    public void mouseClicked(MouseEvent e) {
-        scene.mouseClicked(e, this);
-    }
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		scene.mouseClicked(e, this);
+	}
 
-    // mouse motion listener
+	// mouse motion listener
 
-    @Override
-    public void mouseMoved(MouseEvent e) {
-        scene.mouseMoved(e, this);
-    }
+	@Override
+	public void mouseMoved(MouseEvent e) {
+		scene.mouseMoved(e, this);
+	}
 
-    @Override
-    public void mouseDragged(MouseEvent e) {
-        scene.mouseDragged(e, this);
-    }
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		scene.mouseDragged(e, this);
+	}
 
-    // mouse wheel listener
+	// mouse wheel listener
 
-    @Override
-    public void mouseWheelMoved(MouseWheelEvent e) {
-        scene.mouseWheelMoved(e, this);
-    }
+	@Override
+	public void mouseWheelMoved(MouseEvent e) {
+		scene.mouseWheelMoved(e, this);
+	}
 }

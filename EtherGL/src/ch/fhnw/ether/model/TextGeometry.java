@@ -42,10 +42,10 @@ import javax.media.opengl.GL;
 import ch.fhnw.ether.gl.Texture;
 import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.attribute.IArrayAttributeProvider;
+import ch.fhnw.ether.render.attribute.IAttribute;
 import ch.fhnw.ether.render.attribute.builtin.PositionArray;
 import ch.fhnw.ether.render.attribute.builtin.TexCoordArray;
 import ch.fhnw.ether.render.util.Primitives;
-import ch.fhnw.ether.render.attribute.IAttribute;
 
 public class TextGeometry implements IArrayAttributeProvider {
 	public static final Font FONT = new Font("SansSerif", Font.BOLD, 12);

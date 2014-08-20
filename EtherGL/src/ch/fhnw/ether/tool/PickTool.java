@@ -29,13 +29,14 @@
 
 package ch.fhnw.ether.tool;
 
+import java.util.Map;
+
 import ch.fhnw.ether.geom.PickUtil;
 import ch.fhnw.ether.model.IPickable;
 import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.view.IView;
 
-import java.awt.event.MouseEvent;
-import java.util.Map;
+import com.jogamp.newt.event.MouseEvent;
 
 public class PickTool extends AbstractTool {
 	public PickTool(IScene scene) {

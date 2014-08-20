@@ -27,16 +27,15 @@
  */
 package ch.fhnw.ether.examples.mapping;
 
-import java.awt.event.KeyEvent;
-
 import ch.fhnw.ether.mapping.BoxCalibrationModel;
 import ch.fhnw.ether.mapping.tool.CalibrationTool;
 import ch.fhnw.ether.mapping.tool.FillTool;
-import ch.fhnw.ether.render.forward.ForwardRenderer;
 import ch.fhnw.ether.scene.AbstractScene;
 import ch.fhnw.ether.tool.AbstractTool;
 import ch.fhnw.ether.tool.ITool;
 import ch.fhnw.ether.view.IView;
+
+import com.jogamp.newt.event.KeyEvent;
 
 // XXX light position currently not implemented
 public class MappingScene extends AbstractScene {
@@ -58,11 +57,10 @@ public class MappingScene extends AbstractScene {
 	private final CalibrationTool calibrationTool = new CalibrationTool(this, new BoxCalibrationModel(0.5f, 0.5f, 0.5f, 0.8f, 0.8f));
 	private final FillTool fillTool = new FillTool(this);
 
-	public MappingScene() {
-		super(new ForwardRenderer());
-		setLightPosition(lightPosition);
-		//setCurrentTool(defaultTool);
-	}
+    public MappingScene() {
+        setLightPosition(lightPosition);
+        //setCurrentTool(defaultTool);
+    }
 
 	public void modelChanged() {
 		repaintViews();

@@ -29,11 +29,10 @@
 
 package ch.fhnw.ether.tool;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
-
 import ch.fhnw.ether.view.IView;
+
+import com.jogamp.newt.event.KeyEvent;
+import com.jogamp.newt.event.MouseEvent;
 
 public interface ITool {
     /**
@@ -73,5 +72,5 @@ public interface ITool {
 
     // mouse wheel listener
 
-    void mouseWheelMoved(MouseWheelEvent e, IView view);
+    void mouseWheelMoved(MouseEvent e, IView view);
 }

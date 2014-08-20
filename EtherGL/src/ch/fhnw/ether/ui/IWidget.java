@@ -30,14 +30,15 @@
 package ch.fhnw.ether.ui;
 
 import java.awt.Color;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
 
 import ch.fhnw.ether.model.TextGeometry;
 import ch.fhnw.ether.view.IView;
 
+import com.jogamp.newt.event.KeyEvent;
+import com.jogamp.newt.event.MouseEvent;
+
 public interface IWidget {
-    static final Color TEXT_COLOR = Color.WHITE;
+	static final Color TEXT_COLOR = Color.WHITE;
 
     public interface IWidgetAction<T extends IWidget> {
         void execute(T widget, IView view);

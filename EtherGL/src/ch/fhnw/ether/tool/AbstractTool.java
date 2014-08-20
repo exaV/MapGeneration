@@ -29,12 +29,11 @@
 
 package ch.fhnw.ether.tool;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
-
 import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.view.IView;
+
+import com.jogamp.newt.event.KeyEvent;
+import com.jogamp.newt.event.MouseEvent;
 
 public abstract class AbstractTool implements ITool {
     public static final int SNAP_SIZE = 4;
@@ -90,7 +89,7 @@ public abstract class AbstractTool implements ITool {
     // mouse wheel listener
 
     @Override
-    public void mouseWheelMoved(MouseWheelEvent e, IView view) {
+    public void mouseWheelMoved(MouseEvent e, IView view) {
     }
 
     // TODO: get rid of this or move to PickUtil

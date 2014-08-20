@@ -29,8 +29,6 @@
 
 package ch.fhnw.ether.ui;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -40,11 +38,14 @@ import java.util.List;
 import ch.fhnw.ether.geom.RGBA;
 import ch.fhnw.ether.model.TextGeometry;
 import ch.fhnw.ether.render.IRenderable;
+import ch.fhnw.ether.render.IRenderer;
 import ch.fhnw.ether.render.shader.Triangles;
 import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.util.UpdateRequest;
-import ch.fhnw.ether.render.IRenderer;
+
+import com.jogamp.newt.event.KeyEvent;
+import com.jogamp.newt.event.MouseEvent;
 
 public final class UI {
     private final IScene scene;

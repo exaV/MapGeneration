@@ -27,10 +27,10 @@
  */
 package ch.fhnw.ether.examples.quaternion;
 
-import java.awt.event.KeyEvent;
-
 import ch.fhnw.ether.view.AbstractView;
 import ch.fhnw.ether.view.Camera;
+
+import com.jogamp.newt.event.KeyEvent;
 
 public class QuaternionView extends AbstractView {
 	public QuaternionView(QuaternionScene scene, int x, int y, int w, int h, String title) {

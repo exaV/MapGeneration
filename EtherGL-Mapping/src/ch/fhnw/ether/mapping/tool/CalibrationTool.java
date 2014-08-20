@@ -29,8 +29,6 @@
 
 package ch.fhnw.ether.mapping.tool;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -58,6 +56,9 @@ import ch.fhnw.ether.tool.AbstractTool;
 import ch.fhnw.ether.view.Camera;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.util.PreferencesStore;
+
+import com.jogamp.newt.event.KeyEvent;
+import com.jogamp.newt.event.MouseEvent;
 
 public final class CalibrationTool extends AbstractTool {
 	private static final String[] HELP = { "Calibration Tool for 3D Mapping", "", "[0] Return", "", "[C] Clear Calibration",

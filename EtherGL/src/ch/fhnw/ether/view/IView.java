@@ -29,16 +29,14 @@
 
 package ch.fhnw.ether.view;
 
-import java.awt.event.KeyListener;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseWheelListener;
-
+import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
 
-import ch.fhnw.ether.gl.Frame;
 import ch.fhnw.ether.gl.Viewport;
 import ch.fhnw.ether.scene.IScene;
+
+import com.jogamp.newt.event.KeyListener;
+import com.jogamp.newt.event.MouseListener;
 
 /**
  * A 'view' here is a view with some control functionality, i.e. it handles the
@@ -46,10 +44,12 @@ import ch.fhnw.ether.scene.IScene;
  * 
  * @author radar
  */
-public interface IView extends GLEventListener, KeyListener, MouseListener, MouseMotionListener, MouseWheelListener {
+public interface IView extends GLEventListener, MouseListener, KeyListener {
 	enum ViewType {
 		INTERACTIVE_VIEW, MAPPED_VIEW
 	}
+	
+	GLAutoDrawable getDrawable();
 
 	/**
 	 * Get the scene this view belongs to.
@@ -78,14 +78,6 @@ public interface IView extends GLEventListener, KeyListener, MouseListener, Mous
 	 * @return the view type
 	 */
 	ViewType getViewType();
-
-	/**
-	 * Get underlying Frame which allows access to native window etc. Use with
-	 * caution.
-	 * 
-	 * @return the frame
-	 */
-	Frame getFrame();
 
 	/**
 	 * Check whether view is enabled for rendering.
@@ -119,5 +111,4 @@ public interface IView extends GLEventListener, KeyListener, MouseListener, Mous
 	 * repaint. For instance, this is called when the camera changed.
 	 */
 	void refresh();
-
 }

@@ -29,21 +29,24 @@
 
 package ch.fhnw.ether.scene;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import ch.fhnw.ether.event.EventDrivenScheduler;
+import ch.fhnw.ether.event.IScheduler;
 import ch.fhnw.ether.model.IModel;
 import ch.fhnw.ether.render.IRenderer;
+import ch.fhnw.ether.render.forward.ForwardRenderer;
 import ch.fhnw.ether.tool.ITool;
 import ch.fhnw.ether.tool.NavigationTool;
 import ch.fhnw.ether.tool.PickTool;
 import ch.fhnw.ether.ui.UI;
 import ch.fhnw.ether.view.IView;
+
+import com.jogamp.newt.event.KeyEvent;
+import com.jogamp.newt.event.MouseEvent;
 
 /**
  * Abstract scene class that implements some basic common functionality. Use as
@@ -53,10 +56,12 @@ import ch.fhnw.ether.view.IView;
  */
 // TODO: PickTool doesn't really belong here (any tools at all?)
 public abstract class AbstractScene implements IScene {
-    private IModel model;
-    private final ArrayList<IView> views = new ArrayList<>();
+    private final IScheduler scheduler;
     private final IRenderer renderer;
     
+    private IModel model;
+
+    private final ArrayList<IView> views = new ArrayList<>();
     private final UI ui;
 
     private final NavigationTool navigationTool;
@@ -65,8 +70,12 @@ public abstract class AbstractScene implements IScene {
     private IView currentView;
     private ITool activeTool;
 
+    protected AbstractScene() {
+    	this(new EventDrivenScheduler(), new ForwardRenderer());
+    }
 
-    protected AbstractScene(IRenderer renderer) {
+    protected AbstractScene(IScheduler scheduler, IRenderer renderer) {
+    	this.scheduler = scheduler;
         this.renderer = renderer;
         this.ui = new UI(this);
         this.navigationTool = new NavigationTool(this);
@@ -90,6 +99,10 @@ public abstract class AbstractScene implements IScene {
         views.add(view);
         if (currentView == null)
             currentView = view;
+        
+        scheduler.addDrawable(view.getDrawable());
+        
+        view.repaint();
     }
 
     @Override
@@ -116,9 +129,13 @@ public abstract class AbstractScene implements IScene {
     }
 
     @Override
+    public final void repaintView(IView view) {
+    	repaintViews();
+    }
+
+    @Override
     public final void repaintViews() {
-        for (IView view : views)
-            view.repaint();
+    	scheduler.requestUpdate(null);
     }
 
     @Override
@@ -177,10 +194,6 @@ public abstract class AbstractScene implements IScene {
 
     @Override
     public void keyReleased(KeyEvent e, IView view) {
-    }
-
-    @Override
-    public void keyTyped(KeyEvent e, IView view) {
     }
 
     // mouse listener
@@ -249,7 +262,7 @@ public abstract class AbstractScene implements IScene {
     // mouse wheel listener
 
     @Override
-    public void mouseWheelMoved(MouseWheelEvent e, IView view) {
+    public void mouseWheelMoved(MouseEvent e, IView view) {
         navigationTool.mouseWheelMoved(e, view);
     }
 

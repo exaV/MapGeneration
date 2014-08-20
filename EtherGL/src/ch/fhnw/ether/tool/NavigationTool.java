@@ -29,8 +29,6 @@
 
 package ch.fhnw.ether.tool;
 
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,11 +36,13 @@ import ch.fhnw.ether.geom.RGBA;
 import ch.fhnw.ether.geom.Vec3;
 import ch.fhnw.ether.model.GenericMesh;
 import ch.fhnw.ether.render.IRenderable;
+import ch.fhnw.ether.render.IRenderer;
 import ch.fhnw.ether.render.shader.Lines;
 import ch.fhnw.ether.render.util.Primitives;
 import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.view.IView;
-import ch.fhnw.ether.render.IRenderer;
+
+import com.jogamp.newt.event.MouseEvent;
 
 public class NavigationTool extends AbstractTool {
 	public static final RGBA GRID_COLOR = RGBA.GRAY;
@@ -97,8 +97,9 @@ public class NavigationTool extends AbstractTool {
 	}
 
 	@Override
-	public void mouseWheelMoved(MouseWheelEvent e, IView view) {
-		view.getCamera().addToDistance(0.25f * e.getWheelRotation());
+	public void mouseWheelMoved(MouseEvent e, IView view) {
+		view.getCamera().addToTranslateX(e.getRotation()[0]);
+		view.getCamera().addToDistance(-0.125f * e.getRotation()[1]);
 	}
 
 	private static GenericMesh makeGrid() {

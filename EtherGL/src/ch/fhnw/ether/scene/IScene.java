@@ -29,9 +29,6 @@
 
 package ch.fhnw.ether.scene;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
 import java.util.Collection;
 import java.util.List;
 
@@ -42,9 +39,12 @@ import ch.fhnw.ether.tool.NavigationTool;
 import ch.fhnw.ether.ui.UI;
 import ch.fhnw.ether.view.IView;
 
+import com.jogamp.newt.event.KeyEvent;
+import com.jogamp.newt.event.MouseEvent;
+
 /**
- * A 'scene' is the controller that coordinates both model and associated views.
- * It also handles the relevant events coming from individual views.
+ * A 'scene' is the controller that coordinates both model and associated views. It also handles the relevant events
+ * coming from individual views.
  *
  * @author radar
  */
@@ -57,9 +57,8 @@ public interface IScene {
 	IModel getModel();
 
 	/**
-	 * Set the scene's model. This effectively unhooks the current model from
-	 * the scene and replaces it with the new one. If a scene implementation
-	 * does not implement such behavior it will throw an
+	 * Set the scene's model. This effectively unhooks the current model from the scene and replaces it with the new
+	 * one. If a scene implementation does not implement such behavior it will throw an
 	 * {@link java.lang.UnsupportedOperationException}.
 	 *
 	 * @param model
@@ -93,13 +92,17 @@ public interface IScene {
 	 * Enable a list of views for rendering.
 	 *
 	 * @param views
-	 *            list of views to be enabled for rendering or NULL to enable
-	 *            all views
+	 *            list of views to be enabled for rendering or NULL to enable all views
 	 */
 	void enableViews(Collection<IView> views);
 
 	/**
-	 * Repaint all views.
+	 * Request specific view to repaint.
+	 */
+	void repaintView(IView view);
+
+	/**
+	 * Request all views to repaint.
 	 */
 	void repaintViews();
 
@@ -145,8 +148,6 @@ public interface IScene {
 
 	void keyReleased(KeyEvent e, IView view);
 
-	void keyTyped(KeyEvent e, IView view);
-
 	// mouse listener
 
 	void mouseEntered(MouseEvent e, IView view);
@@ -167,5 +168,5 @@ public interface IScene {
 
 	// mouse wheel listener
 
-	void mouseWheelMoved(MouseWheelEvent e, IView view);
+	void mouseWheelMoved(MouseEvent e, IView view);
 }

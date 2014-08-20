@@ -33,7 +33,6 @@ import java.awt.event.KeyEvent;
 
 import ch.fhnw.ether.examples.metrobuzz.model.Model;
 import ch.fhnw.ether.examples.metrobuzz.tool.AreaTool;
-import ch.fhnw.ether.render.forward.ForwardRenderer;
 import ch.fhnw.ether.scene.AbstractScene;
 import ch.fhnw.ether.tool.ITool;
 import ch.fhnw.ether.ui.Button;
@@ -43,7 +42,6 @@ public class Scene extends AbstractScene {
 	private final ITool areaTool = new AreaTool(this);
     
     public Scene() {
-        super(new ForwardRenderer());
         addUI();
     }
 

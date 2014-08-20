@@ -27,12 +27,11 @@
  */
 package ch.fhnw.ether.examples.quaternion;
 
-import java.awt.event.KeyEvent;
-
 import ch.fhnw.ether.formats.StaticModel;
-import ch.fhnw.ether.render.forward.ForwardRenderer;
 import ch.fhnw.ether.scene.AbstractScene;
 import ch.fhnw.ether.view.IView;
+
+import com.jogamp.newt.event.KeyEvent;
 
 public class QuaternionScene extends AbstractScene {
 	private static final String[] HELP  = {
@@ -44,7 +43,6 @@ public class QuaternionScene extends AbstractScene {
 	};
 
 	public QuaternionScene() {
-		super(new ForwardRenderer());
 	}
 
 	public void modelChanged() {
