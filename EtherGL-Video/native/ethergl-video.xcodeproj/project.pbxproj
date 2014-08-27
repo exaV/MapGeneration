@@ -7,10 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0C75AA5419ADD88B002BFAE9 /* ch_fhnw_ether_video_avfoundation_AVAsset.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C75AA5319ADD88B002BFAE9 /* ch_fhnw_ether_video_avfoundation_AVAsset.h */; };
 		0C7749D0195FFE0E0030CB55 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C7749CF195FFE0E0030CB55 /* Cocoa.framework */; };
 		0C7749DA195FFE0E0030CB55 /* ethergl_video.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0C7749D9195FFE0E0030CB55 /* ethergl_video.mm */; };
 		0C7749FD196002F00030CB55 /* JavaVM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C7749FC196002F00030CB55 /* JavaVM.framework */; };
-		0C774A01196010040030CB55 /* ch_ethz_ether_video_avfoundation_AVAsset.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C774A00196010040030CB55 /* ch_ethz_ether_video_avfoundation_AVAsset.h */; };
 		0C774A031960193D0030CB55 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C774A021960193D0030CB55 /* AVFoundation.framework */; };
 		0C774A051960199C0030CB55 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C774A041960199C0030CB55 /* CoreVideo.framework */; };
 		0C774A0719601C7F0030CB55 /* JavaNativeFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C774A0619601C7F0030CB55 /* JavaNativeFoundation.framework */; };
@@ -18,6 +18,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0C75AA5319ADD88B002BFAE9 /* ch_fhnw_ether_video_avfoundation_AVAsset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ch_fhnw_ether_video_avfoundation_AVAsset.h; sourceTree = "<group>"; };
 		0C7749CF195FFE0E0030CB55 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		0C7749D2195FFE0E0030CB55 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		0C7749D3195FFE0E0030CB55 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
@@ -27,7 +28,6 @@
 		0C7749D9195FFE0E0030CB55 /* ethergl_video.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ethergl_video.mm; sourceTree = "<group>"; };
 		0C7749F6195FFFEB0030CB55 /* libetherglvideo.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libetherglvideo.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		0C7749FC196002F00030CB55 /* JavaVM.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaVM.framework; path = System/Library/Frameworks/JavaVM.framework; sourceTree = SDKROOT; };
-		0C774A00196010040030CB55 /* ch_ethz_ether_video_avfoundation_AVAsset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ch_ethz_ether_video_avfoundation_AVAsset.h; sourceTree = "<group>"; };
 		0C774A021960193D0030CB55 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		0C774A041960199C0030CB55 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		0C774A0619601C7F0030CB55 /* JavaNativeFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaNativeFoundation.framework; path = ../../../../../../../System/Library/Frameworks/JavaVM.framework/Versions/A/Frameworks/JavaNativeFoundation.framework; sourceTree = "<group>"; };
@@ -90,7 +90,7 @@
 				0C7749D8195FFE0E0030CB55 /* ethergl_video.h */,
 				0C7749D9195FFE0E0030CB55 /* ethergl_video.mm */,
 				0C7749D7195FFE0E0030CB55 /* ethergl-video-Prefix.pch */,
-				0C774A00196010040030CB55 /* ch_ethz_ether_video_avfoundation_AVAsset.h */,
+				0C75AA5319ADD88B002BFAE9 /* ch_fhnw_ether_video_avfoundation_AVAsset.h */,
 			);
 			path = "ethergl-video";
 			sourceTree = "<group>";
@@ -110,7 +110,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0C774A01196010040030CB55 /* ch_ethz_ether_video_avfoundation_AVAsset.h in Headers */,
+				0C75AA5419ADD88B002BFAE9 /* ch_fhnw_ether_video_avfoundation_AVAsset.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -174,7 +174,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "echo $SRCROOT\njavah -classpath $SRCROOT/../src -d $SRCROOT/ethergl-video ch.ethz.ether.video.avfoundation.AVAsset";
+			shellScript = "echo $SRCROOT\njavah -classpath $SRCROOT/../src -d $SRCROOT/ethergl-video ch.fhnw.ether.video.avfoundation.AVAsset";
 		};
 		0C7749FF196003C30030CB55 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -286,6 +286,7 @@
 		0C7749F1195FFE0E0030CB55 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_ENABLE_OBJC_ARC = NO;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -293,6 +294,7 @@
 					"$(inherited)",
 					"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks",
 				);
+				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "ethergl-video/ethergl-video-Prefix.pch";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -302,6 +304,7 @@
 		0C7749F2195FFE0E0030CB55 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_ENABLE_OBJC_ARC = NO;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;

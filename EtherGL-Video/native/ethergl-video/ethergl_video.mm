@@ -15,11 +15,11 @@
 
 #import "ethergl_video.h"
 
-//#define MSG(a) printf(a); fflush(0);
 #define MSG(...) { printf(__VA_ARGS__); fflush(stdout); }
 
 class AVAssetWrapper {
 private:
+    std::string url;
     AVAssetReader* reader;
     AVAssetImageGenerator* generator;
     
@@ -28,8 +28,41 @@ private:
     CGSize size;
     
 public:
-    AVAssetWrapper(std::string url) {
-        printf("create asset: %s\n", url.c_str());
+    AVAssetWrapper(std::string url) : url(url), reader(nullptr), generator(nullptr) {
+        rewind();
+        MSG("avfoundation asset: %s: duration=%f framerate=%f size=%dx%d\n", url.c_str(), duration, frameRate, (int)size.width, (int)size.height);
+    }
+    
+    ~AVAssetWrapper() {
+        [reader release];
+        [generator release];
+    }
+    
+    double getDuration() {
+        return duration;
+    }
+    
+    double getFrameRate() {
+        return frameRate;
+    }
+    
+    int getFrameCount() {
+        return duration * frameRate;
+    }
+    
+    int getWidth() {
+        return size.width;
+    }
+    
+    int getHeight() {
+        return size.height;
+    }
+
+    void rewind() {
+        if (reader != nullptr) {
+            [reader release];
+            [generator release];
+        }
         
 		NSURL* nsUrl = [NSURL URLWithString:[NSString stringWithCString:url.c_str() encoding:NSUTF8StringEncoding]];
 		if (!nsUrl) {
@@ -78,21 +111,9 @@ public:
         
         // create generator (for random access)
         generator = [[AVAssetImageGenerator alloc] initWithAsset:asset];
-        
-        
-        MSG("create asset: %s: duration=%f framerate=%f size=%dx%d\n", url.c_str(), duration, frameRate, (int)size.width, (int)size.height);
     }
     
-    ~AVAssetWrapper() {
-        [reader release];
-        [generator release];
-    }
-    
-    void rewind() {
-        // TODO: need to recreate everything, the reader doesn't support seeking/restarting
-    }
-    
-    jintArray getFrame(JNIEnv* env, double time) {
+    jbyteArray getFrame(JNIEnv* env, double time) {
         CMTime cmtime = CMTimeMakeWithSeconds(time, 600);
         
         CMTime actualTime;
@@ -103,24 +124,40 @@ public:
             return nullptr;
 
         NSData* data = (NSData*)CGDataProviderCopyData(CGImageGetDataProvider(image));
-        uint32_t* src = (uint32_t*)[data bytes];
-        size_t length = [data length]/4;
+
+        int width = (int)CGImageGetWidth(image);
+        int height = (int)CGImageGetHeight(image);
+        int bytesPerRow = (int)CGImageGetBytesPerRow(image);
+        int skip = bytesPerRow - width * 4;
+        int length = width * height * 4;
+        MSG("w=%d h=%d bpr=%d skip=%d length=%d\n", width, height, bytesPerRow, skip, length);
         
-        jintArray array = env->NewIntArray((int)length);
-        uint32_t* dst = (uint32_t*)env->GetIntArrayElements(array, nullptr);
-        
-        for (int i = 0; i < length; ++i) {
-            dst[i] = convertBGRAToARGB(src[i]);
+        jbyteArray array = env->NewByteArray(length);
+        uint8_t* arrayElements = (uint8_t*)env->GetByteArrayElements(array, nullptr);
+        uint8_t* src = (uint8_t*)[data bytes];
+        uint8_t* dst = arrayElements;
+        for (int y = 0; y < height; ++y) {
+            for (int x = 0; x < width; ++x) {
+                uint8_t a = *src++;
+                uint8_t r = *src++;
+                uint8_t g = *src++;
+                uint8_t b = *src++;
+                *dst++ = r;
+                *dst++ = g;
+                *dst++ = b;
+                *dst++ = a;
+            }
+            src += skip;
         }
-        
-        env->ReleaseIntArrayElements(array, (int*)dst, 0);
-        
+        env->ReleaseByteArrayElements(array, (jbyte*)arrayElements, 0);
+
+        [data release];
         CGImageRelease(image);
         
         return array;
     }
 
-    jintArray getNextFrame(JNIEnv* env) {
+    jbyteArray getNextFrame(JNIEnv* env) {
         if ([reader status] != AVAssetReaderStatusReading) {
             MSG("get next frame: reached end of movie\n");
             return nullptr;
@@ -129,70 +166,71 @@ public:
         AVAssetReaderTrackOutput* output = [reader.outputs objectAtIndex:0];
         CMSampleBufferRef sampleBuffer = [output copyNextSampleBuffer];
         if (!sampleBuffer) {
-            MSG("getnextframe: could not copy sample buffer\n");
+            MSG("get next frame: could not copy sample buffer\n");
             return nullptr;
         }
         
         CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
         
-        // Lock the image buffer
+        // lock the image buffer
         CVPixelBufferLockBaseAddress(imageBuffer, 0);
         
-        // Get information of the image
-        size_t width = CVPixelBufferGetWidth(imageBuffer);
-        size_t height = CVPixelBufferGetHeight(imageBuffer);
-        size_t length = width * height;
-        uint32_t* src = (uint32_t*)CVPixelBufferGetBaseAddress(imageBuffer);
-    
-        // Copy image to java int array
-        jintArray array = env->NewIntArray((int)length);
-        env->SetIntArrayRegion(array, 0, (int)length, (int*)src);
+        // XXX: note if movie width cannot be divided by 4 it seems the movie is scaled up to the next width that can
+        // i.e. if you open a move with 1278 pixels with, here, the imageBuffer will have a with of 1280. this of course
+        // screws up our interface further up a bit, which relies on movie.getWidth ... thus we for now just ignore the scaling.
+        //int width = (int)CVPixelBufferGetWidth(imageBuffer);
+        //int height = (int)CVPixelBufferGetHeight(imageBuffer);
+        int width = getWidth();
+        int height = getHeight();
+        int bytesPerRow = (int)CVPixelBufferGetBytesPerRow(imageBuffer);
+        int skip = bytesPerRow - width * 4;
+        int length = width * height * 4;
+        MSG("w=%d h=%d bpr=%d skip=%d length=%d\n", width, height, bytesPerRow, skip, length);
+
+        jbyteArray array = env->NewByteArray((int)length);
+        uint8_t* arrayElements = (uint8_t*)env->GetByteArrayElements(array, nullptr);
+        uint8_t* src = (uint8_t*)CVPixelBufferGetBaseAddress(imageBuffer);
+        uint8_t* dst = arrayElements;
+        for (int y = 0; y < height; ++y) {
+            for (int x = 0; x < width; ++x) {
+                uint8_t b = *src++;
+                uint8_t g = *src++;
+                uint8_t r = *src++;
+                uint8_t a = *src++;
+                *dst++ = r;
+                *dst++ = g;
+                *dst++ = b;
+                *dst++ = a;
+            }
+            src += skip;
+        }
+        env->ReleaseByteArrayElements(array, (jbyte*)arrayElements, 0);
         
-        // Unlock the image buffer & cleanup
+        // unlock the image buffer & cleanup
         CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
         CFRelease(sampleBuffer);
         
         return array;
     }
-
-    int getWidth() {
-        return size.width;
+    
+    int loadFrame(double time, int textureId) {
+        // XXX currently unimplemented
+        return -1;
     }
     
-    int getHeight() {
-        return size.height;
-    }
-    
-    double getDuration() {
-        return duration;
-    }
-    
-    double getFrameRate() {
-        return frameRate;
-    }
-
-    int getFrameCount() {
-        return duration * frameRate;
-    }
-
-private:
-    inline uint32_t convertBGRAToARGB(uint32_t i) {
-        // BGRA -> ARGB
-        uint32_t b = i & 0xff000000;
-        uint32_t g = i & 0x00ff0000;
-        uint32_t r = i & 0x0000ff00;
-        uint32_t a = i & 0x000000ff;
-        return a << 24 | r << 8 | g >> 8 | b >> 24;
+    int loadFrames(int numFrames, int textureId) {
+        // XXX currently unimplemented
+        return -1;
     }
 };
 
 
 /*
- * Class:     ch_ethz_ether_video_avfoundation_AVAsset
+ * Class:     ch_fhnw_ether_video_avfoundation_AVAsset
  * Method:    nativeCreate
  * Signature: (Ljava/lang/String;)J
  */
-JNIEXPORT jlong JNICALL Java_ch_ethz_ether_video_avfoundation_AVAsset_nativeCreate
+JNIEXPORT jlong JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeCreate
 (JNIEnv * env, jobject, jstring javaURL) {
     JNF_COCOA_ENTER(env);
     
@@ -213,11 +251,11 @@ JNIEXPORT jlong JNICALL Java_ch_ethz_ether_video_avfoundation_AVAsset_nativeCrea
 }
 
 /*
- * Class:     ch_ethz_ether_video_avfoundation_AVAsset
+ * Class:     ch_fhnw_ether_video_avfoundation_AVAsset
  * Method:    nativeDispose
  * Signature: (J)V
  */
-JNIEXPORT void JNICALL Java_ch_ethz_ether_video_avfoundation_AVAsset_nativeDispose
+JNIEXPORT void JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeDispose
 (JNIEnv * env, jobject, jlong nativeHandle) {
     JNF_COCOA_ENTER(env);
     
@@ -226,12 +264,83 @@ JNIEXPORT void JNICALL Java_ch_ethz_ether_video_avfoundation_AVAsset_nativeDispo
     JNF_COCOA_EXIT(env);
 }
 
+
 /*
- * Class:     ch_ethz_ether_video_avfoundation_AVAsset
+ * Class:     ch_fhnw_ether_video_avfoundation_AVAsset
+ * Method:    nativeGetDuration
+ * Signature: (J)D
+ */
+JNIEXPORT jdouble JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGetDuration
+(JNIEnv * env, jobject, jlong nativeHandle) {
+    JNF_COCOA_ENTER(env);
+    
+    return ((AVAssetWrapper*)nativeHandle)->getDuration();
+    
+    JNF_COCOA_EXIT(env);
+}
+
+/*
+ * Class:     ch_fhnw_ether_video_avfoundation_AVAsset
+ * Method:    nativeGetFrameRate
+ * Signature: (J)D
+ */
+JNIEXPORT jdouble JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGetFrameRate
+(JNIEnv * env, jobject, jlong nativeHandle) {
+    JNF_COCOA_ENTER(env);
+    
+    return ((AVAssetWrapper*)nativeHandle)->getFrameRate();
+    
+    JNF_COCOA_EXIT(env);
+}
+
+/*
+ * Class:     ch_fhnw_ether_video_avfoundation_AVAsset
+ * Method:    nativeGetFrameCount
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGetFrameCount
+(JNIEnv * env, jobject, jlong nativeHandle) {
+    JNF_COCOA_ENTER(env);
+    
+    return ((AVAssetWrapper*)nativeHandle)->getFrameCount();
+    
+    JNF_COCOA_EXIT(env);
+}
+
+/*
+ * Class:     ch_fhnw_ether_video_avfoundation_AVAsset
+ * Method:    nativeGetWidth
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGetWidth
+(JNIEnv * env, jobject, jlong nativeHandle) {
+    JNF_COCOA_ENTER(env);
+    
+    return ((AVAssetWrapper*)nativeHandle)->getWidth();
+    
+    JNF_COCOA_EXIT(env);
+}
+
+/*
+ * Class:     ch_fhnw_ether_video_avfoundation_AVAsset
+ * Method:    nativeGetHeight
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGetHeight
+(JNIEnv * env, jobject, jlong nativeHandle) {
+    JNF_COCOA_ENTER(env);
+    
+    return ((AVAssetWrapper*)nativeHandle)->getHeight();
+    
+    JNF_COCOA_EXIT(env);
+}
+
+/*
+ * Class:     ch_fhnw_ether_video_avfoundation_AVAsset
  * Method:    nativeRewind
  * Signature: (J)V
  */
-JNIEXPORT void JNICALL Java_ch_ethz_ether_video_avfoundation_AVAsset_nativeRewind
+JNIEXPORT void JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeRewind
 (JNIEnv * env, jobject, jlong nativeHandle) {
     JNF_COCOA_ENTER(env);
 
@@ -241,11 +350,11 @@ JNIEXPORT void JNICALL Java_ch_ethz_ether_video_avfoundation_AVAsset_nativeRewin
 }
 
 /*
- * Class:     ch_ethz_ether_video_avfoundation_AVAsset
+ * Class:     ch_fhnw_ether_video_avfoundation_AVAsset
  * Method:    nativeGetFrame
  * Signature: (J)[B
  */
-JNIEXPORT jintArray JNICALL Java_ch_ethz_ether_video_avfoundation_AVAsset_nativeGetFrame
+JNIEXPORT jbyteArray JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGetFrame
 (JNIEnv * env, jobject, jlong nativeHandle, jdouble time) {
     JNF_COCOA_ENTER(env);
 
@@ -255,11 +364,11 @@ JNIEXPORT jintArray JNICALL Java_ch_ethz_ether_video_avfoundation_AVAsset_native
 }
 
 /*
- * Class:     ch_ethz_ether_video_avfoundation_AVAsset
+ * Class:     ch_fhnw_ether_video_avfoundation_AVAsset
  * Method:    nativeGetNextFrame
  * Signature: (J)[B
  */
-JNIEXPORT jintArray JNICALL Java_ch_ethz_ether_video_avfoundation_AVAsset_nativeGetNextFrame
+JNIEXPORT jbyteArray JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGetNextFrame
 (JNIEnv * env, jobject, jlong nativeHandle) {
     JNF_COCOA_ENTER(env);
 
@@ -269,71 +378,29 @@ JNIEXPORT jintArray JNICALL Java_ch_ethz_ether_video_avfoundation_AVAsset_native
 }
 
 /*
- * Class:     ch_ethz_ether_video_avfoundation_AVAsset
- * Method:    nativeGetWidth
- * Signature: (J)I
+ * Class:     ch_fhnw_ether_video_avfoundation_AVAsset
+ * Method:    nativeLoadFrame
+ * Signature: (JDI)I
  */
-JNIEXPORT jint JNICALL Java_ch_ethz_ether_video_avfoundation_AVAsset_nativeGetWidth
-(JNIEnv * env, jobject, jlong nativeHandle) {
+JNIEXPORT jint JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeLoadFrame
+(JNIEnv * env, jobject, jlong nativeHandle, jdouble time, jint textureId) {
     JNF_COCOA_ENTER(env);
-
-    return ((AVAssetWrapper*)nativeHandle)->getWidth();
+    
+    return ((AVAssetWrapper*)nativeHandle)->loadFrame(time, textureId);
     
     JNF_COCOA_EXIT(env);
 }
 
 /*
- * Class:     ch_ethz_ether_video_avfoundation_AVAsset
- * Method:    nativeGetHeight
- * Signature: (J)I
+ * Class:     ch_fhnw_ether_video_avfoundation_AVAsset
+ * Method:    nativeLoadFrames
+ * Signature: (JII)I
  */
-JNIEXPORT jint JNICALL Java_ch_ethz_ether_video_avfoundation_AVAsset_nativeGetHeight
-(JNIEnv * env, jobject, jlong nativeHandle) {
+JNIEXPORT jint JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeLoadFrames
+(JNIEnv * env, jobject, jlong nativeHandle, jint numFrames, jint textureId) {
     JNF_COCOA_ENTER(env);
-
-    return ((AVAssetWrapper*)nativeHandle)->getHeight();
     
-    JNF_COCOA_EXIT(env);
-}
-
-/*
- * Class:     ch_ethz_ether_video_avfoundation_AVAsset
- * Method:    nativeGetDuration
- * Signature: (J)D
- */
-JNIEXPORT jdouble JNICALL Java_ch_ethz_ether_video_avfoundation_AVAsset_nativeGetDuration
-(JNIEnv * env, jobject, jlong nativeHandle) {
-    JNF_COCOA_ENTER(env);
-
-    return ((AVAssetWrapper*)nativeHandle)->getDuration();
-    
-    JNF_COCOA_EXIT(env);
-}
-
-/*
- * Class:     ch_ethz_ether_video_avfoundation_AVAsset
- * Method:    nativeGetFrameRate
- * Signature: (J)D
- */
-JNIEXPORT jdouble JNICALL Java_ch_ethz_ether_video_avfoundation_AVAsset_nativeGetFrameRate
-(JNIEnv * env, jobject, jlong nativeHandle) {
-    JNF_COCOA_ENTER(env);
-
-    return ((AVAssetWrapper*)nativeHandle)->getFrameRate();
-    
-    JNF_COCOA_EXIT(env);
-}
-
-/*
- * Class:     ch_ethz_ether_video_avfoundation_AVAsset
- * Method:    nativeGetFrameCount
- * Signature: (J)I
- */
-JNIEXPORT jint JNICALL Java_ch_ethz_ether_video_avfoundation_AVAsset_nativeGetFrameCount
-(JNIEnv * env, jobject, jlong nativeHandle) {
-    JNF_COCOA_ENTER(env);
-
-    return ((AVAssetWrapper*)nativeHandle)->getFrameCount();
+    return ((AVAssetWrapper*)nativeHandle)->loadFrames(numFrames, textureId);
     
     JNF_COCOA_EXIT(env);
 }

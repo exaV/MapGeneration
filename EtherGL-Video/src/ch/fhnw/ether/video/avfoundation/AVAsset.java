@@ -30,7 +30,6 @@
 package ch.fhnw.ether.video.avfoundation;
 
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferInt;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -38,75 +37,112 @@ import java.net.URL;
 import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
 
-public class AVAsset {
+import ch.fhnw.ether.video.Frame;
+import ch.fhnw.ether.video.IVideoTrack;
+import ch.fhnw.ether.video.RGBA8Frame;
+
+public class AVAsset implements IVideoTrack {
 	static {
-		// System.out.println(System.getProperty("java.library.path"));
 		System.loadLibrary("etherglvideo");
 	}
 
 	private long nativeHandle;
 
+	private double duration;
+	private double frameRate;
+	private int frameCount;
+	private int width;
+	private int height;
+
 	public AVAsset(URL url) {
 		nativeHandle = nativeCreate(url.toString());
 		if (nativeHandle == 0)
 			throw new IllegalArgumentException("cannot create avasset from " + url);
+		duration = nativeGetDuration(nativeHandle);
+		frameRate = nativeGetFrameRate(nativeHandle);
+		frameCount = nativeGetFrameCount(nativeHandle);
+		width = nativeGetWidth(nativeHandle);
+		height = nativeGetHeight(nativeHandle);
 	}
 
+	@Override
 	public void dispose() {
 		nativeDispose(nativeHandle);
 	}
 
+	@Override
+	public double getDuration() {
+		return duration;
+	}
+
+	@Override
+	public double getFrameRate() {
+		return frameRate;
+	}
+
+	@Override
+	public int getFrameCount() {
+		return frameCount;
+	}
+
+	@Override
+	public int getWidth() {
+		return width;
+	}
+
+	@Override
+	public int getHeight() {
+		return height;
+	}
+
+	@Override
 	public void rewind() {
 		nativeRewind(nativeHandle);
 	}
 
-	public int[] getFrame(double time) {
-		return nativeGetFrame(nativeHandle, time);
+	@Override
+	public Frame getFrame(double time) {
+		return new RGBA8Frame(getWidth(), getHeight(), 1, nativeGetFrame(nativeHandle, time));
 	}
 
-	public int[] getNextFrame() {
-		return nativeGetNextFrame(nativeHandle);
+	@Override
+	public Frame getNextFrame() {
+		return new RGBA8Frame(getWidth(), getHeight(), 1, nativeGetNextFrame(nativeHandle));
 	}
 
-	public int getWidth() {
-		return nativeGetWidth(nativeHandle);
+	@Override
+	public void loadFrame(double time, int textureId) {
+		nativeLoadFrame(nativeHandle, time, textureId);
 	}
 
-	public int getHeight() {
-		return nativeGetHeight(nativeHandle);
-	}
-
-	public double getDuration() {
-		return nativeGetDuration(nativeHandle);
-	}
-
-	public double getFrameRate() {
-		return nativeGetFrameRate(nativeHandle);
-	}
-
-	public int getFrameCount() {
-		return nativeGetFrameCount(nativeHandle);
+	@Override
+	public void loadFrames(int numFrames, int textureId) {
+		nativeLoadFrames(nativeHandle, numFrames, textureId);
 	}
 
 	private native long nativeCreate(String url);
 
 	private native void nativeDispose(long nativeHandle);
 
-	private native void nativeRewind(long nativeHandle);
-
-	private native int[] nativeGetFrame(long nativeHandle, double time);
-
-	private native int[] nativeGetNextFrame(long nativeHandle);
-
-	private native int nativeGetWidth(long nativeHandle);
-
-	private native int nativeGetHeight(long nativeHandle);
-
 	private native double nativeGetDuration(long nativeHandle);
 
 	private native double nativeGetFrameRate(long nativeHandle);
 
 	private native int nativeGetFrameCount(long nativeHandle);
+
+	private native int nativeGetWidth(long nativeHandle);
+
+	private native int nativeGetHeight(long nativeHandle);
+
+	private native void nativeRewind(long nativeHandle);
+
+	private native byte[] nativeGetFrame(long nativeHandle, double time);
+
+	private native byte[] nativeGetNextFrame(long nativeHandle);
+
+	private native int nativeLoadFrame(long nativeHandle, double time, int textureId);
+
+	private native int nativeLoadFrames(long nativeHandle, int numFrames, int textureId);
 
 	public static void main(String[] args) {
 		// Make sure everything runs on GUI thread...
@@ -120,25 +156,29 @@ public class AVAsset {
 
 	public AVAsset(String[] args) {
 		try {
-			AVAsset asset = new AVAsset(new URL("file:///Users/radar/Desktop/movies/calvary_(2014).mp4"));
-			int[] image = asset.getFrame(300.0);
-			System.out.println(image.length + " " + asset.getWidth() + " " + asset.getHeight());
+			AVAsset asset = new AVAsset(new URL("file:///Users/radar/Desktop/movies/hot_chip-flutes_(sacha_remix).mp4"));
+			System.out.println("Asset: " + asset.getWidth() + " " + asset.getHeight());
+			Frame frame = asset.getFrame(2.0);
 
-			/*
-			 * for (int i = 0; i < 600; ++i) { image = asset.getNextFrame();
-			 * System.out.println(i + " " + image.length); }
-			 */
+			BufferedImage image = frame.toBufferedImage();
 
-			BufferedImage bi = new BufferedImage(asset.getWidth(), asset.getHeight(), BufferedImage.TYPE_INT_ARGB);
-			int[] imgData = ((DataBufferInt) bi.getRaster().getDataBuffer()).getData();
-			System.arraycopy(image, 0, imgData, 0, image.length);
+			System.out.println("Image: " + image.getWidth() + " " + image.getHeight());
+
+			for (int i = 0; i < 600; ++i) {
+				frame = asset.getNextFrame();
+			}
+			
+			image = frame.toBufferedImage();
+
+			System.out.println("Image: " + image.getWidth() + " " + image.getHeight());
 
 			try {
 				File outputfile = new File("/Users/radar/Desktop/saved.png");
-				ImageIO.write(bi, "png", outputfile);
+				ImageIO.write(image, "png", outputfile);
 			} catch (IOException e) {
 			}
 			asset.dispose();
+			System.out.println("Done");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

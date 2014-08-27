@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Corebounce Association. All rights reserved.
 //
 
-#include "ch_ethz_ether_video_avfoundation_AVAsset.h"
+#include "ch_fhnw_ether_video_avfoundation_AVAsset.h"
 
 #import <Foundation/Foundation.h>
 
