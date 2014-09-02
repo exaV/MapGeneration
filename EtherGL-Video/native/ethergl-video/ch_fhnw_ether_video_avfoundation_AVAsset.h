@@ -42,9 +42,9 @@ JNIEXPORT jdouble JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGe
 /*
  * Class:     ch_fhnw_ether_video_avfoundation_AVAsset
  * Method:    nativeGetFrameCount
- * Signature: (J)I
+ * Signature: (J)J
  */
-JNIEXPORT jint JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGetFrameCount
+JNIEXPORT jlong JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGetFrameCount
   (JNIEnv *, jobject, jlong);
 
 /*

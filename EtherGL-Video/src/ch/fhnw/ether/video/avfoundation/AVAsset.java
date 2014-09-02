@@ -29,32 +29,40 @@
 
 package ch.fhnw.ether.video.avfoundation;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 
-import javax.imageio.ImageIO;
-import javax.swing.SwingUtilities;
+import ch.fhnw.ether.image.Frame;
+import ch.fhnw.ether.image.RGBA8Frame;
+import ch.fhnw.ether.video.IRandomAccessVideoTrack;
+import ch.fhnw.ether.video.ISequentialVideoTrack;
 
-import ch.fhnw.ether.video.Frame;
-import ch.fhnw.ether.video.IVideoTrack;
-import ch.fhnw.ether.video.RGBA8Frame;
+public final class AVAsset implements ISequentialVideoTrack, IRandomAccessVideoTrack {
+	private static boolean READY = true;
 
-public class AVAsset implements IVideoTrack {
 	static {
-		System.loadLibrary("etherglvideo");
+		try {
+			System.loadLibrary("etherglvideo");
+		} catch (Exception e) {
+			READY = false;
+		}
 	}
+	
+	public static boolean isReady() {
+		return READY;
+	}
+	
+	private URL url;
 
 	private long nativeHandle;
 
 	private double duration;
 	private double frameRate;
-	private int frameCount;
+	private long frameCount;
 	private int width;
 	private int height;
 
 	public AVAsset(URL url) {
+		this.url = url;
 		nativeHandle = nativeCreate(url.toString());
 		if (nativeHandle == 0)
 			throw new IllegalArgumentException("cannot create avasset from " + url);
@@ -69,6 +77,11 @@ public class AVAsset implements IVideoTrack {
 	public void dispose() {
 		nativeDispose(nativeHandle);
 	}
+	
+	@Override
+	public URL getURL() {
+		return url;
+	}
 
 	@Override
 	public double getDuration() {
@@ -81,7 +94,7 @@ public class AVAsset implements IVideoTrack {
 	}
 
 	@Override
-	public int getFrameCount() {
+	public long getFrameCount() {
 		return frameCount;
 	}
 
@@ -99,6 +112,11 @@ public class AVAsset implements IVideoTrack {
 	public void rewind() {
 		nativeRewind(nativeHandle);
 	}
+	
+	@Override
+	public Frame getFrame(long frame) {
+		return getFrame(frameToTime(frame));
+	}
 
 	@Override
 	public Frame getFrame(double time) {
@@ -111,13 +129,27 @@ public class AVAsset implements IVideoTrack {
 	}
 
 	@Override
-	public void loadFrame(double time, int textureId) {
-		nativeLoadFrame(nativeHandle, time, textureId);
+	public int loadFrame(long frame, int textureId) {
+		return nativeLoadFrame(nativeHandle, frameToTime(frame), textureId);
 	}
 
 	@Override
-	public void loadFrames(int numFrames, int textureId) {
-		nativeLoadFrames(nativeHandle, numFrames, textureId);
+	public int loadFrame(double time, int textureId) {
+		return nativeLoadFrame(nativeHandle, time, textureId);
+	}
+
+	@Override
+	public int loadFrames(int numFrames, int textureId) {
+		return nativeLoadFrames(nativeHandle, numFrames, textureId);
+	}
+	
+	@Override
+	public String toString() {
+		return getURL() + " (d=" + getDuration() + " fr=" + getFrameRate() + " fc=" + getFrameCount() + " w=" + getWidth() + " h=" + getHeight() + ")"; 
+	}	
+	
+	private double frameToTime(long frame) {
+		return getDuration() * getFrameRate() / frame;
 	}
 
 	private native long nativeCreate(String url);
@@ -128,7 +160,7 @@ public class AVAsset implements IVideoTrack {
 
 	private native double nativeGetFrameRate(long nativeHandle);
 
-	private native int nativeGetFrameCount(long nativeHandle);
+	private native long nativeGetFrameCount(long nativeHandle);
 
 	private native int nativeGetWidth(long nativeHandle);
 
@@ -143,44 +175,4 @@ public class AVAsset implements IVideoTrack {
 	private native int nativeLoadFrame(long nativeHandle, double time, int textureId);
 
 	private native int nativeLoadFrames(long nativeHandle, int numFrames, int textureId);
-
-	public static void main(String[] args) {
-		// Make sure everything runs on GUI thread...
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				new AVAsset(args);
-			}
-		});
-	}
-
-	public AVAsset(String[] args) {
-		try {
-			AVAsset asset = new AVAsset(new URL("file:///Users/radar/Desktop/movies/hot_chip-flutes_(sacha_remix).mp4"));
-			System.out.println("Asset: " + asset.getWidth() + " " + asset.getHeight());
-			Frame frame = asset.getFrame(2.0);
-
-			BufferedImage image = frame.toBufferedImage();
-
-			System.out.println("Image: " + image.getWidth() + " " + image.getHeight());
-
-			for (int i = 0; i < 600; ++i) {
-				frame = asset.getNextFrame();
-			}
-			
-			image = frame.toBufferedImage();
-
-			System.out.println("Image: " + image.getWidth() + " " + image.getHeight());
-
-			try {
-				File outputfile = new File("/Users/radar/Desktop/saved.png");
-				ImageIO.write(image, "png", outputfile);
-			} catch (IOException e) {
-			}
-			asset.dispose();
-			System.out.println("Done");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 }

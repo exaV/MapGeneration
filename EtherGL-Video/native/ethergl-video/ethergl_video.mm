@@ -46,7 +46,7 @@ public:
         return frameRate;
     }
     
-    int getFrameCount() {
+    long getFrameCount() {
         return duration * frameRate;
     }
     
@@ -130,7 +130,7 @@ public:
         int bytesPerRow = (int)CGImageGetBytesPerRow(image);
         int skip = bytesPerRow - width * 4;
         int length = width * height * 4;
-        MSG("w=%d h=%d bpr=%d skip=%d length=%d\n", width, height, bytesPerRow, skip, length);
+        //MSG("w=%d h=%d bpr=%d skip=%d length=%d\n", width, height, bytesPerRow, skip, length);
         
         jbyteArray array = env->NewByteArray(length);
         uint8_t* arrayElements = (uint8_t*)env->GetByteArrayElements(array, nullptr);
@@ -185,7 +185,7 @@ public:
         int bytesPerRow = (int)CVPixelBufferGetBytesPerRow(imageBuffer);
         int skip = bytesPerRow - width * 4;
         int length = width * height * 4;
-        MSG("w=%d h=%d bpr=%d skip=%d length=%d\n", width, height, bytesPerRow, skip, length);
+        //MSG("w=%d h=%d bpr=%d skip=%d length=%d\n", width, height, bytesPerRow, skip, length);
 
         jbyteArray array = env->NewByteArray((int)length);
         uint8_t* arrayElements = (uint8_t*)env->GetByteArrayElements(array, nullptr);
@@ -298,7 +298,7 @@ JNIEXPORT jdouble JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGe
  * Method:    nativeGetFrameCount
  * Signature: (J)I
  */
-JNIEXPORT jint JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGetFrameCount
+JNIEXPORT jlong JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGetFrameCount
 (JNIEnv * env, jobject, jlong nativeHandle) {
     JNF_COCOA_ENTER(env);
     
