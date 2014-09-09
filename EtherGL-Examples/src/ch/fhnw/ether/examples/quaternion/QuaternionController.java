@@ -27,13 +27,13 @@
  */
 package ch.fhnw.ether.examples.quaternion;
 
+import ch.fhnw.ether.controller.AbstractController;
 import ch.fhnw.ether.formats.StaticModel;
-import ch.fhnw.ether.scene.AbstractScene;
 import ch.fhnw.ether.view.IView;
 
 import com.jogamp.newt.event.KeyEvent;
 
-public class QuaternionScene extends AbstractScene {
+public class QuaternionController extends AbstractController {
 	private static final String[] HELP  = {
 		"Simple Quaternion Example",
 		"",
@@ -42,7 +42,7 @@ public class QuaternionScene extends AbstractScene {
 		"Use Mouse Buttons + Shift or Mouse Wheel to Navigate"
 	};
 
-	public QuaternionScene() {
+	public QuaternionController() {
 	}
 
 	public void modelChanged() {

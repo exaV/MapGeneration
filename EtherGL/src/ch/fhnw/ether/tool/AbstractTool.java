@@ -29,7 +29,7 @@
 
 package ch.fhnw.ether.tool;
 
-import ch.fhnw.ether.scene.IScene;
+import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.view.IView;
 
 import com.jogamp.newt.event.KeyEvent;
@@ -38,14 +38,14 @@ import com.jogamp.newt.event.MouseEvent;
 public abstract class AbstractTool implements ITool {
     public static final int SNAP_SIZE = 4;
 
-    private IScene scene;
+    private IController controller;
 
-    protected AbstractTool(IScene scene) {
-        this.scene = scene;
+    protected AbstractTool(IController controller) {
+        this.controller = controller;
     }
 
-    protected final IScene getScene() {
-        return scene;
+    protected final IController getController() {
+        return controller;
     }
 
     @Override

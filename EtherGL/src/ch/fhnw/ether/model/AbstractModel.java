@@ -33,24 +33,24 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.geom.BoundingBox;
-import ch.fhnw.ether.scene.IScene;
 
 /**
  * Created by radar on 05/12/13.
  */
 public abstract class AbstractModel implements IModel {
-	protected final IScene scene;
+	protected final IController controller;
 	private BoundingBox bounds;
 	private final List<IGeometry> geometries = new ArrayList<>();
 
-	protected AbstractModel(IScene scene) {
-		this.scene = scene;
+	protected AbstractModel(IController controller) {
+		this.controller = controller;
 	}
 
 	@Override
-	public IScene getScene() {
-		return scene;
+	public IController getController() {
+		return controller;
 	}
 	
 	@Override

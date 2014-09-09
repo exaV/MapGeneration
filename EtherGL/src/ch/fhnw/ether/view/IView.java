@@ -32,8 +32,8 @@ package ch.fhnw.ether.view;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
 
+import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.gl.Viewport;
-import ch.fhnw.ether.scene.IScene;
 
 import com.jogamp.newt.event.KeyListener;
 import com.jogamp.newt.event.MouseListener;
@@ -52,11 +52,11 @@ public interface IView extends GLEventListener, MouseListener, KeyListener {
 	GLAutoDrawable getDrawable();
 
 	/**
-	 * Get the scene this view belongs to.
+	 * Get the controller this view belongs to.
 	 * 
-	 * @return the scene
+	 * @return the controller
 	 */
-	IScene getScene();
+	IController getController();
 
 	/**
 	 * Get associated camera.

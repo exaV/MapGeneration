@@ -43,7 +43,7 @@ public final class MappingExample {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		// Make sure everything runs on GUI thread...
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
@@ -54,34 +54,30 @@ public final class MappingExample {
 	}
 
 	/*
-	 * Creates a sample scene with 1 control view and 4 projector views, each
-	 * with 90 degrees rotation around the scene. Uses the sample calibration
-	 * model with a calibration rig of 0.5 units (~meters) edge lenght, and an
-	 * additional square 4 points at 0.8 units.
+	 * Creates a sample setup with 1 control view and 4 projector views, each with 90 degrees rotation around the model.
+	 * Uses the sample calibration model with a calibration rig of 0.5 units (~meters) edge lenght, and an additional
+	 * square 4 points at 0.8 units.
 	 */
 	public MappingExample() {
-		final MappingScene scene = new MappingScene();
+		final MappingController controller = new MappingController();
 
-		IModel model = new MappingTriangleModel(scene);
+		IModel model = new MappingTriangleModel(controller);
 
-		scene.setModel(model);
-		
-		scene.addView(new MappingView(scene, 0, 10, 512, 512, ViewType.INTERACTIVE_VIEW, "View 0", 0.0f));
-		scene.addView(new MappingView(scene, 530, 0, 400, 400, ViewType.MAPPED_VIEW, "View 1", 0.0f));
-		// scene.addView(new MappingView(scene, 940, 0, 400, 400,
-		// ViewType.MAPPED_VIEW, "View 2", 90.0f));
-		// scene.addView(new MappingView(scene, 530, 410, 400, 400,
-		// ViewType.MAPPED_VIEW, "View 3", 180.0f));
-		// scene.addView(new MappingView(scene, 940, 410, 400, 400,
-		// ViewType.MAPPED_VIEW, "View 4", 270.0f));
+		controller.setModel(model);
+
+		controller.addView(new MappingView(controller, 0, 10, 512, 512, ViewType.INTERACTIVE_VIEW, "View 0", 0.0f));
+		controller.addView(new MappingView(controller, 530, 0, 400, 400, ViewType.MAPPED_VIEW, "View 1", 0.0f));
+		// controller.addView(new MappingView(controller, 940, 0, 400, 400, ViewType.MAPPED_VIEW, "View 2", 90.0f));
+		// controller.addView(new MappingView(controller, 530, 410, 400, 400, ViewType.MAPPED_VIEW, "View 3", 180.0f));
+		// controller.addView(new MappingView(controller, 940, 410, 400, 400, ViewType.MAPPED_VIEW, "View 4", 270.0f));
 
 		// try {
-		// new TUIO(scene);
+		// new TUIO(controller);
 		// } catch (Exception e) {
 		// e.printStackTrace();
 		// }
 
 		// XXX geometry server currently disabled
-		// new GeometryServer(scene);
-	}	
+		// new GeometryServer(controller);
+	}
 }

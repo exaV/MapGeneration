@@ -31,10 +31,10 @@ import java.io.IOException;
 
 import javax.swing.SwingUtilities;
 
+import ch.fhnw.ether.examples.metrobuzz.controller.MetroBuzzController;
+import ch.fhnw.ether.examples.metrobuzz.controller.View;
 import ch.fhnw.ether.examples.metrobuzz.io.matsim.Loader;
 import ch.fhnw.ether.examples.metrobuzz.model.Model;
-import ch.fhnw.ether.examples.metrobuzz.scene.Scene;
-import ch.fhnw.ether.examples.metrobuzz.scene.View;
 
 public class MetroBuzz {
     public static void main(final String[] args) {
@@ -48,11 +48,11 @@ public class MetroBuzz {
     }
 
 	public MetroBuzz(String[] args) {
-		Scene scene = new Scene();
-		scene.addView(new View(scene, 0, 10, 512, 512));
-		scene.addView(new View(scene, 512, 10, 512, 512));
+		MetroBuzzController controller = new MetroBuzzController();
+		controller.addView(new View(controller, 0, 10, 512, 512));
+		controller.addView(new View(controller, 512, 10, 512, 512));
 
-		Model model = new Model(scene);
+		Model model = new Model(controller);
 		System.out.println("Loading Data");
 		try {
 			Loader.load(model, "/Users/radar/devel/data/sioux_osm", 100 /*Integer.MAX_VALUE*/);
@@ -67,7 +67,7 @@ public class MetroBuzz {
 		//Model.printAgent(model.getAgents().get(1));
 		//Model.printAgent(model.getAgents().get(2));
 		
-		scene.setModel(model);
+		controller.setModel(model);
 	}
 
 }

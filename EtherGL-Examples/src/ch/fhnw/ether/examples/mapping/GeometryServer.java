@@ -46,10 +46,10 @@ import ch.fhnw.net.util.UDPServer;
 // XXX experimental
 @SuppressWarnings("unused")
 public class GeometryServer {
-    private MappingScene scene;
+    private MappingController controller;
 
-    public GeometryServer(MappingScene scene) {
-        this.scene = scene;
+    public GeometryServer(MappingController controller) {
+        this.controller = controller;
 
         //runOSCScan(32000);
         runOSCSun(7777);
@@ -102,19 +102,19 @@ public class GeometryServer {
 
     private void runOSCSun(int port) {
         final float[] sunPosition = new float[3];
-        sunPosition[0] = scene.getLightPosition()[0];
-        sunPosition[1] = scene.getLightPosition()[1];
+        sunPosition[0] = controller.getLightPosition()[0];
+        sunPosition[1] = controller.getLightPosition()[1];
         try {
             if (oscServerSun == null) {
                 final Timer timer = new Timer(50, new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        float[] position = scene.getLightPosition();
+                        float[] position = controller.getLightPosition();
                         position[0] += (sunPosition[0] - position[0]) / 10f;
                         position[1] += (sunPosition[1] - position[1]) / 10f;
-                        // System.out.println(scene.getLightPosition()[0]+" "+scene.getLightPosition()[1]);
-                        scene.setLightPosition(position);
-                        scene.repaintViews();
+                        // System.out.println(controller.getLightPosition()[0]+" "+controller.getLightPosition()[1]);
+                        controller.setLightPosition(position);
+                        controller.repaintViews();
                     }
                 });
 
@@ -183,10 +183,10 @@ public class GeometryServer {
                             //System.out.println();
                         }
                         if (vertices.length > 0) {
-                            System.out.println("udp: scene updated");
+                            System.out.println("udp: model updated");
                             // XXX DISABLED
-                            //scene.getModel().setTriangles(vertices, colors);
-                            scene.modelChanged();
+                            //controller.getModel().setTriangles(vertices, colors);
+                            controller.modelChanged();
                         } else {
                             System.out.println("udp: no data received");
                         }
@@ -242,9 +242,9 @@ public class GeometryServer {
         }
         if (allTriangles.length > 0) {
             // XXX DISABLED
-            //scene.getModel().setTriangles(allTriangles, null);
+            //controller.getModel().setTriangles(allTriangles, null);
         } else {
-            System.out.println("empty scene");
+            System.out.println("empty model");
         }
     }
 }

@@ -32,8 +32,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ch.fhnw.ether.examples.metrobuzz.scene.ModelRenderState;
-import ch.fhnw.ether.examples.metrobuzz.scene.Scene;
+import ch.fhnw.ether.examples.metrobuzz.controller.MetroBuzzController;
+import ch.fhnw.ether.examples.metrobuzz.controller.ModelRenderState;
 import ch.fhnw.ether.geom.BoundingBox;
 import ch.fhnw.ether.model.GenericMesh;
 import ch.fhnw.ether.model.IGeometry;
@@ -43,7 +43,7 @@ public class Model implements IModel {
 	private static final float[] ACTIVITY_COLOR = { 1f, 0f, 0f, 0.2f };
 	private static final float[] TRIP_COLOR = { 0f, 1f, 0f, 0.2f };
 
-	private final Scene scene;
+	private final MetroBuzzController controller;
 	
 	private final List<Node> nodes = new ArrayList<>();
 	private final List<Link> links = new ArrayList<>();
@@ -59,13 +59,13 @@ public class Model implements IModel {
 	private GenericMesh networkGeometry;
 	private ModelRenderState renderState;
 
-	public Model(Scene scene) {
-		this.scene = scene;
+	public Model(MetroBuzzController controller) {
+		this.controller = controller;
 	}
 	
 	@Override
-	public Scene getScene() {
-		return scene;
+	public MetroBuzzController getController() {
+		return controller;
 	}
 
 	@Override
@@ -141,7 +141,7 @@ public class Model implements IModel {
 	 * Normalize the model into a [-1,1][-1,1] area (we don't deal with time here)
 	 */
 	public void normalize() {
-		// first determine overall scale of scene, so we can normalize
+		// first determine overall scale of model, so we can normalize
 		BoundingBox bounds = new BoundingBox();
 		for (Node node : nodes) {
 			bounds.add(node.getX(), node.getY(), 0);

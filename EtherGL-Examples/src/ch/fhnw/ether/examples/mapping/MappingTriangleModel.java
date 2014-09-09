@@ -29,14 +29,14 @@
 
 package ch.fhnw.ether.examples.mapping;
 
+import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.geom.Vec3;
 import ch.fhnw.ether.model.CubeMesh;
 import ch.fhnw.ether.model.GenericMeshModel;
-import ch.fhnw.ether.scene.IScene;
 
 public class MappingTriangleModel extends GenericMeshModel {
-    public MappingTriangleModel(IScene scene) {
-    	super(scene);
+    public MappingTriangleModel(IController controller) {
+    	super(controller);
         for (int i = 0; i < 10; ++i) {
             CubeMesh mesh = new CubeMesh(CubeMesh.Origin.BOTTOM_CENTER);
             double s = 0.1 + 0.1 * Math.random();
@@ -47,6 +47,6 @@ public class MappingTriangleModel extends GenericMeshModel {
             mesh.setTranslation(new Vec3(tx, ty, 0));
             addGeometry(mesh);
         }
-        addRenderables(scene);
+        addRenderables(controller);
     }
 }

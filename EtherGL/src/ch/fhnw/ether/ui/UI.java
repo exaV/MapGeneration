@@ -35,12 +35,12 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
+import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.geom.RGBA;
 import ch.fhnw.ether.model.TextGeometry;
 import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.IRenderer;
 import ch.fhnw.ether.render.shader.Triangles;
-import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.util.UpdateRequest;
 
@@ -48,7 +48,7 @@ import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.MouseEvent;
 
 public final class UI {
-    private final IScene scene;
+    private final IController controller;
     private final TextGeometry text = new TextGeometry(0, 0, 512, 512);
     private final IRenderable renderable;
     private final UpdateRequest updater = new UpdateRequest();
@@ -56,20 +56,20 @@ public final class UI {
     private final List<IWidget> widgets = new ArrayList<>();
     private String message;
 
-    public UI(IScene scene) {
-        this.scene = scene;
-        renderable = scene.getRenderer().createRenderable(IRenderer.Pass.SCREEN_SPACE_OVERLAY, EnumSet.of(IRenderer.Flag.INTERACTIVE_VIEW_ONLY), new Triangles(RGBA.WHITE, text.getTexture()), text);
+    public UI(IController controller) {
+        this.controller = controller;
+        renderable = controller.getRenderer().createRenderable(IRenderer.Pass.SCREEN_SPACE_OVERLAY, EnumSet.of(IRenderer.Flag.INTERACTIVE_VIEW_ONLY), new Triangles(RGBA.WHITE, text.getTexture()), text);
         text.setRenderable(renderable);
         enable();
     }
 
     public void enable() {
-    	scene.getRenderer().addRenderables(renderable);
+    	controller.getRenderer().addRenderables(renderable);
         requestUpdate();
     }
 
     public void disable() {
-    	scene.getRenderer().removeRenderables(renderable);
+    	controller.getRenderer().removeRenderables(renderable);
     }
 
     public void update() {
@@ -127,7 +127,7 @@ public final class UI {
     
     public void requestUpdate() {
         updater.requestUpdate();
-        scene.repaintViews();
+        controller.repaintViews();
     }
     
     

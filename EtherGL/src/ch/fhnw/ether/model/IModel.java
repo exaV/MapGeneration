@@ -31,8 +31,8 @@ package ch.fhnw.ether.model;
 
 import java.util.List;
 
+import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.geom.BoundingBox;
-import ch.fhnw.ether.scene.IScene;
 
 /**
  * Interface for all models to be rendered / interacted with.
@@ -40,7 +40,7 @@ import ch.fhnw.ether.scene.IScene;
  * @author radar
  */
 public interface IModel {
-	IScene getScene();
+	IController getController();
 	
 	BoundingBox getBounds();
 

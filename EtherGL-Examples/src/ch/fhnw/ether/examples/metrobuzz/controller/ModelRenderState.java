@@ -25,7 +25,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */package ch.fhnw.ether.examples.metrobuzz.scene;
+ */package ch.fhnw.ether.examples.metrobuzz.controller;
 
 import ch.fhnw.ether.examples.metrobuzz.model.Model;
 import ch.fhnw.ether.geom.RGBA;
@@ -49,7 +49,7 @@ public final class ModelRenderState {
 	public ModelRenderState(Model model) {
 		this.model = model;
 
-		IRenderer renderer = model.getScene().getRenderer();
+		IRenderer renderer = model.getController().getRenderer();
 		networkNodes = renderer.createRenderable(Pass.DEPTH, new Points(NETWORK_NODE_COLOR, NETWORK_POINT_SIZE, 0), model.getNetworkGeometry());
 		networkEdges = renderer.createRenderable(Pass.DEPTH, new Lines(NETWORK_EDGE_COLOR), model.getNetworkGeometry());
 		agentPaths = renderer.createRenderable(Pass.TRANSPARENCY, new Lines(), model.getAgentGeometries());

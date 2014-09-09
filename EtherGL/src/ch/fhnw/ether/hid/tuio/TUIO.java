@@ -39,8 +39,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.geom.BoundingBox;
-import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.net.osc.OSCHandler;
 import ch.fhnw.net.osc.OSCServer;
@@ -143,8 +143,8 @@ public class TUIO {
 
     private BoundingBox bounds = new BoundingBox();
 
-    public TUIO(IScene scene, int port) throws IOException {
-        for (IView view : scene.getViews()) {
+    public TUIO(IController controller, int port) throws IOException {
+        for (IView view : controller.getViews()) {
             if (view.getViewType() == IView.ViewType.INTERACTIVE_VIEW) {
                 this.view = view;
                 break;
@@ -167,8 +167,8 @@ public class TUIO {
         }
     }
 
-    public TUIO(IScene scene) throws IOException {
-        this(scene, DEFAULT_PORT);
+    public TUIO(IController controller) throws IOException {
+        this(controller, DEFAULT_PORT);
     }
 
     private void detectGesture() {

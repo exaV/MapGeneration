@@ -33,9 +33,9 @@ import javax.media.nativewindow.util.Point;
 import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
 
+import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.gl.NEWTWindow;
 import ch.fhnw.ether.gl.Viewport;
-import ch.fhnw.ether.scene.IScene;
 
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.MouseEvent;
@@ -48,7 +48,7 @@ import com.jogamp.newt.event.MouseEvent;
 public abstract class AbstractView implements IView {
 	private final NEWTWindow window;
 
-	private final IScene scene;
+	private final IController controller;
 
 	private final ViewType viewType;
 
@@ -58,9 +58,9 @@ public abstract class AbstractView implements IView {
 
 	private boolean enabled = true;
 
-	protected AbstractView(IScene scene, int x, int y, int w, int h, ViewType viewType, String title) {
+	protected AbstractView(IController controller, int x, int y, int w, int h, ViewType viewType, String title) {
 		this.window = new NEWTWindow(w, h, title);
-		this.scene = scene;
+		this.controller = controller;
 		this.viewType = viewType;
 		window.setView(this);
 		Point p = window.getPosition();
@@ -77,8 +77,8 @@ public abstract class AbstractView implements IView {
 	}
 
 	@Override
-	public final IScene getScene() {
-		return scene;
+	public final IController getController() {
+		return controller;
 	}
 
 	@Override
@@ -108,17 +108,17 @@ public abstract class AbstractView implements IView {
 
 	@Override
 	public final boolean isCurrent() {
-		return getScene().getCurrentView() == this;
+		return getController().getCurrentView() == this;
 	}
 
 	@Override
 	public final void repaint() {
-		getScene().repaintView(this);
+		getController().repaintView(this);
 	}
 
 	@Override
 	public final void refresh() {
-		getScene().getCurrentTool().refresh(this);
+		getController().getCurrentTool().refresh(this);
 		repaint();
 	}
 
@@ -153,11 +153,11 @@ public abstract class AbstractView implements IView {
 		// System.out.println("display" + this);
 
 		// repaint UI surface if necessary
-		getScene().getUI().update();
+		getController().getUI().update();
 
 		// render everything
 		try {
-			getScene().getRenderer().render(gl.getGL3(), this);
+			getController().getRenderer().render(gl.getGL3(), this);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -183,59 +183,59 @@ public abstract class AbstractView implements IView {
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		scene.keyPressed(e, this);
+		controller.keyPressed(e, this);
 		// TODO: should we set e to "consumed", i.e. e.setConsumed(true)?
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		scene.keyReleased(e, this);
+		controller.keyReleased(e, this);
 	}
 
 	// mouse listener
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
-		scene.mouseEntered(e, this);
+		controller.mouseEntered(e, this);
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
-		scene.mouseExited(e, this);
+		controller.mouseExited(e, this);
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
 		window.requestFocus();
-		scene.mousePressed(e, this);
+		controller.mousePressed(e, this);
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		scene.mouseReleased(e, this);
+		controller.mouseReleased(e, this);
 	}
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		scene.mouseClicked(e, this);
+		controller.mouseClicked(e, this);
 	}
 
 	// mouse motion listener
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		scene.mouseMoved(e, this);
+		controller.mouseMoved(e, this);
 	}
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		scene.mouseDragged(e, this);
+		controller.mouseDragged(e, this);
 	}
 
 	// mouse wheel listener
 
 	@Override
 	public void mouseWheelMoved(MouseEvent e) {
-		scene.mouseWheelMoved(e, this);
+		controller.mouseWheelMoved(e, this);
 	}
 }

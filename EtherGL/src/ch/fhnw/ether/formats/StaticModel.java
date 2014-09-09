@@ -2,6 +2,7 @@ package ch.fhnw.ether.formats;
 
 import java.util.List;
 
+import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.model.AbstractModel;
 import ch.fhnw.ether.model.IGeometry;
 import ch.fhnw.ether.render.IRenderable;
@@ -9,7 +10,6 @@ import ch.fhnw.ether.render.IRenderer;
 import ch.fhnw.ether.render.attribute.IArrayAttributeProvider;
 import ch.fhnw.ether.render.shader.Lines;
 import ch.fhnw.ether.render.shader.Triangles;
-import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.util.CollectionUtil;
 
 public class StaticModel extends AbstractModel {
@@ -19,20 +19,20 @@ public class StaticModel extends AbstractModel {
 	private boolean solid;
 	private boolean wireframe;
 
-	public StaticModel(IScene scene, Iterable<IGeometry> geometries) {
-		super(scene);
+	public StaticModel(IController controller, Iterable<IGeometry> geometries) {
+		super(controller);
 		for(IGeometry g : geometries)
 			addGeometry(g);
 		List<IArrayAttributeProvider> providers = CollectionUtil.filterType(IArrayAttributeProvider.class, getGeometries());
-		triangles = scene.getRenderer().createRenderable(IRenderer.Pass.DEPTH, new Triangles(), providers);
-		edges     = scene.getRenderer().createRenderable(IRenderer.Pass.DEPTH, new Lines(),     providers);
+		triangles = controller.getRenderer().createRenderable(IRenderer.Pass.DEPTH, new Triangles(), providers);
+		edges     = controller.getRenderer().createRenderable(IRenderer.Pass.DEPTH, new Lines(),     providers);
 		setSolid(true);
 		setWireframe(true);
 	}
 	
-	protected void addRenderables(IScene scene) {
+	protected void addRenderables(IController controller) {
 		if (triangles == null) {
-			scene.getRenderer().addRenderables(triangles, edges);			
+			controller.getRenderer().addRenderables(triangles, edges);			
 		}
 	}
 	
@@ -40,16 +40,16 @@ public class StaticModel extends AbstractModel {
 	public void setSolid(boolean solid) {
 		if(this.solid != solid) {
 			this.solid = solid;
-			if(solid) scene.getRenderer().addRenderables(triangles);
-			else      scene.getRenderer().removeRenderables(triangles);
+			if(solid) controller.getRenderer().addRenderables(triangles);
+			else      controller.getRenderer().removeRenderables(triangles);
 		}
 	}
 
 	public void setWireframe(boolean wireframe) {
 		if(this.wireframe != wireframe) {
 			this.wireframe = wireframe;
-			if(wireframe) scene.getRenderer().addRenderables(edges);
-			else          scene.getRenderer().removeRenderables(edges);
+			if(wireframe) controller.getRenderer().addRenderables(edges);
+			else          controller.getRenderer().removeRenderables(edges);
 		}
 	}
 

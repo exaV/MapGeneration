@@ -138,7 +138,7 @@ public class Button extends AbstractWidget {
     public boolean keyPressed(KeyEvent e, IView view) {
     	if (getKey() == e.getKeyCode()) {
     		fire(view);
-    		view.getScene().repaintViews();
+    		view.getController().repaintViews();
     		return true;
     	}
     	return false;
@@ -148,7 +148,7 @@ public class Button extends AbstractWidget {
     public boolean mousePressed(MouseEvent e, IView view) {
         if (hit(e.getX(), e.getY(), view)) {
             fire(view);
-            view.getScene().repaintViews();
+            view.getController().repaintViews();
             return true;
         }
         return false;

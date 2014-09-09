@@ -33,8 +33,8 @@ import ch.fhnw.ether.view.Camera;
 import com.jogamp.newt.event.KeyEvent;
 
 public class QuaternionView extends AbstractView {
-	public QuaternionView(QuaternionScene scene, int x, int y, int w, int h, String title) {
-		super(scene, x, y, w, h,ViewType.INTERACTIVE_VIEW, title);
+	public QuaternionView(QuaternionController controller, int x, int y, int w, int h, String title) {
+		super(controller, x, y, w, h,ViewType.INTERACTIVE_VIEW, title);
 	}
 
 	private static final float[][] CAM_PARAMS = {

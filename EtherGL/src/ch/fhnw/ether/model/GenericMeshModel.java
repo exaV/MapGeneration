@@ -31,13 +31,13 @@ package ch.fhnw.ether.model;
 
 import java.util.List;
 
+import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.geom.RGBA;
 import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.attribute.IArrayAttributeProvider;
 import ch.fhnw.ether.render.shader.Lines;
 import ch.fhnw.ether.render.shader.Points;
 import ch.fhnw.ether.render.shader.Triangles;
-import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.util.CollectionUtil;
 import ch.fhnw.ether.render.IRenderer;
 
@@ -48,18 +48,18 @@ public class GenericMeshModel extends AbstractModel {
 	private IRenderable points;
 	private IRenderable bounds;
 
-	public GenericMeshModel(IScene scene) {
-		super(scene);
+	public GenericMeshModel(IController controller) {
+		super(controller);
 	}
 	
-	protected void addRenderables(IScene scene) {
+	protected void addRenderables(IController controller) {
 		if (triangles == null) {
 			List<IArrayAttributeProvider> providers = CollectionUtil.filterType(IArrayAttributeProvider.class, getGeometries());
-			triangles = scene.getRenderer().createRenderable(IRenderer.Pass.DEPTH, new Triangles(RGBA.WHITE, false), providers);
-			edges = scene.getRenderer().createRenderable(IRenderer.Pass.DEPTH, new Lines(RGBA.WHITE), providers);
-			points = scene.getRenderer().createRenderable(IRenderer.Pass.DEPTH, new Points(RGBA.GREEN, 5, 0), providers);
-			bounds = scene.getRenderer().createRenderable(IRenderer.Pass.DEPTH, new Lines(RGBA.YELLOW), providers);
-			scene.getRenderer().addRenderables(triangles, edges, points, bounds);			
+			triangles = controller.getRenderer().createRenderable(IRenderer.Pass.DEPTH, new Triangles(RGBA.WHITE, false), providers);
+			edges = controller.getRenderer().createRenderable(IRenderer.Pass.DEPTH, new Lines(RGBA.WHITE), providers);
+			points = controller.getRenderer().createRenderable(IRenderer.Pass.DEPTH, new Points(RGBA.GREEN, 5, 0), providers);
+			bounds = controller.getRenderer().createRenderable(IRenderer.Pass.DEPTH, new Lines(RGBA.YELLOW), providers);
+			controller.getRenderer().addRenderables(triangles, edges, points, bounds);			
 		}
 	}
 }

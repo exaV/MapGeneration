@@ -27,7 +27,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.scene;
+package ch.fhnw.ether.controller;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -49,13 +49,13 @@ import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.MouseEvent;
 
 /**
- * Abstract scene class that implements some basic common functionality. Use as
+ * Abstract controller that implements some basic common functionality. Use as
  * base for common implementations.
  *
  * @author radar
  */
 // TODO: PickTool doesn't really belong here (any tools at all?)
-public abstract class AbstractScene implements IScene {
+public abstract class AbstractController implements IController {
     private final IScheduler scheduler;
     private final IRenderer renderer;
     
@@ -70,11 +70,11 @@ public abstract class AbstractScene implements IScene {
     private IView currentView;
     private ITool activeTool;
 
-    protected AbstractScene() {
+    protected AbstractController() {
     	this(new EventDrivenScheduler(), new ForwardRenderer());
     }
 
-    protected AbstractScene(IScheduler scheduler, IRenderer renderer) {
+    protected AbstractController(IScheduler scheduler, IRenderer renderer) {
     	this.scheduler = scheduler;
         this.renderer = renderer;
         this.ui = new UI(this);

@@ -36,6 +36,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.prefs.Preferences;
 
+import ch.fhnw.ether.controller.AbstractController;
+import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.geom.ProjectionUtil;
 import ch.fhnw.ether.geom.RGBA;
 import ch.fhnw.ether.geom.Vec3;
@@ -50,8 +52,6 @@ import ch.fhnw.ether.render.IRenderer.Pass;
 import ch.fhnw.ether.render.shader.Lines;
 import ch.fhnw.ether.render.shader.Points;
 import ch.fhnw.ether.render.util.Primitives;
-import ch.fhnw.ether.scene.AbstractScene;
-import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.tool.AbstractTool;
 import ch.fhnw.ether.view.Camera;
 import ch.fhnw.ether.view.IView;
@@ -82,11 +82,11 @@ public final class CalibrationTool extends AbstractTool {
 
 	private List<IRenderable> renderables = new ArrayList<>();
 
-	public CalibrationTool(IScene scene, ICalibrationModel model) {
-		super(scene);
+	public CalibrationTool(IController controller, ICalibrationModel model) {
+		super(controller);
 		this.model = model;
 
-		IRenderer renderer = scene.getRenderer();
+		IRenderer renderer = controller.getRenderer();
 
 		renderables.add(renderer.createRenderable(Pass.OVERLAY, new Points(MODEL_COLOR, POINT_SIZE, 0), model.getCalibrationMesh()));
 		renderables.add(renderer.createRenderable(Pass.OVERLAY, new Lines(MODEL_COLOR), model.getCalibrationMesh()));
@@ -96,18 +96,18 @@ public final class CalibrationTool extends AbstractTool {
 
 	@Override
 	public void activate() {
-		getScene().getRenderer().addRenderables(renderables);
+		getController().getRenderer().addRenderables(renderables);
 	}
 
 	@Override
 	public void deactivate() {
-		getScene().getRenderer().removeRenderables(renderables);
-		getScene().enableViews(null);
+		getController().getRenderer().removeRenderables(renderables);
+		getController().enableViews(null);
 	}
 
 	@Override
 	public void refresh(IView view) {
-		getScene().enableViews(Collections.singleton(view));
+		getController().enableViews(Collections.singleton(view));
 
 		updateCalibratedGeometry(view);
 	}
@@ -137,14 +137,14 @@ public final class CalibrationTool extends AbstractTool {
 			clearCalibration(view);
 			break;
 		case KeyEvent.VK_H:
-			AbstractScene.printHelp(HELP);
+			AbstractController.printHelp(HELP);
 			break;
 		case KeyEvent.VK_BACK_SPACE:
 		case KeyEvent.VK_DELETE:
 			deleteCurrent(view);
 			break;
 		}
-		view.getScene().repaintViews();
+		view.getController().repaintViews();
 	}
 
 	@Override
@@ -236,7 +236,7 @@ public final class CalibrationTool extends AbstractTool {
 	private void loadCalibration(IView view) {
 		Preferences p = PreferencesStore.get();
 		int iv = 0;
-		for (IView v : view.getScene().getViews()) {
+		for (IView v : view.getController().getViews()) {
 			getContext(v).load(p, iv);
 			calibrate(v);
 			iv++;
@@ -246,7 +246,7 @@ public final class CalibrationTool extends AbstractTool {
 	private void saveCalibration(IView view) {
 		Preferences p = PreferencesStore.get();
 		int iv = 0;
-		for (IView v : view.getScene().getViews()) {
+		for (IView v : view.getController().getViews()) {
 			getContext(v).save(p, iv);
 			iv++;
 		}
@@ -278,7 +278,7 @@ public final class CalibrationTool extends AbstractTool {
 		refresh(view);
 
 		// lazily repaint all views
-		view.getScene().repaintViews();
+		view.getController().repaintViews();
 	}
 
 	private void updateCalibratedGeometry(IView view) {

@@ -32,6 +32,7 @@ package ch.fhnw.ether.tool;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.geom.RGBA;
 import ch.fhnw.ether.geom.Vec3;
 import ch.fhnw.ether.model.GenericMesh;
@@ -39,7 +40,6 @@ import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.IRenderer;
 import ch.fhnw.ether.render.shader.Lines;
 import ch.fhnw.ether.render.util.Primitives;
-import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.view.IView;
 
 import com.jogamp.newt.event.MouseEvent;
@@ -55,21 +55,21 @@ public class NavigationTool extends AbstractTool {
 
 	// TODO: make grid dynamic/configurable
 
-	public NavigationTool(IScene scene) {
-		super(scene);
-		renderable = scene.getRenderer().createRenderable(IRenderer.Pass.DEPTH, new Lines(GRID_COLOR), makeGrid());
+	public NavigationTool(IController controller) {
+		super(controller);
+		renderable = controller.getRenderer().createRenderable(IRenderer.Pass.DEPTH, new Lines(GRID_COLOR), makeGrid());
 		// XXX hack: currently grid is always enabled
 		activate();
 	}
 
 	@Override
 	public void activate() {
-		getScene().getRenderer().addRenderables(renderable);
+		getController().getRenderer().addRenderables(renderable);
 	}
 
 	@Override
 	public void deactivate() {
-		getScene().getRenderer().removeRenderables(renderable);
+		getController().getRenderer().removeRenderables(renderable);
 	}
 
 	@Override

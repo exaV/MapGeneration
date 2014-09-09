@@ -27,6 +27,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */package ch.fhnw.ether.examples.metrobuzz.tool;
 
+import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.geom.Line;
 import ch.fhnw.ether.geom.Plane;
 import ch.fhnw.ether.geom.ProjectionUtil;
@@ -38,7 +39,6 @@ import ch.fhnw.ether.model.IPickable;
 import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.IRenderer.Pass;
 import ch.fhnw.ether.render.shader.Triangles;
-import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.tool.AbstractTool;
 import ch.fhnw.ether.view.IView;
 
@@ -59,20 +59,20 @@ public final class AreaTool extends AbstractTool {
 
 	private final IRenderable area;
 
-	public AreaTool(IScene scene) {
-		super(scene);
+	public AreaTool(IController controller) {
+		super(controller);
 		mesh.setScale(new Vec3(0.1, 0.1, 0.001));
-		area = scene.getRenderer().createRenderable(Pass.DEPTH, new Triangles(TOOL_COLOR, false), mesh);
+		area = controller.getRenderer().createRenderable(Pass.DEPTH, new Triangles(TOOL_COLOR, false), mesh);
 	}
 
 	@Override
 	public void activate() {
-		getScene().getRenderer().addRenderables(area);
+		getController().getRenderer().addRenderables(area);
 	}
 
 	@Override
 	public void deactivate() {
-		getScene().getRenderer().removeRenderables(area);
+		getController().getRenderer().removeRenderables(area);
 	}
 
 	@Override
@@ -94,7 +94,7 @@ public final class AreaTool extends AbstractTool {
 
 		mesh.setTranslation(new Vec3(xOffset, yOffset, 0));
 		area.requestUpdate();
-		view.getScene().repaintViews();
+		view.getController().repaintViews();
 	}
 
 	@Override
@@ -116,7 +116,7 @@ public final class AreaTool extends AbstractTool {
 				yOffset = p.y;
 				mesh.setTranslation(new Vec3(xOffset, yOffset, 0));
 				area.requestUpdate();
-				view.getScene().repaintViews();
+				view.getController().repaintViews();
 			}
 		}
 	}

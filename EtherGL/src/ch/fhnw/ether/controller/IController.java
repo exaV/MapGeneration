@@ -27,7 +27,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.scene;
+package ch.fhnw.ether.controller;
 
 import java.util.Collection;
 import java.util.List;
@@ -43,22 +43,22 @@ import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.MouseEvent;
 
 /**
- * A 'scene' is the controller that coordinates both model and associated views. It also handles the relevant events
- * coming from individual views.
+ * A controller that coordinates both model and associated views. It also handles the relevant events coming from
+ * individual views.
  *
  * @author radar
  */
-public interface IScene {
+public interface IController {
 	/**
-	 * Get the scene's model.
+	 * Get the controller's model.
 	 *
-	 * @return the scene's model
+	 * @return the controller's model
 	 */
 	IModel getModel();
 
 	/**
-	 * Set the scene's model. This effectively unhooks the current model from the scene and replaces it with the new
-	 * one. If a scene implementation does not implement such behavior it will throw an
+	 * Set the controller's model. This effectively unhooks the current model from the controller and replaces it with
+	 * the new one. If a controller implementation does not implement such behavior it will throw an
 	 * {@link java.lang.UnsupportedOperationException}.
 	 *
 	 * @param model
@@ -67,7 +67,7 @@ public interface IScene {
 	void setModel(IModel model);
 
 	/**
-	 * Add a view to the scene.
+	 * Add a view to the controller.
 	 *
 	 * @param view
 	 *            the view to add

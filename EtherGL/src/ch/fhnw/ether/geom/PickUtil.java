@@ -51,7 +51,7 @@ public final class PickUtil {
                 pickables.put(z, pickable);
             }
         };
-        for (IGeometry geometry : view.getScene().getModel().getGeometries()) {
+        for (IGeometry geometry : view.getController().getModel().getGeometries()) {
             if (geometry instanceof IPickable)
                 ((IPickable) geometry).pick(IPickable.PickMode.POINT, x, y, 0, 0, view, state);
         }

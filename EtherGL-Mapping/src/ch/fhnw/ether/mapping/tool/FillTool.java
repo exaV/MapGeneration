@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.geom.RGBA;
 import ch.fhnw.ether.geom.Vec3;
 import ch.fhnw.ether.model.GenericMesh;
@@ -40,7 +41,6 @@ import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.IRenderer.Pass;
 import ch.fhnw.ether.render.shader.Triangles;
 import ch.fhnw.ether.render.util.Primitives;
-import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.tool.AbstractTool;
 import ch.fhnw.ether.view.IView;
 
@@ -49,25 +49,25 @@ public final class FillTool extends AbstractTool {
 
 	private final IRenderable quads;
 
-	public FillTool(IScene scene) {
-		super(scene);
-		quads = scene.getRenderer().createRenderable(Pass.DEVICE_SPACE_OVERLAY, new Triangles(RGBA.WHITE), makeQuads());
+	public FillTool(IController controller) {
+		super(controller);
+		quads = controller.getRenderer().createRenderable(Pass.DEVICE_SPACE_OVERLAY, new Triangles(RGBA.WHITE), makeQuads());
 	}
 
 	@Override
 	public void activate() {
-		getScene().getRenderer().addRenderables(quads);
+		getController().getRenderer().addRenderables(quads);
 	}
 
 	@Override
 	public void deactivate() {
-		getScene().getRenderer().removeRenderables(quads);
-		getScene().enableViews(null);
+		getController().getRenderer().removeRenderables(quads);
+		getController().enableViews(null);
 	}
 
 	@Override
 	public void refresh(IView view) {
-		getScene().enableViews(Collections.singleton(view));
+		getController().enableViews(Collections.singleton(view));
 	}
 
 	private static GenericMesh makeQuads() {
