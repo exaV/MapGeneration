@@ -27,10 +27,25 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.spatialindex;
+package ch.fhnw.ether.geom.spatialindex;
 
-public class SpatialIndexFactory {
-	public static ISpatialIndex create(String id) {
-		return new ArrayListSpatialIndex();
-	}
+import java.util.List;
+
+import ch.fhnw.ether.geom.BoundingBox;
+import ch.fhnw.ether.model.IGeometry;
+
+public interface ISpatialIndex {
+	public void addGeometry(IGeometry geometry);
+
+	public boolean removeGeometry(IGeometry geometry);
+
+	public List<IGeometry> getIntersectingGeometries(BoundingBox bounds);
+
+	public List<IGeometry> getContainingGeometries(BoundingBox bounds);
+
+	public List<IGeometry> getGeometries();
+
+	public int size();
+
+	public BoundingBox getBounds();
 }

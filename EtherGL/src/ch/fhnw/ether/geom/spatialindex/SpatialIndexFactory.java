@@ -27,68 +27,10 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.spatialindex;
+package ch.fhnw.ether.geom.spatialindex;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import ch.fhnw.ether.geom.BoundingBox;
-import ch.fhnw.ether.model.IGeometry;
-
-/**
- * A simple implementation of spatial index using array list
- */
-public class ArrayListSpatialIndex implements ISpatialIndex {
-	private final List<IGeometry> geometries = new ArrayList<>();
-	private BoundingBox bb;
-
-	@Override
-	public void addGeometry(IGeometry object) {
-		geometries.add(object);
-		bb = null;
-	}
-
-	@Override
-	public boolean removeGeometry(IGeometry object) {
-		boolean removed = geometries.remove(object);
-		if (removed)
-			bb = null;
-		return removed;
-	}
-
-	@Override
-	public List<IGeometry> getIntersectingGeometries(BoundingBox bb) {
-		List<IGeometry> result = new ArrayList<>();
-		for (IGeometry geometry : geometries) {
-			if (bb.intersects(geometry.getBounds()))
-				result.add(geometry);
-		}
-		return result;
-	}
-
-	@Override
-	public List<IGeometry> getContainingGeometries(BoundingBox bb) {
-		List<IGeometry> result = new ArrayList<>();
-		for (IGeometry geometry : geometries) {
-			if (bb.contains(geometry.getBounds()))
-				result.add(geometry);
-		}
-		return result;
-	}
-	
-	@Override
-	public List<IGeometry> getGeometries() {
-		return Collections.unmodifiableList(geometries);
-	}
-
-	@Override
-	public int size() {
-		return geometries.size();
-	}
-
-	@Override
-	public BoundingBox getBounds() {
-		return bb;
+public class SpatialIndexFactory {
+	public static ISpatialIndex create(String id) {
+		return new ArrayListSpatialIndex();
 	}
 }
