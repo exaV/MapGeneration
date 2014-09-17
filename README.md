@@ -24,6 +24,7 @@ For questions etc. feel free to be in touch with me (Stefan Müller Arisona) at 
 Credits
 -------
 
-Concept & Setup: Eva Friedrich & Stefan Müller Arisona
+Stefan Müller Arisona
+Simon Schubiger
 
-Code: Ether-GL was written by Stefan Müller Arisona, with contributions by Eva Friedrich (early prototyping, and shadow volumes) and Simon Schubiger (OSC).
+Contributions by: Eva Friedrich
