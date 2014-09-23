@@ -41,7 +41,7 @@ import ch.fhnw.ether.render.attribute.IUniformAttribute;
 public abstract class AbstractShader implements IShader {
 	private String source;
 	private PrimitiveType type;
-	Program program;
+	private Program program;
 
 	protected AbstractShader(String source, PrimitiveType type) {
 		this.source = source;

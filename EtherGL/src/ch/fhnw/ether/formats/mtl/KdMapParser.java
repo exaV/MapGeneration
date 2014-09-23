@@ -1,6 +1,5 @@
 package ch.fhnw.ether.formats.mtl;
 
-
 import ch.fhnw.ether.formats.obj.LineParser;
 import ch.fhnw.ether.formats.obj.Material;
 import ch.fhnw.ether.formats.obj.Texture;
@@ -12,18 +11,16 @@ public class KdMapParser extends LineParser {
 	private Texture texture = null;
 	private WavefrontObject object = null;
 	private String texName;
-	
-	public KdMapParser(WavefrontObject object)
-	{
+
+	public KdMapParser(WavefrontObject object) {
 		this.object = object;
 	}
-	
+
 	@Override
 	public void incoporateResults(WavefrontObject wavefrontObject) {
-		
-		if (texture != null)
-		{
-			Material currentMaterial = wavefrontObject.getCurrentMaterial() ;
+
+		if (texture != null) {
+			Material currentMaterial = wavefrontObject.getCurrentMaterial();
 			currentMaterial.texName = texName;
 			currentMaterial.setTexture(texture);
 		}
@@ -31,9 +28,9 @@ public class KdMapParser extends LineParser {
 
 	@Override
 	public void parse() {
-		String textureFileName = words[words.length-1];
+		String textureFileName = words[words.length - 1];
 		texName = textureFileName;
-		String pathToTextureBinary = object.getContextfolder() +  textureFileName;
+		String pathToTextureBinary = object.getContextfolder() + textureFileName;
 		texture = TextureLoader.instance().loadTexture(pathToTextureBinary);
 	}
 

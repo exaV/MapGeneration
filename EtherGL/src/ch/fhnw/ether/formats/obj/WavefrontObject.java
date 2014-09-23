@@ -12,52 +12,49 @@ import java.util.Map;
 import ch.fhnw.ether.geom.Vec3;
 
 public class WavefrontObject {
-	private List<Vec3>              vertices           = new ArrayList<Vec3>();
-	private List<Vec3>              normals            = new ArrayList<Vec3>();
-	private List<TexCoord> textures           = new ArrayList<TexCoord>();
-	private List<Group>             groups             = new ArrayList<Group>();
-	private Map<String,Group>       groupsDirectAccess = new HashMap<String,Group>();
-	Map<String, Material>           materials          = new HashMap<String, Material>(); 
-	public String                   fileName;
+	private List<Vec3> vertices = new ArrayList<Vec3>();
+	private List<Vec3> normals = new ArrayList<Vec3>();
+	private List<TexCoord> textures = new ArrayList<TexCoord>();
+	private List<Group> groups = new ArrayList<Group>();
+	private Map<String, Group> groupsDirectAccess = new HashMap<String, Group>();
+	private Map<String, Material> materials = new HashMap<String, Material>();
+	private String fileName;
 
-	private ObjLineParserFactory parserFactory ;
+	private ObjLineParserFactory parserFactory;
 
 	private Material currentMaterial;
 
 	private Group currentGroup;
 
-	private String contextfolder ="" ;
+	private String contextfolder = "";
 
-	public double radius=0;
+	private double radius = 0;
 
 	public WavefrontObject(String fileName, InputStream in) {
-		try
-		{
+		try {
 			this.fileName = fileName;
 
 			int lastSlashIndex = fileName.lastIndexOf('/');
-			if ( lastSlashIndex != -1)
-				this.contextfolder = fileName.substring(0,lastSlashIndex+1);
+			if (lastSlashIndex != -1)
+				this.contextfolder = fileName.substring(0, lastSlashIndex + 1);
 
 			lastSlashIndex = fileName.lastIndexOf('\\');
-			if ( lastSlashIndex != -1)
-				this.contextfolder = fileName.substring(0,lastSlashIndex+1);
+			if (lastSlashIndex != -1)
+				this.contextfolder = fileName.substring(0, lastSlashIndex + 1);
 
 			parse(in);
 
 			calculateRadius();
-		}
-		catch(Exception e )
-		{
-			System.out.println("Error, could not load obj:"+fileName);
+		} catch (Exception e) {
+			System.out.println("Error, could not load obj:" + fileName);
 		}
 	}
 
 	private void calculateRadius() {
 		double currentNorm = 0;
-		for(Vec3 vertex : vertices) {
-			currentNorm = vertex.length(); 
-			if ( currentNorm> radius )
+		for (Vec3 vertex : vertices) {
+			currentNorm = vertex.length();
+			if (currentNorm > radius)
 				radius = currentNorm;
 		}
 	}
@@ -66,23 +63,22 @@ public class WavefrontObject {
 		return contextfolder;
 	}
 
-	private void parse(InputStream input)   {
+	private void parse(InputStream input) {
 		parserFactory = new ObjLineParserFactory(this);
 
 		BufferedReader in = null;
 		try {
 			in = new BufferedReader(new InputStreamReader(input));
 
-			for(String currentLine = null; (currentLine = in.readLine()) != null;)
+			for (String currentLine = null; (currentLine = in.readLine()) != null;)
 				parseLine(currentLine);
 
 			if (in != null)
 				in.close();
 
-		} 
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
-			throw new RuntimeException("Error reading file :'"+fileName+"'");
+			throw new RuntimeException("Error reading file :'" + fileName + "'");
 		}
 	}
 
@@ -132,59 +128,58 @@ public class WavefrontObject {
 		return currentMaterial;
 	}
 
-	public void setCurrentMaterial(Material currentMaterial )
-	{
-		this.currentMaterial= currentMaterial;
+	public void setCurrentMaterial(Material currentMaterial) {
+		this.currentMaterial = currentMaterial;
 	}
-
 
 	public List<Group> getGroups() {
 		return groups;
 	}
 
-
 	public Map<String, Group> getGroupsDirectAccess() {
 		return groupsDirectAccess;
 	}
 
-
 	public Group getCurrentGroup() {
 		return currentGroup;
 	}
-
 
 	public void setCurrentGroup(Group currentGroup) {
 		this.currentGroup = currentGroup;
 	}
 
 	public String getBoudariesText() {
-
-		float minX=0;
-		float maxX=0;
-		float minY=0;
-		float maxY=0;
-		float minZ=0;
-		float maxZ=0;
+		float minX = 0;
+		float maxX = 0;
+		float minY = 0;
+		float maxY = 0;
+		float minZ = 0;
+		float maxZ = 0;
 
 		Vec3 currentVertex = null;
-		for (int i=0; i < getVertices().size(); i++) {
+		for (int i = 0; i < getVertices().size(); i++) {
 			currentVertex = getVertices().get(i);
-			if (currentVertex.x > maxX) maxX = currentVertex.x;
-			if (currentVertex.x < minX) minX = currentVertex.x;
+			if (currentVertex.x > maxX)
+				maxX = currentVertex.x;
+			if (currentVertex.x < minX)
+				minX = currentVertex.x;
 
-			if (currentVertex.y > maxY) maxY = currentVertex.y;
-			if (currentVertex.y < minY) minY = currentVertex.y;
+			if (currentVertex.y > maxY)
+				maxY = currentVertex.y;
+			if (currentVertex.y < minY)
+				minY = currentVertex.y;
 
-			if (currentVertex.z > maxZ) maxZ = currentVertex.z;
-			if (currentVertex.z < minZ) minZ = currentVertex.z;
+			if (currentVertex.z > maxZ)
+				maxZ = currentVertex.z;
+			if (currentVertex.z < minZ)
+				minZ = currentVertex.z;
 
 		}
 
-		return "maxX=" + maxX + " minX=" + minX +  " maxY=" +  maxY + " minY=" + minY+  " maxZ=" + maxZ+  " minZ=" + minZ;  
+		return "maxX=" + maxX + " minX=" + minX + " maxY=" + maxY + " minY=" + minY + " maxZ=" + maxZ + " minZ=" + minZ;
 	}
 
 	public void printBoudariesText() {
 		System.out.println(getBoudariesText());
-
 	}
 }

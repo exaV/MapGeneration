@@ -38,7 +38,7 @@ import ch.fhnw.ether.model.IGeometry;
 
 public abstract class AbstractModelReader {
 	private final List<IGeometry> model;
-	
+
 	public AbstractModelReader(URL resource) throws IOException {
 		this(resource.getFile(), resource.openStream());
 	}

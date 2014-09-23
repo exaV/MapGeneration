@@ -1,29 +1,27 @@
 package ch.fhnw.ether.formats.obj;
 
-
 public class TextureCooParser extends LineParser {
 
 	private TexCoord coordinate = null;
-	
-	public TextureCooParser() {}
+
+	public TextureCooParser() {
+	}
 
 	@Override
 	public void parse() {
 		coordinate = new TexCoord();
-		try
-		{
-		if (words.length >= 2)
-			coordinate.setU(Float.parseFloat(words[1]));
-		
-		if (words.length >= 3)
-			coordinate.setV(1- Float.parseFloat(words[2]));		// OBJ origin is at upper left, OpenGL origin is	 at lower left.
-		
-		if (words.length >= 4)
-			coordinate.setW(Float.parseFloat(words[3]));
-		
-		}
-		catch(Exception e)
-		{
+		try {
+			if (words.length >= 2)
+				coordinate.setU(Float.parseFloat(words[1]));
+
+			if (words.length >= 3)
+				coordinate.setV(1 - Float.parseFloat(words[2])); // OBJ origin is at upper left, OpenGL origin is at
+																	// lower left.
+
+			if (words.length >= 4)
+				coordinate.setW(Float.parseFloat(words[3]));
+
+		} catch (Exception e) {
 			throw new RuntimeException("TextureParser Error");
 		}
 	}
@@ -31,7 +29,5 @@ public class TextureCooParser extends LineParser {
 	@Override
 	public void incoporateResults(WavefrontObject wavefrontObject) {
 		wavefrontObject.getTextures().add(coordinate);
-		
 	}
-
 }

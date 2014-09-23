@@ -7,13 +7,12 @@ import ch.fhnw.ether.formats.obj.WavefrontObject;
 public class MaterialParser extends LineParser {
 
 	String materialName = "";
-	
+
 	@Override
-	public void incoporateResults(WavefrontObject wavefrontObject) 
-	{
+	public void incoporateResults(WavefrontObject wavefrontObject) {
 		Material newMaterial = new Material(materialName);
-		
-		wavefrontObject.getMaterials().put(materialName,newMaterial);
+
+		wavefrontObject.getMaterials().put(materialName, newMaterial);
 		wavefrontObject.setCurrentMaterial(newMaterial);
 	}
 

@@ -25,7 +25,9 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */package ch.fhnw.ether.examples.metrobuzz.model;
+ */
+
+package ch.fhnw.ether.examples.metrobuzz.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,7 +46,7 @@ public class Model implements IModel {
 	private static final float[] TRIP_COLOR = { 0f, 1f, 0f, 0.2f };
 
 	private final MetroBuzzController controller;
-	
+
 	private final List<Node> nodes = new ArrayList<>();
 	private final List<Link> links = new ArrayList<>();
 
@@ -62,7 +64,7 @@ public class Model implements IModel {
 	public Model(MetroBuzzController controller) {
 		this.controller = controller;
 	}
-	
+
 	@Override
 	public MetroBuzzController getController() {
 		return controller;
@@ -199,7 +201,6 @@ public class Model implements IModel {
 		networkGeometry.setPoints(networkNodes);
 		networkGeometry.setLines(networkEdges);
 
-
 		// add agents (count number of paths first, then add);
 
 		for (Agent agent : agents) {
@@ -299,7 +300,7 @@ public class Model implements IModel {
 			geometry.setLines(agentEdges, agentColors);
 			agentGeometries.add(geometry);
 		}
-		
+
 		renderState = new ModelRenderState(this);
 		renderState.updateNetwork();
 		renderState.updateAgents();
