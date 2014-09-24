@@ -37,9 +37,9 @@ import java.util.Map;
 import ch.fhnw.ether.examples.metrobuzz.controller.MetroBuzzController;
 import ch.fhnw.ether.examples.metrobuzz.controller.ModelRenderState;
 import ch.fhnw.ether.geom.BoundingBox;
-import ch.fhnw.ether.model.GenericMesh;
-import ch.fhnw.ether.model.IGeometry;
-import ch.fhnw.ether.model.IModel;
+import ch.fhnw.ether.scene.GenericMesh;
+import ch.fhnw.ether.scene.IGeometry;
+import ch.fhnw.ether.scene.IModel;
 
 public class Model implements IModel {
 	private static final float[] ACTIVITY_COLOR = { 1f, 0f, 0f, 0.2f };

@@ -34,14 +34,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import ch.fhnw.ether.event.EventDrivenScheduler;
-import ch.fhnw.ether.event.IScheduler;
-import ch.fhnw.ether.model.IModel;
+import ch.fhnw.ether.controller.event.EventDrivenScheduler;
+import ch.fhnw.ether.controller.event.IScheduler;
+import ch.fhnw.ether.controller.tool.ITool;
+import ch.fhnw.ether.controller.tool.NavigationTool;
+import ch.fhnw.ether.controller.tool.PickTool;
 import ch.fhnw.ether.render.IRenderer;
 import ch.fhnw.ether.render.forward.ForwardRenderer;
-import ch.fhnw.ether.tool.ITool;
-import ch.fhnw.ether.tool.NavigationTool;
-import ch.fhnw.ether.tool.PickTool;
+import ch.fhnw.ether.scene.IModel;
 import ch.fhnw.ether.ui.UI;
 import ch.fhnw.ether.view.IView;
 

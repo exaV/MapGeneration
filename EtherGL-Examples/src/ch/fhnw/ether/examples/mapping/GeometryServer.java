@@ -39,9 +39,9 @@ import java.util.ArrayList;
 
 import javax.swing.Timer;
 
-import ch.fhnw.net.osc.OSCHandler;
-import ch.fhnw.net.osc.OSCServer;
-import ch.fhnw.net.util.UDPServer;
+import ch.fhnw.util.net.UDPServer;
+import ch.fhnw.util.net.osc.OSCHandler;
+import ch.fhnw.util.net.osc.OSCServer;
 
 // XXX experimental
 @SuppressWarnings("unused")

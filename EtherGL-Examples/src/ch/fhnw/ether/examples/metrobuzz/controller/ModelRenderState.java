@@ -34,8 +34,8 @@ import ch.fhnw.ether.geom.RGBA;
 import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.IRenderer;
 import ch.fhnw.ether.render.IRenderer.Pass;
-import ch.fhnw.ether.render.shader.Lines;
-import ch.fhnw.ether.render.shader.Points;
+import ch.fhnw.ether.render.shader.builtin.Lines;
+import ch.fhnw.ether.render.shader.builtin.Points;
 
 public final class ModelRenderState {
 	private static final RGBA NETWORK_NODE_COLOR = RGBA.GRAY;

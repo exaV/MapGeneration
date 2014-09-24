@@ -28,11 +28,11 @@
 package ch.fhnw.ether.examples.mapping;
 
 import ch.fhnw.ether.controller.AbstractController;
+import ch.fhnw.ether.controller.tool.AbstractTool;
+import ch.fhnw.ether.controller.tool.ITool;
 import ch.fhnw.ether.mapping.BoxCalibrationModel;
 import ch.fhnw.ether.mapping.tool.CalibrationTool;
 import ch.fhnw.ether.mapping.tool.FillTool;
-import ch.fhnw.ether.tool.AbstractTool;
-import ch.fhnw.ether.tool.ITool;
 import ch.fhnw.ether.view.IView;
 
 import com.jogamp.newt.event.KeyEvent;

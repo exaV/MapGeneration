@@ -31,8 +31,8 @@ package ch.fhnw.ether.examples.mapping;
 
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.geom.Vec3;
-import ch.fhnw.ether.model.CubeMesh;
-import ch.fhnw.ether.model.GenericMeshModel;
+import ch.fhnw.ether.scene.CubeMesh;
+import ch.fhnw.ether.scene.GenericMeshModel;
 
 public class MappingTriangleModel extends GenericMeshModel {
     public MappingTriangleModel(IController controller) {

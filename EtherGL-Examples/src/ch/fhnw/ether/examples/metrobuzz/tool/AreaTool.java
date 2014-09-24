@@ -30,18 +30,18 @@
 package ch.fhnw.ether.examples.metrobuzz.tool;
 
 import ch.fhnw.ether.controller.IController;
+import ch.fhnw.ether.controller.tool.AbstractTool;
 import ch.fhnw.ether.geom.Line;
 import ch.fhnw.ether.geom.Plane;
 import ch.fhnw.ether.geom.ProjectionUtil;
 import ch.fhnw.ether.geom.RGBA;
 import ch.fhnw.ether.geom.Vec3;
-import ch.fhnw.ether.model.CubeMesh;
-import ch.fhnw.ether.model.CubeMesh.Origin;
-import ch.fhnw.ether.model.IPickable;
 import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.IRenderer.Pass;
-import ch.fhnw.ether.render.shader.Triangles;
-import ch.fhnw.ether.tool.AbstractTool;
+import ch.fhnw.ether.render.shader.builtin.Triangles;
+import ch.fhnw.ether.scene.CubeMesh;
+import ch.fhnw.ether.scene.IPickable;
+import ch.fhnw.ether.scene.CubeMesh.Origin;
 import ch.fhnw.ether.view.IView;
 
 import com.jogamp.newt.event.KeyEvent;

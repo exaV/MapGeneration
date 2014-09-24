@@ -31,8 +31,8 @@ package ch.fhnw.ether.render.attribute.builtin;
 
 import java.util.function.Supplier;
 
-import ch.fhnw.ether.gl.Texture;
-import ch.fhnw.ether.render.attribute.SamplerUniformAttribute;
+import ch.fhnw.ether.render.attribute.base.SamplerUniformAttribute;
+import ch.fhnw.ether.render.gl.Texture;
 
 public final class TextureUniform extends SamplerUniformAttribute {
 	public static final String ID = "builtin.texture";

@@ -32,7 +32,7 @@ package ch.fhnw.ether.render.attribute.builtin;
 import java.util.function.Supplier;
 
 import ch.fhnw.ether.geom.Mat4;
-import ch.fhnw.ether.render.attribute.Mat4FloatUniformAttribute;
+import ch.fhnw.ether.render.attribute.base.Mat4FloatUniformAttribute;
 
 public final class ProjMatrixUniform extends Mat4FloatUniformAttribute {
 	public static final String ID = "builtin.proj_matrix";

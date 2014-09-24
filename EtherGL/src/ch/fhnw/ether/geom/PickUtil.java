@@ -29,8 +29,8 @@
 
 package ch.fhnw.ether.geom;
 
-import ch.fhnw.ether.model.IGeometry;
-import ch.fhnw.ether.model.IPickable;
+import ch.fhnw.ether.scene.IGeometry;
+import ch.fhnw.ether.scene.IPickable;
 import ch.fhnw.ether.view.IView;
 
 import java.util.Map;

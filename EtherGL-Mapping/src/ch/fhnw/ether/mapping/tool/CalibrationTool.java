@@ -38,23 +38,23 @@ import java.util.prefs.Preferences;
 
 import ch.fhnw.ether.controller.AbstractController;
 import ch.fhnw.ether.controller.IController;
+import ch.fhnw.ether.controller.tool.AbstractTool;
 import ch.fhnw.ether.geom.ProjectionUtil;
 import ch.fhnw.ether.geom.RGBA;
 import ch.fhnw.ether.geom.Vec3;
-import ch.fhnw.ether.gl.Viewport;
 import ch.fhnw.ether.mapping.BimberRaskarCalibrator;
 import ch.fhnw.ether.mapping.ICalibrationModel;
 import ch.fhnw.ether.mapping.ICalibrator;
-import ch.fhnw.ether.model.GenericMesh;
 import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.IRenderer;
 import ch.fhnw.ether.render.IRenderer.Pass;
-import ch.fhnw.ether.render.shader.Lines;
-import ch.fhnw.ether.render.shader.Points;
+import ch.fhnw.ether.render.shader.builtin.Lines;
+import ch.fhnw.ether.render.shader.builtin.Points;
 import ch.fhnw.ether.render.util.Primitives;
-import ch.fhnw.ether.tool.AbstractTool;
+import ch.fhnw.ether.scene.GenericMesh;
 import ch.fhnw.ether.view.Camera;
 import ch.fhnw.ether.view.IView;
+import ch.fhnw.ether.view.Viewport;
 import ch.fhnw.util.PreferencesStore;
 
 import com.jogamp.newt.event.KeyEvent;

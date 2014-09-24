@@ -33,7 +33,6 @@ import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
 
 import ch.fhnw.ether.controller.IController;
-import ch.fhnw.ether.gl.Viewport;
 
 import com.jogamp.newt.event.KeyListener;
 import com.jogamp.newt.event.MouseListener;

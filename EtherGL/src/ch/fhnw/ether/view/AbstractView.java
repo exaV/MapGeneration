@@ -34,8 +34,7 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
 
 import ch.fhnw.ether.controller.IController;
-import ch.fhnw.ether.gl.NEWTWindow;
-import ch.fhnw.ether.gl.Viewport;
+import ch.fhnw.ether.view.gl.NEWTWindow;
 
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.MouseEvent;

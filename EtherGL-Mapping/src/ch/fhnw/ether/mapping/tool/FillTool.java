@@ -34,14 +34,14 @@ import java.util.Collections;
 import java.util.List;
 
 import ch.fhnw.ether.controller.IController;
+import ch.fhnw.ether.controller.tool.AbstractTool;
 import ch.fhnw.ether.geom.RGBA;
 import ch.fhnw.ether.geom.Vec3;
-import ch.fhnw.ether.model.GenericMesh;
 import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.IRenderer.Pass;
-import ch.fhnw.ether.render.shader.Triangles;
+import ch.fhnw.ether.render.shader.builtin.Triangles;
 import ch.fhnw.ether.render.util.Primitives;
-import ch.fhnw.ether.tool.AbstractTool;
+import ch.fhnw.ether.scene.GenericMesh;
 import ch.fhnw.ether.view.IView;
 
 public final class FillTool extends AbstractTool {

@@ -32,9 +32,9 @@ package ch.fhnw.ether.examples.metrobuzz.controller;
 import java.awt.event.KeyEvent;
 
 import ch.fhnw.ether.controller.AbstractController;
+import ch.fhnw.ether.controller.tool.ITool;
 import ch.fhnw.ether.examples.metrobuzz.model.Model;
 import ch.fhnw.ether.examples.metrobuzz.tool.AreaTool;
-import ch.fhnw.ether.tool.ITool;
 import ch.fhnw.ether.ui.Button;
 import ch.fhnw.ether.ui.Slider;
 

@@ -3,13 +3,13 @@ package ch.fhnw.ether.formats;
 import java.util.List;
 
 import ch.fhnw.ether.controller.IController;
-import ch.fhnw.ether.model.AbstractModel;
-import ch.fhnw.ether.model.IGeometry;
 import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.IRenderer;
 import ch.fhnw.ether.render.attribute.IArrayAttributeProvider;
-import ch.fhnw.ether.render.shader.Lines;
-import ch.fhnw.ether.render.shader.Triangles;
+import ch.fhnw.ether.render.shader.builtin.Lines;
+import ch.fhnw.ether.render.shader.builtin.Triangles;
+import ch.fhnw.ether.scene.AbstractModel;
+import ch.fhnw.ether.scene.IGeometry;
 import ch.fhnw.util.CollectionUtil;
 
 public class StaticModel extends AbstractModel {

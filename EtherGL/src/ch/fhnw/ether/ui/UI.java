@@ -37,10 +37,10 @@ import java.util.List;
 
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.geom.RGBA;
-import ch.fhnw.ether.model.TextGeometry;
 import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.IRenderer;
-import ch.fhnw.ether.render.shader.Triangles;
+import ch.fhnw.ether.render.shader.builtin.Triangles;
+import ch.fhnw.ether.scene.TextGeometry;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.util.UpdateRequest;
 

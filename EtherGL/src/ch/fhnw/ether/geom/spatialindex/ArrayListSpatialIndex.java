@@ -34,7 +34,7 @@ import java.util.Collections;
 import java.util.List;
 
 import ch.fhnw.ether.geom.BoundingBox;
-import ch.fhnw.ether.model.IGeometry;
+import ch.fhnw.ether.scene.IGeometry;
 
 /**
  * A simple implementation of spatial index using array list

@@ -31,7 +31,7 @@ package ch.fhnw.ether.render.attribute.builtin;
 
 import java.util.function.Supplier;
 
-import ch.fhnw.ether.render.attribute.FloatArrayAttribute;
+import ch.fhnw.ether.render.attribute.base.FloatArrayAttribute;
 
 public final class PointSizeArray extends FloatArrayAttribute {
 	public static final String ID = "builtin.point_size_array";

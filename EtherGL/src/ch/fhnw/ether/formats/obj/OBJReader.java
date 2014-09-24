@@ -11,8 +11,8 @@ import ch.fhnw.ether.geom.GeometryUtil;
 import ch.fhnw.ether.geom.RGB;
 import ch.fhnw.ether.geom.RGBA;
 import ch.fhnw.ether.geom.Vec3;
-import ch.fhnw.ether.model.GenericMesh;
-import ch.fhnw.ether.model.IGeometry;
+import ch.fhnw.ether.scene.GenericMesh;
+import ch.fhnw.ether.scene.IGeometry;
 import ch.fhnw.util.FloatList;
 import ch.fhnw.util.IntList;
 

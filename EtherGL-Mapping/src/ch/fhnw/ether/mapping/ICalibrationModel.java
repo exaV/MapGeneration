@@ -29,7 +29,7 @@
 
 package ch.fhnw.ether.mapping;
 
-import ch.fhnw.ether.model.GenericMesh;
+import ch.fhnw.ether.scene.GenericMesh;
 
 public interface ICalibrationModel {
 	GenericMesh getCalibrationMesh();

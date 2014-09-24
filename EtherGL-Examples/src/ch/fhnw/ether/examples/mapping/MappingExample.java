@@ -31,7 +31,7 @@ package ch.fhnw.ether.examples.mapping;
 
 import javax.swing.SwingUtilities;
 
-import ch.fhnw.ether.model.IModel;
+import ch.fhnw.ether.scene.IModel;
 import ch.fhnw.ether.view.IView.ViewType;
 
 public final class MappingExample {

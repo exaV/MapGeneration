@@ -31,7 +31,7 @@ package ch.fhnw.ether.ui;
 
 import java.awt.Color;
 
-import ch.fhnw.ether.model.TextGeometry;
+import ch.fhnw.ether.scene.TextGeometry;
 import ch.fhnw.ether.view.IView;
 
 import com.jogamp.newt.event.KeyEvent;

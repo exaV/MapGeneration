@@ -29,8 +29,8 @@
 
 package ch.fhnw.ether.geom;
 
-import ch.fhnw.ether.gl.Viewport;
 import ch.fhnw.ether.view.IView;
+import ch.fhnw.ether.view.Viewport;
 
 public final class ProjectionUtil {
     public static Vec3 projectToDevice(IView view, Vec3 v) {

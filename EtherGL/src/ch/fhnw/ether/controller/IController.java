@@ -32,10 +32,10 @@ package ch.fhnw.ether.controller;
 import java.util.Collection;
 import java.util.List;
 
-import ch.fhnw.ether.model.IModel;
+import ch.fhnw.ether.controller.tool.ITool;
+import ch.fhnw.ether.controller.tool.NavigationTool;
 import ch.fhnw.ether.render.IRenderer;
-import ch.fhnw.ether.tool.ITool;
-import ch.fhnw.ether.tool.NavigationTool;
+import ch.fhnw.ether.scene.IModel;
 import ch.fhnw.ether.ui.UI;
 import ch.fhnw.ether.view.IView;
 
