@@ -34,8 +34,8 @@ import java.util.List;
 import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.render.attribute.IArrayAttributeProvider;
-import ch.fhnw.ether.render.util.FloatList;
 import ch.fhnw.ether.view.IView;
+import ch.fhnw.util.FloatList;
 
 public interface IRenderable {
 	void dispose(GL3 gl);

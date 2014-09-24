@@ -29,6 +29,7 @@
 
 package ch.fhnw.ether.render;
 
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -44,7 +45,7 @@ import ch.fhnw.ether.render.attribute.IArrayAttributeProvider;
 import ch.fhnw.ether.render.attribute.IUniformAttribute;
 import ch.fhnw.ether.render.attribute.IUniformAttributeProvider;
 import ch.fhnw.ether.render.shader.IShader;
-import ch.fhnw.ether.render.util.FloatList;
+import ch.fhnw.util.FloatList;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.util.UpdateRequest;
 import ch.fhnw.ether.render.attribute.*;
@@ -296,10 +297,9 @@ final class Renderable implements IRenderable {
 			}
 			index = interleave(interleavedData, index, data, sizes);
 		}
-
-		dst.clear();
+		
 		dst.add(interleavedData);
-		buffer.load(gl, dst.buffer());
+		buffer.load(gl, FloatBuffer.wrap(dst.toArray()));
 	}
 
 	private static int interleave(final float[] interleavedData, int index, final float[][] data, final int[] sizes) {
