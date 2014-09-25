@@ -289,6 +289,7 @@ final class Renderable implements IRenderable {
 
 		final float[] interleavedData = new float[size];
 		final float[][] data = new float[arrayAttributes.size()][];
+		
 
 		int index = 0;
 		for (int supplierIndex = 0; supplierIndex < attr.getSuppliers().size(); ++supplierIndex) {
