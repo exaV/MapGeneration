@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.util;
+package ch.fhnw.util.math;
 
 public final class MathUtil {
 	static public final float FLOAT_ROUNDING_ERROR = 0.000001f; // 32 bits

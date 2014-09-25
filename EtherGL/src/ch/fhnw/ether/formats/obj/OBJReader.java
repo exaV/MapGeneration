@@ -7,14 +7,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.fhnw.ether.formats.AbstractModelReader;
-import ch.fhnw.ether.geom.GeometryUtil;
-import ch.fhnw.ether.geom.RGB;
-import ch.fhnw.ether.geom.RGBA;
-import ch.fhnw.ether.geom.Vec3;
 import ch.fhnw.ether.scene.GenericMesh;
 import ch.fhnw.ether.scene.IGeometry;
 import ch.fhnw.util.FloatList;
 import ch.fhnw.util.IntList;
+import ch.fhnw.util.color.RGB;
+import ch.fhnw.util.color.RGBA;
+import ch.fhnw.util.math.GeometryUtil;
+import ch.fhnw.util.math.Vec3;
 
 public class OBJReader extends AbstractModelReader {
 

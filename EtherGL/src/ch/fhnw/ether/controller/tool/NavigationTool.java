@@ -33,14 +33,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.fhnw.ether.controller.IController;
-import ch.fhnw.ether.geom.RGBA;
-import ch.fhnw.ether.geom.Vec3;
 import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.IRenderer;
 import ch.fhnw.ether.render.shader.builtin.Lines;
 import ch.fhnw.ether.render.util.Primitives;
 import ch.fhnw.ether.scene.GenericMesh;
 import ch.fhnw.ether.view.IView;
+import ch.fhnw.util.color.RGBA;
+import ch.fhnw.util.math.Vec3;
 
 import com.jogamp.newt.event.MouseEvent;
 

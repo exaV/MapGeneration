@@ -30,9 +30,7 @@
 package ch.fhnw.ether.scene;
 
 import ch.fhnw.ether.geom.BoundingBox;
-import ch.fhnw.ether.geom.IColor;
 import ch.fhnw.ether.geom.PickUtil;
-import ch.fhnw.ether.geom.Vec3;
 import ch.fhnw.ether.render.attribute.IAttribute.ISuppliers;
 import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
 import ch.fhnw.ether.render.attribute.builtin.ColorArray;
@@ -41,6 +39,8 @@ import ch.fhnw.ether.render.attribute.builtin.PointSizeArray;
 import ch.fhnw.ether.render.attribute.builtin.PositionArray;
 import ch.fhnw.ether.render.attribute.builtin.TexCoordArray;
 import ch.fhnw.ether.view.IView;
+import ch.fhnw.util.color.IColor;
+import ch.fhnw.util.math.Vec3;
 
 /**
  * Created by radar on 05/12/13.

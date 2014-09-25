@@ -29,7 +29,7 @@
 
 package ch.fhnw.ether.scene;
 
-import ch.fhnw.ether.geom.Vec3;
+import ch.fhnw.util.math.Vec3;
 
 /**
  * Created by radar on 05/12/13.

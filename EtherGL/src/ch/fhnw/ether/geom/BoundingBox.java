@@ -31,6 +31,8 @@ package ch.fhnw.ether.geom;
 
 import java.util.Collection;
 
+import ch.fhnw.util.math.Vec3;
+
 /**
  * Axis aligned 3D bounding box. Also contains 2D operations that only take x and y coordinates into account.
  * 

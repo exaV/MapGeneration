@@ -29,10 +29,10 @@
 
 package ch.fhnw.ether.mapping;
 
-import ch.fhnw.ether.geom.Mat4;
-import ch.fhnw.ether.geom.Vec3;
-
 import java.util.List;
+
+import ch.fhnw.util.math.Mat4;
+import ch.fhnw.util.math.Vec3;
 
 /**
  * Interface for calibrators.

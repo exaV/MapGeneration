@@ -29,13 +29,13 @@
 
 package ch.fhnw.ether.mapping.tool;
 
-import ch.fhnw.ether.geom.Vec3;
-
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
+
+import ch.fhnw.util.math.Vec3;
 
 class CalibrationContext {
     boolean calibrated = false;

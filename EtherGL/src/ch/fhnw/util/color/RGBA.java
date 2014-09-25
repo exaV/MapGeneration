@@ -27,57 +27,57 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.mapping.tool;
+package ch.fhnw.util.color;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import ch.fhnw.util.math.Vec4;
 
-import ch.fhnw.ether.controller.IController;
-import ch.fhnw.ether.controller.tool.AbstractTool;
-import ch.fhnw.ether.render.IRenderable;
-import ch.fhnw.ether.render.IRenderer.Pass;
-import ch.fhnw.ether.render.shader.builtin.Triangles;
-import ch.fhnw.ether.render.util.Primitives;
-import ch.fhnw.ether.scene.GenericMesh;
-import ch.fhnw.ether.view.IView;
-import ch.fhnw.util.color.RGBA;
-import ch.fhnw.util.math.Vec3;
+public class RGBA extends Vec4 implements IColor {
+	public static final RGBA BLACK = new RGBA(0, 0, 0, 1);
+	public static final RGBA WHITE = new RGBA(1, 1, 1, 1);
 
-public final class FillTool extends AbstractTool {
-	static final String[] FILL_HELP = { "Fill Tool for Projector Adjustment", "", "[0] Return" };
+	public static final RGBA RED = new RGBA(1, 0, 0, 1);
+	public static final RGBA GREEN = new RGBA(0, 1, 0, 1);
+	public static final RGBA BLUE = new RGBA(0, 0, 1, 1);
 
-	private final IRenderable quads;
+	public static final RGBA YELLOW = new RGBA(1, 1, 0, 1);
+	public static final RGBA MAGENTA = new RGBA(1, 0, 1, 1);
+	public static final RGBA CYAN = new RGBA(0, 1, 1, 1);
 
-	public FillTool(IController controller) {
-		super(controller);
-		quads = controller.getRenderer().createRenderable(Pass.DEVICE_SPACE_OVERLAY, new Triangles(RGBA.WHITE), makeQuads());
+	public static final RGBA GRAY = new RGBA(0.5f, 0.5f, 0.5f, 1);
+	public static final RGBA LIGHT_GRAY = new RGBA(0.75f, 0.75f, 0.75f, 1);
+	public static final RGBA DARK_GRAY = new RGBA(0.25f, 0.25f, 0.25f, 1);
+
+
+	public RGBA(float[] rgba) {
+		this(rgba[0], rgba[1], rgba[2], rgba[3]);
+	}
+
+	public RGBA(float r, float g, float b, float a) {
+		super(r, g, b, a);
 	}
 
 	@Override
-	public void activate() {
-		getController().getRenderer().addRenderables(quads);
+	public float red() {
+		return x;
 	}
 
 	@Override
-	public void deactivate() {
-		getController().getRenderer().removeRenderables(quads);
-		getController().enableViews(null);
+	public float green() {
+		return y;
 	}
 
 	@Override
-	public void refresh(IView view) {
-		getController().enableViews(Collections.singleton(view));
+	public float blue() {
+		return z;
 	}
 
-	private static GenericMesh makeQuads() {
-		GenericMesh geometry = new GenericMesh();
-		List<Vec3> dst = new ArrayList<>();
-		Primitives.addRectangle(dst, -1.0f, -1.0f, -0.1f, -0.1f);
-		Primitives.addRectangle(dst, 0.1f, -1.0f, 1.0f, -0.1f);
-		Primitives.addRectangle(dst, 0.1f, 0.1f, 1.0f, 1.0f);
-		Primitives.addRectangle(dst, -1.0f, 0.1f, -0.1f, 1.0f);
-		geometry.setTriangles(Vec3.toArray(dst));
-		return geometry;
+	@Override
+	public float alpha() {
+		return w;
+	}
+
+	@Override
+	public String toString() {
+		return "rgba[" + red() + " " + green() + " " + blue() + " " + alpha() + "]";
 	}
 }

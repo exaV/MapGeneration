@@ -2,8 +2,8 @@ package ch.fhnw.ether.formats.obj;
 
 import java.util.ArrayList;
 
-import ch.fhnw.ether.geom.Vec3;
 import ch.fhnw.util.IntList;
+import ch.fhnw.util.math.Vec3;
 
 public class Group {
 

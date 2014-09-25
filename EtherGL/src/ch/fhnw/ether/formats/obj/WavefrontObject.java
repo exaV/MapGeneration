@@ -9,7 +9,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import ch.fhnw.ether.geom.Vec3;
+import ch.fhnw.util.math.Vec3;
 
 public class WavefrontObject {
 	private List<Vec3> vertices = new ArrayList<Vec3>();

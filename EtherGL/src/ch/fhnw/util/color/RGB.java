@@ -1,4 +1,6 @@
-package ch.fhnw.ether.geom;
+package ch.fhnw.util.color;
+
+import ch.fhnw.util.math.Vec3;
 
 public class RGB extends Vec3 implements IColor {
     public RGB(float red, float green, float blue) {

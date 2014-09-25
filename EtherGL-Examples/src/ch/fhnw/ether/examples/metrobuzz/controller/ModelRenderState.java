@@ -30,12 +30,12 @@
 package ch.fhnw.ether.examples.metrobuzz.controller;
 
 import ch.fhnw.ether.examples.metrobuzz.model.Model;
-import ch.fhnw.ether.geom.RGBA;
 import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.IRenderer;
 import ch.fhnw.ether.render.IRenderer.Pass;
 import ch.fhnw.ether.render.shader.builtin.Lines;
 import ch.fhnw.ether.render.shader.builtin.Points;
+import ch.fhnw.util.color.RGBA;
 
 public final class ModelRenderState {
 	private static final RGBA NETWORK_NODE_COLOR = RGBA.GRAY;

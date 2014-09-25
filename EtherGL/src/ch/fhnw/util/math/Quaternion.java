@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package ch.fhnw.ether.geom;
+package ch.fhnw.util.math;
 
-import ch.fhnw.util.MathUtil;
 import ch.fhnw.util.Pair;
 
 public class Quaternion extends Vec4 {

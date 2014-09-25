@@ -32,13 +32,13 @@ package ch.fhnw.ether.scene;
 import java.util.List;
 
 import ch.fhnw.ether.controller.IController;
-import ch.fhnw.ether.geom.RGBA;
 import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.attribute.IArrayAttributeProvider;
 import ch.fhnw.ether.render.shader.builtin.Lines;
 import ch.fhnw.ether.render.shader.builtin.Points;
 import ch.fhnw.ether.render.shader.builtin.Triangles;
 import ch.fhnw.util.CollectionUtil;
+import ch.fhnw.util.color.RGBA;
 import ch.fhnw.ether.render.IRenderer;
 
 // TODO: this class is doomed, mainly for testing right now

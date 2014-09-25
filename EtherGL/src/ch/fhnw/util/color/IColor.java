@@ -1,4 +1,4 @@
-package ch.fhnw.ether.geom;
+package ch.fhnw.util.color;
 
 public interface IColor {
 	float red();

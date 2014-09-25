@@ -33,8 +33,8 @@ import java.util.function.Supplier;
 
 import javax.media.opengl.GL3;
 
-import ch.fhnw.ether.geom.Mat4;
 import ch.fhnw.ether.render.gl.Program;
+import ch.fhnw.util.math.Mat4;
 
 public class Mat4FloatUniformAttribute extends AbstractUniformAttribute<Mat4> {
 	public Mat4FloatUniformAttribute(String id, String shaderName) {

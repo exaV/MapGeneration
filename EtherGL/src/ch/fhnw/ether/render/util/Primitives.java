@@ -31,7 +31,7 @@ package ch.fhnw.ether.render.util;
 
 import java.util.List;
 
-import ch.fhnw.ether.geom.Vec3;
+import ch.fhnw.util.math.Vec3;
 
 // TODO: this is really too "primitive"... needs total revision
 public final class Primitives {

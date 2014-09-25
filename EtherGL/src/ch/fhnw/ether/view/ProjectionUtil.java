@@ -27,10 +27,14 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.geom;
+package ch.fhnw.ether.view;
 
+import ch.fhnw.ether.geom.Line;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.Viewport;
+import ch.fhnw.util.math.Mat4;
+import ch.fhnw.util.math.Vec3;
+import ch.fhnw.util.math.Vec4;
 
 public final class ProjectionUtil {
     public static Vec3 projectToDevice(IView view, Vec3 v) {

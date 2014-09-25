@@ -32,6 +32,9 @@ package ch.fhnw.ether.geom;
 import ch.fhnw.ether.scene.IGeometry;
 import ch.fhnw.ether.scene.IPickable;
 import ch.fhnw.ether.view.IView;
+import ch.fhnw.util.math.GeometryUtil;
+import ch.fhnw.ether.view.ProjectionUtil;
+import ch.fhnw.util.math.Vec3;
 
 import java.util.Map;
 import java.util.TreeMap;

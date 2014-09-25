@@ -30,7 +30,7 @@
 package ch.fhnw.ether.scene;
 
 import ch.fhnw.ether.geom.BoundingBox;
-import ch.fhnw.ether.geom.Vec3;
+import ch.fhnw.util.math.Vec3;
 
 public interface IGeometry {
 	Object getContainer();

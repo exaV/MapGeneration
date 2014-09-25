@@ -35,7 +35,6 @@ import java.util.function.Supplier;
 
 import javax.media.opengl.GL3;
 
-import ch.fhnw.ether.render.attribute.AbstractArrayAttribute;
 import ch.fhnw.ether.render.attribute.IArrayAttribute;
 import ch.fhnw.ether.render.attribute.IArrayAttribute.NumComponents;
 import ch.fhnw.ether.render.gl.FloatArrayBuffer;

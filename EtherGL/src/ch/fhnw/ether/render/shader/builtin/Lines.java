@@ -31,7 +31,6 @@ package ch.fhnw.ether.render.shader.builtin;
 
 import java.util.List;
 
-import ch.fhnw.ether.geom.RGBA;
 import ch.fhnw.ether.render.attribute.IArrayAttribute;
 import ch.fhnw.ether.render.attribute.IUniformAttribute;
 import ch.fhnw.ether.render.attribute.base.BooleanUniformAttribute;
@@ -42,6 +41,7 @@ import ch.fhnw.ether.render.attribute.builtin.ProjMatrixUniform;
 import ch.fhnw.ether.render.attribute.builtin.ViewMatrixUniform;
 import ch.fhnw.ether.render.attribute.*;
 import ch.fhnw.ether.render.shader.base.AbstractShader;
+import ch.fhnw.util.color.RGBA;
 
 public class Lines extends AbstractShader {
 	private RGBA rgba;

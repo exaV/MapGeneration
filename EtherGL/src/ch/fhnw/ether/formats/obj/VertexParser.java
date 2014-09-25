@@ -1,6 +1,6 @@
 package ch.fhnw.ether.formats.obj;
 
-import ch.fhnw.ether.geom.Vec3;
+import ch.fhnw.util.math.Vec3;
 
 public class VertexParser extends LineParser {
 	private Vec3 vertex = null;

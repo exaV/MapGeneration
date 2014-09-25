@@ -34,10 +34,10 @@ import java.util.List;
 
 import javax.media.opengl.GL3;
 
-import ch.fhnw.ether.geom.Mat4;
 import ch.fhnw.ether.render.attribute.IArrayAttributeProvider;
 import ch.fhnw.ether.render.shader.IShader;
 import ch.fhnw.ether.view.IView;
+import ch.fhnw.util.math.Mat4;
 
 /**
  * Simple rendering interface.

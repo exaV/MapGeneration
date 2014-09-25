@@ -1,6 +1,7 @@
-package ch.fhnw.ether.render.attribute;
+package ch.fhnw.ether.render.attribute.base;
 
-import ch.fhnw.ether.render.attribute.base.AbstractAttribute;
+import ch.fhnw.ether.render.attribute.IArrayAttribute;
+import ch.fhnw.ether.render.attribute.IArrayAttribute.NumComponents;
 
 
 public abstract class AbstractArrayAttribute extends AbstractAttribute implements IArrayAttribute {

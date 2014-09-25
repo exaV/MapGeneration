@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.geom;
+package ch.fhnw.util.math;
 
 /**
  * 4D vector for basic vector algebra.

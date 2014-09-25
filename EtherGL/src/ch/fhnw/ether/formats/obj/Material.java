@@ -1,6 +1,6 @@
 package ch.fhnw.ether.formats.obj;
 
-import ch.fhnw.ether.geom.RGB;
+import ch.fhnw.util.color.RGB;
 
 public class Material {
 	private Texture texture;

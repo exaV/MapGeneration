@@ -27,55 +27,23 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.geom;
+package ch.fhnw.util;
 
-public class RGBA extends Vec4 implements IColor {
-	public static final RGBA BLACK = new RGBA(0, 0, 0, 1);
-	public static final RGBA WHITE = new RGBA(1, 1, 1, 1);
+/**
+ * Viewport frame for use with OpenGL.
+ *
+ * @author radar
+ */
+public final class Viewport {
+    public final int x;
+    public final int y;
+    public final int w;
+    public final int h;
 
-	public static final RGBA RED = new RGBA(1, 0, 0, 1);
-	public static final RGBA GREEN = new RGBA(0, 1, 0, 1);
-	public static final RGBA BLUE = new RGBA(0, 0, 1, 1);
-
-	public static final RGBA YELLOW = new RGBA(1, 1, 0, 1);
-	public static final RGBA MAGENTA = new RGBA(1, 0, 1, 1);
-	public static final RGBA CYAN = new RGBA(0, 1, 1, 1);
-
-	public static final RGBA GRAY = new RGBA(0.5f, 0.5f, 0.5f, 1);
-	public static final RGBA LIGHT_GRAY = new RGBA(0.75f, 0.75f, 0.75f, 1);
-	public static final RGBA DARK_GRAY = new RGBA(0.25f, 0.25f, 0.25f, 1);
-
-
-	public RGBA(float[] rgba) {
-		this(rgba[0], rgba[1], rgba[2], rgba[3]);
-	}
-
-	public RGBA(float r, float g, float b, float a) {
-		super(r, g, b, a);
-	}
-
-	@Override
-	public float red() {
-		return x;
-	}
-
-	@Override
-	public float green() {
-		return y;
-	}
-
-	@Override
-	public float blue() {
-		return z;
-	}
-
-	@Override
-	public float alpha() {
-		return w;
-	}
-
-	@Override
-	public String toString() {
-		return "rgba[" + red() + " " + green() + " " + blue() + " " + alpha() + "]";
-	}
+    public Viewport(int x, int y, int w, int h) {
+        this.x = x;
+        this.y = y;
+        this.w = w;
+        this.h = h;
+    }
 }

@@ -30,8 +30,8 @@
 package ch.fhnw.ether.view;
 
 import ch.fhnw.ether.geom.BoundingBox;
-import ch.fhnw.ether.geom.Mat4;
-import ch.fhnw.util.MathUtil;
+import ch.fhnw.util.math.Mat4;
+import ch.fhnw.util.math.MathUtil;
 
 /**
  * OpenGL-aligned camera model
