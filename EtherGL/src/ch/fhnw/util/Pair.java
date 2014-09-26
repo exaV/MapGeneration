@@ -8,8 +8,4 @@ public class Pair<TF, TS> {
 		this.first  = first;
 		this.second = second;
 	}
-	
-	public static <TF, TS> Pair<TF, TS> make(TF first, TS second) {
-		return new Pair<TF, TS>(first, second);
-	}
 }
