@@ -695,7 +695,7 @@ public class Quaternion extends Vec4 {
 
 		Quaternion twist = new Quaternion(axisX * d, axisY * d, axisZ * d, this.w).normalize();
 		Quaternion swing = twist.conjugate().mulLeft(this);
-		return Pair.make(swing, twist);
+		return new Pair<>(swing, twist);
 	}
 
 	/** Get the swing rotation and twist rotation for the specified axis. The twist rotation represents the rotation around the
