@@ -29,8 +29,6 @@
 
 package ch.fhnw.ether.render.attribute.builtin;
 
-import java.util.function.Supplier;
-
 import ch.fhnw.ether.render.attribute.base.FloatArrayAttribute;
 
 public final class TexCoordArray extends FloatArrayAttribute {
@@ -43,9 +41,5 @@ public final class TexCoordArray extends FloatArrayAttribute {
 
 	public TexCoordArray(String shaderName) {
 		super(ID, shaderName, NumComponents.TWO);
-	}
-	
-	public static IdSupplierPair supply(Supplier<float[]> supplier) {
-		return new IdSupplierPair(ID, supplier);
 	}
 }

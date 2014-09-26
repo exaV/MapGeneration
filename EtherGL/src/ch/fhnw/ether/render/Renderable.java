@@ -42,16 +42,16 @@ import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.render.attribute.IArrayAttribute;
 import ch.fhnw.ether.render.attribute.IArrayAttributeProvider;
+import ch.fhnw.ether.render.attribute.IAttribute;
 import ch.fhnw.ether.render.attribute.IUniformAttribute;
 import ch.fhnw.ether.render.attribute.IUniformAttributeProvider;
-import ch.fhnw.ether.render.shader.IShader;
-import ch.fhnw.util.FloatList;
-import ch.fhnw.ether.view.IView;
-import ch.fhnw.util.UpdateRequest;
-import ch.fhnw.ether.render.attribute.*;
 import ch.fhnw.ether.render.attribute.base.FloatArrayAttribute;
 import ch.fhnw.ether.render.gl.FloatArrayBuffer;
 import ch.fhnw.ether.render.gl.Program;
+import ch.fhnw.ether.render.shader.IShader;
+import ch.fhnw.ether.view.IView;
+import ch.fhnw.util.FloatList;
+import ch.fhnw.util.UpdateRequest;
 
 // TODO: we currently support float arrays only
 final class Renderable implements IRenderable {
@@ -204,11 +204,6 @@ final class Renderable implements IRenderable {
 			public void add(String id, Supplier<?> supplier) {
 				if (map.put(id, supplier) != null)
 					throw new IllegalArgumentException("duplicate attribute: " + id);
-			}
-
-			@Override
-			public void add(IAttribute.IdSupplierPair entry) {
-				add(entry.id, entry.supplier);
 			}
 
 			@Override

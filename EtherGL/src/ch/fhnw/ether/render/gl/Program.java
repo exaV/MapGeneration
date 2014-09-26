@@ -47,8 +47,13 @@ import com.jogamp.opengl.util.glsl.ShaderProgram;
 // TODO we currently just wrap around JOGLs GLSL helpers. should get rid non-GL code dependencies though...
 public final class Program {
 	public enum ShaderType {
-		VERTEX(GL3.GL_VERTEX_SHADER), TESS_CONTROL(GL4.GL_TESS_CONTROL_SHADER), TESS_EVAL(GL4.GL_TESS_EVALUATION_SHADER), GEOMETRY(GL3.GL_GEOMETRY_SHADER), FRAGMENT(
-				GL3.GL_FRAGMENT_SHADER);
+		//@formatter:off
+		VERTEX(GL3.GL_VERTEX_SHADER),
+		TESS_CONTROL(GL4.GL_TESS_CONTROL_SHADER),
+		TESS_EVAL(GL4.GL_TESS_EVALUATION_SHADER),
+		GEOMETRY(GL3.GL_GEOMETRY_SHADER),
+		FRAGMENT(GL3.GL_FRAGMENT_SHADER);
+		//@formatter:on
 
 		ShaderType(int glType) {
 			this.glType = glType;

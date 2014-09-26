@@ -53,8 +53,4 @@ public final class TextureUniform extends SamplerUniformAttribute {
 	public TextureUniform(String shaderName, Supplier<Texture> supplier) {
 		super(ID, shaderName, supplier);
 	}
-	
-	public static IdSupplierPair supply(Supplier<Texture> supplier) {
-		return new IdSupplierPair(ID, supplier);
-	}
 }

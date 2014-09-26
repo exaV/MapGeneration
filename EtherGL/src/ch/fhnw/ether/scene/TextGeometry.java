@@ -147,8 +147,8 @@ public class TextGeometry implements IArrayAttributeProvider {
 		if (primitiveType != IAttribute.PrimitiveType.TRIANGLE)
 			return;
 
-		dst.add(PositionArray.supply(() -> new float[]{x, y, 0, x + w, y, 0, x + w, y + h, 0, x, y, 0, x + w, y + h, 0, x, y + h, 0}));
-		dst.add(TexCoordArray.supply(() -> Primitives.DEFAULT_QUAD_TEX_COORDS));
+		dst.add(PositionArray.ID, () -> new float[]{x, y, 0, x + w, y, 0, x + w, y + h, 0, x, y, 0, x + w, y + h, 0, x, y + h, 0});
+		dst.add(TexCoordArray.ID, () -> Primitives.DEFAULT_QUAD_TEX_COORDS);
 	}
 
 	private void requestUpdate() {

@@ -116,7 +116,7 @@ public class ForwardRenderer extends AbstractRenderer {
 
 	@Override
 	public void getAttributeSuppliers(ISuppliers dst) {
-		dst.add(ProjMatrixUniform.supply(() -> state.projMatrix));
-		dst.add(ViewMatrixUniform.supply(() -> state.viewMatrix));
+		dst.add(ProjMatrixUniform.ID, () -> state.projMatrix);
+		dst.add(ViewMatrixUniform.ID, () -> state.viewMatrix);
 	}
 }

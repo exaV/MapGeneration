@@ -53,8 +53,4 @@ public final class ProjMatrixUniform extends Mat4FloatUniformAttribute {
 	public ProjMatrixUniform(String shaderName, Supplier<Mat4> supplier) {
 		super(ID, shaderName, supplier);
 	}
-
-	public static IdSupplierPair supply(Supplier<Mat4> supplier) {
-		return new IdSupplierPair(ID, supplier);
-	}
 }

@@ -233,33 +233,33 @@ public class GenericMesh extends AbstractMesh {
 	}
 
 	private void getPointSuppliers(ISuppliers dst) {
-		dst.add(PositionArray.supply(() -> {
+		dst.add(PositionArray.ID, () -> {
 			validateCache();
 			return cache.pointVertices;
-		}));
-		dst.add(ColorArray.supply(() -> pointColors));
-		dst.add(PointSizeArray.supply(() -> pointSizes));
+		});
+		dst.add(ColorArray.ID, () -> pointColors);
+		dst.add(PointSizeArray.ID, () -> pointSizes);
 	}
 
 	private void getLineSuppliers(ISuppliers dst) {
-		dst.add(PositionArray.supply(() -> {
+		dst.add(PositionArray.ID, () -> {
 			validateCache();
 			return cache.lineVertices;
-		}));
-		dst.add(ColorArray.supply(() -> lineColors));
+		});
+		dst.add(ColorArray.ID, () -> lineColors);
 	}
 
 	private void getTriangleSuppliers(ISuppliers dst) {
-		dst.add(PositionArray.supply(() -> {
+		dst.add(PositionArray.ID, () -> {
 			validateCache();
 			return cache.triangleVertices;
-		}));
-		dst.add(NormalArray.supply(() -> {
+		});
+		dst.add(NormalArray.ID, () -> {
 			validateCache();
 			return cache.triangleNormals;
-		}));
-		dst.add(ColorArray.supply(() -> triangleColors));
-		dst.add(TexCoordArray.supply(() -> triangleTexCoords));
+		});
+		dst.add(ColorArray.ID, () -> triangleColors);
+		dst.add(TexCoordArray.ID, () -> triangleTexCoords);
 	}
 
 	private void invalidateCache() {
