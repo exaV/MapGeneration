@@ -1,4 +1,12 @@
 package ch.fhnw.ether.reorg.api;
 
-public interface I3DObject {	
+import ch.fhnw.ether.geom.BoundingBox;
+import ch.fhnw.util.math.Vec3;
+
+public interface I3DObject {
+
+	BoundingBox getBoundings();	
+	
+	Vec3 getPosition();
+	
 }

@@ -3,18 +3,7 @@ package ch.fhnw.ether.reorg.api;
 import java.util.List;
 
 public interface IScene {
+
+	List<? extends I3DObject> getObjects();
 	
-	boolean addMesh(IMesh mesh);
-	
-	boolean removeMesh(IMesh mesh);
-	
-	List<IMesh> getMeshes();
-	
-	boolean addLight(ILight light);
-	
-	boolean removeLight(ILight light);
-	
-	List<ILight> getLights();
-	
-	void setActiveCamera(ICamera camera);
 }

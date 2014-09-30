@@ -36,7 +36,7 @@ import javax.swing.SwingUtilities;
 import ch.fhnw.ether.examples.metrobuzz.controller.MetroBuzzController;
 import ch.fhnw.ether.examples.metrobuzz.controller.View;
 import ch.fhnw.ether.examples.metrobuzz.io.matsim.Loader;
-import ch.fhnw.ether.examples.metrobuzz.model.Model;
+import ch.fhnw.ether.examples.metrobuzz.model.Scene;
 
 public class MetroBuzz {
     public static void main(final String[] args) {
@@ -54,7 +54,7 @@ public class MetroBuzz {
 		controller.addView(new View(controller, 0, 10, 512, 512));
 		controller.addView(new View(controller, 512, 10, 512, 512));
 
-		Model model = new Model(controller);
+		Scene model = new Scene(controller);
 		System.out.println("Loading Data");
 		try {
 			Loader.load(model, "/Users/radar/devel/data/sioux_osm", 100 /*Integer.MAX_VALUE*/);
@@ -65,7 +65,7 @@ public class MetroBuzz {
 		model.getNetworkGeometry();
 		System.out.println("Done.");
 
-		Model.printAgent(model.getAgents().get(0));
+		Scene.printAgent(model.getAgents().get(0));
 		//Model.printAgent(model.getAgents().get(1));
 		//Model.printAgent(model.getAgents().get(2));
 		

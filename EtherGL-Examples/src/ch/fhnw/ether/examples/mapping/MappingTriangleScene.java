@@ -34,8 +34,8 @@ import ch.fhnw.ether.scene.CubeMesh;
 import ch.fhnw.ether.scene.GenericMeshModel;
 import ch.fhnw.util.math.Vec3;
 
-public class MappingTriangleModel extends GenericMeshModel {
-    public MappingTriangleModel(IController controller) {
+public class MappingTriangleScene extends GenericMeshModel {
+    public MappingTriangleScene(IController controller) {
     	super(controller);
         for (int i = 0; i < 10; ++i) {
             CubeMesh mesh = new CubeMesh(CubeMesh.Origin.BOTTOM_CENTER);

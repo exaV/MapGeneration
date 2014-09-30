@@ -38,6 +38,7 @@ import javax.xml.parsers.SAXParserFactory;
 
 import ch.fhnw.ether.examples.metrobuzz.model.Link;
 import ch.fhnw.ether.examples.metrobuzz.model.Trip;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -46,27 +47,27 @@ import org.xml.sax.helpers.DefaultHandler;
 import ch.fhnw.ether.examples.metrobuzz.model.Activity;
 import ch.fhnw.ether.examples.metrobuzz.model.Activity.ActivityType;
 import ch.fhnw.ether.examples.metrobuzz.model.Agent;
-import ch.fhnw.ether.examples.metrobuzz.model.Model;
 import ch.fhnw.ether.examples.metrobuzz.model.Node;
+import ch.fhnw.ether.examples.metrobuzz.model.Scene;
 
 public class Loader {
 	private static final boolean DBG = false;
 
 	private SAXParserFactory parserFactory = SAXParserFactory.newInstance();
 
-	public static void load(Model model, String basePath, int maxAgents) throws IOException {
+	public static void load(Scene model, String basePath, int maxAgents) throws IOException {
 		new Loader(model, basePath, maxAgents);
 		model.normalize();
 	}
 
-	private Loader(Model model, String basePath, int maxAgents) throws IOException {
+	private Loader(Scene model, String basePath, int maxAgents) throws IOException {
 		loadNetwork(model, basePath + "/output_network.xml");
 		loadAgents(model, basePath + "/output_plans.xml", maxAgents);
 		System.out.println("info: loaded network (" + model.getNodes().size() + " nodes, " + model.getLinks().size() + " links, " + model.getAgents().size()
 				+ " agents)");
 	}
 
-	private void loadNetwork(final Model model, final String path) throws IOException {
+	private void loadNetwork(final Scene model, final String path) throws IOException {
 		try {
 			SAXParser parser = parserFactory.newSAXParser();
 			parser.parse(path, new DefaultHandler() {
@@ -93,7 +94,7 @@ public class Loader {
 		}
 	}
 
-	private void addNode(Model model, Attributes attributes) {
+	private void addNode(Scene model, Attributes attributes) {
 		// attributes: id, x, y
 		String id = attributes.getValue("id");
 		String x = attributes.getValue("x");
@@ -113,7 +114,7 @@ public class Loader {
 		}
 	}
 
-	private void addEdge(Model model, Attributes attributes) {
+	private void addEdge(Scene model, Attributes attributes) {
 		// attributes: id, fromNode, toNode
 		String id = attributes.getValue("id");
 		String fromNode = attributes.getValue("from");
@@ -141,7 +142,7 @@ public class Loader {
 		NONE, PUBLIC_TRANSPORT, CAR
 	}
 
-	private void loadAgents(final Model model, final String path, final int maxAgents) throws IOException {
+	private void loadAgents(final Scene model, final String path, final int maxAgents) throws IOException {
 		try {
 			SAXParser parser = parserFactory.newSAXParser();
 			parser.parse(path, new DefaultHandler() {

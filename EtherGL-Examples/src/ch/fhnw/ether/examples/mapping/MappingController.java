@@ -97,7 +97,7 @@ public class MappingController extends AbstractController {
 	}
 
 	@Override
-	public MappingTriangleModel getModel() {
-		return (MappingTriangleModel) super.getModel();
+	public MappingTriangleScene getModel() {
+		return (MappingTriangleScene) super.getModel();
 	}
 }

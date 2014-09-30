@@ -29,7 +29,7 @@
 
 package ch.fhnw.ether.examples.metrobuzz.controller;
 
-import ch.fhnw.ether.examples.metrobuzz.model.Model;
+import ch.fhnw.ether.examples.metrobuzz.model.Scene;
 import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.IRenderer;
 import ch.fhnw.ether.render.IRenderer.Pass;
@@ -42,13 +42,13 @@ public final class ModelRenderState {
 	private static final RGBA NETWORK_EDGE_COLOR = RGBA.GRAY;
 	private static final float NETWORK_POINT_SIZE = 4.0f;
 
-	protected final Model model;
+	protected final Scene model;
 	
 	private final IRenderable networkNodes;
 	private final IRenderable networkEdges;
 	private final IRenderable agentPaths;
 
-	public ModelRenderState(Model model) {
+	public ModelRenderState(Scene model) {
 		this.model = model;
 
 		IRenderer renderer = model.getController().getRenderer();

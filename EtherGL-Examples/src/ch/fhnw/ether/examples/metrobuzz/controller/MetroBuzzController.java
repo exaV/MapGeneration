@@ -33,7 +33,7 @@ import java.awt.event.KeyEvent;
 
 import ch.fhnw.ether.controller.AbstractController;
 import ch.fhnw.ether.controller.tool.ITool;
-import ch.fhnw.ether.examples.metrobuzz.model.Model;
+import ch.fhnw.ether.examples.metrobuzz.model.Scene;
 import ch.fhnw.ether.examples.metrobuzz.tool.AreaTool;
 import ch.fhnw.ether.ui.Button;
 import ch.fhnw.ether.ui.Slider;
@@ -46,8 +46,8 @@ public class MetroBuzzController extends AbstractController {
     }
 
     @Override
-    public Model getModel() {
-        return (Model) super.getModel();
+    public Scene getModel() {
+        return (Scene) super.getModel();
     }
     
     private void addUI() {

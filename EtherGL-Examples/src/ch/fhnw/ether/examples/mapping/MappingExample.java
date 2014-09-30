@@ -61,7 +61,7 @@ public final class MappingExample {
 	public MappingExample() {
 		final MappingController controller = new MappingController();
 
-		IModel model = new MappingTriangleModel(controller);
+		IModel model = new MappingTriangleScene(controller);
 
 		controller.setModel(model);
 

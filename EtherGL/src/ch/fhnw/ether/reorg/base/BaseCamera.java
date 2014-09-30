@@ -39,24 +39,20 @@ public class BaseCamera implements ICamera{
 		dst.add(ViewMatrixUniform.ID, () -> { return viewMatrix; });
 	}
 	
-	@Override
 	public void rotate(float angle, Vec3 axis) {
 		viewMatrix.rotate(angle, axis);
 		direction = viewMatrix.transform(Vec3.Z);
 	}
 	
-	@Override
 	public void translate(Vec3 vector) {
 		position.add(vector);
 		viewMatrix.translate(vector);
 	}
 	
-	@Override
 	public Vec3 getPosition() {
 		return position;
 	}
 
-	@Override
 	public void setPosition(Vec3 position) {
 		viewMatrix.translate(this.position.negate());
 		viewMatrix.translate(position);
@@ -100,18 +96,8 @@ public class BaseCamera implements ICamera{
 	}
 
 	@Override
-	public void setProjectionMatrix(Mat4 projectionMat) {
-		projectionMatrix = projectionMat;
-	}
-
-	@Override
 	public Mat4 getProjectionMatrix() {
 		return projectionMatrix;
-	}
-
-	@Override
-	public void setViewMatrix(Mat4 viewMat) {
-		viewMatrix = viewMat;
 	}
 
 	@Override

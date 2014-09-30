@@ -41,7 +41,7 @@ import ch.fhnw.ether.scene.GenericMesh;
 import ch.fhnw.ether.scene.IGeometry;
 import ch.fhnw.ether.scene.IModel;
 
-public class Model implements IModel {
+public class Scene implements IModel {
 	private static final float[] ACTIVITY_COLOR = { 1f, 0f, 0f, 0.2f };
 	private static final float[] TRIP_COLOR = { 0f, 1f, 0f, 0.2f };
 
@@ -61,7 +61,7 @@ public class Model implements IModel {
 	private GenericMesh networkGeometry;
 	private ModelRenderState renderState;
 
-	public Model(MetroBuzzController controller) {
+	public Scene(MetroBuzzController controller) {
 		this.controller = controller;
 	}
 
