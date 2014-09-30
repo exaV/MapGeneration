@@ -128,13 +128,13 @@ public class Vec3 {
 	}
 
 	@Override
-	public boolean equals(Object other) {
-		if (this == other) {
+	public boolean equals(Object obj) {
+		if (this == obj) {
 			return true;
 		}
 
-		if (other instanceof Vec3) {
-			final Vec3 v = (Vec3) other;
+		if (obj instanceof Vec3) {
+			final Vec3 v = (Vec3) obj;
 			return (x == v.x) && (y == v.y) && (z == v.z);
 		}
 		return false;
@@ -149,7 +149,7 @@ public class Vec3 {
 		return new float[] { x, y, z };
 	}
 
-	public static float[] toArray(List<Vec3> vs) {
+	public static float[] toArray(List<? extends Vec3> vs) {
 		float[] result = new float[vs.size() * 3];
 		int i = 0;
 		for (Vec3 v : vs) {

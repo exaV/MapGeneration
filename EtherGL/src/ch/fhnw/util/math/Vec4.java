@@ -121,13 +121,13 @@ public class Vec4 {
 	}
 
 	@Override
-	public boolean equals(Object other) {
-		if (this == other) {
+	public boolean equals(Object obj) {
+		if (this == obj) {
 			return true;
 		}
 
-		if (other instanceof Vec4) {
-			final Vec4 v = (Vec4) other;
+		if (obj instanceof Vec4) {
+			final Vec4 v = (Vec4) obj;
 			return (x == v.x) && (y == v.y) && (z == v.z) && (w == v.w);
 		}
 		return false;
@@ -142,7 +142,7 @@ public class Vec4 {
 		return new float[] { x, y, z, w };
 	}
 
-	public static float[] toArray(List<Vec4> vs) {
+	public static float[] toArray(List<? extends Vec4> vs) {
 		float[] result = new float[vs.size() * 4];
 		int i = 0;
 		for (Vec4 v : vs) {
