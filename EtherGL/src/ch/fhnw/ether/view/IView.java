@@ -33,6 +33,8 @@ import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
 
 import ch.fhnw.ether.controller.IController;
+import ch.fhnw.ether.reorg.api.ICamera;
+import ch.fhnw.util.Viewport;
 
 import com.jogamp.newt.event.KeyListener;
 import com.jogamp.newt.event.MouseListener;
@@ -62,7 +64,7 @@ public interface IView extends GLEventListener, MouseListener, KeyListener {
 	 * 
 	 * @return the camera
 	 */
-	Camera getCamera();
+	ICamera getCamera();
 
 	/**
 	 * Get viewport [x, y, w, h].

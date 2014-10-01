@@ -233,15 +233,13 @@ public class TUIO {
     private void handleSwipeOrPinch2(float swipeX, float swipeY, float pinch) {
         // XXX do we really need to discriminate between swipe and pinch, or just let both go at once?
         if (Math.abs(pinch) > 0.001) {
-            view.getCamera().addToDistance(-SCALE_DISTANCE * pinch);
+            view.getCamera().move(0, -SCALE_DISTANCE * pinch, 0);
         } else {
-            view.getCamera().addToRotateZ(SCALE_ROTATE * swipeX);
-            view.getCamera().addToRotateX(SCALE_ROTATE * swipeY);
+            view.getCamera().turn(SCALE_ROTATE * swipeY,0,SCALE_ROTATE * swipeX);
         }
     }
 
     private void handleSwipe3(float swipeX, float swipeY) {
-        view.getCamera().addToTranslateX(SCALE_TRANSLATE * swipeX);
-        view.getCamera().addToTranslateY(-SCALE_TRANSLATE * swipeY);
+        view.getCamera().move(SCALE_TRANSLATE * swipeX, -SCALE_TRANSLATE * swipeY, 0);
     }
 }

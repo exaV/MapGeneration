@@ -34,7 +34,9 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
 
 import ch.fhnw.ether.controller.IController;
+import ch.fhnw.ether.reorg.api.ICamera;
 import ch.fhnw.ether.view.gl.NEWTWindow;
+import ch.fhnw.util.Viewport;
 
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.MouseEvent;
@@ -44,23 +46,24 @@ import com.jogamp.newt.event.MouseEvent;
  *
  * @author radar
  */
-public abstract class AbstractView implements IView {
+public class AbstractView implements IView {
 	private final NEWTWindow window;
 
 	private final IController controller;
 
 	private final ViewType viewType;
 
-	private final Camera camera = new Camera(this);
+	private final ICamera camera;
 
 	private Viewport viewport = new Viewport(0, 0, 1, 1);
 
 	private boolean enabled = true;
 
-	protected AbstractView(IController controller, int x, int y, int w, int h, ViewType viewType, String title) {
+	public AbstractView(IController controller, int x, int y, int w, int h, ViewType viewType, String title, ICamera camera) {
 		this.window = new NEWTWindow(w, h, title);
 		this.controller = controller;
 		this.viewType = viewType;
+		this.camera = camera;
 		window.setView(this);
 		Point p = window.getPosition();
 		if (x != -1)
@@ -81,7 +84,7 @@ public abstract class AbstractView implements IView {
 	}
 
 	@Override
-	public final Camera getCamera() {
+	public final ICamera getCamera() {
 		return camera;
 	}
 
@@ -170,7 +173,7 @@ public abstract class AbstractView implements IView {
 			height = 1; // prevent divide by zero
 		gl.glViewport(0, 0, width, height);
 		viewport = new Viewport(0, 0, width, height);
-		camera.refresh();
+		//camera.refresh();
 	}
 
 	@Override

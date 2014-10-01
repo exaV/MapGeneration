@@ -86,11 +86,9 @@ public class NavigationTool extends AbstractTool {
 	@Override
 	public void mouseDragged(MouseEvent e, IView view) {
 		if (button == MouseEvent.BUTTON1) {
-			view.getCamera().addToRotateZ(e.getX() - mouseX);
-			view.getCamera().addToRotateX(e.getY() - mouseY);
+			view.getCamera().turn(e.getY() - mouseY, 0, e.getX() - mouseX);
 		} else if (button == MouseEvent.BUTTON2 || button == MouseEvent.BUTTON3) {
-			view.getCamera().addToTranslateX(e.getX() - mouseX);
-			view.getCamera().addToTranslateY(mouseY - e.getY());
+			view.getCamera().move(e.getX() - mouseX, mouseY - e.getY(), 0);
 		}
 		mouseX = e.getX();
 		mouseY = e.getY();
@@ -98,8 +96,8 @@ public class NavigationTool extends AbstractTool {
 
 	@Override
 	public void mouseWheelMoved(MouseEvent e, IView view) {
-		view.getCamera().addToTranslateX(e.getRotation()[0]);
-		view.getCamera().addToDistance(-0.125f * e.getRotation()[1]);
+		view.getCamera().move(0, e.getRotation()[1], 0);
+		// view.getCamera().addToDistance(-0.125f * e.getRotation()[1]);
 	}
 
 	private static GenericMesh makeGrid() {

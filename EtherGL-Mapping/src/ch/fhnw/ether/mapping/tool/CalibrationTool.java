@@ -48,12 +48,12 @@ import ch.fhnw.ether.render.IRenderer.Pass;
 import ch.fhnw.ether.render.shader.builtin.Lines;
 import ch.fhnw.ether.render.shader.builtin.Points;
 import ch.fhnw.ether.render.util.Primitives;
+import ch.fhnw.ether.reorg.api.ICamera;
 import ch.fhnw.ether.scene.GenericMesh;
-import ch.fhnw.ether.view.Camera;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.ProjectionUtil;
-import ch.fhnw.ether.view.Viewport;
 import ch.fhnw.util.PreferencesStore;
+import ch.fhnw.util.Viewport;
 import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Vec3;
 
@@ -254,25 +254,30 @@ public final class CalibrationTool extends AbstractTool {
 
 	private void clearCalibration(IView view) {
 		contexts.put(view, new CalibrationContext());
-		view.getCamera().setMatrices(null, null);
+		view.getCamera().setProjectionMatrix(null);
+		view.getCamera().setViewMatrix(null);
 		calibrate(view);
 	}
 
 	private void calibrate(IView view) {
-		Camera camera = view.getCamera();
+		ICamera camera = view.getCamera();
 		CalibrationContext context = getContext(view);
 		context.calibrated = false;
 		try {
-			double error = calibrator.calibrate(context.modelVertices, context.projectedVertices, camera.getNearClippingPlane(), camera.getFarClippingPlane());
+			double error = calibrator.calibrate(
+					context.modelVertices, 
+					context.projectedVertices, 
+					camera.getNear(), 
+					camera.getFar());
 			if (error < MAX_CALIBRATION_ERROR)
 				context.calibrated = true;
 			// System.out.println("error: " + error);
 		} catch (Throwable ignored) {
 		}
-		if (context.calibrated)
-			camera.setMatrices(calibrator.getProjMatrix(), calibrator.getViewMatrix());
-		else
-			camera.setMatrices(null, null);
+		if (context.calibrated) {
+			camera.setProjectionMatrix(calibrator.getProjMatrix());
+			camera.setViewMatrix(calibrator.getViewMatrix());
+		}
 
 		// need to update VBOs
 		refresh(view);
