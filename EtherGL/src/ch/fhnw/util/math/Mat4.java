@@ -31,7 +31,7 @@ package ch.fhnw.util.math;
 import java.util.Arrays;
 
 /**
- * 4x4 matrix for dealing with OpenGL 4x4 matrices (column major).
+ * 4x4 matrix for dealing with OpenGL 4x4 matrices (column major). In contrast to VecN and Quaternion, Mat4 is mutable.
  *
  * @author radar
  */
@@ -480,7 +480,7 @@ public final class Mat4 {
 	}
 
 	/**
-	 * Create new identity matrix
+	 * Create new identity matrix.
 	 *
 	 * @return the new identity matrix
 	 */

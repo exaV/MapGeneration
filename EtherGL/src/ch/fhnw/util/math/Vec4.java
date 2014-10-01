@@ -31,7 +31,7 @@ package ch.fhnw.util.math;
 import java.util.List;
 
 /**
- * 4D vector for basic vector algebra.
+ * 4D vector for basic vector algebra. Instances are immutable.
  *
  * @author radar
  */
@@ -59,8 +59,16 @@ public class Vec4 {
 		this.w = w;
 	}
 
+	public Vec4(double x, double y, double z, double w) {
+		this((float)x, (float)y, (float)z, (float)w);
+	}
+	
 	public Vec4(float x, float y, float z) {
 		this(x, y, z, 1);
+	}
+
+	public Vec4(double x, double y, double z) {
+		this((float)x, (float)y, (float)z);
 	}
 
 	public Vec4(Vec3 v) {

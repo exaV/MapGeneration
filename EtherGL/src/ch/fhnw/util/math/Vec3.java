@@ -31,7 +31,7 @@ package ch.fhnw.util.math;
 import java.util.List;
 
 /**
- * 3D vector for basic vector algebra.
+ * 3D vector for basic vector algebra. Instances are immutable.
  *
  * @author radar
  */
@@ -56,15 +56,11 @@ public class Vec3 {
 	}
 
 	public Vec3(double x, double y, double z) {
-		this.x = (float) x;
-		this.y = (float) y;
-		this.z = (float) z;
+		this((float)x, (float)y, (float)z);
 	}
 
 	public Vec3(Vec4 v) {
-		this.x = v.x;
-		this.y = v.y;
-		this.z = v.z;
+		this(v.x, v.y, v.z);
 	}
 
 	public float length() {

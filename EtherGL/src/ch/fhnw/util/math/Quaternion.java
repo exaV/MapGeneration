@@ -34,6 +34,11 @@ package ch.fhnw.util.math;
 
 import ch.fhnw.util.Pair;
 
+/**
+ * Quaternion. Instances are immutable.
+ *
+ * @author radar
+ */
 public final class Quaternion {
 	public static final Quaternion IDENTITY = new Quaternion(0, 0, 0, 1);
 
@@ -47,6 +52,10 @@ public final class Quaternion {
 		this.y = y;
 		this.z = z;
 		this.w = w;
+	}
+
+	public Quaternion(double x, double y, double z, double w) {
+		this((float) x, (float) y, (float) z, (float) w);
 	}
 
 	/**
@@ -172,14 +181,14 @@ public final class Quaternion {
 	}
 
 	/**
-	 * Creates Quaternion from the given rotation matrix, which must not contain scaling.
+	 * Creates quaternion from the given rotation matrix, which must not contain scaling.
 	 */
 	public static Quaternion fromMatrix(Mat4 matrix) {
 		return fromMatrix(matrix, false);
 	}
 
 	/**
-	 * Creates Quaternion from the given matrix, optionally removing any scaling.
+	 * Creates quaternion from the given matrix, optionally removing any scaling.
 	 */
 	public static Quaternion fromMatrix(Mat4 matrix, boolean normalize) {
 		return fromAxes(new Vec3(matrix.m[Mat4.M00], matrix.m[Mat4.M01], matrix.m[Mat4.M02]), new Vec3(matrix.m[Mat4.M10], matrix.m[Mat4.M11],
@@ -189,7 +198,7 @@ public final class Quaternion {
 	/**
 	 * Check this quaternion for identity.
 	 * 
-	 * @return true this quaternion is an identity quaternion
+	 * @return true if quaternion is an identity quaternion
 	 */
 	public boolean isIdentity() {
 		return MathUtil.isZero(x) && MathUtil.isZero(y) && MathUtil.isZero(z) && MathUtil.isEqual(w, 1f);
@@ -198,7 +207,7 @@ public final class Quaternion {
 	/**
 	 * Check this quaternion for identity with given tolerance.
 	 * 
-	 * @return true this quaternion is an identity quaternion
+	 * @return true if quaternion is an identity quaternion
 	 */
 	public boolean isIdentity(float tolerance) {
 		return MathUtil.isZero(x, tolerance) && MathUtil.isZero(y, tolerance) && MathUtil.isZero(z, tolerance) && MathUtil.isEqual(w, 1f, tolerance);
@@ -224,7 +233,7 @@ public final class Quaternion {
 	public float length() {
 		return MathUtil.length(x, y, z, w);
 	}
-	
+
 	/**
 	 * Calculates the dot product this*q.
 	 * 
@@ -259,7 +268,7 @@ public final class Quaternion {
 	 * 
 	 * @param q
 	 *            quaternion to multiply with
-	 *            
+	 * 
 	 * @return the quaternion this * q
 	 */
 	public Quaternion postMultiply(Quaternion q) {
@@ -272,7 +281,7 @@ public final class Quaternion {
 	 * 
 	 * @param q
 	 *            quaternion to multiply with
-	 *            
+	 * 
 	 * @return the quaternion q * this
 	 */
 	public Quaternion preMultiply(Quaternion q) {
@@ -288,7 +297,7 @@ public final class Quaternion {
 	 *            the end quaternion
 	 * @param alpha
 	 *            alpha in the range [0,1]
-	 *            
+	 * 
 	 * @return the resulting quaternion
 	 */
 	public Quaternion slerp(Quaternion end, float alpha) {
@@ -319,7 +328,7 @@ public final class Quaternion {
 	 * 
 	 * @param q
 	 *            list of quaternions
-	 *            
+	 * 
 	 * @return the resulting quaternion
 	 */
 	public Quaternion slerp(Quaternion[] q) {
@@ -339,7 +348,7 @@ public final class Quaternion {
 	 *            list of quaternions
 	 * @param w
 	 *            list of weights
-	 *            
+	 * 
 	 * @return the resulting quaternion
 	 */
 	public Quaternion slerp(Quaternion[] q, float[] w) {
@@ -354,7 +363,7 @@ public final class Quaternion {
 	 * 
 	 * @param alpha
 	 *            exponent
-	 *            
+	 * 
 	 * @return the quaternion this^alpha
 	 */
 	public Quaternion exp(float alpha) {

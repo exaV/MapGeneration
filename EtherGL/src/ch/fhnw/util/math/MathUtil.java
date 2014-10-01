@@ -100,6 +100,15 @@ public final class MathUtil {
 	}
 
 	/**
+	 * Calculates the length of a vector [x, y].
+	 * 
+	 * @return the euclidean length of [x, y]
+	 */
+	public static float length(float x, float y) {
+		return (float) Math.sqrt(x * x + y * y);
+	}
+
+	/**
 	 * Calculates the length of a vector [x, y, z].
 	 * 
 	 * @return the euclidean length of [x, y, z]
@@ -115,6 +124,15 @@ public final class MathUtil {
 	 */
 	public static float length(float x, float y, float z, float w) {
 		return (float) Math.sqrt(x * x + y * y + z * z + w * w);
+	}
+
+	/**
+	 * Calculates the dot product between two vectors [x, y].
+	 * 
+	 * @return The dot product between the two vectors
+	 */
+	public static float dot(float ax, float ay, float bx, float by) {
+		return ax * bx + ay * by;
 	}
 
 	/**
