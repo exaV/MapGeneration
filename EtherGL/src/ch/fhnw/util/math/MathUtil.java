@@ -98,4 +98,41 @@ public final class MathUtil {
 	static public boolean isEqual(float a, float b, float tolerance) {
 		return Math.abs(a - b) <= tolerance;
 	}
+
+	/**
+	 * Calculates the length of a vector [x, y, z].
+	 * 
+	 * @return the euclidean length of [x, y, z]
+	 */
+	public static float length(float x, float y, float z) {
+		return (float) Math.sqrt(x * x + y * y + z * z);
+	}
+
+	/**
+	 * Calculates the length of a vector [x, y, z, w].
+	 * 
+	 * @return the euclidean length of [x, y, z, w]
+	 */
+	public static float length(float x, float y, float z, float w) {
+		return (float) Math.sqrt(x * x + y * y + z * z + w * w);
+	}
+
+	/**
+	 * Calculates the dot product between two vectors [x, y, z].
+	 * 
+	 * @return The dot product between the two vectors
+	 */
+	public static float dot(float ax, float ay, float az, float bx, float by, float bz) {
+		return ax * bx + ay * by + az * bz;
+	}
+
+	/**
+	 * Calculates the dot product between two vectors [x, y, z, w].
+	 * 
+	 * @return The dot product between the two vectors
+	 */
+	public static float dot(float ax, float ay, float az, float aw, float bx, float by, float bz, float bw) {
+		return ax * bx + ay * by + az * bz + aw * bw;
+	}
+
 }

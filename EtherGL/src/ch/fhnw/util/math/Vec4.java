@@ -67,17 +67,10 @@ public class Vec4 {
 		this(v.x, v.y, v.z, 1);
 	}
 
-	/** @return the euclidean length of this vector */
 	public float length() {
-		return length(x, y, z, w);
+		return MathUtil.length(x, y, z, w);
 	}
 
-	/** @return the euclidean length of [x,y,z,w] */
-	public static float length(float x, float y, float z, float w) {
-		return (float) Math.sqrt(x * x + y * y + z * z + w * w);
-	}
-
-	/** @return the euclidean distance to another vector */
 	public float distance(Vec4 v) {
 		return (float) Math.sqrt((v.x - x) * (v.x - x) + (v.y - y) * (v.y - y) + (v.z - z) * (v.z - z) + (v.w - w) * (v.w - w));
 	}
@@ -105,19 +98,8 @@ public class Vec4 {
 		return new Vec4(x / l, y / l, z / l, w / l);
 	}
 
-	/** @return The dot product between this vector and a */
 	public float dot(Vec4 a) {
-		return dot(x, y, z, z, a.x, a.y, a.z, a.w);
-	}
-
-	/** @return The dot product between the two vectors */
-	public static float dot(Vec4 a, Vec4 b) {
-		return dot(a.x, a.y, a.z, a.w, b.x, b.y, b.z, b.w);
-	}
-
-	/** @return The dot product between the two vectors */
-	public static float dot(float ax, float ay, float az, float aw, float bx, float by, float bz, float bw) {
-		return ax * bx + ay * by + az * bz + aw * bw;
+		return MathUtil.dot(x, y, z, z, a.x, a.y, a.z, a.w);
 	}
 
 	@Override

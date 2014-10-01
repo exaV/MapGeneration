@@ -67,17 +67,10 @@ public class Vec3 {
 		this.z = v.z;
 	}
 
-	/** @return the euclidean length of this vector */
 	public float length() {
-		return length(x, y, z);
+		return MathUtil.length(x, y, z);
 	}
 
-	/** @return the euclidean length of [x,y,z] */
-	public static float length(float x, float y, float z) {
-		return (float) Math.sqrt(x * x + y * y + z * z);
-	}
-
-	/** @return the euclidean distance to another vector */
 	public float distance(Vec3 v) {
 		return (float) Math.sqrt((v.x - x) * (v.x - x) + (v.y - y) * (v.y - y) + (v.z - z) * (v.z - z));
 	}
@@ -105,25 +98,14 @@ public class Vec3 {
 		return new Vec3(x / l, y / l, z / l);
 	}
 
-	/** @return The dot product between this vector and a */
 	public float dot(Vec3 a) {
-		return dot(x, y, z, a.x, a.y, a.z);
+		return MathUtil.dot(x, y, z, a.x, a.y, a.z);
 	}
 
-	/** @return The dot product between the two vectors */
-	public static float dot(Vec3 a, Vec3 b) {
-		return dot(a.x, a.y, a.z, b.x, b.y, b.z);
-	}
-
-	/** @return The dot product between the two vectors */
-	public static float dot(float ax, float ay, float az, float bx, float by, float bz) {
-		return ax * bx + ay * by + az * bz;
-	}
-
-	public static Vec3 cross(Vec3 a, Vec3 b) {
-		float x = a.y * b.z - a.z * b.y;
-		float y = a.z * b.x - a.x * b.z;
-		float z = a.x * b.y - a.y * b.x;
+	public Vec3 cross(Vec3 a) {
+		float x = y * a.z - z * a.y;
+		float y = z * a.x - x * a.z;
+		float z = x * a.y - y * a.x;
 		return new Vec3(x, y, z);
 	}
 

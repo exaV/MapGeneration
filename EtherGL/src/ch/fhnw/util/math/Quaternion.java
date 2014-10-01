@@ -34,15 +34,23 @@ package ch.fhnw.util.math;
 
 import ch.fhnw.util.Pair;
 
-public class Quaternion extends Vec4 {
+public final class Quaternion {
 	public static final Quaternion IDENTITY = new Quaternion(0, 0, 0, 1);
 
+	public final float x;
+	public final float y;
+	public final float z;
+	public final float w;
+
 	public Quaternion(float x, float y, float z, float w) {
-		super(x, y, z, w);
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		this.w = w;
 	}
 
 	/**
-	 * Create quaternion to the given euler angles in degrees.
+	 * Creates quaternion from given euler angles in degrees.
 	 * 
 	 * @param yaw
 	 *            the rotation around the y axis in degrees
@@ -50,7 +58,6 @@ public class Quaternion extends Vec4 {
 	 *            the rotation around the x axis in degrees
 	 * @param roll
 	 *            the rotation around the z axis degrees
-	 * @return this quaternion
 	 */
 	public static Quaternion fromEulerAngles(float yaw, float pitch, float roll) {
 		float hr = roll * 0.5f * MathUtil.DEGREES_TO_RADIANS;
@@ -72,13 +79,12 @@ public class Quaternion extends Vec4 {
 	}
 
 	/**
-	 * Computes the quaternion components from the given axis and angle around that axis.
+	 * Creates quaternion components from the given axis and angle around that axis.
 	 * 
 	 * @param axis
-	 *            The axis
+	 *            the axis
 	 * @param angle
-	 *            The angle in degrees
-	 * @return This quaternion for chaining.
+	 *            the angle in degrees
 	 */
 	public static Quaternion fromAxis(Vec3 axis, float angle) {
 		float rad = angle * MathUtil.DEGREES_TO_RADIANS;
@@ -93,14 +99,14 @@ public class Quaternion extends Vec4 {
 	}
 
 	/**
-	 * Computes the Quaternion from the given x-, y- and z-axis which have to be orthonormal.
+	 * Creates quaternion from the given x-, y- and z-axis which have to be orthonormal.
 	 */
 	public static Quaternion fromAxes(Vec3 vx, Vec3 vy, Vec3 vz) {
 		return fromAxes(vx, vy, vz, false);
 	}
 
 	/**
-	 * Computes the Quaternion from the given x-, y- and z-axis.
+	 * Creates quaternion from the given x-, y- and z-axis.
 	 */
 	public static Quaternion fromAxes(Vec3 vx, Vec3 vy, Vec3 vz, boolean normalize) {
 		if (normalize) {
@@ -152,30 +158,28 @@ public class Quaternion extends Vec4 {
 	}
 
 	/**
-	 * Set this quaternion to the rotation between two vectors.
+	 * Creates quaternion from the rotation between two vectors.
 	 * 
 	 * @param v1
-	 *            The base vector, which should be normalized.
+	 *            the base vector, which should be normalized.
 	 * @param v2
-	 *            The target vector, which should be normalized.
-	 * 
-	 * @return This quaternion for chaining
+	 *            the target vector, which should be normalized.
 	 */
 	public static Quaternion fromCross(Vec3 v1, Vec3 v2) {
 		final float dot = MathUtil.clamp(v1.dot(v2), -1f, 1f);
 		final float angle = (float) Math.acos(dot) * MathUtil.RADIANS_TO_DEGREES;
-		return fromAxis(Vec3.cross(v1, v2), angle);
+		return fromAxis(v1.cross(v2), angle);
 	}
 
 	/**
-	 * Computes the Quaternion from the given rotation matrix, which must not contain scaling.
+	 * Creates Quaternion from the given rotation matrix, which must not contain scaling.
 	 */
 	public static Quaternion fromMatrix(Mat4 matrix) {
 		return fromMatrix(matrix, false);
 	}
 
 	/**
-	 * Computes the Quaternion from the given matrix, optionally removing any scaling.
+	 * Creates Quaternion from the given matrix, optionally removing any scaling.
 	 */
 	public static Quaternion fromMatrix(Mat4 matrix, boolean normalize) {
 		return fromAxes(new Vec3(matrix.m[Mat4.M00], matrix.m[Mat4.M01], matrix.m[Mat4.M02]), new Vec3(matrix.m[Mat4.M10], matrix.m[Mat4.M11],
@@ -205,12 +209,29 @@ public class Quaternion extends Vec4 {
 	 * 
 	 * @return the normalized quaternion
 	 */
-	@Override
 	public Quaternion normalize() {
 		float l = length();
 		if (MathUtil.isZero(l) || l == 1)
 			return this;
 		return new Quaternion(x / l, y / l, z / l, w / l);
+	}
+
+	/**
+	 * Calculates the length of this quaternion.
+	 * 
+	 * @return the length of this quaternion
+	 */
+	public float length() {
+		return MathUtil.length(x, y, z, w);
+	}
+	
+	/**
+	 * Calculates the dot product this*q.
+	 * 
+	 * @return the dot product this*q
+	 */
+	public float dot(Quaternion q) {
+		return MathUtil.dot(x, y, z, w, q.x, q.y, q.z, q.w);
 	}
 
 	/**
@@ -226,7 +247,7 @@ public class Quaternion extends Vec4 {
 	 * Add quaternion q to this.
 	 * 
 	 * @param q
-	 *            Quaternion to be added
+	 *            quaternion to be added
 	 * @return the quaternion this + q
 	 */
 	public Quaternion add(Quaternion q) {
@@ -237,7 +258,8 @@ public class Quaternion extends Vec4 {
 	 * Post-multiply this quaternion with result = this * q.
 	 * 
 	 * @param q
-	 *            Quaternion to multiply with
+	 *            quaternion to multiply with
+	 *            
 	 * @return the quaternion this * q
 	 */
 	public Quaternion postMultiply(Quaternion q) {
@@ -249,7 +271,8 @@ public class Quaternion extends Vec4 {
 	 * Pre-multiply this quaternion with result = q * this.
 	 * 
 	 * @param q
-	 *            Quaternion to multiply with
+	 *            quaternion to multiply with
+	 *            
 	 * @return the quaternion q * this
 	 */
 	public Quaternion preMultiply(Quaternion q) {
@@ -265,6 +288,7 @@ public class Quaternion extends Vec4 {
 	 *            the end quaternion
 	 * @param alpha
 	 *            alpha in the range [0,1]
+	 *            
 	 * @return the resulting quaternion
 	 */
 	public Quaternion slerp(Quaternion end, float alpha) {
@@ -294,7 +318,8 @@ public class Quaternion extends Vec4 {
 	 * previously inside the elements of q. result = (q_1^w_1)*(q_2^w_2)* ... *(q_n^w_n) where w_i=1/n.
 	 * 
 	 * @param q
-	 *            List of quaternions
+	 *            list of quaternions
+	 *            
 	 * @return the resulting quaternion
 	 */
 	public Quaternion slerp(Quaternion[] q) {
@@ -311,9 +336,10 @@ public class Quaternion extends Vec4 {
 	 * sum of w_i is 1. Lists must be equal in length.
 	 * 
 	 * @param q
-	 *            List of quaternions
+	 *            list of quaternions
 	 * @param w
-	 *            List of weights
+	 *            list of weights
+	 *            
 	 * @return the resulting quaternion
 	 */
 	public Quaternion slerp(Quaternion[] q, float[] w) {
@@ -327,7 +353,8 @@ public class Quaternion extends Vec4 {
 	 * Calculates this^alpha where alpha is a real number.
 	 * 
 	 * @param alpha
-	 *            Exponent
+	 *            exponent
+	 *            
 	 * @return the quaternion this^alpha
 	 */
 	public Quaternion exp(float alpha) {
@@ -427,8 +454,8 @@ public class Quaternion extends Vec4 {
 	 * @return the angle in degrees of the rotation around the specified axis
 	 */
 	public float getAngleAround(Vec3 axis) {
-		float d = Vec3.dot(this.x, this.y, this.z, axis.x, axis.y, axis.z);
-		float l = Quaternion.length(axis.x * d, axis.y * d, axis.z * d, this.w);
+		float d = MathUtil.dot(this.x, this.y, this.z, axis.x, axis.y, axis.z);
+		float l = MathUtil.length(axis.x * d, axis.y * d, axis.z * d, this.w);
 		float rad = MathUtil.isZero(l) ? 0f : (float) (2.0 * Math.acos(this.w / l));
 		return rad * MathUtil.RADIANS_TO_DEGREES;
 	}
@@ -460,7 +487,7 @@ public class Quaternion extends Vec4 {
 	 * Transforms the given vector using this quaternion.
 	 * 
 	 * @param v
-	 *            Vector to transform
+	 *            vector to transform
 	 * 
 	 * @return the transformed vector
 	 */
@@ -468,7 +495,7 @@ public class Quaternion extends Vec4 {
 		Quaternion tmp2 = this;
 		tmp2 = tmp2.conjugate();
 		tmp2 = tmp2.preMultiply(new Quaternion(v.x, v.y, v.z, 0)).preMultiply(this);
-		return new Vec3(tmp2);
+		return new Vec3(tmp2.x, tmp2.y, tmp2.z);
 	}
 
 	@Override
@@ -486,6 +513,6 @@ public class Quaternion extends Vec4 {
 
 	@Override
 	public String toString() {
-		return "Q" + super.toString();
+		return "Q" + "[" + x + ", " + y + ", " + z + ", " + w + "]";
 	}
 }
