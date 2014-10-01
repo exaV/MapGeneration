@@ -1,12 +1,20 @@
 package ch.fhnw.ether.reorg.api;
 
-import ch.fhnw.ether.render.IRenderable;
+import java.util.List;
 
 public interface IScene {
 	
-	void add3DObject(I3DObject object);
+	boolean addMesh(IMesh mesh);
 	
-	void remove3DObject(I3DObject object);
+	boolean removeMesh(IMesh mesh);
 	
-	IRenderable[] getRenderables();
+	List<IMesh> getMeshes();
+	
+	boolean addLight(ILight light);
+	
+	boolean removeLight(ILight light);
+	
+	List<ILight> getLights();
+	
+	void setActiveCamera(ICamera camera);
 }

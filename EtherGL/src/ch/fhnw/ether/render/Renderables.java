@@ -30,6 +30,7 @@
 package ch.fhnw.ether.render;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.media.opengl.GL3;
@@ -93,6 +94,8 @@ final class Renderables {
 
     void render(GL3 gl, IView view, IRenderer.RenderState state, IRenderer.Pass pass) {
         for (IRenderable renderable : renderables) {
+//    	for(int i=0; i<renderables.size(); ++i) { //TODO: use this line to prevent concurrent modification exception
+//    		IRenderable renderable = renderables.get(i);
             if (renderable.containsFlag(IRenderer.Flag.INTERACTIVE_VIEW_ONLY) && view.getViewType() != IView.ViewType.INTERACTIVE_VIEW)
                 continue;
             if (renderable.getPass() == pass) {

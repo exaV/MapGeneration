@@ -3,6 +3,7 @@ package ch.fhnw.ether.reorg.base;
 import ch.fhnw.ether.reorg.api.IGeometry;
 import ch.fhnw.ether.reorg.api.IMaterial;
 import ch.fhnw.ether.reorg.api.IMesh;
+import ch.fhnw.ether.reorg.builtin.EmptyMaterial;
 
 public class SimpleMesh implements IMesh {
 

@@ -54,7 +54,7 @@ import ch.fhnw.util.FloatList;
 import ch.fhnw.util.UpdateRequest;
 
 // TODO: we currently support float arrays only
-final class Renderable implements IRenderable {
+public final class Renderable implements IRenderable {
 	private IRenderer.Pass pass;
 	private EnumSet<IRenderer.Flag> flags;
 	private IShader shader;
