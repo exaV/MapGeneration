@@ -33,7 +33,8 @@ import java.util.Map;
 
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.geom.PickUtil;
-import ch.fhnw.ether.scene.IPickable;
+import ch.fhnw.ether.geom.PickUtil.PickMode;
+import ch.fhnw.ether.reorg.api.I3DObject;
 import ch.fhnw.ether.view.IView;
 
 import com.jogamp.newt.event.MouseEvent;
@@ -47,7 +48,7 @@ public class PickTool extends AbstractTool {
 	public void mousePressed(MouseEvent e, IView view) {
 		int x = e.getX();
 		int y = view.getViewport().h - e.getY();
-		Map<Float, IPickable> pickables = PickUtil.pickFromModel(IPickable.PickMode.POINT, x, y, 0, 0, view);
+		Map<Float, I3DObject> pickables = PickUtil.pickFromModel(PickMode.POINT, x, y, 0, 0, view);
 		if (pickables.isEmpty())
 			System.out.println("no pick");
 		else

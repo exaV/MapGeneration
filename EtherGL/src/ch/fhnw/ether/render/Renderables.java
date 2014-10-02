@@ -30,7 +30,6 @@
 package ch.fhnw.ether.render;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.media.opengl.GL3;

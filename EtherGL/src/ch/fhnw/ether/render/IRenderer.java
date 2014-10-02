@@ -34,6 +34,7 @@ import java.util.List;
 
 import javax.media.opengl.GL3;
 
+import ch.fhnw.ether.render.IRenderer.Flag;
 import ch.fhnw.ether.render.attribute.IArrayAttributeProvider;
 import ch.fhnw.ether.render.shader.IShader;
 import ch.fhnw.ether.view.IView;
@@ -62,6 +63,8 @@ public interface IRenderer {
 	enum Flag {
 		INTERACTIVE_VIEW_ONLY
 	}
+	
+	public final static EnumSet<Flag> NO_FLAGS = EnumSet.noneOf(Flag.class);
 
 	void render(GL3 gl, IView view);
 	

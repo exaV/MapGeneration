@@ -40,8 +40,9 @@ import ch.fhnw.ether.controller.tool.ITool;
 import ch.fhnw.ether.controller.tool.NavigationTool;
 import ch.fhnw.ether.controller.tool.PickTool;
 import ch.fhnw.ether.render.IRenderer;
+import ch.fhnw.ether.render.attribute.IUniformAttributeProvider;
 import ch.fhnw.ether.render.forward.ForwardRenderer;
-import ch.fhnw.ether.scene.IModel;
+import ch.fhnw.ether.reorg.api.IScene;
 import ch.fhnw.ether.ui.UI;
 import ch.fhnw.ether.view.IView;
 
@@ -59,7 +60,7 @@ public abstract class AbstractController implements IController {
     private final IScheduler scheduler;
     private final IRenderer renderer;
     
-    private IModel model;
+    private IScene scene;
 
     private final ArrayList<IView> views = new ArrayList<>();
     private final UI ui;
@@ -85,13 +86,18 @@ public abstract class AbstractController implements IController {
     }
 
     @Override
-    public IModel getModel() {
-        return model;
+    public IScene getScene() {
+        return scene;
     }
 
     @Override
-    public final void setModel(IModel model) {
-        this.model = model;
+    public final void setScene(IScene scene) {
+        this.scene = scene;
+        if(renderer instanceof IUniformAttributeProvider) {
+        	renderer.addRenderables(scene.createRenderables((IUniformAttributeProvider)renderer));
+        } else {
+        	renderer.addRenderables(scene.createRenderables(null));
+        }
     }
 
     @Override

@@ -35,7 +35,7 @@ import java.util.List;
 import ch.fhnw.ether.controller.tool.ITool;
 import ch.fhnw.ether.controller.tool.NavigationTool;
 import ch.fhnw.ether.render.IRenderer;
-import ch.fhnw.ether.scene.IModel;
+import ch.fhnw.ether.reorg.api.IScene;
 import ch.fhnw.ether.ui.UI;
 import ch.fhnw.ether.view.IView;
 
@@ -54,7 +54,7 @@ public interface IController {
 	 *
 	 * @return the controller's model
 	 */
-	IModel getModel();
+	IScene getScene();
 
 	/**
 	 * Set the controller's model. This effectively unhooks the current model from the controller and replaces it with
@@ -64,7 +64,7 @@ public interface IController {
 	 * @param model
 	 *            to be set
 	 */
-	void setModel(IModel model);
+	void setScene(IScene model);
 
 	/**
 	 * Add a view to the controller.

@@ -34,7 +34,7 @@ import java.util.Collections;
 import java.util.List;
 
 import ch.fhnw.ether.geom.BoundingBox;
-import ch.fhnw.ether.scene.IGeometry;
+import ch.fhnw.ether.reorg.api.IGeometry;
 
 /**
  * A simple implementation of spatial index using array list
@@ -61,7 +61,7 @@ public class ArrayListSpatialIndex implements ISpatialIndex {
 	public List<IGeometry> getIntersectingGeometries(BoundingBox bb) {
 		List<IGeometry> result = new ArrayList<>();
 		for (IGeometry geometry : geometries) {
-			if (bb.intersects(geometry.getBounds()))
+			if (bb.intersects(geometry.getBoundings()))
 				result.add(geometry);
 		}
 		return result;
@@ -71,7 +71,7 @@ public class ArrayListSpatialIndex implements ISpatialIndex {
 	public List<IGeometry> getContainingGeometries(BoundingBox bb) {
 		List<IGeometry> result = new ArrayList<>();
 		for (IGeometry geometry : geometries) {
-			if (bb.contains(geometry.getBounds()))
+			if (bb.contains(geometry.getBoundings()))
 				result.add(geometry);
 		}
 		return result;

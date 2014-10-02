@@ -29,8 +29,7 @@
 
 package ch.fhnw.ether.geom;
 
-import ch.fhnw.ether.scene.IGeometry;
-import ch.fhnw.ether.scene.IPickable;
+import ch.fhnw.ether.reorg.api.I3DObject;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.util.math.GeometryUtil;
 import ch.fhnw.ether.view.ProjectionUtil;
@@ -43,27 +42,28 @@ import java.util.TreeMap;
  * Utilities for 3D object picking
  */
 public final class PickUtil {
+	
+    public enum PickMode {
+        POINT,
+        //INSIDE,       // TODO UNSUPPORTED YET - TO BE IMPLEMENTED
+        //INTERSECT
+    }
+	
     public static final float PICK_DISTANCE = 5;
 
     // TODO: this needs to be generalized when spatial indices are available (e.g. RTree based)
-    public static Map<Float, IPickable> pickFromModel(IPickable.PickMode mode, int x, int y, int w, int h, IView view) {
-        final Map<Float, IPickable> pickables = new TreeMap<>();
-        IPickable.IPickState state = new IPickable.IPickState() {
-            @Override
-            public void add(float z, IPickable pickable) {
-                pickables.put(z, pickable);
-            }
-        };
-        for (IGeometry geometry : view.getController().getModel().getGeometries()) {
-            if (geometry instanceof IPickable)
-                ((IPickable) geometry).pick(IPickable.PickMode.POINT, x, y, 0, 0, view, state);
+    public static Map<Float, I3DObject> pickFromModel(PickMode mode, int x, int y, int w, int h, IView view) {
+        final Map<Float, I3DObject> pickables = new TreeMap<>();
+        for (I3DObject geometry : view.getController().getScene().getObjects()) {
+        	float d = pickBoundingBox(mode, x, y, w, h, view, geometry.getBoundings());
+        	if(d < Float.POSITIVE_INFINITY) pickables.put(d, geometry);
         }
         return pickables;
     }
 
     // TODO: pickFromUI (basically same as above, but need to define UI geometry access) (in case we need this)
 
-    public static float pickBoundingBox(IPickable.PickMode mode, int x, int y, int w, int h, IView view, BoundingBox bounds) {
+    public static float pickBoundingBox(PickMode mode, int x, int y, int w, int h, IView view, BoundingBox bounds) {
         BoundingBox b = new BoundingBox();
         float xmin = bounds.getMinX();
         float xmax = bounds.getMaxX();
@@ -91,7 +91,7 @@ public final class PickUtil {
         return Float.POSITIVE_INFINITY;
     }
 
-    public static float pickTriangles(IPickable.PickMode mode, int x, int y, int w, int h, IView view, float[] triangles) {
+    public static float pickTriangles(PickMode mode, int x, int y, int w, int h, IView view, float[] triangles) {
         triangles = ProjectionUtil.projectToScreen(view, triangles);
 
         Vec3 o = new Vec3(x, y, 0);
@@ -104,7 +104,7 @@ public final class PickUtil {
         return zMin;
     }
 
-    public static float pickEdges(IPickable.PickMode mode, int x, int y, int w, int h, IView view, float[] edges) {
+    public static float pickEdges(PickMode mode, int x, int y, int w, int h, IView view, float[] edges) {
         edges = ProjectionUtil.projectToScreen(view, edges);
 
         float zMin = Float.POSITIVE_INFINITY;
@@ -135,7 +135,7 @@ public final class PickUtil {
         return zMin;
     }
 
-    public static float pickPoints(IPickable.PickMode mode, int x, int y, int w, int h, IView view, float[] points) {
+    public static float pickPoints(PickMode mode, int x, int y, int w, int h, IView view, float[] points) {
         points = ProjectionUtil.projectToScreen(view, points);
 
         float zMin = Float.POSITIVE_INFINITY;

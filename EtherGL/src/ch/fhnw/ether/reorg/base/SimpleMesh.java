@@ -4,14 +4,12 @@ import ch.fhnw.ether.geom.BoundingBox;
 import ch.fhnw.ether.reorg.api.IGeometry;
 import ch.fhnw.ether.reorg.api.IMaterial;
 import ch.fhnw.ether.reorg.api.IMesh;
-import ch.fhnw.ether.reorg.builtin.EmptyMaterial;
-import ch.fhnw.util.math.Vec3;
 
 public class SimpleMesh implements IMesh {
 
 	private IGeometry geometry;
-	private IMaterial material = new EmptyMaterial();
-	private Vec3 position = new Vec3(0,0,0);
+	private IMaterial material = IMaterial.EmptyMaterial;
+	private float[] position = new float[3];
 	
 	public SimpleMesh(IGeometry geometry) {
 		this.geometry = geometry;
@@ -29,12 +27,19 @@ public class SimpleMesh implements IMesh {
 
 	@Override
 	public BoundingBox getBoundings() {
-		return null;
+		return geometry.getBoundings();
 	}
 
 	@Override
-	public Vec3 getPosition() {
-		return position;
+	public float[] getPosition() {
+		return new float[] {position[0],position[1],position[2]};
+	}
+
+	@Override
+	public void setPosition(float[] position) {
+		this.position[0] = position[0];
+		this.position[1] = position[1];
+		this.position[2] = position[2];
 	}
 
 }

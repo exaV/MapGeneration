@@ -29,6 +29,7 @@
 
 package ch.fhnw.ether.scene;
 
+import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
 import ch.fhnw.ether.render.util.Primitives;
 import ch.fhnw.util.math.Vec3;
 
@@ -57,9 +58,7 @@ public final class CubeMesh extends GenericMesh {
     }
 
     public CubeMesh(Vec3 origin) {
-        super(origin);
-        setTriangles(Primitives.UNIT_CUBE_TRIANGLES);
-        setLines(Primitives.UNIT_CUBE_EDGES);
-        setPoints(Primitives.UNIT_CUBE_POINTS);
+        super(PrimitiveType.TRIANGLE);
+        setGeometry(Primitives.UNIT_CUBE_TRIANGLES);
     }
 }

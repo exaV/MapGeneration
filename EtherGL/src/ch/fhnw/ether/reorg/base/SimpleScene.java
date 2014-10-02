@@ -14,7 +14,7 @@ import ch.fhnw.ether.render.IRenderer.Pass;
 import ch.fhnw.ether.render.Renderable;
 import ch.fhnw.ether.render.attribute.IUniformAttributeProvider;
 import ch.fhnw.ether.render.attribute.IAttribute.ISuppliers;
-import ch.fhnw.ether.render.shader.IShader;
+import ch.fhnw.ether.render.shader.builtin.Triangles;
 import ch.fhnw.ether.reorg.api.IGeometry;
 import ch.fhnw.ether.reorg.api.ILight;
 import ch.fhnw.ether.reorg.api.IMaterial;
@@ -26,24 +26,6 @@ public class SimpleScene implements IScene{
 	
 	private final List<IMesh> meshes = Collections.synchronizedList(new ArrayList<>(10));
 	private final List<ILight> lights = Collections.synchronizedList(new ArrayList<>(3));
-	
-	IUniformAttributeProvider uniforms = new IUniformAttributeProvider() {
-		@Override
-		public void getAttributeSuppliers(ISuppliers dst) {
-			
-			Set<IMaterial> materials = new HashSet<>();
-			
-			//for(IMesh m : meshes) {
-			for(int i=0; i<meshes.size(); ++i) {
-				IMesh m = meshes.get(i);
-				IMaterial material = m.getMaterial();
-				if(!materials.contains(m)) {
-					materials.add(material);
-					m.getMaterial().getAttributeSuppliers(dst);
-				}
-			}
-		}
-	};
 
 	public SimpleScene() {
 
@@ -59,7 +41,7 @@ public class SimpleScene implements IScene{
 
 	@Override
 	public List<IMesh> getObjects() {
-		return meshes;
+		return Collections.unmodifiableList(meshes);
 	}
 
 	public boolean addLight(ILight light) {
@@ -71,14 +53,39 @@ public class SimpleScene implements IScene{
 	}
 
 	public List<ILight> getLights() {
-		return lights;
+		return Collections.unmodifiableList(lights);
 	}
 
-	public IRenderable[] getRenderables(IRenderer r, IShader s) {
+	@Override
+	public List<IMesh> getMeshes() {
+		return Collections.unmodifiableList(meshes);
+	}
+	
+	@Override
+	public IRenderable[] createRenderables(IUniformAttributeProvider globalAttributes) {
 		
 		final List<IGeometry> geo = Collections.synchronizedList(meshes.stream().map((x) -> {return x.getGeometry();}).collect(Collectors.toList()));
 		
-		IRenderable ret = new Renderable(Pass.DEPTH, EnumSet.noneOf(IRenderer.Flag.class), s, uniforms, geo);
+		//setup material and global uniform attributes
+		IUniformAttributeProvider uniforms = new IUniformAttributeProvider() {
+			@Override
+			public void getAttributeSuppliers(ISuppliers dst) {
+				
+				Set<IMaterial> materials = new HashSet<>();
+				
+				for(int i=0; i<meshes.size(); ++i) {
+					IMesh m = meshes.get(i);
+					IMaterial material = m.getMaterial();
+					if(!materials.contains(m)) {
+						materials.add(material);
+						m.getMaterial().getAttributeSuppliers(dst);
+					}
+				}
+				if(globalAttributes != null) globalAttributes.getAttributeSuppliers(dst);
+			}
+		};
+		
+		IRenderable ret = new Renderable(Pass.DEPTH, EnumSet.noneOf(IRenderer.Flag.class), new Triangles(), uniforms, geo);
 		
 		return new IRenderable[]{ret};
 	}

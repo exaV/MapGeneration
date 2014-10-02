@@ -34,10 +34,11 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 
-import ch.fhnw.ether.scene.IGeometry;
+import ch.fhnw.ether.reorg.api.IMesh;
+
 
 public abstract class AbstractModelReader {
-	private final List<IGeometry> model;
+	private final List<IMesh> mesh;
 
 	public AbstractModelReader(URL resource) throws IOException {
 		this(resource.getFile(), resource.openStream());
@@ -48,13 +49,13 @@ public abstract class AbstractModelReader {
 	}
 
 	public AbstractModelReader(String path, InputStream in) throws IOException {
-		model = decode(path, in);
+		mesh = decode(path, in);
 		in.close();
 	}
 
-	protected abstract List<IGeometry> decode(String path, InputStream in) throws IOException;
+	protected abstract List<IMesh> decode(String path, InputStream in) throws IOException;
 
-	public List<IGeometry> getModel() {
-		return model;
+	public List<IMesh> getMeshes() {
+		return mesh;
 	}
 }

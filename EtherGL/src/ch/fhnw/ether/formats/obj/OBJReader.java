@@ -7,12 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.fhnw.ether.formats.AbstractModelReader;
+import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
+import ch.fhnw.ether.reorg.api.IMesh;
 import ch.fhnw.ether.scene.GenericMesh;
-import ch.fhnw.ether.scene.IGeometry;
 import ch.fhnw.util.FloatList;
 import ch.fhnw.util.IntList;
 import ch.fhnw.util.color.RGB;
-import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.GeometryUtil;
 import ch.fhnw.util.math.Vec3;
 
@@ -23,8 +23,8 @@ public class OBJReader extends AbstractModelReader {
 	}
 
 	@Override
-	protected List<IGeometry> decode(String path, InputStream in) throws IOException {
-		List<IGeometry> meshes = new ArrayList<IGeometry>();
+	protected List<IMesh> decode(String path, InputStream in) throws IOException {
+		List<IMesh> meshes = new ArrayList<IMesh>();
 		WavefrontObject obj = new WavefrontObject(path, in);
 		for (Group g : obj.getGroups()) {
 			FloatList edgVertices = new FloatList();
@@ -58,13 +58,15 @@ public class OBJReader extends AbstractModelReader {
 				}
 			}
 
-			GenericMesh mesh = new GenericMesh();
+			GenericMesh mesh = new GenericMesh(PrimitiveType.TRIANGLE);
 			mesh.setName(path + '/' + g.getName());
 			Material mat = g.getMaterial();
 			RGB diffuse = mat.getKd();
-			mesh.setLines(edgVertices.toArray(), RGBA.WHITE);
+			//mesh.setLines(edgVertices.toArray(), RGBA.WHITE);
 			float[] triv = triVertices.toArray();
-			mesh.setTriangles(triv, triNormals.size() == triv.length ? triNormals.toArray() : GeometryUtil.calculateNormals(triv), diffuse);
+			//mesh.setTriangles(triv, triNormals.size() == triv.length ? triNormals.toArray() : GeometryUtil.calculateNormals(triv), diffuse);
+			
+			mesh.setGeometry(triv, GeometryUtil.calculateNormals(triv), diffuse.generateColorArray(triv.length/3));
 			meshes.add(mesh);
 		}
 		return meshes;
