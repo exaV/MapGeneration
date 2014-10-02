@@ -37,6 +37,7 @@ import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.controller.tool.AbstractTool;
 import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.IRenderer.Pass;
+import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
 import ch.fhnw.ether.render.shader.builtin.Triangles;
 import ch.fhnw.ether.render.util.Primitives;
 import ch.fhnw.ether.scene.GenericMesh;
@@ -51,7 +52,7 @@ public final class FillTool extends AbstractTool {
 
 	public FillTool(IController controller) {
 		super(controller);
-		quads = controller.getRenderer().createRenderable(Pass.DEVICE_SPACE_OVERLAY, new Triangles(RGBA.WHITE), makeQuads());
+		quads = controller.getRenderer().createRenderable(Pass.DEVICE_SPACE_OVERLAY, new Triangles(RGBA.WHITE), makeQuads().getGeometry());
 	}
 
 	@Override
@@ -71,13 +72,13 @@ public final class FillTool extends AbstractTool {
 	}
 
 	private static GenericMesh makeQuads() {
-		GenericMesh geometry = new GenericMesh();
+		GenericMesh geometry = new GenericMesh(PrimitiveType.TRIANGLE);
 		List<Vec3> dst = new ArrayList<>();
 		Primitives.addRectangle(dst, -1.0f, -1.0f, -0.1f, -0.1f);
 		Primitives.addRectangle(dst, 0.1f, -1.0f, 1.0f, -0.1f);
 		Primitives.addRectangle(dst, 0.1f, 0.1f, 1.0f, 1.0f);
 		Primitives.addRectangle(dst, -1.0f, 0.1f, -0.1f, 1.0f);
-		geometry.setTriangles(Vec3.toArray(dst));
+		geometry.setGeometry(Vec3.toArray(dst));
 		return geometry;
 	}
 }

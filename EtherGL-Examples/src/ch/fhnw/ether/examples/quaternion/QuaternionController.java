@@ -28,7 +28,7 @@
 package ch.fhnw.ether.examples.quaternion;
 
 import ch.fhnw.ether.controller.AbstractController;
-import ch.fhnw.ether.formats.StaticModel;
+import ch.fhnw.ether.reorg.api.IScene;
 import ch.fhnw.ether.view.IView;
 
 import com.jogamp.newt.event.KeyEvent;
@@ -62,7 +62,7 @@ public class QuaternionController extends AbstractController {
 	}
 
 	@Override
-	public StaticModel getModel() {
-		return (StaticModel)super.getModel();
+	public IScene getScene() {
+		return getScene();
 	}
 }

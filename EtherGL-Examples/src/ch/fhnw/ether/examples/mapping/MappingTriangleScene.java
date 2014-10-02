@@ -29,24 +29,62 @@
 
 package ch.fhnw.ether.examples.mapping;
 
-import ch.fhnw.ether.controller.IController;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import ch.fhnw.ether.render.IRenderable;
+import ch.fhnw.ether.render.IRenderer;
+import ch.fhnw.ether.render.Renderable;
+import ch.fhnw.ether.render.IRenderer.Pass;
+import ch.fhnw.ether.render.attribute.IUniformAttributeProvider;
+import ch.fhnw.ether.render.shader.builtin.Triangles;
+import ch.fhnw.ether.reorg.api.I3DObject;
+import ch.fhnw.ether.reorg.api.IGeometry;
+import ch.fhnw.ether.reorg.api.IMesh;
+import ch.fhnw.ether.reorg.api.IScene;
 import ch.fhnw.ether.scene.CubeMesh;
-import ch.fhnw.ether.scene.GenericMeshModel;
 import ch.fhnw.util.math.Vec3;
 
-public class MappingTriangleScene extends GenericMeshModel {
-    public MappingTriangleScene(IController controller) {
-    	super(controller);
+public class MappingTriangleScene implements IScene {
+	
+	private List<IMesh> objects = new ArrayList<>(10);
+	
+    public MappingTriangleScene() {
         for (int i = 0; i < 10; ++i) {
             CubeMesh mesh = new CubeMesh(CubeMesh.Origin.BOTTOM_CENTER);
             double s = 0.1 + 0.1 * Math.random();
             double tx = -1 + 2 * Math.random();
             double ty = -1 + 2 * Math.random();
-            mesh.setScale(new Vec3(s, s, s));
-            mesh.setRotation(new Vec3(0, 0, 360 * Math.random()));
-            mesh.setTranslation(new Vec3(tx, ty, 0));
-            addGeometry(mesh);
+            mesh.getGeometry().setScale(new Vec3(s, s, s));
+            mesh.getGeometry().setRotation(new Vec3(0, 0, 360 * Math.random()));
+            mesh.getGeometry().setTranslation(new Vec3(tx, ty, 0));
+            objects.add(mesh);
         }
-        addRenderables(controller);
     }
+
+	@Override
+	public List<? extends I3DObject> getObjects() {
+		return objects;
+	}
+
+	@Override
+	public List<? extends IMesh> getMeshes() {
+		return objects;
+	}
+
+	@Override
+	public IRenderable[] createRenderables(
+			IUniformAttributeProvider globalAttributes) {
+		
+		final List<IGeometry> geo = Collections.synchronizedList(objects.stream().map((x) -> {return x.getGeometry();}).collect(Collectors.toList()));
+		
+		IRenderable ret = new Renderable(Pass.DEPTH, EnumSet.noneOf(IRenderer.Flag.class), new Triangles(), globalAttributes, geo);
+		
+		return new IRenderable[]{ret};
+	}
+
+
 }

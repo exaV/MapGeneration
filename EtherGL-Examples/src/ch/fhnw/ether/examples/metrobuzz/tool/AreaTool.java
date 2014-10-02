@@ -32,12 +32,13 @@ package ch.fhnw.ether.examples.metrobuzz.tool;
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.controller.tool.AbstractTool;
 import ch.fhnw.ether.geom.Line;
+import ch.fhnw.ether.geom.PickUtil;
+import ch.fhnw.ether.geom.PickUtil.PickMode;
 import ch.fhnw.ether.geom.Plane;
 import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.IRenderer.Pass;
 import ch.fhnw.ether.render.shader.builtin.Triangles;
 import ch.fhnw.ether.scene.CubeMesh;
-import ch.fhnw.ether.scene.IPickable;
 import ch.fhnw.ether.scene.CubeMesh.Origin;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.ProjectionUtil;
@@ -63,8 +64,8 @@ public final class AreaTool extends AbstractTool {
 
 	public AreaTool(IController controller) {
 		super(controller);
-		mesh.setScale(new Vec3(0.1, 0.1, 0.001));
-		area = controller.getRenderer().createRenderable(Pass.DEPTH, new Triangles(TOOL_COLOR, false), mesh);
+		mesh.getGeometry().setScale(new Vec3(0.1, 0.1, 0.001));
+		area = controller.getRenderer().createRenderable(Pass.DEPTH, new Triangles(TOOL_COLOR, false), mesh.getGeometry());
 	}
 
 	@Override
@@ -94,7 +95,7 @@ public final class AreaTool extends AbstractTool {
 			break;
 		}
 
-		mesh.setTranslation(new Vec3(xOffset, yOffset, 0));
+		mesh.getGeometry().setTranslation(new Vec3(xOffset, yOffset, 0));
 		area.requestUpdate();
 		view.getController().repaintViews();
 	}
@@ -103,7 +104,8 @@ public final class AreaTool extends AbstractTool {
 	public void mousePressed(MouseEvent e, IView view) {
 		int x = e.getX();
 		int y = view.getViewport().h - e.getY();
-		if (mesh.pick(IPickable.PickMode.POINT, x, y, 0, 0, view, null))
+		float d = PickUtil.pickBoundingBox(PickMode.POINT, x, y, 0, 0, view, mesh.getBoundings());
+		if (d < Float.POSITIVE_INFINITY)
 			moving = true;
 	}
 
@@ -116,7 +118,7 @@ public final class AreaTool extends AbstractTool {
 			if (p != null) {
 				xOffset = p.x;
 				yOffset = p.y;
-				mesh.setTranslation(new Vec3(xOffset, yOffset, 0));
+				mesh.getGeometry().setTranslation(new Vec3(xOffset, yOffset, 0));
 				area.requestUpdate();
 				view.getController().repaintViews();
 			}

@@ -30,22 +30,30 @@
 package ch.fhnw.ether.examples.metrobuzz.model;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import ch.fhnw.ether.examples.metrobuzz.controller.MetroBuzzController;
-import ch.fhnw.ether.examples.metrobuzz.controller.ModelRenderState;
 import ch.fhnw.ether.geom.BoundingBox;
+import ch.fhnw.ether.render.IRenderable;
+import ch.fhnw.ether.render.IRenderer;
+import ch.fhnw.ether.render.IRenderer.Pass;
+import ch.fhnw.ether.render.Renderable;
+import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
+import ch.fhnw.ether.render.attribute.IUniformAttributeProvider;
+import ch.fhnw.ether.render.shader.builtin.Lines;
+import ch.fhnw.ether.render.shader.builtin.Points;
+import ch.fhnw.ether.reorg.api.I3DObject;
+import ch.fhnw.ether.reorg.api.IGeometry;
+import ch.fhnw.ether.reorg.api.IMesh;
+import ch.fhnw.ether.reorg.api.IScene;
 import ch.fhnw.ether.scene.GenericMesh;
-import ch.fhnw.ether.scene.IGeometry;
-import ch.fhnw.ether.scene.IModel;
 
-public class Scene implements IModel {
+public class Scene implements IScene {
 	private static final float[] ACTIVITY_COLOR = { 1f, 0f, 0f, 0.2f };
 	private static final float[] TRIP_COLOR = { 0f, 1f, 0f, 0.2f };
-
-	private final MetroBuzzController controller;
 
 	private final List<Node> nodes = new ArrayList<>();
 	private final List<Link> links = new ArrayList<>();
@@ -55,52 +63,11 @@ public class Scene implements IModel {
 
 	private final List<Agent> agents = new ArrayList<>();
 
-	private BoundingBox bounds = null;
-
 	private List<GenericMesh> agentGeometries;
-	private GenericMesh networkGeometry;
-	private ModelRenderState renderState;
+	private GenericMesh networkGeometryPoints;
+	private GenericMesh networkGeometryLines;
 
-	public Scene(MetroBuzzController controller) {
-		this.controller = controller;
-	}
-
-	@Override
-	public MetroBuzzController getController() {
-		return controller;
-	}
-
-	@Override
-	public BoundingBox getBounds() {
-		if (bounds == null) {
-			bounds = new BoundingBox();
-			for (IGeometry geometry : getGeometries()) {
-				bounds.add(geometry.getBounds());
-			}
-		}
-		return bounds;
-	}
-
-	@Override
-	public List<? extends IGeometry> getGeometries() {
-		if (agentGeometries == null) {
-			createGeometries();
-		}
-		return agentGeometries;
-	}
-
-	public GenericMesh getNetworkGeometry() {
-		if (networkGeometry == null) {
-			createGeometries();
-		}
-		return networkGeometry;
-	}
-
-	public List<GenericMesh> getAgentGeometries() {
-		if (agentGeometries == null) {
-			createGeometries();
-		}
-		return agentGeometries;
+	public Scene() {
 	}
 
 	public List<Node> getNodes() {
@@ -114,7 +81,6 @@ public class Scene implements IModel {
 	public void addNode(Node node) {
 		nodes.add(node);
 		idToNode.put(node.getId(), node);
-		bounds = null;
 	}
 
 	public List<Link> getLinks() {
@@ -136,7 +102,6 @@ public class Scene implements IModel {
 
 	public void addAgent(Agent agent) {
 		agents.add(agent);
-		bounds = null;
 	}
 
 	/**
@@ -197,9 +162,10 @@ public class Scene implements IModel {
 			networkEdges[i++] = 0;
 		}
 
-		networkGeometry = new GenericMesh();
-		networkGeometry.setPoints(networkNodes);
-		networkGeometry.setLines(networkEdges);
+		networkGeometryPoints = new GenericMesh(PrimitiveType.POINT);
+		networkGeometryLines = new GenericMesh(PrimitiveType.LINE);
+		networkGeometryPoints.setGeometry(networkNodes);
+		networkGeometryLines.setGeometry(networkEdges);
 
 		// add agents (count number of paths first, then add);
 
@@ -296,17 +262,43 @@ public class Scene implements IModel {
 				}
 				}
 			}
-			GenericMesh geometry = new GenericMesh();
-			geometry.setLines(agentEdges, agentColors);
+			GenericMesh geometry = new GenericMesh(PrimitiveType.LINE);
+			geometry.setGeometry(agentEdges, agentColors);
 			agentGeometries.add(geometry);
 		}
-
-		renderState = new ModelRenderState(this);
-		renderState.updateNetwork();
-		renderState.updateAgents();
 	}
 
 	private static float normTime(float time) {
 		return time / (24 * 60 * 60);
+	}
+
+	@Override
+	public List<? extends I3DObject> getObjects() {
+		return getMeshes();
+	}
+
+	@Override
+	public List<? extends IMesh> getMeshes() {
+		createGeometries();
+		List<IMesh> l = new ArrayList<>(agentGeometries);
+		l.add(networkGeometryPoints);
+		l.add(networkGeometryLines);
+		return l;
+	}
+
+	@Override
+	public IRenderable[] createRenderables(
+			IUniformAttributeProvider globalAttributes) {
+		
+		createGeometries();
+		
+		List<IGeometry> geometries = agentGeometries.stream().map((x) -> { return x.getGeometry(); }).collect(Collectors.toList());
+		geometries.add(networkGeometryLines.getGeometry());
+		IRenderable r1 = new Renderable(Pass.DEPTH, EnumSet.noneOf(IRenderer.Flag.class), new Lines(), globalAttributes, geometries);
+		geometries = new ArrayList<>(1);
+		geometries.add(networkGeometryPoints.getGeometry());
+		IRenderable r2 = new Renderable(Pass.DEPTH, EnumSet.noneOf(IRenderer.Flag.class), new Points(), globalAttributes, geometries);
+		
+		return new IRenderable[]{r1,r2};
 	}
 }

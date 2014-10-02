@@ -28,6 +28,7 @@
  */
 package ch.fhnw.ether.examples.mapping;
 
+import ch.fhnw.ether.reorg.api.ICamera;
 import ch.fhnw.ether.view.AbstractView;
 
 public class MappingView extends AbstractView {
@@ -51,8 +52,8 @@ public class MappingView extends AbstractView {
 	 * @param initialCamRotateZ
 	 *            initial z angle of view
 	 */
-	public MappingView(MappingController controller, int x, int y, int w, int h, ViewType viewType, String title, float initialCamRotateZ) {
-		super(controller, x, y, w, h, viewType, viewType == ViewType.MAPPED_VIEW ? null : title);
-		getCamera().setRotateZ(initialCamRotateZ);
+	public MappingView(MappingController controller, int x, int y, int w, int h, ViewType viewType, String title, float initialCamRotateZ, ICamera camera) {
+		super(controller, x, y, w, h, viewType, viewType == ViewType.MAPPED_VIEW ? null : title, camera);
+		getCamera().setRotation(0, 0, initialCamRotateZ);
 	}
 }

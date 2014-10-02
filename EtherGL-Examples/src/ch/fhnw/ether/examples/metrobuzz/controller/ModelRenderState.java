@@ -30,11 +30,14 @@
 package ch.fhnw.ether.examples.metrobuzz.controller;
 
 import ch.fhnw.ether.examples.metrobuzz.model.Scene;
+import ch.fhnw.ether.render.AbstractRenderer;
 import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.IRenderer;
 import ch.fhnw.ether.render.IRenderer.Pass;
 import ch.fhnw.ether.render.shader.builtin.Lines;
 import ch.fhnw.ether.render.shader.builtin.Points;
+import ch.fhnw.ether.reorg.api.IGeometry;
+import ch.fhnw.ether.reorg.api.IMesh;
 import ch.fhnw.util.color.RGBA;
 
 public final class ModelRenderState {
@@ -44,30 +47,18 @@ public final class ModelRenderState {
 
 	protected final Scene model;
 	
-	private final IRenderable networkNodes;
-	private final IRenderable networkEdges;
-	private final IRenderable agentPaths;
+	private final IRenderable[] renderables;
 
-	public ModelRenderState(Scene model) {
+	public ModelRenderState(Scene model, AbstractRenderer renderer) {
 		this.model = model;
 
-		IRenderer renderer = model.getController().getRenderer();
-		networkNodes = renderer.createRenderable(Pass.DEPTH, new Points(NETWORK_NODE_COLOR, NETWORK_POINT_SIZE, 0), model.getNetworkGeometry());
-		networkEdges = renderer.createRenderable(Pass.DEPTH, new Lines(NETWORK_EDGE_COLOR), model.getNetworkGeometry());
-		agentPaths = renderer.createRenderable(Pass.TRANSPARENCY, new Lines(), model.getAgentGeometries());
+		renderables = model.createRenderables(renderer);
+		renderer.addRenderables(renderables);
 		
-		renderer.addRenderables(networkNodes, networkEdges, agentPaths);
-		
-		updateNetwork();
-		updateAgents();
-	}
-
-	public void updateNetwork() {
-		networkNodes.requestUpdate();
-		networkEdges.requestUpdate();
+		updateRenderables();
 	}
 	
-	public void updateAgents() {
-		agentPaths.requestUpdate();
+	public void updateRenderables() {
+		for(IRenderable r : renderables) r.requestUpdate();
 	}
 }

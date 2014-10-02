@@ -29,6 +29,7 @@
 
 package ch.fhnw.ether.mapping;
 
+import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
 import ch.fhnw.ether.scene.GenericMesh;
 
 public class BoxCalibrationModel implements ICalibrationModel {
@@ -38,7 +39,7 @@ public class BoxCalibrationModel implements ICalibrationModel {
     private float planeExtentX;
     private float planeExtentY;
     
-    private GenericMesh mesh = new GenericMesh();
+    private GenericMesh mesh = new GenericMesh(PrimitiveType.LINE);
 
     public BoxCalibrationModel(float boxExtentX, float boxExtentY, float boxExtentZ, float planeExtentX, float planeExtentY) {
         this.boxExtentX = boxExtentX;
@@ -46,8 +47,10 @@ public class BoxCalibrationModel implements ICalibrationModel {
         this.boxExtentZ = boxExtentZ;
         this.planeExtentX = planeExtentX;
         this.planeExtentY = planeExtentY;
-        mesh.setPoints(getCalibrationPoints());
-        mesh.setLines(getCalibrationLines());
+//        TODO: add also points?
+//        mesh.setPoints(getCalibrationPoints());
+//        mesh.setLines(getCalibrationLines());
+        mesh.setGeometry(getCalibrationLines());
     }
 
     @Override

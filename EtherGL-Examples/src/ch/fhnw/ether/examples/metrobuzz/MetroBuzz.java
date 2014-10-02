@@ -37,6 +37,7 @@ import ch.fhnw.ether.examples.metrobuzz.controller.MetroBuzzController;
 import ch.fhnw.ether.examples.metrobuzz.controller.View;
 import ch.fhnw.ether.examples.metrobuzz.io.matsim.Loader;
 import ch.fhnw.ether.examples.metrobuzz.model.Scene;
+import ch.fhnw.ether.view.Camera;
 
 public class MetroBuzz {
     public static void main(final String[] args) {
@@ -50,26 +51,28 @@ public class MetroBuzz {
     }
 
 	public MetroBuzz(String[] args) {
+		if(args.length < 1) throw new IllegalArgumentException("Pass path to Sioux OSM as command line argument");
+		
 		MetroBuzzController controller = new MetroBuzzController();
-		controller.addView(new View(controller, 0, 10, 512, 512));
-		controller.addView(new View(controller, 512, 10, 512, 512));
-
-		Scene model = new Scene(controller);
+		Camera camera = new Camera();
+		controller.addView(new View(controller, 0, 10, 512, 512, camera));
+		controller.addView(new View(controller, 512, 10, 512, 512, camera));
+		
+		Scene model = new Scene();
 		System.out.println("Loading Data");
 		try {
-			Loader.load(model, "/Users/radar/devel/data/sioux_osm", 100 /*Integer.MAX_VALUE*/);
+			Loader.load(model, args[0], 100 /*Integer.MAX_VALUE*/);
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);
 		}
-		model.getNetworkGeometry();
 		System.out.println("Done.");
 
 		Scene.printAgent(model.getAgents().get(0));
 		//Model.printAgent(model.getAgents().get(1));
 		//Model.printAgent(model.getAgents().get(2));
 		
-		controller.setModel(model);
+		controller.setScene(model);
 	}
 
 }

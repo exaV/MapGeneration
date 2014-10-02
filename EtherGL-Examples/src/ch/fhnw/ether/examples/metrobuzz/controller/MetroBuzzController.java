@@ -46,15 +46,16 @@ public class MetroBuzzController extends AbstractController {
     }
 
     @Override
-    public Scene getModel() {
-        return (Scene) super.getModel();
+    public Scene getScene() {
+        return (Scene) super.getScene();
     }
     
     private void addUI() {
         getUI().addWidget(new Button(0, 0, "PICK", "Pick Tool (1)", KeyEvent.VK_1, (button, view) -> setCurrentTool(null)));
         getUI().addWidget(new Button(1, 0, "AREA", "AREA Tool (2)", KeyEvent.VK_2, (button, view) -> setCurrentTool(areaTool)));
 		getUI().addWidget(new Button(0, 1, "F", "Frame Scene (F)", KeyEvent.VK_F, (button, view) -> {
-			view.getCamera().frame(getModel().getBounds());
+			//TODO: enable framing
+			//view.getCamera().frame(getScene().getBounds());
 			repaintViews();
 		}));
         getUI().addWidget(new Button(1, 1, "Quit", "Quit", KeyEvent.VK_ESCAPE, (button, view) -> System.exit(0)));

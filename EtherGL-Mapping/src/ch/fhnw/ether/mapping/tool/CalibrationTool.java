@@ -45,8 +45,8 @@ import ch.fhnw.ether.mapping.ICalibrator;
 import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.IRenderer;
 import ch.fhnw.ether.render.IRenderer.Pass;
+import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
 import ch.fhnw.ether.render.shader.builtin.Lines;
-import ch.fhnw.ether.render.shader.builtin.Points;
 import ch.fhnw.ether.render.util.Primitives;
 import ch.fhnw.ether.reorg.api.ICamera;
 import ch.fhnw.ether.scene.GenericMesh;
@@ -78,20 +78,22 @@ public final class CalibrationTool extends AbstractTool {
 
 	private Map<IView, CalibrationContext> contexts = new HashMap<>();
 
-	private GenericMesh calibratedGeometry = new GenericMesh();
+	private GenericMesh calibratedGeometry = new GenericMesh(PrimitiveType.LINE);
 
 	private List<IRenderable> renderables = new ArrayList<>();
 
 	public CalibrationTool(IController controller, ICalibrationModel model) {
 		super(controller);
 		this.model = model;
+		calibratedGeometry.setGeometry(new float[0]);
 
 		IRenderer renderer = controller.getRenderer();
 
-		renderables.add(renderer.createRenderable(Pass.OVERLAY, new Points(MODEL_COLOR, POINT_SIZE, 0), model.getCalibrationMesh()));
-		renderables.add(renderer.createRenderable(Pass.OVERLAY, new Lines(MODEL_COLOR), model.getCalibrationMesh()));
-		renderables.add(renderer.createRenderable(Pass.DEVICE_SPACE_OVERLAY, new Points(null, POINT_SIZE, 0), calibratedGeometry));
-		renderables.add(renderer.createRenderable(Pass.DEVICE_SPACE_OVERLAY, new Lines(null), calibratedGeometry));
+		renderables.add(renderer.createRenderable(Pass.OVERLAY, new Lines(MODEL_COLOR), model.getCalibrationMesh().getGeometry()));
+		renderables.add(renderer.createRenderable(Pass.DEVICE_SPACE_OVERLAY, new Lines(), calibratedGeometry.getGeometry()));
+//		TODO: add also points?
+//		renderables.add(renderer.createRenderable(Pass.OVERLAY, new Points(MODEL_COLOR, POINT_SIZE, 0), model.getCalibrationMesh().getGeometry()));
+//		renderables.add(renderer.createRenderable(Pass.DEVICE_SPACE_OVERLAY, new Points(null, POINT_SIZE, 0), calibratedGeometry));
 	}
 
 	@Override
@@ -292,7 +294,8 @@ public final class CalibrationTool extends AbstractTool {
 		RGBA color = context.calibrated ? CALIBRATION_COLOR_CALIBRATED : CALIBRATION_COLOR_UNCALIBRATED;
 
 		// prepare points
-		calibratedGeometry.setPoints(Vec3.toArray(context.projectedVertices), color, null);
+//		TODO: add points?
+//		calibratedGeometry.setPoints(Vec3.toArray(context.projectedVertices), color, null);
 
 		// prepare lines
 		List<Vec3> v = new ArrayList<>();
@@ -310,7 +313,8 @@ public final class CalibrationTool extends AbstractTool {
 				Primitives.addLine(v, a.x, a.y - CROSSHAIR_SIZE / viewport.h, a.z, a.x, a.y + CROSSHAIR_SIZE / viewport.h, a.z);
 			}
 		}
-		calibratedGeometry.setLines(Vec3.toArray(v), color);
+//		calibratedGeometry.setLines(Vec3.toArray(v), color);
+		calibratedGeometry.setGeometry(Vec3.toArray(v));
 
 		// request refresh
 		for (IRenderable renderable : renderables)
