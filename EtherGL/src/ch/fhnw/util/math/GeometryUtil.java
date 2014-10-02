@@ -198,7 +198,7 @@ public class GeometryUtil {
 			Vec3 n;
 			Vec3 a = new Vec3(triangles[i + 3] - triangles[i], triangles[i + 4] - triangles[i + 1], triangles[i + 5] - triangles[i + 2]);
 			Vec3 b = new Vec3(triangles[i + 6] - triangles[i], triangles[i + 7] - triangles[i + 1], triangles[i + 8] - triangles[i + 2]);
-			n = Vec3.cross(a, b).normalize();
+			n = a.cross(b).normalize();
 			if(n == null)
 				n = new Vec3(0, 0, 1);
 			normals[i] = normals[i + 3] = normals[i + 6] = n.x;

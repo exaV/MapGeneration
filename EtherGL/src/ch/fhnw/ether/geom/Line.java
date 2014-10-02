@@ -48,7 +48,7 @@ public class Line {
 			throw new IllegalArgumentException();
 		}
 		direction = delta.scale(1.0f / length);
-		origin = p1.add(direction.scale(-Vec3.dot(p1, delta) / length));
+		origin = p1.add(direction.scale(-p1.dot(delta) / length));
 	}
 
 	public Vec3 getOrigin() {

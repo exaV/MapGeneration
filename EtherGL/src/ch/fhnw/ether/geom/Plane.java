@@ -51,7 +51,7 @@ public class Plane {
 	public Plane(Vec3 origin, Vec3 normal) {
 		this.origin = origin;
 		this.normal = normal.normalize();
-		this.offset = -Vec3.dot(origin, this.normal);
+		this.offset = -origin.dot(this.normal);
 	}
 
 	public Vec3 getOrigin() {
@@ -67,10 +67,10 @@ public class Plane {
 	}
 
 	public Vec3 intersection(Line line) {
-		float dot = Vec3.dot(normal, line.getDirection());
+		float dot = normal.dot(line.getDirection());
 		if (dot == 0)
 			return null;
-		float k = -(offset + Vec3.dot(normal, line.getOrigin())) / dot;
+		float k = -(offset + normal.dot(line.getOrigin())) / dot;
 		return line.getOrigin().add(line.getDirection().scale(k));
 	}
 }

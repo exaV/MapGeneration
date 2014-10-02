@@ -34,8 +34,8 @@ import java.util.List;
 
 import javax.media.opengl.GL3;
 
-import ch.fhnw.util.FloatList;
 import ch.fhnw.ether.view.IView;
+import ch.fhnw.util.FloatList;
 import ch.fhnw.util.UpdateRequest;
 
 final class Renderables {
@@ -102,5 +102,5 @@ final class Renderables {
                 renderable.render(gl, view, state);
             }
         }
-    }
+    }    
 }
