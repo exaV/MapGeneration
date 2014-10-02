@@ -95,8 +95,8 @@ public class Camera extends BaseCamera {
 				this.locked = false;
 			} else {
 				this.locked = true;
-				setProjectionMatrix(projMatrix);
-				setViewMatrix(viewMatrix);
+				super.setProjectionMatrix(projMatrix);
+				super.setViewMatrix(viewMatrix);
 			}
 		}
 	}
@@ -118,20 +118,20 @@ public class Camera extends BaseCamera {
 	@Override
 	public Mat4 getViewProjMatrix() {
 		synchronized (lock) {
-			return Mat4.product(getProjectionMatrix(), getViewMatrix());
+			return super.getViewProjMatrix();
 		}
 	}
 
 	@Override
 	public Mat4 getViewProjInvMatrix() {
 		synchronized (lock) {
-			return getViewProjMatrix().inverse();
+			return super.getViewProjInvMatrix();
 		}
 	}
 
 	public Mat4 getViewProjInvTpMatrix() {
 		synchronized (lock) {
-			return getViewProjInvMatrix().transposed();
+			return super.getViewProjInvMatrix().transposed();
 		}
 	}
 

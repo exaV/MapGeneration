@@ -35,6 +35,7 @@ import java.util.List;
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.IRenderer;
+import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
 import ch.fhnw.ether.render.shader.builtin.Lines;
 import ch.fhnw.ether.render.util.Primitives;
 import ch.fhnw.ether.scene.GenericMesh;
@@ -57,7 +58,7 @@ public class NavigationTool extends AbstractTool {
 
 	public NavigationTool(IController controller) {
 		super(controller);
-		renderable = controller.getRenderer().createRenderable(IRenderer.Pass.DEPTH, new Lines(GRID_COLOR), makeGrid());
+		renderable = controller.getRenderer().createRenderable(IRenderer.Pass.DEPTH, new Lines(), makeGrid().getGeometry());
 		// XXX hack: currently grid is always enabled
 		activate();
 	}
@@ -75,33 +76,40 @@ public class NavigationTool extends AbstractTool {
 	@Override
 	public void mousePressed(MouseEvent e, IView view) {
 		button = e.getButton();
+		view.repaint();
 	}
 
 	@Override
 	public void mouseMoved(MouseEvent e, IView view) {
 		mouseX = e.getX();
 		mouseY = e.getY();
+		view.repaint();
 	}
 
 	@Override
 	public void mouseDragged(MouseEvent e, IView view) {
+		float dx = e.getX() - mouseX;
+		float dy = e.getY() - mouseY;
+		float moveFactor = 0.002f;
+		float turnFactor = -0.2f;
 		if (button == MouseEvent.BUTTON1) {
-			view.getCamera().turn(e.getY() - mouseY, 0, e.getX() - mouseX);
+			view.getCamera().turn(turnFactor * dy, turnFactor * dx, 0, true);
 		} else if (button == MouseEvent.BUTTON2 || button == MouseEvent.BUTTON3) {
-			view.getCamera().move(e.getX() - mouseX, mouseY - e.getY(), 0);
+			view.getCamera().move(moveFactor*dx, -moveFactor*dy, 0, true);
 		}
 		mouseX = e.getX();
 		mouseY = e.getY();
+		view.repaint();
 	}
 
 	@Override
 	public void mouseWheelMoved(MouseEvent e, IView view) {
-		view.getCamera().move(0, e.getRotation()[1], 0);
-		// view.getCamera().addToDistance(-0.125f * e.getRotation()[1]);
+		view.getCamera().move(0, 0, -0.125f * e.getRotation()[1], true);
+		view.repaint();
 	}
 
 	private static GenericMesh makeGrid() {
-		GenericMesh mesh = new GenericMesh();
+		GenericMesh mesh = new GenericMesh(PrimitiveType.LINE);
 		List<Vec3> lines = new ArrayList<>();
 
 		int gridNumLines = 12;
@@ -121,7 +129,7 @@ public class NavigationTool extends AbstractTool {
 			Primitives.addLine(lines, -e, -i * gridSpacing, e, -i * gridSpacing);
 		}
 		
-		mesh.setLines(Vec3.toArray(lines));
+		mesh.setGeometry(Vec3.toArray(lines));
 		return mesh;
 	}
 }

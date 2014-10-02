@@ -31,7 +31,7 @@ package ch.fhnw.ether.view;
 
 import ch.fhnw.ether.geom.Line;
 import ch.fhnw.ether.view.IView;
-import ch.fhnw.ether.view.Viewport;
+import ch.fhnw.util.Viewport;
 import ch.fhnw.util.math.Mat4;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.Vec4;

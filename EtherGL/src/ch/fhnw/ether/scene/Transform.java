@@ -124,4 +124,10 @@ public class Transform implements ITransformable {
             normalTransform = normalTransform.transposed();
         }
     }
+    
+    @Override
+    public String toString() {
+    	validateVertexTransform(origin);
+    	return vertexTransform.toString();
+    }
 }

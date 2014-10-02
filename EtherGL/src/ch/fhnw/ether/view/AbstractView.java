@@ -130,7 +130,7 @@ public class AbstractView implements IView {
 	public final void init(GLAutoDrawable drawable) {
 		GL gl = drawable.getGL();
 
-		gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		gl.glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
 		gl.glClearDepth(1.0f);
 
 		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);

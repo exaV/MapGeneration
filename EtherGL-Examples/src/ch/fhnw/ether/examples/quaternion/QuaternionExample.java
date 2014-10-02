@@ -28,11 +28,11 @@
 package ch.fhnw.ether.examples.quaternion;
 
 import java.io.IOException;
-
 import javax.swing.SwingUtilities;
 
-import ch.fhnw.ether.formats.StaticModel;
 import ch.fhnw.ether.formats.obj.OBJReader;
+import ch.fhnw.ether.reorg.base.SimpleScene;
+import ch.fhnw.ether.view.Camera;
 
 public class QuaternionExample {
 	 public static void main(String[] args) {
@@ -51,9 +51,12 @@ public class QuaternionExample {
 
 	    public QuaternionExample() throws IOException {
 	        final QuaternionController controller = new QuaternionController();
+	        Camera camera = new Camera();
 	 
-	        controller.setModel(new StaticModel(controller, new OBJReader(getClass().getResource("fhnw.obj")).getModel()));
+	        SimpleScene s = new SimpleScene();
+	        new OBJReader(getClass().getResource("fhnw.obj")).getMeshes().forEach((x) -> {s.addMesh(x);} );
+	        controller.setScene(s);
 	        
-	        controller.addView(new QuaternionView(controller, 0, 10, 512, 512, "Quaternion View"));
+	        controller.addView(new QuaternionView(controller, 0, 10, 512, 512, "Quaternion View", camera));
 	    }
 }

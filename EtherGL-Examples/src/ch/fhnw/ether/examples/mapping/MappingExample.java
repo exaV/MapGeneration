@@ -31,7 +31,9 @@ package ch.fhnw.ether.examples.mapping;
 
 import javax.swing.SwingUtilities;
 
-import ch.fhnw.ether.scene.IModel;
+import ch.fhnw.ether.reorg.api.ICamera;
+import ch.fhnw.ether.reorg.api.IScene;
+import ch.fhnw.ether.view.Camera;
 import ch.fhnw.ether.view.IView.ViewType;
 
 public final class MappingExample {
@@ -61,12 +63,13 @@ public final class MappingExample {
 	public MappingExample() {
 		final MappingController controller = new MappingController();
 
-		IModel model = new MappingTriangleScene(controller);
+		IScene model = new MappingTriangleScene();
+		ICamera camera = new Camera();
 
-		controller.setModel(model);
+		controller.setScene(model);
 
-		controller.addView(new MappingView(controller, 0, 10, 512, 512, ViewType.INTERACTIVE_VIEW, "View 0", 0.0f));
-		controller.addView(new MappingView(controller, 530, 0, 400, 400, ViewType.MAPPED_VIEW, "View 1", 0.0f));
+		controller.addView(new MappingView(controller, 0, 10, 512, 512, ViewType.INTERACTIVE_VIEW, "View 0", 0.0f, camera));
+		controller.addView(new MappingView(controller, 530, 0, 400, 400, ViewType.MAPPED_VIEW, "View 1", 0.0f, camera));
 		// controller.addView(new MappingView(controller, 940, 0, 400, 400, ViewType.MAPPED_VIEW, "View 2", 90.0f));
 		// controller.addView(new MappingView(controller, 530, 410, 400, 400, ViewType.MAPPED_VIEW, "View 3", 180.0f));
 		// controller.addView(new MappingView(controller, 940, 410, 400, 400, ViewType.MAPPED_VIEW, "View 4", 270.0f));

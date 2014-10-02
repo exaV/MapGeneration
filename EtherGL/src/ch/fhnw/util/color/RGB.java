@@ -26,4 +26,15 @@ public class RGB extends Vec3 implements IColor {
 	public float alpha() {
 		return 1f;
 	}
+	
+	@Override
+	public float[] generateColorArray(int len) {
+		float[] ret = new float[len*4];
+		for(int i=0; i<ret.length; i+=3) {
+			ret[i+0] = x;
+			ret[i+1] = y;
+			ret[i+2] = z;
+		}
+		return ret;
+	}
 }

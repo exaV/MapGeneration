@@ -12,4 +12,6 @@ public interface IColor {
 	default float[] toArray() {
 		return new float[] { red(), green(), blue(), alpha() };
 	}
+
+	float[] generateColorArray(int len);
 }

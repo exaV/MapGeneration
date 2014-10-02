@@ -27,14 +27,14 @@
  */
 package ch.fhnw.ether.examples.quaternion;
 
+import ch.fhnw.ether.reorg.api.ICamera;
 import ch.fhnw.ether.view.AbstractView;
-import ch.fhnw.ether.view.Camera;
 
 import com.jogamp.newt.event.KeyEvent;
 
 public class QuaternionView extends AbstractView {
-	public QuaternionView(QuaternionController controller, int x, int y, int w, int h, String title) {
-		super(controller, x, y, w, h,ViewType.INTERACTIVE_VIEW, title);
+	public QuaternionView(QuaternionController controller, int x, int y, int w, int h, String title, ICamera camera) {
+		super(controller, x, y, w, h,ViewType.INTERACTIVE_VIEW, title, camera);
 	}
 
 	private static final float[][] CAM_PARAMS = {
@@ -56,9 +56,9 @@ public class QuaternionView extends AbstractView {
 		case KeyEvent.VK_4:
 		case KeyEvent.VK_5:
 			float[] params = CAM_PARAMS[e.getKeyCode() - KeyEvent.VK_0];
-			Camera  cam    = getCamera();
+			ICamera cam = getCamera();
 			cam.setPosition(params[0], params[1], params[2]);
-			cam.setOrientation(params[3], params[4], params[5]);
+			cam.setRotation(params[3], params[4], params[5]);
 			break;
 		default:
 			super.keyPressed(e);

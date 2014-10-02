@@ -8,7 +8,7 @@ import ch.fhnw.util.math.Vec3;
 public class BaseCamera implements ICamera{
 	
 	private Mat4 projectionMatrix = Mat4.identityMatrix();
-	private Mat4 viewMatrix = Mat4.identityMatrix();
+	private Mat4 cameraMatrix = Mat4.identityMatrix();
 	protected float fov;
 	protected float aspect;
 	protected float near;
@@ -16,7 +16,7 @@ public class BaseCamera implements ICamera{
 	private BoundingBox camera_box = new BoundingBox();
 	
 	public BaseCamera() {
-		this(45, 1, 0.0001f, 10000000);
+		this(45, 1, 0.1f, 1000000000);
 	}
 	
 	public BaseCamera(float fov, float aspect, float near, float far) {
@@ -28,7 +28,7 @@ public class BaseCamera implements ICamera{
 	
 	@Override
 	public float[] getPosition() {
-		return new float[]{viewMatrix.m[Mat4.M30], viewMatrix.m[Mat4.M31], viewMatrix.m[Mat4.M32]};
+		return new float[]{cameraMatrix.m[Mat4.M03], cameraMatrix.m[Mat4.M13], cameraMatrix.m[Mat4.M23]};
 	}
 
 	@Override
@@ -80,7 +80,7 @@ public class BaseCamera implements ICamera{
 
 	@Override
 	public Mat4 getViewMatrix() {
-		return viewMatrix;
+		return cameraMatrix.inverse();
 	}
 
 	@Override
@@ -90,7 +90,7 @@ public class BaseCamera implements ICamera{
 
 	@Override
 	public Mat4 getViewProjMatrix() {
-		return Mat4.product(viewMatrix, getProjectionMatrix());
+		return Mat4.product(getProjectionMatrix(), getViewMatrix());
 	}
 
 	@Override
@@ -99,49 +99,58 @@ public class BaseCamera implements ICamera{
 	}
 
 	@Override
-	public void move(float x, float y, float z) {
+	public void move(float x, float y, float z, boolean local_transformation) {
 		Mat4 move = Mat4.identityMatrix();
 		move.translate(x,y,z);
-		viewMatrix = Mat4.product(viewMatrix, move); 
+		if(local_transformation) {
+			cameraMatrix = Mat4.product(cameraMatrix, move);
+		} else {
+			cameraMatrix = Mat4.product(move, cameraMatrix);
+		}
 	}
 
 	@Override
-	public void turn(float xAxis, float yAxis, float zAxis) {
+	public void turn(float xAxis, float yAxis, float zAxis, boolean local_transformation) {
 		Mat4 turn = Mat4.identityMatrix();
 		turn.rotate(xAxis, Vec3.X);
 		turn.rotate(yAxis, Vec3.Y);
 		turn.rotate(zAxis, Vec3.Z);
-		viewMatrix = Mat4.product(viewMatrix, turn); 
+		if(local_transformation) {
+			cameraMatrix = Mat4.product(cameraMatrix, turn);
+		} else {
+			cameraMatrix = Mat4.product(turn, cameraMatrix);
+		}
 	}
 
 	@Override
 	public void setRotation(float xAxis, float yAxis, float zAxis) {
-		float x = viewMatrix.m[Mat4.M30];
-		float y = viewMatrix.m[Mat4.M31];
-		float z = viewMatrix.m[Mat4.M32]; 
-		viewMatrix = Mat4.identityMatrix();
-		viewMatrix.rotate(xAxis, Vec3.X);
-		viewMatrix.rotate(yAxis, Vec3.Y);
-		viewMatrix.rotate(zAxis, Vec3.Z);
-		viewMatrix.translate(x,y,z);
+		float x = cameraMatrix.m[Mat4.M03];
+		float y = cameraMatrix.m[Mat4.M13];
+		float z = cameraMatrix.m[Mat4.M23]; 
+		cameraMatrix = Mat4.identityMatrix();
+		cameraMatrix.rotate(xAxis, Vec3.X);
+		cameraMatrix.rotate(yAxis, Vec3.Y);
+		cameraMatrix.rotate(zAxis, Vec3.Z);
+		cameraMatrix.translate(x,y,z);
 	}
 
 	@Override
 	public void setPosition(float x, float y, float z) {
-		viewMatrix.m[Mat4.M30] = x;
-		viewMatrix.m[Mat4.M31] = y;
-		viewMatrix.m[Mat4.M32] = z;
+		cameraMatrix.m[Mat4.M03] = x;
+		cameraMatrix.m[Mat4.M13] = y;
+		cameraMatrix.m[Mat4.M23] = z;
 	}
 
-	//TODO: after these operations, some values will be dirty. Implement consideration for this.
 	@Override
 	public void setViewMatrix(Mat4 viewMatrix) {
-		this.viewMatrix = viewMatrix;
+		this.cameraMatrix = viewMatrix.inverse();
 	}
 
 	@Override
 	public void setProjectionMatrix(Mat4 projectionMatrix) {
 		this.projectionMatrix = projectionMatrix;
+		//these values are now dirty
+		fov = aspect = near = far = -1;
 	}
 
 }

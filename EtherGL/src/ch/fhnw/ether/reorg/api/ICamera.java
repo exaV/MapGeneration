@@ -27,12 +27,12 @@ public interface ICamera extends I3DObject {
 	/**
 	 * Turn the camera around the specified amounts on each axis. This is a camera-local transformation.
 	 */
-	void turn(float xAxis, float yAxis, float zAxis);
+	void turn(float xAxis, float yAxis, float zAxis, boolean local_transformation);
 	
 	/**
 	 * Move the camera along the specified amounts on each axis. This is a camera-local transformation.
 	 */
-	void move(float x, float y, float z);
+	void move(float x, float y, float z, boolean local_transformation);
 	
 	/**
 	 * Rotates the camera to the specific angles. The angles are assumed in world-space.
