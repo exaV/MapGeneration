@@ -35,11 +35,11 @@ import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
 import ch.fhnw.ether.render.attribute.builtin.ColorArray;
 import ch.fhnw.ether.render.attribute.builtin.PositionArray;
 import ch.fhnw.ether.reorg.api.IScene;
-import ch.fhnw.ether.reorg.base.BaseCamera;
 import ch.fhnw.ether.reorg.base.VertexGeometry;
 import ch.fhnw.ether.reorg.base.SimpleMesh;
 import ch.fhnw.ether.reorg.base.SimpleScene;
 import ch.fhnw.ether.view.AbstractView;
+import ch.fhnw.ether.view.Camera;
 import ch.fhnw.ether.view.IView;
 
 public final class Test {
@@ -49,7 +49,7 @@ public final class Test {
 	
 	static IScene createScene() {
 		SimpleScene scene = new SimpleScene();
-		float[] position = {-0.5f,0,-0.5f, -0.5f,0,0.5f, 0.5f,0,0.5f, };
+		float[] position = {0f,0,0, 0,0,0.5f, 0.5f,0,0.5f, };
 		float[] color = {1,0,0,1, 1,0,0,1, 1,0,0,1, };
 		float[][] data = {position, color};
 		IArrayAttribute[] attribs = {new PositionArray(), new ColorArray()};
@@ -64,9 +64,7 @@ public final class Test {
 	public Test() {
 
 		AbstractController controller = new AbstractController(){};
-		BaseCamera camera = new BaseCamera();
-		camera.move(0, -3, 1, false);
-		camera.setRotation(80, 0, 0);
+		Camera camera = new Camera();
 		IScene scene = createScene();
 		AbstractView view = new AbstractView(controller, 100, 100, 500, 500, IView.ViewType.INTERACTIVE_VIEW, "Test", camera);
 		

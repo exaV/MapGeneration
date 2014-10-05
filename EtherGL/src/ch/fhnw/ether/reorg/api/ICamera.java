@@ -1,20 +1,14 @@
 package ch.fhnw.ether.reorg.api;
 
 import ch.fhnw.util.math.Mat4;
+import ch.fhnw.util.math.Vec3;
 
 public interface ICamera extends I3DObject {
 
-	Mat4 getViewMatrix();
-	
+	// projection settings
 	Mat4 getProjectionMatrix();
 	
-	void setViewMatrix(Mat4 viewMatrix);
-	
 	void setProjectionMatrix(Mat4 projectionMatrix);
-	
-	Mat4 getViewProjMatrix();
-	
-	Mat4 getViewProjInvMatrix();
 	
 	float getNear();
 	
@@ -24,26 +18,47 @@ public interface ICamera extends I3DObject {
 	
 	void setFar(float far);
 	
-	/**
-	 * Turn the camera around the specified amounts on each axis. This is a camera-local transformation.
-	 */
-	void turn(float xAxis, float yAxis, float zAxis, boolean local_transformation);
+	float getFov();
+
+	void setFov(float fov);
+
+	float getAspect();
+
+	void setAspect(float aspect);
 	
-	/**
-	 * Move the camera along the specified amounts on each axis. This is a camera-local transformation.
-	 */
+	// view matrix
+	
+	Mat4 getViewMatrix();
+	
+	void setViewMatrix(Mat4 viewMatrix);
+	
+	Mat4 getViewProjMatrix();
+	
+	Mat4 getViewProjInvMatrix();
+	
+	// camera matrix
+	void turn(float amount, Vec3 axis, boolean local_transformation);
+	
 	void move(float x, float y, float z, boolean local_transformation);
 	
-	/**
-	 * Rotates the camera to the specific angles. The angles are assumed in world-space.
-	 */
 	void setRotation(float xAxis, float yAxis, float zAxis);
 	
-	/**
-	 * Moves the camera to the specific position. The coordinates are assumed in world-space.
-	 */
 	void setPosition(float x, float y, float z);
+
+	Vec3 getLookDirection();
 	
-		
+	// orbit-related changes, camera transformations around pivot point
+
+	void ORBITzoom(float zoomFactor);
+
+	void ORBITturnAzimut(float amount);
+
+	void ORBITturnElevation(float amount);
+
+	void ORBITsetZoom(float zoom);
+
+	void ORBITsetAzimut(float azimut);
+
+	void ORBITsetElevation(float elevation);
 
 }

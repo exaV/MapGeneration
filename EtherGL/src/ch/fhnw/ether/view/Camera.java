@@ -1,138 +1,240 @@
-/*
- * Copyright (c) 2013 - 2014 FHNW & ETH Zurich (Stefan Muller Arisona & Simon Schubiger)
- * Copyright (c) 2013 - 2014 Stefan Muller Arisona & Simon Schubiger
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- *  Redistributions of source code must retain the above copyright notice,
- *   this list of conditions and the following disclaimer.
- *  Redistributions in binary form must reproduce the above copyright notice,
- *   this list of conditions and the following disclaimer in the documentation
- *   and/or other materials provided with the distribution.
- *  Neither the name of FHNW / ETH Zurich nor the names of its contributors may
- *   be used to endorse or promote products derived from this software without
- *   specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
 package ch.fhnw.ether.view;
 
-import ch.fhnw.ether.reorg.base.BaseCamera;
+import ch.fhnw.ether.geom.BoundingBox;
+import ch.fhnw.ether.reorg.api.ICamera;
 import ch.fhnw.util.math.Mat4;
+import ch.fhnw.util.math.Vec3;
 
-/**
- * OpenGL-aligned camera model
- *
- * @author radar
- */
-public class Camera extends BaseCamera {
+public class Camera implements ICamera{
 	private static final boolean KEEP_ROT_X_POSITIVE = true;
+	private static final float MIN_ZOOM = 0.02f;
 
-	private final Object lock = new Object();
-
-	private boolean locked = false;
-
-	private float distance = 2.0f;
-
-	private boolean ortho = false;
-
+	protected float fov;
+	protected float aspect;
+	protected float near;
+	protected float far;
+	
+	private Mat4 projectionMatrix = Mat4.identityMatrix();
+	private Mat4 cameraMatrix = Mat4.identityMatrix();
+	
+	private float orbitRadius = 3;
+	private float azimut = 0;
+	private float elevation = 0;
+	
+	private BoundingBox camera_box = new BoundingBox();
+	
 	public Camera() {
-		super();
+		this(45, 1, 0.01f, 100000);
 	}
-
-	public boolean isLocked() {
-		return locked;
+	
+	public Camera(float fov, float aspect, float near, float far) {
+		this.fov = fov;
+		this.aspect = aspect;
+		this.near = near;
+		this.far = far;
+		move(0,-orbitRadius,0,true);
 	}
-
+	
 	@Override
-	public void setNear(float near) {
-		if (locked)
-			return;
-		super.setNear(near);
-	}
-
-	@Override
-	public void setFar(float far) {
-		if (locked)
-			return;
-		super.setFar(far);
+	public float getFov() {
+		return fov;
 	}
 
 	@Override
 	public void setFov(float fov) {
-		if (locked)
-			return;
-		super.setFov(fov);
+		this.fov = fov;
 	}
 
-	public float getDistance() {
-		return distance;
+	@Override
+	public float getAspect() {
+		return aspect;
 	}
 
-	public boolean isOrtho() {
-		return ortho;
+	@Override
+	public void setAspect(float aspect) {
+		this.aspect = aspect;
 	}
 
-	public void setOrtho(boolean ortho) {
-		this.ortho = ortho;
+	@Override
+	public float getNear() {
+		return near;
 	}
 
-	public void setMatrices(Mat4 projMatrix, Mat4 viewMatrix) {
-		synchronized (lock) {
-			if (projMatrix == null) {
-				this.locked = false;
-			} else {
-				this.locked = true;
-				super.setProjectionMatrix(projMatrix);
-				super.setViewMatrix(viewMatrix);
-			}
-		}
+	@Override
+	public void setNear(float near) {
+		this.near = near;
+	}
+
+	@Override
+	public float getFar() {
+		return far;
+	}
+
+	@Override
+	public void setFar(float far) {
+		this.far = far;
 	}
 
 	@Override
 	public Mat4 getProjectionMatrix() {
-		synchronized (lock) {
-			return super.getProjectionMatrix();
-		}
+		projectionMatrix.perspective(fov, aspect, near, far);
+		return projectionMatrix;
+	}
+	
+	@Override
+	public void setProjectionMatrix(Mat4 projectionMatrix) {
+		this.projectionMatrix = projectionMatrix;
+		//these values are now dirty
+		fov = aspect = near = far = -1;
 	}
 
 	@Override
 	public Mat4 getViewMatrix() {
-		synchronized (lock) {
-			return super.getViewMatrix();
-		}
+		Mat4 viewMatrix = cameraMatrix.inverse();
+		//Align to coordinate space with Z=up ad Y=depth
+		viewMatrix.rotate(-90, Vec3.X);
+		return viewMatrix;
+	}
+	
+	@Override
+	public void setViewMatrix(Mat4 viewMatrix) {
+		cameraMatrix = viewMatrix.inverse();
 	}
 
 	@Override
 	public Mat4 getViewProjMatrix() {
-		synchronized (lock) {
-			return super.getViewProjMatrix();
-		}
+		return Mat4.product(getProjectionMatrix(), getViewMatrix());
 	}
 
 	@Override
 	public Mat4 getViewProjInvMatrix() {
-		synchronized (lock) {
-			return super.getViewProjInvMatrix();
+		return getViewProjMatrix().inverse();
+	}
+	
+	@Override
+	public BoundingBox getBoundings() {
+		camera_box.reset();
+		camera_box.add(getPosition());
+		return camera_box;
+	}
+
+	@Override
+	public void move(float x, float y, float z, boolean local_transformation) {
+		Mat4 move = Mat4.identityMatrix();
+		move.translate(x,y,z);
+		if(local_transformation) {
+			cameraMatrix = Mat4.product(cameraMatrix, move);
+		} else {
+			cameraMatrix = Mat4.product(move, cameraMatrix);
 		}
 	}
 
-	public Mat4 getViewProjInvTpMatrix() {
-		synchronized (lock) {
-			return super.getViewProjInvMatrix().transposed();
+	@Override
+	public void turn(float amount, Vec3 axis, boolean local_transformation) {
+		Mat4 turn = Mat4.identityMatrix();
+		turn.rotate(amount, axis);
+		if(local_transformation) {
+			cameraMatrix = Mat4.product(cameraMatrix, turn);
+		} else {
+			cameraMatrix = Mat4.product(turn, cameraMatrix);
 		}
+	}
+
+	@Override
+	public void setRotation(float xAxis, float yAxis, float zAxis) {
+		float x = cameraMatrix.m[Mat4.M03];
+		float y = cameraMatrix.m[Mat4.M13];
+		float z = cameraMatrix.m[Mat4.M23]; 
+		cameraMatrix = Mat4.identityMatrix();
+		cameraMatrix.rotate(xAxis, Vec3.X);
+		cameraMatrix.rotate(yAxis, Vec3.Y);
+		cameraMatrix.rotate(zAxis, Vec3.Z);
+		cameraMatrix.translate(x,y,z);
+	}
+	
+	@Override
+	public float[] getPosition() {
+		return new float[]{cameraMatrix.m[Mat4.M03], cameraMatrix.m[Mat4.M13], cameraMatrix.m[Mat4.M23]};
+	}
+
+	@Override
+	public void setPosition(float[] position) {
+		setPosition(position[0], position[1], position[2]);
+	}
+
+	@Override
+	public void setPosition(float x, float y, float z) {
+		cameraMatrix.m[Mat4.M03] = x;
+		cameraMatrix.m[Mat4.M13] = y;
+		cameraMatrix.m[Mat4.M23] = z;
+	}
+	
+	@Override
+	public Vec3 getLookDirection() {
+		return new Vec3(cameraMatrix.m[Mat4.M10],cameraMatrix.m[Mat4.M11],cameraMatrix.m[Mat4.M12]).normalize();
+	}
+
+	//orbit camera methods--------------------------------------------------------------
+	//a call of one of this methods will change the camera mode to orbit mode
+
+	@Override
+	public void ORBITzoom(float zoomFactor) {
+		float old_radius = orbitRadius;
+		orbitRadius *= zoomFactor;
+		if(orbitRadius < MIN_ZOOM) {
+			orbitRadius = old_radius;
+			return;
+		}
+		move(0,old_radius - orbitRadius,0, true);
+	}
+	
+	@Override
+	public void ORBITturnAzimut(float amount) {
+		move(0, orbitRadius, 0, true);
+		turn(amount, Vec3.Z, false);
+		move(0, -orbitRadius, 0, true);
+		azimut += amount;
+	}
+	
+	@Override
+	public void ORBITturnElevation(float amount) {
+		if(KEEP_ROT_X_POSITIVE) {
+			if(elevation - amount < 0) amount = elevation;
+			if(elevation - amount > 90) amount = 90 - elevation;
+		}
+		move(0, orbitRadius, 0, true);
+		turn(amount, Vec3.X, true);
+		move(0, -orbitRadius, 0, true);
+		this.elevation -= amount;
+	}
+	
+	@Override
+	public void ORBITsetZoom(float zoom) {
+		if(zoom < MIN_ZOOM) zoom = MIN_ZOOM;
+		move(0,orbitRadius - zoom, 0, true);
+		orbitRadius = zoom;
+	}
+
+	@Override
+	public void ORBITsetAzimut(float azimut) {
+		float diff = azimut - this.azimut;
+		move(0, orbitRadius, 0, true);
+		turn(diff, Vec3.Z, false);
+		move(0, -orbitRadius, 0, true);
+		this.azimut = azimut;
+	}
+	
+	@Override
+	public void ORBITsetElevation(float elevation) {
+		if(KEEP_ROT_X_POSITIVE) {
+			if(elevation < 0) elevation = 0;
+			if(elevation > 90) elevation = 90;
+		}
+		float diff = this.elevation - elevation;
+		move(0, orbitRadius, 0, true);
+		turn(diff, Vec3.X, true);
+		move(0, -orbitRadius, 0, true);	
+		this.elevation = elevation;
 	}
 
 }

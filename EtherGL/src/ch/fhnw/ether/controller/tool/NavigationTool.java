@@ -93,7 +93,8 @@ public class NavigationTool extends AbstractTool {
 		float moveFactor = 0.002f;
 		float turnFactor = -0.2f;
 		if (button == MouseEvent.BUTTON1) {
-			view.getCamera().turn(turnFactor * dy, turnFactor * dx, 0, true);
+			view.getCamera().ORBITturnAzimut(turnFactor * dx);
+			view.getCamera().ORBITturnElevation(turnFactor * dy);
 		} else if (button == MouseEvent.BUTTON2 || button == MouseEvent.BUTTON3) {
 			view.getCamera().move(moveFactor*dx, -moveFactor*dy, 0, true);
 		}
@@ -104,7 +105,7 @@ public class NavigationTool extends AbstractTool {
 
 	@Override
 	public void mouseWheelMoved(MouseEvent e, IView view) {
-		view.getCamera().move(0, 0, -0.125f * e.getRotation()[1], true);
+		view.getCamera().ORBITzoom(1 - e.getRotation()[1] * 0.01f);
 		view.repaint();
 	}
 
