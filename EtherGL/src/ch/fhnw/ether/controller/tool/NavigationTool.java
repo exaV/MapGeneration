@@ -58,7 +58,8 @@ public class NavigationTool extends AbstractTool {
 
 	public NavigationTool(IController controller) {
 		super(controller);
-		renderable = controller.getRenderer().createRenderable(IRenderer.Pass.DEPTH, new Lines(), makeGrid().getGeometry());
+		renderable = controller.getRenderer().createRenderable(
+				IRenderer.Pass.DEPTH, new Lines(), makeGrid().getGeometry());
 		// XXX hack: currently grid is always enabled
 		activate();
 	}
@@ -90,13 +91,13 @@ public class NavigationTool extends AbstractTool {
 	public void mouseDragged(MouseEvent e, IView view) {
 		float dx = e.getX() - mouseX;
 		float dy = e.getY() - mouseY;
-		float moveFactor = 0.002f;
+		float moveFactor = 0.002f * view.getCamera().ORBIgetZoom();
 		float turnFactor = -0.2f;
 		if (button == MouseEvent.BUTTON1) {
 			view.getCamera().ORBITturnAzimut(turnFactor * dx);
 			view.getCamera().ORBITturnElevation(turnFactor * dy);
 		} else if (button == MouseEvent.BUTTON2 || button == MouseEvent.BUTTON3) {
-			view.getCamera().move(moveFactor*dx, -moveFactor*dy, 0, true);
+			view.getCamera().ORBITmovePivot(-moveFactor * dx, moveFactor * dy, 0, true);
 		}
 		mouseX = e.getX();
 		mouseY = e.getY();
@@ -125,11 +126,13 @@ public class NavigationTool extends AbstractTool {
 		int n = gridNumLines / 2;
 		for (int i = 1; i <= n; ++i) {
 			Primitives.addLine(lines, i * gridSpacing, -e, i * gridSpacing, e);
-			Primitives.addLine(lines, -i * gridSpacing, -e, -i * gridSpacing, e);
+			Primitives
+					.addLine(lines, -i * gridSpacing, -e, -i * gridSpacing, e);
 			Primitives.addLine(lines, -e, i * gridSpacing, e, i * gridSpacing);
-			Primitives.addLine(lines, -e, -i * gridSpacing, e, -i * gridSpacing);
+			Primitives
+					.addLine(lines, -e, -i * gridSpacing, e, -i * gridSpacing);
 		}
-		
+
 		mesh.setGeometry(Vec3.toArray(lines));
 		return mesh;
 	}
