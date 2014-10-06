@@ -172,8 +172,8 @@ public class Camera implements ICamera {
 
 	@Override
 	public Vec3 getLookDirection() {
-		return new Vec3(cameraMatrix.m[Mat4.M10], cameraMatrix.m[Mat4.M11],
-				cameraMatrix.m[Mat4.M12]).normalize();
+		return new Vec3(cameraMatrix.m[Mat4.M01], cameraMatrix.m[Mat4.M11],
+				cameraMatrix.m[Mat4.M21]);
 	}
 
 	// orbit camera
@@ -193,9 +193,21 @@ public class Camera implements ICamera {
 
 	@Override
 	public void ORBITturnAzimut(float amount) {
+		// move camera pivot to world center
+		Vec3 pivot_position = ORBITgetPivotPosition();
+		cameraMatrix.translate(pivot_position.negate());
+
+		// move camera to pivot center
 		move(0, orbitRadius, 0, true);
+
+		// rotate camera round global Z-axis
 		turn(amount, Vec3.Z, false);
+		
+		// move camera back to orbit position
 		move(0, -orbitRadius, 0, true);
+
+		// move pivot back to origin position
+		cameraMatrix.translate(pivot_position);
 		azimut += amount;
 	}
 
@@ -224,9 +236,12 @@ public class Camera implements ICamera {
 	@Override
 	public void ORBITsetAzimut(float azimut) {
 		float diff = azimut - this.azimut;
+		Vec3 pivot_position = ORBITgetPivotPosition();
+		cameraMatrix.translate(pivot_position.negate());
 		move(0, orbitRadius, 0, true);
 		turn(diff, Vec3.Z, false);
 		move(0, -orbitRadius, 0, true);
+		cameraMatrix.translate(pivot_position);
 		this.azimut = azimut;
 	}
 
@@ -249,12 +264,22 @@ public class Camera implements ICamera {
 	public void ORBITmovePivot(float x, float y, float z,
 			boolean localTransformation) {
 		float newX = x, newY = y;
-		if(localTransformation) {
+		if (localTransformation) {
 			float azimut_rad = (float) Math.toRadians(-azimut);
-			newX = (float) (Math.cos(azimut_rad)*x + Math.sin(azimut_rad)*y);
-			newY = (float) (-Math.sin(azimut_rad)*x + Math.cos(azimut_rad)*y);
+			newX = (float) (Math.cos(azimut_rad) * x + Math.sin(azimut_rad) * y);
+			newY = (float) (-Math.sin(azimut_rad) * x + Math.cos(azimut_rad)
+					* y);
 		}
-		cameraMatrix.translate(newX, newY, 0);
+		cameraMatrix.translate(newX, newY, z);
+	}
+
+	@Override
+	public Vec3 ORBITgetPivotPosition() {
+		float[] p = getPosition();
+		Vec3 cameraPosition = new Vec3(p[0], p[1], p[2]);
+		Vec3 pivot_position = cameraPosition.add(getLookDirection().scale(
+				orbitRadius));
+		return pivot_position;
 	}
 
 	@Override

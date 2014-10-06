@@ -66,4 +66,6 @@ public interface ICamera extends I3DObject {
 
 	void ORBITmovePivot(float x, float y, float z, boolean localTransformation);
 
+	Vec3 ORBITgetPivotPosition();
+
 }

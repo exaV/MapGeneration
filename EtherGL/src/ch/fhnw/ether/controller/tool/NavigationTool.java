@@ -106,7 +106,11 @@ public class NavigationTool extends AbstractTool {
 
 	@Override
 	public void mouseWheelMoved(MouseEvent e, IView view) {
-		view.getCamera().ORBITzoom(1 - e.getRotation()[1] * 0.01f);
+		if(e.isControlDown()) {
+			view.getCamera().ORBITmovePivot(0, 0, e.getRotation()[1] * 0.1f, false);
+		} else {
+			view.getCamera().ORBITzoom(1 - e.getRotation()[1] * 0.1f);
+		}
 		view.repaint();
 	}
 
