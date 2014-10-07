@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import ch.fhnw.ether.camera.ICamera;
 import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.IRenderer;
 import ch.fhnw.ether.render.IRenderer.Pass;
@@ -18,9 +19,15 @@ public class SimpleScene implements IScene{
 	
 	private final List<IMesh> meshes = Collections.synchronizedList(new ArrayList<>(10));
 	private final List<ILight> lights = Collections.synchronizedList(new ArrayList<>(3));
+	private final List<ICamera> cameras = Collections.synchronizedList(new ArrayList<>(3));
 
 	public SimpleScene() {
 
+	}
+	
+	@Override
+	public List<IMesh> getObjects() {
+		return Collections.unmodifiableList(meshes);
 	}
 	
 	public boolean addMesh(IMesh mesh) {
@@ -30,9 +37,9 @@ public class SimpleScene implements IScene{
 	public boolean removeMesh(IMesh mesh) {
 		return meshes.remove(mesh);
 	}
-
+	
 	@Override
-	public List<IMesh> getObjects() {
+	public List<IMesh> getMeshes() {
 		return Collections.unmodifiableList(meshes);
 	}
 
@@ -43,14 +50,23 @@ public class SimpleScene implements IScene{
 	public boolean removeLight(ILight light) {
 		return lights.remove(light);
 	}
-
+	
+	@Override
 	public List<ILight> getLights() {
 		return Collections.unmodifiableList(lights);
 	}
+	
+	public boolean addCamera(ICamera camera) {
+		return cameras.add(camera);
+	}
+	
+	public boolean removeCamera(ICamera camera) {
+		return cameras.remove(camera);
+	}
 
 	@Override
-	public List<IMesh> getMeshes() {
-		return Collections.unmodifiableList(meshes);
+	public List<? extends ICamera> getCameras() {
+		return Collections.unmodifiableList(cameras);
 	}
 	
 	@Override
@@ -62,5 +78,6 @@ public class SimpleScene implements IScene{
 		
 		return renderables.toArray(new IRenderable[0]);
 	}
+
 
 }

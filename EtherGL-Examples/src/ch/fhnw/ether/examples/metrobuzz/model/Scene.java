@@ -30,11 +30,13 @@
 package ch.fhnw.ether.examples.metrobuzz.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import ch.fhnw.ether.camera.ICamera;
 import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.IRenderer;
 import ch.fhnw.ether.render.IRenderer.Pass;
@@ -42,6 +44,7 @@ import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
 import ch.fhnw.ether.render.shader.builtin.Lines;
 import ch.fhnw.ether.render.shader.builtin.Points;
 import ch.fhnw.ether.scene.IScene;
+import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.GenericMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
@@ -65,8 +68,10 @@ public class Scene implements IScene {
 	private List<GenericMesh> agentGeometries;
 	private GenericMesh networkGeometryPoints;
 	private GenericMesh networkGeometryLines;
+	private ICamera camera;
 
-	public Scene() {
+	public Scene(ICamera camera) {
+		this.camera = camera;
 	}
 
 	public List<Node> getNodes() {
@@ -300,5 +305,15 @@ public class Scene implements IScene {
 		IRenderable r2 = renderer.createRenderable(Pass.DEPTH, new Points(false), new ColorMaterial(RGBA.YELLOW), point_geometries);
 		
 		return new IRenderable[]{r1,r2};
+	}
+
+	@Override
+	public List<? extends ICamera> getCameras() {
+		return Collections.singletonList(camera);
+	}
+
+	@Override
+	public List<? extends ILight> getLights() {
+		return Collections.emptyList();
 	}
 }

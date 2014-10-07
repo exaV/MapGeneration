@@ -60,6 +60,10 @@ public class GenericMesh implements IMesh {
 		this.type = type;
 		this.material = material;
 	}
+	
+	public void setGeometry(IGeometry geometry) {
+		this.geometry = geometry;
+	}
 
 	public void setGeometry(float[] vertices) {
 		setGeometry(vertices, RGBA.WHITE.generateColorArray(vertices.length/3));

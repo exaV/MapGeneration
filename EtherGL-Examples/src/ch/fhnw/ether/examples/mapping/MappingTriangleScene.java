@@ -34,12 +34,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import ch.fhnw.ether.camera.ICamera;
 import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.IRenderer;
 import ch.fhnw.ether.render.IRenderer.Pass;
 import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
 import ch.fhnw.ether.render.shader.builtin.MaterialTriangles;
 import ch.fhnw.ether.scene.IScene;
+import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.GenericMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
@@ -54,8 +56,9 @@ public class MappingTriangleScene implements IScene {
 	
 	private List<IMesh> objects = new ArrayList<>(10);
 	private IMaterial material = new ColorMaterial(RGBA.WHITE);
+	private ICamera camera;
 	
-    public MappingTriangleScene() {
+    public MappingTriangleScene(ICamera camera) {
         for (int i = 0; i < 10; ++i) {
             GenericMesh cube = new GenericMesh(PrimitiveType.TRIANGLE, material);
             cube.setGeometry(Primitives.UNIT_CUBE_TRIANGLES);
@@ -67,6 +70,7 @@ public class MappingTriangleScene implements IScene {
             cube.getGeometry().setTranslation(new Vec3(tx, ty, 0));
             objects.add(cube);
         }
+        this.camera = camera;
     }
 
 	@Override
@@ -88,6 +92,16 @@ public class MappingTriangleScene implements IScene {
 		IRenderable ret = renderer.createRenderable(Pass.DEPTH, new MaterialTriangles(true, false, false, false), material, geo);
 		
 		return new IRenderable[]{ret};
+	}
+
+	@Override
+	public List<? extends ICamera> getCameras() {
+		return Collections.singletonList(camera);
+	}
+
+	@Override
+	public List<? extends ILight> getLights() {
+		return Collections.emptyList();
 	}
 
 

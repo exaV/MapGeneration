@@ -63,8 +63,8 @@ public final class MappingExample {
 	public MappingExample() {
 		final MappingController controller = new MappingController();
 
-		IScene model = new MappingTriangleScene();
 		ICamera camera = new Camera();
+		IScene model = new MappingTriangleScene(camera);
 
 		controller.setScene(model);
 

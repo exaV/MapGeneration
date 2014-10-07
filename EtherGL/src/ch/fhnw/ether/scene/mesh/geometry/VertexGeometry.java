@@ -61,11 +61,6 @@ public class VertexGeometry implements IGeometry {
 	}
 
 	@Override
-	public IArrayAttribute[] getArrayAttributes() {
-		return attributes;
-	}
-
-	@Override
 	public BoundingBox getBoundings() {
 		return boundings;
 	}

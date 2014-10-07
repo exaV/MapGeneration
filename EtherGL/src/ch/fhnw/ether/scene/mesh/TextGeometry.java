@@ -42,11 +42,16 @@ import javax.media.opengl.GL;
 import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.IRenderer;
 import ch.fhnw.ether.render.IRenderer.Pass;
+import ch.fhnw.ether.render.attribute.IArrayAttribute;
 import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
+import ch.fhnw.ether.render.attribute.builtin.PositionArray;
+import ch.fhnw.ether.render.attribute.builtin.TexCoordArray;
 import ch.fhnw.ether.render.gl.Texture;
 import ch.fhnw.ether.render.shader.IShader;
 import ch.fhnw.ether.render.shader.builtin.MaterialTriangles;
+import ch.fhnw.ether.scene.mesh.geometry.VertexGeometry;
 import ch.fhnw.ether.scene.mesh.material.TextureMaterial;
+import ch.fhnw.util.math.geometry.Primitives;
 
 public class TextGeometry extends GenericMesh /*implements IArrayAttributeProvider*/ {
 	public static final Font FONT = new Font("SansSerif", Font.BOLD, 12);
@@ -72,8 +77,10 @@ public class TextGeometry extends GenericMesh /*implements IArrayAttributeProvid
 		this.w = w;
 		this.h = h;
 		
-		float[] data = new float[]{x, y, 0, x + w, y, 0, x + w, y + h, 0, x, y, 0, x + w, y + h, 0, x, y + h, 0};
-		setGeometry(data);
+		float[] position = new float[]{x, y, 0, x + w, y, 0, x + w, y + h, 0, x, y, 0, x + w, y + h, 0, x, y + h, 0};
+		float[] tex_coords = Primitives.DEFAULT_QUAD_TEX_COORDS;
+		IArrayAttribute[] attribs = new IArrayAttribute[]{new PositionArray(), new TexCoordArray()};
+		setGeometry(new VertexGeometry(new float[][]{position, tex_coords}, attribs, PrimitiveType.TRIANGLE));
 		setMaterial(new TextureMaterial(texture));
 	}
 
@@ -145,15 +152,6 @@ public class TextGeometry extends GenericMesh /*implements IArrayAttributeProvid
 		}
 		requestUpdate();
 	}
-
-//	@Override
-//	public void getAttributeSuppliers(IAttribute.PrimitiveType primitiveType, IAttribute.ISuppliers dst) {
-//		if (primitiveType != IAttribute.PrimitiveType.TRIANGLE)
-//			return;
-//
-//		dst.add(PositionArray.ID, () -> new float[]{x, y, 0, x + w, y, 0, x + w, y + h, 0, x, y, 0, x + w, y + h, 0, x, y + h, 0});
-//		dst.add(TexCoordArray.ID, () -> Primitives.DEFAULT_QUAD_TEX_COORDS);
-//	}
 
 	private void requestUpdate() {
 		texture.setData(w, h, IntBuffer.wrap(((DataBufferInt) image.getRaster().getDataBuffer()).getData()), GL.GL_BGRA);
