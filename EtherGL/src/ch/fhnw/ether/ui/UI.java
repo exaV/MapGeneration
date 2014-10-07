@@ -36,7 +36,7 @@ import java.util.List;
 
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.render.IRenderer;
-import ch.fhnw.ether.scene.mesh.TextGeometry;
+import ch.fhnw.ether.scene.mesh.TextMesh;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.util.UpdateRequest;
 import com.jogamp.newt.event.KeyEvent;
@@ -44,7 +44,7 @@ import com.jogamp.newt.event.MouseEvent;
 
 public final class UI {
 	private final IController controller;
-	private final TextGeometry text = new TextGeometry(0, 0, 512, 512);
+	private final TextMesh text = new TextMesh(0, 0, 512, 512);
 	private final UpdateRequest updater = new UpdateRequest();
 
 	private final List<IWidget> widgets = new ArrayList<>();
@@ -79,7 +79,7 @@ public final class UI {
 
 		if (message != null)
 			text.drawString(message, 0,
-					text.getHeight() - TextGeometry.FONT.getSize());
+					text.getHeight() - TextMesh.FONT.getSize());
 
 		text.getRenderable(controller.getRenderer()).requestUpdate();
 	}

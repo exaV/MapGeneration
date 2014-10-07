@@ -53,7 +53,7 @@ import ch.fhnw.ether.scene.mesh.geometry.VertexGeometry;
 import ch.fhnw.ether.scene.mesh.material.TextureMaterial;
 import ch.fhnw.util.math.geometry.Primitives;
 
-public class TextGeometry extends GenericMesh /*implements IArrayAttributeProvider*/ {
+public class TextMesh extends GenericMesh /*implements IArrayAttributeProvider*/ {
 	public static final Font FONT = new Font("SansSerif", Font.BOLD, 12);
 
 	private static final Color CLEAR_COLOR = new Color(0, 0, 0, 0);
@@ -67,7 +67,7 @@ public class TextGeometry extends GenericMesh /*implements IArrayAttributeProvid
 	private int h;
 	private IRenderable renderable;
 
-	public TextGeometry(int x, int y, int w, int h) {
+	public TextMesh(int x, int y, int w, int h) {
 		super(PrimitiveType.TRIANGLE);
 		image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
 		graphics = image.createGraphics();

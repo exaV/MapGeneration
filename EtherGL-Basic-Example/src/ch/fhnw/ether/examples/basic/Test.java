@@ -37,7 +37,7 @@ import ch.fhnw.ether.render.attribute.builtin.ColorArray;
 import ch.fhnw.ether.render.attribute.builtin.PositionArray;
 import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.scene.SimpleScene;
-import ch.fhnw.ether.scene.mesh.SimpleMesh;
+import ch.fhnw.ether.scene.mesh.GenericMesh;
 import ch.fhnw.ether.scene.mesh.geometry.VertexGeometry;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.view.IView;
@@ -56,9 +56,9 @@ public final class Test {
 		float[][] data = {position, color};
 		IArrayAttribute[] attribs = {new PositionArray(), new ColorArray()};
 		
-		VertexGeometry g = new VertexGeometry(data, attribs, PrimitiveType.TRIANGLE);
 		scene = new SimpleScene();
-		scene.addMesh(new SimpleMesh(g, new ColorMaterial(RGBA.YELLOW)));
+		VertexGeometry g = new VertexGeometry(data, attribs, PrimitiveType.LINE);
+		scene.addMesh(new GenericMesh(g, new ColorMaterial(RGBA.YELLOW)));
 		
 		return scene;
 	}

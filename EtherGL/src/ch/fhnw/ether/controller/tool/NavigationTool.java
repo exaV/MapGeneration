@@ -30,19 +30,15 @@
 package ch.fhnw.ether.controller.tool;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
+import java.util.Collections;
 import java.util.List;
 
 import ch.fhnw.ether.controller.IController;
-import ch.fhnw.ether.render.AbstractRenderer;
 import ch.fhnw.ether.render.IRenderable;
-import ch.fhnw.ether.render.IRenderer;
-import ch.fhnw.ether.render.Renderable;
 import ch.fhnw.ether.render.IRenderer.Pass;
 import ch.fhnw.ether.render.attribute.IArrayAttributeProvider;
-import ch.fhnw.ether.render.attribute.IAttribute.ISuppliers;
 import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
-import ch.fhnw.ether.render.attribute.IUniformAttributeProvider;
+import ch.fhnw.ether.render.shader.IShader;
 import ch.fhnw.ether.render.shader.builtin.Lines;
 import ch.fhnw.ether.scene.mesh.GenericMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
@@ -67,22 +63,11 @@ public class NavigationTool extends AbstractTool {
 
 	public NavigationTool(IController controller) {
 		super(controller);
-//		renderable = controller.getRenderer().createRenderable(
-//				IRenderer.Pass.DEPTH, new Lines(), makeGrid().getGeometry());
 		// XXX hack: currently grid is always enabled
 		IMesh gridMesh = makeGrid();
-		List<IArrayAttributeProvider> l = new ArrayList<>(1);
-		l.add(gridMesh.getGeometry());
-		IUniformAttributeProvider uniforms = new IUniformAttributeProvider() {
-			@Override
-			public void getAttributeSuppliers(ISuppliers dst) {
-				gridMesh.getMaterial().getAttributeSuppliers(dst);
-				if(controller.getRenderer() instanceof AbstractRenderer) {
-					((IUniformAttributeProvider)controller.getRenderer()).getAttributeSuppliers(dst);
-				}
-			}
-		};
-		renderable = new Renderable(Pass.DEPTH, EnumSet.noneOf(IRenderer.Flag.class), new Lines(false), uniforms, l);
+		List<IArrayAttributeProvider> l = Collections.singletonList(gridMesh.getGeometry());
+		IShader s = new Lines(false);
+		renderable = controller.getRenderer().createRenderable(Pass.DEPTH, s, gridMesh.getMaterial(), l);
 		activate();
 	}
 

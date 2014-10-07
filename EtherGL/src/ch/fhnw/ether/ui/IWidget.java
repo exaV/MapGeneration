@@ -31,7 +31,7 @@ package ch.fhnw.ether.ui;
 
 import java.awt.Color;
 
-import ch.fhnw.ether.scene.mesh.TextGeometry;
+import ch.fhnw.ether.scene.mesh.TextMesh;
 import ch.fhnw.ether.view.IView;
 
 import com.jogamp.newt.event.KeyEvent;
@@ -58,7 +58,7 @@ public interface IWidget {
 	
 	boolean hit(int x, int y, IView view);
 	
-	void draw(TextGeometry surface);
+	void draw(TextMesh surface);
 	
 	IWidgetAction<? extends IWidget> getAction();
 	

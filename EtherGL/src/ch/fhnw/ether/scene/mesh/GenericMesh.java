@@ -50,7 +50,7 @@ public class GenericMesh implements IMesh {
 
 	private IMaterial material = null;
 	private IGeometry geometry = null;
-	private final PrimitiveType type;
+	private PrimitiveType type;
 
 	public GenericMesh(PrimitiveType type) {
 		this.type = type;
@@ -61,7 +61,14 @@ public class GenericMesh implements IMesh {
 		this.material = material;
 	}
 	
-	public void setGeometry(IGeometry geometry) {
+	public GenericMesh(VertexGeometry geometry, IMaterial material) {
+		this.type = geometry.getPrimitiveType();
+		this.material = material;
+		this.geometry = geometry;
+	}
+	
+	public void setGeometry(VertexGeometry geometry) {
+		this.type = geometry.getPrimitiveType();
 		this.geometry = geometry;
 	}
 

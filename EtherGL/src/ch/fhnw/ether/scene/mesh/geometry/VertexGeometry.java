@@ -17,7 +17,7 @@ public class VertexGeometry implements IGeometry {
 	private IArrayAttribute[] attributes;
 	private BoundingBox boundings;
 	private PrimitiveType type;
-	
+
 	public VertexGeometry(float[][] attribData, IArrayAttribute[] attributes, PrimitiveType type) {
 		this.attributes = attributes;
 		this.vertexData = attribData;
@@ -36,6 +36,10 @@ public class VertexGeometry implements IGeometry {
 			throw new IllegalArgumentException("Attributes must contain position");
 		}
 
+	}
+	
+	public PrimitiveType getPrimitiveType() {
+		return type;
 	}
 
 	@Override
