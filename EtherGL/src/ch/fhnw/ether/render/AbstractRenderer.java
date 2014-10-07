@@ -39,7 +39,6 @@ import ch.fhnw.ether.render.attribute.IArrayAttributeProvider;
 import ch.fhnw.ether.render.attribute.IUniformAttributeProvider;
 import ch.fhnw.ether.render.attribute.IAttribute.ISuppliers;
 import ch.fhnw.ether.render.shader.IShader;
-import ch.fhnw.ether.view.IView;
 
 public abstract class AbstractRenderer implements IRenderer, IUniformAttributeProvider {
 
@@ -107,7 +106,7 @@ public abstract class AbstractRenderer implements IRenderer, IUniformAttributePr
 		
 	}
 
-	protected void renderPass(GL3 gl, IView view, RenderState state, Pass pass) {
-		this.renderables.render(gl, view, state, pass);
+	protected void renderPass(GL3 gl, RenderState state, Pass pass, boolean interactive) {
+		this.renderables.render(gl, state, pass, interactive);
 	}
 }

@@ -32,7 +32,7 @@ import java.io.IOException;
 import javax.swing.SwingUtilities;
 
 import ch.fhnw.ether.camera.Camera;
-import ch.fhnw.ether.formats.obj.OBJReader;
+import ch.fhnw.ether.formats.obj.parser.OBJReader;
 import ch.fhnw.ether.scene.SimpleScene;
 
 public class QuaternionExample {

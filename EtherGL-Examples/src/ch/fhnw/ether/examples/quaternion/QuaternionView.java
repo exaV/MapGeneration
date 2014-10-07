@@ -38,24 +38,24 @@ public class QuaternionView extends AbstractView {
 	}
 
 	private static final float[][] CAM_PARAMS = {
-		{ 0, 0, 5,   0,   0, 0},
-		{ 0, 5, 0,   0, -90, 0},
-		{ 0, 0,-5,   0, 180, 0},
-		{ 0,-5, 0,   0,  90, 0},
-		{-5, 0, 0,  90,   0, 0},
-		{ 5, 0, 0, -90,   0, 0},
+		{ 5, 0, 0,   0,   0,  90},
+		{-5, 0, 0,   0,   0, -90},
+		{ 0, 5, 0,   0,   0, 180},
+		{ 0,-5, 0,   0,   0,   0},
+		{ 0, 0, 5, -90,   0,   0},
+		{ 0, 0,-5,  90,   0,   0},
 	};
 	
 	@Override
 	public void keyPressed(KeyEvent e) {
 		switch (e.getKeyCode()) {
-		case KeyEvent.VK_0:
 		case KeyEvent.VK_1:
 		case KeyEvent.VK_2:
 		case KeyEvent.VK_3:
 		case KeyEvent.VK_4:
 		case KeyEvent.VK_5:
-			float[] params = CAM_PARAMS[e.getKeyCode() - KeyEvent.VK_0];
+		case KeyEvent.VK_6:
+			float[] params = CAM_PARAMS[e.getKeyCode() - KeyEvent.VK_1];
 			ICamera cam = getCamera();
 			cam.setPosition(params[0], params[1], params[2]);
 			cam.setRotation(params[3], params[4], params[5]);

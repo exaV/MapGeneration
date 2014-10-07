@@ -300,7 +300,7 @@ public abstract class AbstractController implements IController {
     
     @Override
 	public void requestRendering(GL3 gl, IView view) {
-		renderer.render(gl, view);
+		renderer.render(gl, view.getCamera(), view.getViewport(), view.getViewType() == IView.ViewType.INTERACTIVE_VIEW);
 	}
 
 }

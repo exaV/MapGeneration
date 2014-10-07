@@ -34,7 +34,6 @@ import java.util.List;
 
 import javax.media.opengl.GL3;
 
-import ch.fhnw.ether.view.IView;
 import ch.fhnw.util.FloatList;
 import ch.fhnw.util.UpdateRequest;
 
@@ -91,14 +90,14 @@ final class Renderables {
         }
     }
 
-    void render(GL3 gl, IView view, IRenderer.RenderState state, IRenderer.Pass pass) {
+    void render(GL3 gl, IRenderer.RenderState state, IRenderer.Pass pass, boolean interactive) {
     	for(int i=0; i<renderables.size(); ++i) {
     		IRenderable renderable = renderables.get(i);
-            if (renderable.containsFlag(IRenderer.Flag.INTERACTIVE_VIEW_ONLY) && view.getViewType() != IView.ViewType.INTERACTIVE_VIEW)
+            if (renderable.containsFlag(IRenderer.Flag.INTERACTIVE_VIEW_ONLY) && !interactive)
                 continue;
             if (renderable.getPass() == pass) {
-                renderable.update(gl, view, data);
-                renderable.render(gl, view, state);
+                renderable.update(gl, data);
+                renderable.render(gl, state);
             }
         }
     }    

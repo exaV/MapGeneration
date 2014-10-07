@@ -28,7 +28,6 @@
 package ch.fhnw.ether.examples.quaternion;
 
 import ch.fhnw.ether.controller.AbstractController;
-import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.view.IView;
 
 import com.jogamp.newt.event.KeyEvent;
@@ -61,8 +60,4 @@ public class QuaternionController extends AbstractController {
 		repaintViews();
 	}
 
-	@Override
-	public IScene getScene() {
-		return getScene();
-	}
 }

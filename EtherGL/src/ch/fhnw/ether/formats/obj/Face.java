@@ -2,7 +2,7 @@ package ch.fhnw.ether.formats.obj;
 
 import ch.fhnw.util.math.Vec3;
 
-class Face {
+public class Face {
 	public int[] vertIndices;
 	public int[] normIndices;
 	public int[] texIndices;

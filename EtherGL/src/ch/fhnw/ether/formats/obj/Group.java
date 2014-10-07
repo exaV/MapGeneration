@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import ch.fhnw.util.IntList;
 import ch.fhnw.util.math.Vec3;
 
-class Group {
+public class Group {
 
 	private String name;
 	private Vec3 min = null;

@@ -2,21 +2,16 @@ package ch.fhnw.ether.scene;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.IRenderer;
 import ch.fhnw.ether.render.IRenderer.Pass;
-import ch.fhnw.ether.render.attribute.IUniformAttributeProvider;
-import ch.fhnw.ether.render.attribute.IAttribute.ISuppliers;
+import ch.fhnw.ether.render.shader.IShader;
 import ch.fhnw.ether.render.shader.builtin.MaterialTriangles;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.IMesh;
-import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
-import ch.fhnw.ether.scene.mesh.material.IMaterial;
 
 //only for testing purposes
 public class SimpleScene implements IScene{
@@ -60,30 +55,12 @@ public class SimpleScene implements IScene{
 	
 	@Override
 	public IRenderable[] createRenderables(IRenderer renderer) {
+
+		List<IRenderable> renderables;
+		IShader shader = new MaterialTriangles(true, false, false, false);
+		renderables = meshes.stream().map((x) -> renderer.createRenderable(Pass.DEPTH, shader, x.getMaterial(), x.getGeometry())).collect(Collectors.toList());
 		
-		final List<IGeometry> geo = Collections.synchronizedList(meshes.stream().map((x) -> {return x.getGeometry();}).collect(Collectors.toList()));
-		
-		//setup material
-		IUniformAttributeProvider uniforms = new IUniformAttributeProvider() {
-			@Override
-			public void getAttributeSuppliers(ISuppliers dst) {
-				
-				Set<IMaterial> materials = new HashSet<>();
-				
-				for(int i=0; i<meshes.size(); ++i) {
-					IMesh m = meshes.get(i);
-					IMaterial material = m.getMaterial();
-					if(!materials.contains(m)) {
-						materials.add(material);
-						m.getMaterial().getAttributeSuppliers(dst);
-					}
-				}
-			}
-		};
-		
-		IRenderable renderable = renderer.createRenderable(Pass.DEPTH, new MaterialTriangles(true, false, false, false), uniforms, geo);
-				
-		return new IRenderable[]{renderable};
+		return renderables.toArray(new IRenderable[0]);
 	}
 
 }

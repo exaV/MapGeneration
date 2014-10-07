@@ -1,6 +1,6 @@
 package ch.fhnw.ether.formats.obj;
 
-class TexCoord {
+public class TexCoord {
 
 	private float u;
 	private float v;

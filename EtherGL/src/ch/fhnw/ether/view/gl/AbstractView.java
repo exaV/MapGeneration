@@ -36,7 +36,6 @@ import javax.media.opengl.GLAutoDrawable;
 import ch.fhnw.ether.camera.ICamera;
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.view.IView;
-import ch.fhnw.ether.view.IView.ViewType;
 import ch.fhnw.util.Viewport;
 
 import com.jogamp.newt.event.KeyEvent;

@@ -49,7 +49,6 @@ import ch.fhnw.ether.render.attribute.base.FloatArrayAttribute;
 import ch.fhnw.ether.render.gl.FloatArrayBuffer;
 import ch.fhnw.ether.render.gl.Program;
 import ch.fhnw.ether.render.shader.IShader;
-import ch.fhnw.ether.view.IView;
 import ch.fhnw.util.FloatList;
 import ch.fhnw.util.UpdateRequest;
 
@@ -100,7 +99,7 @@ public final class Renderable implements IRenderable {
 	}
 
 	@Override
-	public void update(GL3 gl, IView view, FloatList dst) {
+	public void update(GL3 gl, FloatList dst) {
 		if (updater.needsUpdate()) {
 			dst.clear();
 			shader.update(gl);
@@ -109,7 +108,7 @@ public final class Renderable implements IRenderable {
 	}
 
 	@Override
-	public void render(GL3 gl, IView view, IRenderer.RenderState state) {
+	public void render(GL3 gl, IRenderer.RenderState state) {
 		// TODO: generally, sorting of any kind is not implemented yet...
 		// e.g. sort by program, shader params, instance params, ... (we should come up with some flexible mechanism for
 		// implementing sorting strategies)

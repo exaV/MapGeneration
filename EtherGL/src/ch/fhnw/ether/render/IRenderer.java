@@ -34,10 +34,11 @@ import java.util.List;
 
 import javax.media.opengl.GL3;
 
+import ch.fhnw.ether.camera.ICamera;
 import ch.fhnw.ether.render.attribute.IArrayAttributeProvider;
 import ch.fhnw.ether.render.attribute.IUniformAttributeProvider;
 import ch.fhnw.ether.render.shader.IShader;
-import ch.fhnw.ether.view.IView;
+import ch.fhnw.util.Viewport;
 import ch.fhnw.util.math.Mat4;
 
 /**
@@ -66,7 +67,7 @@ public interface IRenderer {
 	
 	public final static EnumSet<Flag> NO_FLAGS = EnumSet.noneOf(Flag.class);
 
-	void render(GL3 gl, IView view);
+	void render(GL3 gl, ICamera camera, Viewport viewport, boolean interactive);
 	
 	IRenderable createRenderable(Pass pass, IShader shader, IUniformAttributeProvider uniforms, IArrayAttributeProvider... providers);
 
