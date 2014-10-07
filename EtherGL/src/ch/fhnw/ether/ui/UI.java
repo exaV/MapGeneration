@@ -32,30 +32,19 @@ package ch.fhnw.ether.ui;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.List;
 
 import ch.fhnw.ether.controller.IController;
-import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.IRenderer;
-import ch.fhnw.ether.render.attribute.IUniformAttributeProvider;
-import ch.fhnw.ether.render.attribute.IAttribute.ISuppliers;
-import ch.fhnw.ether.render.attribute.builtin.TextureUniform;
-import ch.fhnw.ether.render.shader.builtin.MaterialTriangles;
 import ch.fhnw.ether.scene.mesh.TextGeometry;
-import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
-import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.util.UpdateRequest;
-import ch.fhnw.util.color.RGBA;
-
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.MouseEvent;
 
 public final class UI {
 	private final IController controller;
 	private final TextGeometry text = new TextGeometry(0, 0, 512, 512);
-	private final IRenderable renderable;
 	private final UpdateRequest updater = new UpdateRequest();
 
 	private final List<IWidget> widgets = new ArrayList<>();
@@ -63,29 +52,19 @@ public final class UI {
 
 	public UI(IController controller) {
 		this.controller = controller;
-		IMaterial color = new ColorMaterial(RGBA.WHITE);
-		IUniformAttributeProvider uniforms = new IUniformAttributeProvider() {
-			@Override
-			public void getAttributeSuppliers(ISuppliers dst) {
-				 color.getAttributeSuppliers(dst);
-				 dst.add(TextureUniform.ID, () -> text.getTexture() );
-			}
-		};
-		renderable = controller.getRenderer().createRenderable(
-				IRenderer.Pass.SCREEN_SPACE_OVERLAY,
-				EnumSet.of(IRenderer.Flag.INTERACTIVE_VIEW_ONLY),
-				new MaterialTriangles(false, false, true, false), uniforms, text);
-		text.setRenderable(renderable);
+
 		enable();
 	}
 
 	public void enable() {
-		controller.getRenderer().addRenderables(renderable);
+		IRenderer r = controller.getRenderer();
+		r.addRenderables(text.getRenderable(r));
 		requestUpdate();
 	}
 
 	public void disable() {
-		controller.getRenderer().removeRenderables(renderable);
+		IRenderer r = controller.getRenderer();
+		r.removeRenderables(text.getRenderable(r));
 	}
 
 	public void update() {
@@ -102,7 +81,7 @@ public final class UI {
 			text.drawString(message, 0,
 					text.getHeight() - TextGeometry.FONT.getSize());
 
-		renderable.requestUpdate();
+		text.getRenderable(controller.getRenderer()).requestUpdate();
 	}
 
 	public List<IWidget> getWidgets() {

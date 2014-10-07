@@ -40,14 +40,15 @@ import java.nio.IntBuffer;
 import javax.media.opengl.GL;
 
 import ch.fhnw.ether.render.IRenderable;
-import ch.fhnw.ether.render.attribute.IArrayAttributeProvider;
-import ch.fhnw.ether.render.attribute.IAttribute;
-import ch.fhnw.ether.render.attribute.builtin.PositionArray;
-import ch.fhnw.ether.render.attribute.builtin.TexCoordArray;
+import ch.fhnw.ether.render.IRenderer;
+import ch.fhnw.ether.render.IRenderer.Pass;
+import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
 import ch.fhnw.ether.render.gl.Texture;
-import ch.fhnw.util.math.geometry.Primitives;
+import ch.fhnw.ether.render.shader.IShader;
+import ch.fhnw.ether.render.shader.builtin.MaterialTriangles;
+import ch.fhnw.ether.scene.mesh.material.TextureMaterial;
 
-public class TextGeometry implements IArrayAttributeProvider {
+public class TextGeometry extends GenericMesh /*implements IArrayAttributeProvider*/ {
 	public static final Font FONT = new Font("SansSerif", Font.BOLD, 12);
 
 	private static final Color CLEAR_COLOR = new Color(0, 0, 0, 0);
@@ -62,6 +63,7 @@ public class TextGeometry implements IArrayAttributeProvider {
 	private IRenderable renderable;
 
 	public TextGeometry(int x, int y, int w, int h) {
+		super(PrimitiveType.TRIANGLE);
 		image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
 		graphics = image.createGraphics();
 		graphics.setFont(FONT);
@@ -69,6 +71,10 @@ public class TextGeometry implements IArrayAttributeProvider {
 		this.y = y;
 		this.w = w;
 		this.h = h;
+		
+		float[] data = new float[]{x, y, 0, x + w, y, 0, x + w, y + h, 0, x, y, 0, x + w, y + h, 0, x, y + h, 0};
+		setGeometry(data);
+		setMaterial(new TextureMaterial(texture));
 	}
 
 	public final Texture getTexture() {
@@ -91,12 +97,10 @@ public class TextGeometry implements IArrayAttributeProvider {
 		return h;
 	}
 
-	public IRenderable getRenderable() {
+	public IRenderable getRenderable(IRenderer renderer) {
+		IShader s = new MaterialTriangles(false, false, true, false);
+		renderable = renderer.createRenderable(Pass.SCREEN_SPACE_OVERLAY, s, getMaterial(), getGeometry());
 		return renderable;
-	}
-
-	public void setRenderable(IRenderable renderable) {
-		this.renderable = renderable;
 	}
 
 	public final void setPosition(int x, int y) {
@@ -142,14 +146,14 @@ public class TextGeometry implements IArrayAttributeProvider {
 		requestUpdate();
 	}
 
-	@Override
-	public void getAttributeSuppliers(IAttribute.PrimitiveType primitiveType, IAttribute.ISuppliers dst) {
-		if (primitiveType != IAttribute.PrimitiveType.TRIANGLE)
-			return;
-
-		dst.add(PositionArray.ID, () -> new float[]{x, y, 0, x + w, y, 0, x + w, y + h, 0, x, y, 0, x + w, y + h, 0, x, y + h, 0});
-		dst.add(TexCoordArray.ID, () -> Primitives.DEFAULT_QUAD_TEX_COORDS);
-	}
+//	@Override
+//	public void getAttributeSuppliers(IAttribute.PrimitiveType primitiveType, IAttribute.ISuppliers dst) {
+//		if (primitiveType != IAttribute.PrimitiveType.TRIANGLE)
+//			return;
+//
+//		dst.add(PositionArray.ID, () -> new float[]{x, y, 0, x + w, y, 0, x + w, y + h, 0, x, y, 0, x + w, y + h, 0, x, y + h, 0});
+//		dst.add(TexCoordArray.ID, () -> Primitives.DEFAULT_QUAD_TEX_COORDS);
+//	}
 
 	private void requestUpdate() {
 		texture.setData(w, h, IntBuffer.wrap(((DataBufferInt) image.getRaster().getDataBuffer()).getData()), GL.GL_BGRA);
