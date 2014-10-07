@@ -31,13 +31,13 @@ package ch.fhnw.ether.ui;
 
 import java.awt.Color;
 
-import ch.fhnw.ether.scene.TextGeometry;
+import ch.fhnw.ether.scene.mesh.TextGeometry;
 import ch.fhnw.ether.view.IView;
 
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.MouseEvent;
 
-interface IWidget {
+public interface IWidget {
 	static final Color TEXT_COLOR = Color.WHITE;
 
     public interface IWidgetAction<T extends IWidget> {

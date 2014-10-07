@@ -57,7 +57,7 @@ public class FloatArrayAttribute extends AbstractArrayAttribute {
 
 	@Override
 	public void enable(GL3 gl, Program program, FloatArrayBuffer buffer) {
-		buffer.enableAttribute(gl, getShaderIndex(gl, program), getNumComponents(), getStride(), getOffset());
+		buffer.enableAttribute(gl, getShaderIndex(gl, program), getNumComponents().get(), getStride(), getOffset());
 	}
 
 	@Override

@@ -31,21 +31,22 @@ package ch.fhnw.ether.examples.metrobuzz.tool;
 
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.controller.tool.AbstractTool;
-import ch.fhnw.ether.geom.Line;
-import ch.fhnw.ether.geom.PickUtil;
-import ch.fhnw.ether.geom.PickUtil.PickMode;
-import ch.fhnw.ether.geom.Plane;
+import ch.fhnw.ether.controller.tool.PickUtil;
+import ch.fhnw.ether.controller.tool.PickUtil.PickMode;
 import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.IRenderer.Pass;
+import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
 import ch.fhnw.ether.render.shader.builtin.MaterialTriangles;
-import ch.fhnw.ether.reorg.api.IMaterial;
-import ch.fhnw.ether.reorg.base.ColorMaterial;
-import ch.fhnw.ether.scene.CubeMesh;
-import ch.fhnw.ether.scene.CubeMesh.Origin;
+import ch.fhnw.ether.scene.mesh.GenericMesh;
+import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
+import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.ProjectionUtil;
 import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Vec3;
+import ch.fhnw.util.math.geometry.Line;
+import ch.fhnw.util.math.geometry.Plane;
+import ch.fhnw.util.math.geometry.Primitives;
 
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.MouseEvent;
@@ -55,7 +56,7 @@ public final class AreaTool extends AbstractTool {
 
 	private static final float KEY_INCREMENT = 0.01f;
 
-	private CubeMesh mesh = new CubeMesh(Origin.BOTTOM_CENTER);
+    private GenericMesh mesh = new GenericMesh(PrimitiveType.TRIANGLE);
 
 	private boolean moving = false;
 
@@ -66,6 +67,7 @@ public final class AreaTool extends AbstractTool {
 
 	public AreaTool(IController controller) {
 		super(controller);
+	    mesh.setGeometry(Primitives.UNIT_CUBE_TRIANGLES);
 		mesh.getGeometry().setScale(new Vec3(0.1, 0.1, 0.001));
 		IMaterial m = new ColorMaterial(TOOL_COLOR);
 		area = controller.getRenderer().createRenderable(Pass.DEPTH, new MaterialTriangles(true,false,false,false), m, mesh.getGeometry());
@@ -107,7 +109,7 @@ public final class AreaTool extends AbstractTool {
 	public void mousePressed(MouseEvent e, IView view) {
 		int x = e.getX();
 		int y = view.getViewport().h - e.getY();
-		float d = PickUtil.pickBoundingBox(PickMode.POINT, x, y, 0, 0, view, mesh.getBoundings());
+		float d = PickUtil.pickBoundingBox(PickMode.POINT, x, y, 0, 0, view.getCamera(), view.getViewport(), mesh.getBoundings());
 		if (d < Float.POSITIVE_INFINITY)
 			moving = true;
 	}

@@ -30,8 +30,8 @@
 package ch.fhnw.ether.mapping;
 
 import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
-import ch.fhnw.ether.reorg.base.ColorMaterial;
-import ch.fhnw.ether.scene.GenericMesh;
+import ch.fhnw.ether.scene.mesh.GenericMesh;
+import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.util.color.RGBA;
 
 public class BoxCalibrationModel implements ICalibrationModel {

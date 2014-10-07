@@ -36,12 +36,12 @@ import ch.fhnw.ether.render.attribute.IArrayAttribute;
 import ch.fhnw.ether.render.attribute.IUniformAttribute;
 import ch.fhnw.ether.render.attribute.base.BooleanUniformAttribute;
 import ch.fhnw.ether.render.attribute.builtin.ColorArray;
+import ch.fhnw.ether.render.attribute.builtin.ColorMaterialUniform;
 import ch.fhnw.ether.render.attribute.builtin.PositionArray;
 import ch.fhnw.ether.render.attribute.builtin.ProjMatrixUniform;
 import ch.fhnw.ether.render.attribute.builtin.ViewMatrixUniform;
 import ch.fhnw.ether.render.attribute.*;
 import ch.fhnw.ether.render.shader.base.AbstractShader;
-import ch.fhnw.ether.reorg.base.ColorMaterialAttribute;
 
 public class Lines extends AbstractShader {
 	private boolean useVertexColors;
@@ -53,7 +53,7 @@ public class Lines extends AbstractShader {
 		this.useVertexColors = useVertexCOlors;
 		
 		if(!useVertexColors) {
-			uniformAttributes.add(new ColorMaterialAttribute());
+			uniformAttributes.add(new ColorMaterialUniform());
 		} else {
 			arrayAttributes.add(new ColorArray());
 		}

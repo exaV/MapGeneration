@@ -8,13 +8,13 @@ import java.util.List;
 
 import ch.fhnw.ether.formats.AbstractModelReader;
 import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
-import ch.fhnw.ether.reorg.api.IMesh;
-import ch.fhnw.ether.scene.GenericMesh;
+import ch.fhnw.ether.scene.mesh.GenericMesh;
+import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.util.FloatList;
 import ch.fhnw.util.IntList;
 import ch.fhnw.util.color.RGB;
-import ch.fhnw.util.math.GeometryUtil;
 import ch.fhnw.util.math.Vec3;
+import ch.fhnw.util.math.geometry.GeometryUtil;
 
 public class OBJReader extends AbstractModelReader {
 

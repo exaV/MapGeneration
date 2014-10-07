@@ -31,9 +31,9 @@ package ch.fhnw.ether.examples.mapping;
 
 import javax.swing.SwingUtilities;
 
-import ch.fhnw.ether.reorg.api.ICamera;
-import ch.fhnw.ether.reorg.api.IScene;
-import ch.fhnw.ether.view.Camera;
+import ch.fhnw.ether.camera.Camera;
+import ch.fhnw.ether.camera.ICamera;
+import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.view.IView.ViewType;
 
 public final class MappingExample {

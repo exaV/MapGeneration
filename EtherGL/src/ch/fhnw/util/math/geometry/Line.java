@@ -27,38 +27,36 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.scene;
+package ch.fhnw.util.math.geometry;
 
-import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
-import ch.fhnw.ether.render.util.Primitives;
 import ch.fhnw.util.math.Vec3;
 
+
 /**
- * Created by radar on 05/12/13.
+ * Very basic line class. Loosely based on Apache Commons Math3.
+ * 
+ * @author radar
+ *
  */
-public final class CubeMesh extends GenericMesh {
-    public enum Origin {
-        CENTER(Vec3.ZERO),
-        BOTTOM_CENTER(new Vec3(0, 0, -0.5)),
-        ZERO(new Vec3(-0.5, -0.5, -0.5));
+public class Line {
+	private Vec3 origin;
+	private Vec3 direction;
 
-        Origin(Vec3 origin) {
-            this.origin = origin;
-        }
+	public Line(Vec3 p1, Vec3 p2) {
+		Vec3 delta = p2.subtract(p1);
+		float length = delta.length();
+		if (length == 0.0) {
+			throw new IllegalArgumentException();
+		}
+		direction = delta.scale(1.0f / length);
+		origin = p1.add(direction.scale(-p1.dot(delta) / length));
+	}
 
-        Vec3 origin;
-    }
+	public Vec3 getOrigin() {
+		return origin;
+	}
 
-    public CubeMesh() {
-        this(Origin.CENTER);
-    }
-
-    public CubeMesh(Origin origin) {
-        this(origin.origin);
-    }
-
-    public CubeMesh(Vec3 origin) {
-        super(PrimitiveType.TRIANGLE);
-        setGeometry(Primitives.UNIT_CUBE_TRIANGLES);
-    }
+	public Vec3 getDirection() {
+		return direction;
+	}
 }

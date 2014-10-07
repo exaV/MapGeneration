@@ -29,8 +29,8 @@
 
 package ch.fhnw.ether.examples.metrobuzz.controller;
 
-import ch.fhnw.ether.reorg.api.ICamera;
-import ch.fhnw.ether.view.AbstractView;
+import ch.fhnw.ether.camera.ICamera;
+import ch.fhnw.ether.view.gl.AbstractView;
 
 public class View extends AbstractView {
     public View(MetroBuzzController controller, int x, int y, int w, int h, ICamera camera) {

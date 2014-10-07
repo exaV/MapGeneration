@@ -29,19 +29,19 @@
 
 package ch.fhnw.ether.examples.basic;
 
+import ch.fhnw.ether.camera.Camera;
 import ch.fhnw.ether.controller.AbstractController;
 import ch.fhnw.ether.render.attribute.IArrayAttribute;
 import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
 import ch.fhnw.ether.render.attribute.builtin.ColorArray;
 import ch.fhnw.ether.render.attribute.builtin.PositionArray;
-import ch.fhnw.ether.reorg.api.IScene;
-import ch.fhnw.ether.reorg.base.ColorMaterial;
-import ch.fhnw.ether.reorg.base.VertexGeometry;
-import ch.fhnw.ether.reorg.base.SimpleMesh;
-import ch.fhnw.ether.reorg.base.SimpleScene;
-import ch.fhnw.ether.view.AbstractView;
-import ch.fhnw.ether.view.Camera;
+import ch.fhnw.ether.scene.IScene;
+import ch.fhnw.ether.scene.SimpleScene;
+import ch.fhnw.ether.scene.mesh.SimpleMesh;
+import ch.fhnw.ether.scene.mesh.geometry.VertexGeometry;
+import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.view.IView;
+import ch.fhnw.ether.view.gl.AbstractView;
 import ch.fhnw.util.color.RGBA;
 
 public final class Test {

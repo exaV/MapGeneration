@@ -28,8 +28,8 @@
  */
 package ch.fhnw.ether.examples.mapping;
 
-import ch.fhnw.ether.reorg.api.ICamera;
-import ch.fhnw.ether.view.AbstractView;
+import ch.fhnw.ether.camera.ICamera;
+import ch.fhnw.ether.view.gl.AbstractView;
 
 public class MappingView extends AbstractView {
 	/**

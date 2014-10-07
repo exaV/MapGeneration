@@ -37,6 +37,7 @@ import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
 import ch.fhnw.ether.render.attribute.IUniformAttribute;
 import ch.fhnw.ether.render.attribute.base.BooleanUniformAttribute;
 import ch.fhnw.ether.render.attribute.builtin.ColorArray;
+import ch.fhnw.ether.render.attribute.builtin.ColorMaterialUniform;
 import ch.fhnw.ether.render.attribute.builtin.NormalArray;
 import ch.fhnw.ether.render.attribute.builtin.PositionArray;
 import ch.fhnw.ether.render.attribute.builtin.ProjMatrixUniform;
@@ -44,7 +45,6 @@ import ch.fhnw.ether.render.attribute.builtin.TexCoordArray;
 import ch.fhnw.ether.render.attribute.builtin.TextureUniform;
 import ch.fhnw.ether.render.attribute.builtin.ViewMatrixUniform;
 import ch.fhnw.ether.render.shader.base.AbstractShader;
-import ch.fhnw.ether.reorg.base.ColorMaterialAttribute;
 
 public class MaterialTriangles extends AbstractShader {
 	private List<IUniformAttribute> uniformAttributes = new ArrayList<>(5);
@@ -53,9 +53,9 @@ public class MaterialTriangles extends AbstractShader {
 	public MaterialTriangles(boolean useMaterialColor, boolean useVertexColors, boolean useTexture, boolean normals) {
 		super("unshaded_vct", PrimitiveType.TRIANGLE);
 		if(useMaterialColor) {
-			uniformAttributes.add(new ColorMaterialAttribute());
+			uniformAttributes.add(new ColorMaterialUniform());
 		} else {
-			uniformAttributes.add(new ColorMaterialAttribute(() -> new float[]{1,1,1,1}));
+			uniformAttributes.add(new ColorMaterialUniform(() -> new float[]{1,1,1,1}));
 		}
 		if(useVertexColors) {
 			arrayAttributes.add(new ColorArray());

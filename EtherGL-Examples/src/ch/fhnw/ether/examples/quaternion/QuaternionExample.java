@@ -28,11 +28,12 @@
 package ch.fhnw.ether.examples.quaternion;
 
 import java.io.IOException;
+
 import javax.swing.SwingUtilities;
 
+import ch.fhnw.ether.camera.Camera;
 import ch.fhnw.ether.formats.obj.OBJReader;
-import ch.fhnw.ether.reorg.base.SimpleScene;
-import ch.fhnw.ether.view.Camera;
+import ch.fhnw.ether.scene.SimpleScene;
 
 public class QuaternionExample {
 	 public static void main(String[] args) {

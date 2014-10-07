@@ -34,7 +34,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 
-import ch.fhnw.ether.reorg.api.IMesh;
+import ch.fhnw.ether.scene.mesh.IMesh;
 
 
 public abstract class AbstractModelReader {

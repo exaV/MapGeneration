@@ -40,8 +40,8 @@ import java.util.List;
 import java.util.Map;
 
 import ch.fhnw.ether.controller.IController;
-import ch.fhnw.ether.geom.BoundingBox;
 import ch.fhnw.ether.view.IView;
+import ch.fhnw.util.math.geometry.BoundingBox;
 import ch.fhnw.util.net.osc.OSCHandler;
 import ch.fhnw.util.net.osc.OSCServer;
 

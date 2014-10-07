@@ -34,6 +34,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import javax.media.opengl.GL3;
+
 import ch.fhnw.ether.controller.event.EventDrivenScheduler;
 import ch.fhnw.ether.controller.event.IScheduler;
 import ch.fhnw.ether.controller.tool.ITool;
@@ -42,7 +44,7 @@ import ch.fhnw.ether.controller.tool.PickTool;
 import ch.fhnw.ether.render.IRenderer;
 import ch.fhnw.ether.render.attribute.IUniformAttributeProvider;
 import ch.fhnw.ether.render.forward.ForwardRenderer;
-import ch.fhnw.ether.reorg.api.IScene;
+import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.ui.UI;
 import ch.fhnw.ether.view.IView;
 
@@ -290,4 +292,15 @@ public abstract class AbstractController implements IController {
     	for(String s : help)
     		System.out.println(s);
     }
+    
+    @Override
+    public void updateUI() {
+    	ui.update();
+    }
+    
+    @Override
+	public void requestRendering(GL3 gl, IView view) {
+		renderer.render(gl, view);
+	}
+
 }

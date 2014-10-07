@@ -44,13 +44,13 @@ import ch.fhnw.ether.render.attribute.IAttribute.ISuppliers;
 import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
 import ch.fhnw.ether.render.attribute.IUniformAttributeProvider;
 import ch.fhnw.ether.render.shader.builtin.Lines;
-import ch.fhnw.ether.render.util.Primitives;
-import ch.fhnw.ether.reorg.api.IMesh;
-import ch.fhnw.ether.reorg.base.ColorMaterial;
-import ch.fhnw.ether.scene.GenericMesh;
+import ch.fhnw.ether.scene.mesh.GenericMesh;
+import ch.fhnw.ether.scene.mesh.IMesh;
+import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Vec3;
+import ch.fhnw.util.math.geometry.Primitives;
 
 import com.jogamp.newt.event.MouseEvent;
 

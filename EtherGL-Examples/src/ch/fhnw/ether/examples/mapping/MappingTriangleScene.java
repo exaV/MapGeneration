@@ -37,30 +37,35 @@ import java.util.stream.Collectors;
 import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.IRenderer;
 import ch.fhnw.ether.render.IRenderer.Pass;
+import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
 import ch.fhnw.ether.render.shader.builtin.MaterialTriangles;
-import ch.fhnw.ether.reorg.api.I3DObject;
-import ch.fhnw.ether.reorg.api.IGeometry;
-import ch.fhnw.ether.reorg.api.IMesh;
-import ch.fhnw.ether.reorg.api.IScene;
-import ch.fhnw.ether.reorg.base.ColorMaterial;
-import ch.fhnw.ether.scene.CubeMesh;
+import ch.fhnw.ether.scene.IScene;
+import ch.fhnw.ether.scene.mesh.GenericMesh;
+import ch.fhnw.ether.scene.mesh.IMesh;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
+import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
+import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Vec3;
+import ch.fhnw.util.math.geometry.I3DObject;
+import ch.fhnw.util.math.geometry.Primitives;
 
 public class MappingTriangleScene implements IScene {
 	
 	private List<IMesh> objects = new ArrayList<>(10);
+	private IMaterial material = new ColorMaterial(RGBA.WHITE);
 	
     public MappingTriangleScene() {
         for (int i = 0; i < 10; ++i) {
-            CubeMesh mesh = new CubeMesh(CubeMesh.Origin.BOTTOM_CENTER);
+            GenericMesh cube = new GenericMesh(PrimitiveType.TRIANGLE, material);
+            cube.setGeometry(Primitives.UNIT_CUBE_TRIANGLES);
             double s = 0.1 + 0.1 * Math.random();
             double tx = -1 + 2 * Math.random();
             double ty = -1 + 2 * Math.random();
-            mesh.getGeometry().setScale(new Vec3(s, s, s));
-            mesh.getGeometry().setRotation(new Vec3(0, 0, 360 * Math.random()));
-            mesh.getGeometry().setTranslation(new Vec3(tx, ty, 0));
-            objects.add(mesh);
+            cube.getGeometry().setScale(new Vec3(s, s, s));
+            cube.getGeometry().setRotation(new Vec3(0, 0, 360 * Math.random()));
+            cube.getGeometry().setTranslation(new Vec3(tx, ty, 0));
+            objects.add(cube);
         }
     }
 
@@ -80,7 +85,7 @@ public class MappingTriangleScene implements IScene {
 		
 		final List<IGeometry> geo = Collections.synchronizedList(objects.stream().map((x) -> {return x.getGeometry();}).collect(Collectors.toList()));
 		
-		IRenderable ret = renderer.createRenderable(Pass.DEPTH, new MaterialTriangles(true, false, false, false), new ColorMaterial(RGBA.YELLOW), geo);
+		IRenderable ret = renderer.createRenderable(Pass.DEPTH, new MaterialTriangles(true, false, false, false), material, geo);
 		
 		return new IRenderable[]{ret};
 	}

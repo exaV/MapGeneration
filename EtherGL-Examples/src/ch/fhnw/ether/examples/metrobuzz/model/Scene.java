@@ -35,20 +35,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import ch.fhnw.ether.geom.BoundingBox;
 import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.IRenderer;
 import ch.fhnw.ether.render.IRenderer.Pass;
 import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
 import ch.fhnw.ether.render.shader.builtin.Lines;
 import ch.fhnw.ether.render.shader.builtin.Points;
-import ch.fhnw.ether.reorg.api.I3DObject;
-import ch.fhnw.ether.reorg.api.IGeometry;
-import ch.fhnw.ether.reorg.api.IMesh;
-import ch.fhnw.ether.reorg.api.IScene;
-import ch.fhnw.ether.reorg.base.ColorMaterial;
-import ch.fhnw.ether.scene.GenericMesh;
+import ch.fhnw.ether.scene.IScene;
+import ch.fhnw.ether.scene.mesh.GenericMesh;
+import ch.fhnw.ether.scene.mesh.IMesh;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
+import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.util.color.RGBA;
+import ch.fhnw.util.math.geometry.BoundingBox;
+import ch.fhnw.util.math.geometry.I3DObject;
 
 public class Scene implements IScene {
 	private static final float[] ACTIVITY_COLOR = { 1f, 0f, 0f, 0.2f };

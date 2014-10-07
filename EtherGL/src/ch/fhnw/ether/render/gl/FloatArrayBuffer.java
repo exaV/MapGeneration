@@ -34,8 +34,6 @@ import java.nio.FloatBuffer;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL3;
 
-import ch.fhnw.ether.render.attribute.IArrayAttribute;
-
 import com.jogamp.common.nio.Buffers;
 
 /**
@@ -93,14 +91,14 @@ public class FloatArrayBuffer implements IArrayBuffer {
 		}
 	}
 
-	public void enableAttribute(GL3 gl, int index, IArrayAttribute.NumComponents numComponents, int stride, int offset) {
+	public void enableAttribute(GL3 gl, int index, int numComponents, int stride, int offset) {
 		if (size > 0) {
 			gl.glEnableVertexAttribArray(index);
-			gl.glVertexAttribPointer(index, numComponents.get(), GL.GL_FLOAT, false, stride * BYTES_PER_FLOAT, offset * BYTES_PER_FLOAT);
+			gl.glVertexAttribPointer(index, numComponents, GL.GL_FLOAT, false, stride * BYTES_PER_FLOAT, offset * BYTES_PER_FLOAT);
 		}
 	}
 
-	public void enableAttribute(GL3 gl, int index, IArrayAttribute.NumComponents numComponents) {
+	public void enableAttribute(GL3 gl, int index, int numComponents) {
 		enableAttribute(gl, index, numComponents, 0, 0);
 	}
 

@@ -28,7 +28,7 @@
 package ch.fhnw.ether.examples.quaternion;
 
 import ch.fhnw.ether.controller.AbstractController;
-import ch.fhnw.ether.reorg.api.IScene;
+import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.view.IView;
 
 import com.jogamp.newt.event.KeyEvent;

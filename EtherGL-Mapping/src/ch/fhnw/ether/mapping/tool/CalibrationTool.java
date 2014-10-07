@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.prefs.Preferences;
 
+import ch.fhnw.ether.camera.ICamera;
 import ch.fhnw.ether.controller.AbstractController;
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.controller.tool.AbstractTool;
@@ -47,16 +48,15 @@ import ch.fhnw.ether.render.IRenderer;
 import ch.fhnw.ether.render.IRenderer.Pass;
 import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
 import ch.fhnw.ether.render.shader.builtin.Lines;
-import ch.fhnw.ether.render.util.Primitives;
-import ch.fhnw.ether.reorg.api.ICamera;
-import ch.fhnw.ether.reorg.api.IMesh;
-import ch.fhnw.ether.scene.GenericMesh;
+import ch.fhnw.ether.scene.mesh.GenericMesh;
+import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.ProjectionUtil;
 import ch.fhnw.util.PreferencesStore;
 import ch.fhnw.util.Viewport;
 import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Vec3;
+import ch.fhnw.util.math.geometry.Primitives;
 
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.MouseEvent;

@@ -29,12 +29,12 @@
 
 package ch.fhnw.ether.view;
 
-import ch.fhnw.ether.geom.Line;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.util.Viewport;
 import ch.fhnw.util.math.Mat4;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.Vec4;
+import ch.fhnw.util.math.geometry.Line;
 
 public final class ProjectionUtil {
     public static Vec3 projectToDevice(IView view, Vec3 v) {

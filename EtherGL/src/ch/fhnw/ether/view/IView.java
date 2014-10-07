@@ -32,8 +32,8 @@ package ch.fhnw.ether.view;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
 
+import ch.fhnw.ether.camera.ICamera;
 import ch.fhnw.ether.controller.IController;
-import ch.fhnw.ether.reorg.api.ICamera;
 import ch.fhnw.util.Viewport;
 
 import com.jogamp.newt.event.KeyListener;

@@ -32,10 +32,12 @@ package ch.fhnw.ether.controller;
 import java.util.Collection;
 import java.util.List;
 
+import javax.media.opengl.GL3;
+
 import ch.fhnw.ether.controller.tool.ITool;
 import ch.fhnw.ether.controller.tool.NavigationTool;
 import ch.fhnw.ether.render.IRenderer;
-import ch.fhnw.ether.reorg.api.IScene;
+import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.ui.UI;
 import ch.fhnw.ether.view.IView;
 
@@ -134,6 +136,8 @@ public interface IController {
 	 * @return the renderer
 	 */
 	IRenderer getRenderer();
+	
+	void requestRendering(GL3 gl, IView view);
 
 	/**
 	 * Get UI.
@@ -141,6 +145,8 @@ public interface IController {
 	 * @return the ui
 	 */
 	UI getUI();
+	
+	void updateUI();
 
 	// key listener
 

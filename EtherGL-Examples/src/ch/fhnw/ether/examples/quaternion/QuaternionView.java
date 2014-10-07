@@ -27,8 +27,8 @@
  */
 package ch.fhnw.ether.examples.quaternion;
 
-import ch.fhnw.ether.reorg.api.ICamera;
-import ch.fhnw.ether.view.AbstractView;
+import ch.fhnw.ether.camera.ICamera;
+import ch.fhnw.ether.view.gl.AbstractView;
 
 import com.jogamp.newt.event.KeyEvent;
 
