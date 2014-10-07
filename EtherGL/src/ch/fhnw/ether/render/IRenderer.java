@@ -34,8 +34,8 @@ import java.util.List;
 
 import javax.media.opengl.GL3;
 
-import ch.fhnw.ether.render.IRenderer.Flag;
 import ch.fhnw.ether.render.attribute.IArrayAttributeProvider;
+import ch.fhnw.ether.render.attribute.IUniformAttributeProvider;
 import ch.fhnw.ether.render.shader.IShader;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.util.math.Mat4;
@@ -68,13 +68,13 @@ public interface IRenderer {
 
 	void render(GL3 gl, IView view);
 	
-	IRenderable createRenderable(Pass pass, IShader shader, IArrayAttributeProvider... providers);
+	IRenderable createRenderable(Pass pass, IShader shader, IUniformAttributeProvider uniforms, IArrayAttributeProvider... providers);
 
-	IRenderable createRenderable(Pass pass, EnumSet<Flag> flags, IShader shader, IArrayAttributeProvider... providers);
+	IRenderable createRenderable(Pass pass, EnumSet<Flag> flags, IShader shader, IUniformAttributeProvider uniforms, IArrayAttributeProvider... providers);
 
-	IRenderable createRenderable(Pass pass, IShader shader, List<? extends IArrayAttributeProvider> providers);
+	IRenderable createRenderable(Pass pass, IShader shader,IUniformAttributeProvider uniforms, List<? extends IArrayAttributeProvider> providers);
 
-	IRenderable createRenderable(Pass pass, EnumSet<Flag> flags, IShader shader, List<? extends IArrayAttributeProvider> providers);
+	IRenderable createRenderable(Pass pass, EnumSet<Flag> flags, IShader shader, IUniformAttributeProvider uniforms, List<? extends IArrayAttributeProvider> providers);
 
 	void addRenderables(IRenderable renderable);
 

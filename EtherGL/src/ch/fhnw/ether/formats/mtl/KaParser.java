@@ -5,7 +5,7 @@ import ch.fhnw.ether.formats.obj.Material;
 import ch.fhnw.ether.formats.obj.WavefrontObject;
 import ch.fhnw.util.color.RGB;
 
-public class KaParser extends LineParser {
+class KaParser extends LineParser {
 	RGB ka = null;
 
 	@Override

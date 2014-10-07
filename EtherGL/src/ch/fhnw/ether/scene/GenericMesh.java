@@ -49,11 +49,17 @@ import ch.fhnw.util.math.Vec3;
 public class GenericMesh implements IMesh {
 	private String name = "GenericMesh";
 
+	private IMaterial material = null;
 	private IGeometry geometry = null;
 	private final PrimitiveType type;
 
 	public GenericMesh(PrimitiveType type) {
 		this.type = type;
+	}
+	
+	public GenericMesh(PrimitiveType type, IMaterial material) {
+		this.type = type;
+		this.material = material;
 	}
 
 	public void setGeometry(float[] vertices) {
@@ -88,6 +94,10 @@ public class GenericMesh implements IMesh {
 		geometry = new VertexGeometry(data, attributes, type);
 	}
 	
+	public void setMaterial(IMaterial material) {
+		this.material = material;
+	}
+	
 	public String getName() {
 		return name;
 	}
@@ -108,7 +118,7 @@ public class GenericMesh implements IMesh {
 
 	@Override
 	public IMaterial getMaterial() {
-		return IMaterial.EmptyMaterial;
+		return material != null ? material : IMaterial.EmptyMaterial;
 	}
 
 	@Override

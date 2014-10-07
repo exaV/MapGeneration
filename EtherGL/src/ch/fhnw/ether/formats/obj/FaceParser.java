@@ -2,7 +2,7 @@ package ch.fhnw.ether.formats.obj;
 
 import ch.fhnw.util.math.Vec3;
 
-public class FaceParser extends LineParser {
+class FaceParser extends LineParser {
 
 	private Face face;
 	public int[] vindices;

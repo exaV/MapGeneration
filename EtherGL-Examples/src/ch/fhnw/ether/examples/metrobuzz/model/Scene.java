@@ -30,7 +30,6 @@
 package ch.fhnw.ether.examples.metrobuzz.model;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,16 +39,16 @@ import ch.fhnw.ether.geom.BoundingBox;
 import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.IRenderer;
 import ch.fhnw.ether.render.IRenderer.Pass;
-import ch.fhnw.ether.render.Renderable;
 import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
-import ch.fhnw.ether.render.attribute.IUniformAttributeProvider;
 import ch.fhnw.ether.render.shader.builtin.Lines;
 import ch.fhnw.ether.render.shader.builtin.Points;
 import ch.fhnw.ether.reorg.api.I3DObject;
 import ch.fhnw.ether.reorg.api.IGeometry;
 import ch.fhnw.ether.reorg.api.IMesh;
 import ch.fhnw.ether.reorg.api.IScene;
+import ch.fhnw.ether.reorg.base.ColorMaterial;
 import ch.fhnw.ether.scene.GenericMesh;
+import ch.fhnw.util.color.RGBA;
 
 public class Scene implements IScene {
 	private static final float[] ACTIVITY_COLOR = { 1f, 0f, 0f, 0.2f };
@@ -288,16 +287,17 @@ public class Scene implements IScene {
 
 	@Override
 	public IRenderable[] createRenderables(
-			IUniformAttributeProvider globalAttributes) {
+			IRenderer renderer) {
 		
 		createGeometries();
 		
-		List<IGeometry> geometries = agentGeometries.stream().map((x) -> { return x.getGeometry(); }).collect(Collectors.toList());
-		geometries.add(networkGeometryLines.getGeometry());
-		IRenderable r1 = new Renderable(Pass.DEPTH, EnumSet.noneOf(IRenderer.Flag.class), new Lines(), globalAttributes, geometries);
-		geometries = new ArrayList<>(1);
-		geometries.add(networkGeometryPoints.getGeometry());
-		IRenderable r2 = new Renderable(Pass.DEPTH, EnumSet.noneOf(IRenderer.Flag.class), new Points(), globalAttributes, geometries);
+		List<IGeometry> line_geometries = agentGeometries.stream().map((x) -> { return x.getGeometry(); }).collect(Collectors.toList());
+		line_geometries.add(networkGeometryLines.getGeometry());
+		IRenderable r1 = renderer.createRenderable(Pass.DEPTH, new Lines(true), null, line_geometries);
+		
+		List<IGeometry> point_geometries = new ArrayList<>(1);
+		point_geometries.add(networkGeometryPoints.getGeometry());
+		IRenderable r2 = renderer.createRenderable(Pass.DEPTH, new Points(false), new ColorMaterial(RGBA.YELLOW), point_geometries);
 		
 		return new IRenderable[]{r1,r2};
 	}

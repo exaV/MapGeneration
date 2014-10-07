@@ -15,6 +15,11 @@ public class SimpleMesh implements IMesh {
 		this.geometry = geometry;
 	}
 	
+	public SimpleMesh(IGeometry geometry, IMaterial material) {
+		this.geometry = geometry;
+		this.material = material;
+	}
+	
 	@Override
 	public IGeometry getGeometry() {
 		return geometry;

@@ -38,21 +38,28 @@ import ch.fhnw.ether.controller.tool.AbstractTool;
 import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.IRenderer.Pass;
 import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
-import ch.fhnw.ether.render.shader.builtin.Triangles;
+import ch.fhnw.ether.render.shader.builtin.MaterialTriangles;
 import ch.fhnw.ether.render.util.Primitives;
+import ch.fhnw.ether.reorg.api.IMaterial;
+import ch.fhnw.ether.reorg.base.ColorMaterial;
 import ch.fhnw.ether.scene.GenericMesh;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Vec3;
 
 public final class FillTool extends AbstractTool {
-	static final String[] FILL_HELP = { "Fill Tool for Projector Adjustment", "", "[0] Return" };
+	static final String[] FILL_HELP = { "Fill Tool for Projector Adjustment",
+			"", "[0] Return" };
 
 	private final IRenderable quads;
 
 	public FillTool(IController controller) {
 		super(controller);
-		quads = controller.getRenderer().createRenderable(Pass.DEVICE_SPACE_OVERLAY, new Triangles(RGBA.WHITE), makeQuads().getGeometry());
+		IMaterial m = new ColorMaterial(RGBA.YELLOW);
+		quads = controller.getRenderer().createRenderable(
+				Pass.DEVICE_SPACE_OVERLAY,
+				new MaterialTriangles(true, false, false, false), m,
+				makeQuads().getGeometry());
 	}
 
 	@Override

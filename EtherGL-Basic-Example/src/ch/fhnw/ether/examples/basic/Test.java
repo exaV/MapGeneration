@@ -35,12 +35,14 @@ import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
 import ch.fhnw.ether.render.attribute.builtin.ColorArray;
 import ch.fhnw.ether.render.attribute.builtin.PositionArray;
 import ch.fhnw.ether.reorg.api.IScene;
+import ch.fhnw.ether.reorg.base.ColorMaterial;
 import ch.fhnw.ether.reorg.base.VertexGeometry;
 import ch.fhnw.ether.reorg.base.SimpleMesh;
 import ch.fhnw.ether.reorg.base.SimpleScene;
 import ch.fhnw.ether.view.AbstractView;
 import ch.fhnw.ether.view.Camera;
 import ch.fhnw.ether.view.IView;
+import ch.fhnw.util.color.RGBA;
 
 public final class Test {
 	public static void main(String[] args) {
@@ -50,19 +52,18 @@ public final class Test {
 	static IScene createScene() {
 		SimpleScene scene = new SimpleScene();
 		float[] position = {0f,0,0, 0,0,0.5f, 0.5f,0,0.5f, };
-		float[] color = {1,0,0,1, 1,0,0,1, 1,0,0,1, };
+		float[] color = {1,0,0,1, 0,1,0,1, 0,0,1,1, };
 		float[][] data = {position, color};
 		IArrayAttribute[] attribs = {new PositionArray(), new ColorArray()};
 		
 		VertexGeometry g = new VertexGeometry(data, attribs, PrimitiveType.TRIANGLE);
 		scene = new SimpleScene();
-		scene.addMesh(new SimpleMesh(g));
+		scene.addMesh(new SimpleMesh(g, new ColorMaterial(RGBA.YELLOW)));
 		
 		return scene;
 	}
 	
 	public Test() {
-
 		AbstractController controller = new AbstractController(){};
 		Camera camera = new Camera();
 		IScene scene = createScene();

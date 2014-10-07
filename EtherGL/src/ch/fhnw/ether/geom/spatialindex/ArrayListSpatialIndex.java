@@ -39,7 +39,7 @@ import ch.fhnw.ether.reorg.api.IGeometry;
 /**
  * A simple implementation of spatial index using array list
  */
-public class ArrayListSpatialIndex implements ISpatialIndex {
+class ArrayListSpatialIndex implements ISpatialIndex {
 	private final List<IGeometry> geometries = new ArrayList<>();
 	private BoundingBox bb;
 

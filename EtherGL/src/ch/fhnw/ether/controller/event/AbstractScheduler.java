@@ -7,7 +7,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import javax.media.opengl.GLAutoDrawable;
 
-public abstract class AbstractScheduler implements IScheduler {
+abstract class AbstractScheduler implements IScheduler {
 
 	private final List<GLAutoDrawable> drawables = new ArrayList<>();
 

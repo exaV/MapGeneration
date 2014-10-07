@@ -3,7 +3,7 @@ package ch.fhnw.ether.formats.obj;
 //import java.util.Hashtable;
 import ch.fhnw.ether.formats.mtl.MaterialFileParser;
 
-public class ObjLineParserFactory extends LineParserFactory {
+class ObjLineParserFactory extends LineParserFactory {
 	public ObjLineParserFactory(WavefrontObject object) {
 		this.object = object;
 		parsers.put("v", new VertexParser());

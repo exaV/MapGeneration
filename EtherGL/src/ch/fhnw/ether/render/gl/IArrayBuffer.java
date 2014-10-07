@@ -29,5 +29,5 @@
 
 package ch.fhnw.ether.render.gl;
 
-public interface IArrayBuffer {
+interface IArrayBuffer {
 }

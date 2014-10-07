@@ -6,7 +6,7 @@ import ch.fhnw.ether.formats.obj.Texture;
 import ch.fhnw.ether.formats.obj.TextureLoader;
 import ch.fhnw.ether.formats.obj.WavefrontObject;
 
-public class KdMapParser extends LineParser {
+class KdMapParser extends LineParser {
 
 	private Texture texture = null;
 	private WavefrontObject object = null;

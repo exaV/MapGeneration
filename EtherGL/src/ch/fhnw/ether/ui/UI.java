@@ -38,7 +38,12 @@ import java.util.List;
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.IRenderer;
-import ch.fhnw.ether.render.shader.builtin.Triangles;
+import ch.fhnw.ether.render.attribute.IUniformAttributeProvider;
+import ch.fhnw.ether.render.attribute.IAttribute.ISuppliers;
+import ch.fhnw.ether.render.attribute.builtin.TextureUniform;
+import ch.fhnw.ether.render.shader.builtin.MaterialTriangles;
+import ch.fhnw.ether.reorg.api.IMaterial;
+import ch.fhnw.ether.reorg.base.ColorMaterial;
 import ch.fhnw.ether.scene.TextGeometry;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.util.UpdateRequest;
@@ -48,151 +53,161 @@ import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.MouseEvent;
 
 public final class UI {
-    private final IController controller;
-    private final TextGeometry text = new TextGeometry(0, 0, 512, 512);
-    private final IRenderable renderable;
-    private final UpdateRequest updater = new UpdateRequest();
+	private final IController controller;
+	private final TextGeometry text = new TextGeometry(0, 0, 512, 512);
+	private final IRenderable renderable;
+	private final UpdateRequest updater = new UpdateRequest();
 
-    private final List<IWidget> widgets = new ArrayList<>();
-    private String message;
+	private final List<IWidget> widgets = new ArrayList<>();
+	private String message;
 
-    public UI(IController controller) {
-        this.controller = controller;
-        renderable = controller.getRenderer().createRenderable(IRenderer.Pass.SCREEN_SPACE_OVERLAY, EnumSet.of(IRenderer.Flag.INTERACTIVE_VIEW_ONLY), new Triangles(RGBA.WHITE, text.getTexture()), text);
-        text.setRenderable(renderable);
-        enable();
-    }
+	public UI(IController controller) {
+		this.controller = controller;
+		IMaterial color = new ColorMaterial(RGBA.WHITE);
+		IUniformAttributeProvider uniforms = new IUniformAttributeProvider() {
+			@Override
+			public void getAttributeSuppliers(ISuppliers dst) {
+				 color.getAttributeSuppliers(dst);
+				 dst.add(TextureUniform.ID, () -> text.getTexture() );
+			}
+		};
+		renderable = controller.getRenderer().createRenderable(
+				IRenderer.Pass.SCREEN_SPACE_OVERLAY,
+				EnumSet.of(IRenderer.Flag.INTERACTIVE_VIEW_ONLY),
+				new MaterialTriangles(false, false, true, false), uniforms, text);
+		text.setRenderable(renderable);
+		enable();
+	}
 
-    public void enable() {
-    	controller.getRenderer().addRenderables(renderable);
-        requestUpdate();
-    }
+	public void enable() {
+		controller.getRenderer().addRenderables(renderable);
+		requestUpdate();
+	}
 
-    public void disable() {
-    	controller.getRenderer().removeRenderables(renderable);
-    }
+	public void disable() {
+		controller.getRenderer().removeRenderables(renderable);
+	}
 
-    public void update() {
-        if (!updater.needsUpdate())
-            return;
+	public void update() {
+		if (!updater.needsUpdate())
+			return;
 
-        text.clear();
+		text.clear();
 
-        for (IWidget widget : widgets) {
-        	widget.draw(text);
-        }
+		for (IWidget widget : widgets) {
+			widget.draw(text);
+		}
 
-        if (message != null)
-            text.drawString(message, 0, text.getHeight() - TextGeometry.FONT.getSize());
- 
-        renderable.requestUpdate();
-    }
+		if (message != null)
+			text.drawString(message, 0,
+					text.getHeight() - TextGeometry.FONT.getSize());
 
-    public List<IWidget> getWidgets() {
-        return Collections.unmodifiableList(widgets);
-    }
+		renderable.requestUpdate();
+	}
 
-    public void addWidget(IWidget widget) {
-        widget.setUI(this);
-        widgets.add(widget);
-        requestUpdate();
-    }
+	public List<IWidget> getWidgets() {
+		return Collections.unmodifiableList(widgets);
+	}
 
-    public void addWidgets(Collection<? extends IWidget> widgets) {
-        widgets.forEach(this::addWidget);
-    }
+	public void addWidget(IWidget widget) {
+		widget.setUI(this);
+		widgets.add(widget);
+		requestUpdate();
+	}
 
-    public void setMessage(String message) {
-        if (this.message != null && this.message.equals(message))
-            return;
-        this.message = message;
-        requestUpdate();
-    }
+	public void addWidgets(Collection<? extends IWidget> widgets) {
+		widgets.forEach(this::addWidget);
+	}
 
-    public int getX() {
-        return text.getX();
-    }
+	public void setMessage(String message) {
+		if (this.message != null && this.message.equals(message))
+			return;
+		this.message = message;
+		requestUpdate();
+	}
 
-    public int getY() {
-        return text.getX();
-    }
+	public int getX() {
+		return text.getX();
+	}
 
-    public int getWidth() {
-        return text.getWidth();
-    }
+	public int getY() {
+		return text.getX();
+	}
 
-    public int getHeight() {
-        return text.getHeight();
-    }
-    
-    public void requestUpdate() {
-        updater.requestUpdate();
-        controller.repaintViews();
-    }
-    
-    
-    // key listener
+	public int getWidth() {
+		return text.getWidth();
+	}
 
-    public boolean keyPressed(KeyEvent e, IView view) {
-        if (view.getViewType() == IView.ViewType.INTERACTIVE_VIEW) {
-	        for (IWidget widget : getWidgets()) {
-	        	if (widget.keyPressed(e, view))
-	        		return true;
-	        }
-        }
-        return false;
-    }
+	public int getHeight() {
+		return text.getHeight();
+	}
 
-    // mouse listener
+	public void requestUpdate() {
+		updater.requestUpdate();
+		controller.repaintViews();
+	}
 
-    public void mouseEntered(MouseEvent e, IView view) {
-    }
+	// key listener
 
-    public void mouseExited(MouseEvent e, IView view) {
-    }
+	public boolean keyPressed(KeyEvent e, IView view) {
+		if (view.getViewType() == IView.ViewType.INTERACTIVE_VIEW) {
+			for (IWidget widget : getWidgets()) {
+				if (widget.keyPressed(e, view))
+					return true;
+			}
+		}
+		return false;
+	}
 
-    public boolean mousePressed(MouseEvent e, IView view) {
-        if (view.getViewType() == IView.ViewType.INTERACTIVE_VIEW) {
-            for (IWidget widget : getWidgets()) {
-            	if (widget.mousePressed(e, view))
-            		return true;
-            }
-        }
-        return false;
-    }
-    
-    public boolean mouseReleased(MouseEvent e, IView view) {
-        if (view.getViewType() == IView.ViewType.INTERACTIVE_VIEW) {
-            for (IWidget widget : getWidgets()) {
-            	if (widget.mouseReleased(e, view))
-            		return true;
-            }
-        }
-        return false;
-    }
+	// mouse listener
 
+	public void mouseEntered(MouseEvent e, IView view) {
+	}
 
-    // mouse motion listener
+	public void mouseExited(MouseEvent e, IView view) {
+	}
 
-    public void mouseMoved(MouseEvent e, IView view) {
-        if (view.getViewType() == IView.ViewType.INTERACTIVE_VIEW) {
-            for (IWidget widget : getWidgets()) {
-                if (widget.hit(e.getX(), e.getY(), view)) {
-                    String message = widget.getHelp();
-                    setMessage(message);
-                    return;
-                }
-            }
-        }
-    }
+	public boolean mousePressed(MouseEvent e, IView view) {
+		if (view.getViewType() == IView.ViewType.INTERACTIVE_VIEW) {
+			for (IWidget widget : getWidgets()) {
+				if (widget.mousePressed(e, view))
+					return true;
+			}
+		}
+		return false;
+	}
 
-    public boolean mouseDragged(MouseEvent e, IView view) {
-        if (view.getViewType() == IView.ViewType.INTERACTIVE_VIEW) {
-            for (IWidget widget : getWidgets()) {
-            	if (widget.mouseDragged(e, view))
-            		return true;
-            }
-        }
-        return false;
-    }
+	public boolean mouseReleased(MouseEvent e, IView view) {
+		if (view.getViewType() == IView.ViewType.INTERACTIVE_VIEW) {
+			for (IWidget widget : getWidgets()) {
+				if (widget.mouseReleased(e, view))
+					return true;
+			}
+		}
+		return false;
+	}
+
+	// mouse motion listener
+
+	public void mouseMoved(MouseEvent e, IView view) {
+		if (view.getViewType() == IView.ViewType.INTERACTIVE_VIEW) {
+			for (IWidget widget : getWidgets()) {
+				if (widget.hit(e.getX(), e.getY(), view)) {
+					String message = widget.getHelp();
+					setMessage(message);
+					return;
+				}
+			}
+		}
+	}
+
+	public boolean mouseDragged(MouseEvent e, IView view) {
+		if (view.getViewType() == IView.ViewType.INTERACTIVE_VIEW) {
+			for (IWidget widget : getWidgets()) {
+				if (widget.mouseDragged(e, view))
+					return true;
+			}
+		}
+		return false;
+	}
 }

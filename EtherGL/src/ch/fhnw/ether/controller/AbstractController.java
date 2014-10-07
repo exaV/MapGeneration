@@ -94,7 +94,7 @@ public abstract class AbstractController implements IController {
     public final void setScene(IScene scene) {
         this.scene = scene;
         if(renderer instanceof IUniformAttributeProvider) {
-        	renderer.addRenderables(scene.createRenderables((IUniformAttributeProvider)renderer));
+        	renderer.addRenderables(scene.createRenderables(renderer));
         } else {
         	renderer.addRenderables(scene.createRenderables(null));
         }

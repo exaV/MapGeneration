@@ -1,6 +1,6 @@
 package ch.fhnw.ether.formats.obj;
 
-public class FreeFormParser extends LineParser {
+class FreeFormParser extends LineParser {
 
 	public FreeFormParser() {
 	}

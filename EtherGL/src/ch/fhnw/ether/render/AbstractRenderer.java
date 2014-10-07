@@ -37,6 +37,7 @@ import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.render.attribute.IArrayAttributeProvider;
 import ch.fhnw.ether.render.attribute.IUniformAttributeProvider;
+import ch.fhnw.ether.render.attribute.IAttribute.ISuppliers;
 import ch.fhnw.ether.render.shader.IShader;
 import ch.fhnw.ether.view.IView;
 
@@ -45,23 +46,30 @@ public abstract class AbstractRenderer implements IRenderer, IUniformAttributePr
 	private final Renderables renderables = new Renderables();
 
 	@Override
-	public IRenderable createRenderable(Pass pass, IShader shader, IArrayAttributeProvider... providers) {
-		return createRenderable(pass, EnumSet.noneOf(Flag.class), shader, Arrays.asList(providers));
+	public IRenderable createRenderable(Pass pass, IShader shader, IUniformAttributeProvider uniforms, IArrayAttributeProvider... providers) {
+		return createRenderable(pass, EnumSet.noneOf(Flag.class), shader, uniforms, Arrays.asList(providers));
 	}
 
 	@Override
-	public IRenderable createRenderable(Pass pass, IShader shader, List<? extends IArrayAttributeProvider> providers) {
-		return createRenderable(pass, EnumSet.noneOf(Flag.class), shader, providers);
+	public IRenderable createRenderable(Pass pass, IShader shader, IUniformAttributeProvider uniforms, List<? extends IArrayAttributeProvider> providers) {
+		return createRenderable(pass, EnumSet.noneOf(Flag.class), shader, uniforms, providers);
 	}
 
 	@Override
-	public IRenderable createRenderable(Pass pass, EnumSet<Flag> flags, IShader shader, IArrayAttributeProvider... providers) {
-		return createRenderable(pass, flags, shader, Arrays.asList(providers));
+	public IRenderable createRenderable(Pass pass, EnumSet<Flag> flags, IShader shader, IUniformAttributeProvider uniforms, IArrayAttributeProvider... providers) {
+		return createRenderable(pass, flags, shader, uniforms, Arrays.asList(providers));
 	}
 
 	@Override
-	public IRenderable createRenderable(Pass pass, EnumSet<Flag> flags, IShader shader, List<? extends IArrayAttributeProvider> providers) {
-		return new Renderable(pass, flags, shader, this, providers);
+	public IRenderable createRenderable(Pass pass, EnumSet<Flag> flags, IShader shader, IUniformAttributeProvider uniforms, List<? extends IArrayAttributeProvider> providers) {
+		IUniformAttributeProvider composed = new IUniformAttributeProvider() {
+			@Override
+			public void getAttributeSuppliers(ISuppliers dst) {
+				if(uniforms != null) uniforms.getAttributeSuppliers(dst);
+				AbstractRenderer.this.getAttributeSuppliers(dst);
+			}
+		};
+		return new Renderable(pass, flags, shader, composed, providers);
 	}
 
 	@Override

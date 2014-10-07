@@ -4,7 +4,7 @@ import ch.fhnw.ether.formats.obj.LineParser;
 import ch.fhnw.ether.formats.obj.Material;
 import ch.fhnw.ether.formats.obj.WavefrontObject;
 
-public class NsParser extends LineParser {
+class NsParser extends LineParser {
 
 	float ns;
 

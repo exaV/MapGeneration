@@ -34,7 +34,7 @@ import javax.media.opengl.GL3;
 import ch.fhnw.ether.render.attribute.IAttribute;
 import ch.fhnw.ether.render.gl.Program;
 
-public abstract class AbstractAttribute implements IAttribute {
+abstract class AbstractAttribute implements IAttribute {
 	private final String id;
 	private final String shaderName;
 	private int shaderIndex = -1;

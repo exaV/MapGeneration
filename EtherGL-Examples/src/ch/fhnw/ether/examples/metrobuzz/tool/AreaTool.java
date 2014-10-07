@@ -37,7 +37,9 @@ import ch.fhnw.ether.geom.PickUtil.PickMode;
 import ch.fhnw.ether.geom.Plane;
 import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.IRenderer.Pass;
-import ch.fhnw.ether.render.shader.builtin.Triangles;
+import ch.fhnw.ether.render.shader.builtin.MaterialTriangles;
+import ch.fhnw.ether.reorg.api.IMaterial;
+import ch.fhnw.ether.reorg.base.ColorMaterial;
 import ch.fhnw.ether.scene.CubeMesh;
 import ch.fhnw.ether.scene.CubeMesh.Origin;
 import ch.fhnw.ether.view.IView;
@@ -65,7 +67,8 @@ public final class AreaTool extends AbstractTool {
 	public AreaTool(IController controller) {
 		super(controller);
 		mesh.getGeometry().setScale(new Vec3(0.1, 0.1, 0.001));
-		area = controller.getRenderer().createRenderable(Pass.DEPTH, new Triangles(TOOL_COLOR, false), mesh.getGeometry());
+		IMaterial m = new ColorMaterial(TOOL_COLOR);
+		area = controller.getRenderer().createRenderable(Pass.DEPTH, new MaterialTriangles(true,false,false,false), m, mesh.getGeometry());
 	}
 
 	@Override

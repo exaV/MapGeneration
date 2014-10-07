@@ -49,6 +49,7 @@ import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
 import ch.fhnw.ether.render.shader.builtin.Lines;
 import ch.fhnw.ether.render.util.Primitives;
 import ch.fhnw.ether.reorg.api.ICamera;
+import ch.fhnw.ether.reorg.api.IMesh;
 import ch.fhnw.ether.scene.GenericMesh;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.ProjectionUtil;
@@ -70,7 +71,6 @@ public final class CalibrationTool extends AbstractTool {
 	public static final RGBA CALIBRATION_COLOR_UNCALIBRATED = RGBA.YELLOW;
 	public static final RGBA CALIBRATION_COLOR_CALIBRATED = RGBA.GREEN;
 
-	private static final float POINT_SIZE = 10;
 	private static final float CROSSHAIR_SIZE = 20;
 
 	private final ICalibrator calibrator = new BimberRaskarCalibrator();
@@ -88,12 +88,13 @@ public final class CalibrationTool extends AbstractTool {
 		calibratedGeometry.setGeometry(new float[0]);
 
 		IRenderer renderer = controller.getRenderer();
+		IMesh mesh = model.getCalibrationMesh();
 
-		renderables.add(renderer.createRenderable(Pass.OVERLAY, new Lines(MODEL_COLOR), model.getCalibrationMesh().getGeometry()));
-		renderables.add(renderer.createRenderable(Pass.DEVICE_SPACE_OVERLAY, new Lines(), calibratedGeometry.getGeometry()));
+		renderables.add(renderer.createRenderable(Pass.OVERLAY, new Lines(false), mesh.getMaterial(), mesh.getGeometry()));
+		renderables.add(renderer.createRenderable(Pass.DEVICE_SPACE_OVERLAY, new Lines(false), mesh.getMaterial(), calibratedGeometry.getGeometry()));
 //		TODO: add also points?
 //		renderables.add(renderer.createRenderable(Pass.OVERLAY, new Points(MODEL_COLOR, POINT_SIZE, 0), model.getCalibrationMesh().getGeometry()));
-//		renderables.add(renderer.createRenderable(Pass.DEVICE_SPACE_OVERLAY, new Points(null, POINT_SIZE, 0), calibratedGeometry));
+//		renderables.add(renderer.createRenderable(Pass.DEVICE_SPACE_OVERsLAY, new Points(null, POINT_SIZE, 0), calibratedGeometry));
 	}
 
 	@Override
@@ -290,8 +291,6 @@ public final class CalibrationTool extends AbstractTool {
 
 	private void updateCalibratedGeometry(IView view) {
 		CalibrationContext context = getContext(view);
-
-		RGBA color = context.calibrated ? CALIBRATION_COLOR_CALIBRATED : CALIBRATION_COLOR_UNCALIBRATED;
 
 		// prepare points
 //		TODO: add points?

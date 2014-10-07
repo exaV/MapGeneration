@@ -3,7 +3,7 @@ package ch.fhnw.ether.reorg.api;
 import java.util.List;
 
 import ch.fhnw.ether.render.IRenderable;
-import ch.fhnw.ether.render.attribute.IUniformAttributeProvider;
+import ch.fhnw.ether.render.IRenderer;
 
 public interface IScene {
 
@@ -11,5 +11,5 @@ public interface IScene {
 	
 	List<? extends IMesh> getMeshes();
 
-	IRenderable[] createRenderables(IUniformAttributeProvider globalAttributes);
+	IRenderable[] createRenderables(IRenderer renderer);
 }

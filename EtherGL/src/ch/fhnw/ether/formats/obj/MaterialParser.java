@@ -1,6 +1,6 @@
 package ch.fhnw.ether.formats.obj;
 
-public class MaterialParser extends LineParser {
+class MaterialParser extends LineParser {
 	String materialName = "";
 
 	@Override

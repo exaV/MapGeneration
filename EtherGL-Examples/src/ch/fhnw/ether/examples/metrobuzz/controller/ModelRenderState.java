@@ -32,19 +32,8 @@ package ch.fhnw.ether.examples.metrobuzz.controller;
 import ch.fhnw.ether.examples.metrobuzz.model.Scene;
 import ch.fhnw.ether.render.AbstractRenderer;
 import ch.fhnw.ether.render.IRenderable;
-import ch.fhnw.ether.render.IRenderer;
-import ch.fhnw.ether.render.IRenderer.Pass;
-import ch.fhnw.ether.render.shader.builtin.Lines;
-import ch.fhnw.ether.render.shader.builtin.Points;
-import ch.fhnw.ether.reorg.api.IGeometry;
-import ch.fhnw.ether.reorg.api.IMesh;
-import ch.fhnw.util.color.RGBA;
 
 public final class ModelRenderState {
-	private static final RGBA NETWORK_NODE_COLOR = RGBA.GRAY;
-	private static final RGBA NETWORK_EDGE_COLOR = RGBA.GRAY;
-	private static final float NETWORK_POINT_SIZE = 4.0f;
-
 	protected final Scene model;
 	
 	private final IRenderable[] renderables;

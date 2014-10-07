@@ -134,6 +134,7 @@ public class AbstractView implements IView {
 		gl.glClearDepth(1.0f);
 
 		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+		
 	}
 
 	@Override

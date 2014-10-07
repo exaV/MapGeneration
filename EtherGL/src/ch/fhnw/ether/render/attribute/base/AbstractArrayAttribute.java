@@ -2,7 +2,7 @@ package ch.fhnw.ether.render.attribute.base;
 
 import ch.fhnw.ether.render.attribute.IArrayAttribute;
 
-public abstract class AbstractArrayAttribute extends AbstractAttribute implements IArrayAttribute {
+abstract class AbstractArrayAttribute extends AbstractAttribute implements IArrayAttribute {
 	private final NumComponents numComponents;
 	private int stride;
 	private int offset;

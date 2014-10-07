@@ -36,7 +36,7 @@ import javax.media.opengl.GL3;
 import ch.fhnw.ether.render.attribute.IUniformAttribute;
 import ch.fhnw.ether.render.gl.Program;
 
-public abstract class AbstractUniformAttribute<T> extends AbstractAttribute implements IUniformAttribute {
+abstract class AbstractUniformAttribute<T> extends AbstractAttribute implements IUniformAttribute {
 	private Supplier<T> supplier;
 	
 	protected AbstractUniformAttribute(String id, String shaderName) {

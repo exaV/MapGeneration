@@ -30,7 +30,9 @@
 package ch.fhnw.ether.mapping;
 
 import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
+import ch.fhnw.ether.reorg.base.ColorMaterial;
 import ch.fhnw.ether.scene.GenericMesh;
+import ch.fhnw.util.color.RGBA;
 
 public class BoxCalibrationModel implements ICalibrationModel {
     private float boxExtentX;
@@ -51,6 +53,7 @@ public class BoxCalibrationModel implements ICalibrationModel {
 //        mesh.setPoints(getCalibrationPoints());
 //        mesh.setLines(getCalibrationLines());
         mesh.setGeometry(getCalibrationLines());
+        mesh.setMaterial(new ColorMaterial(RGBA.YELLOW));
     }
 
     @Override

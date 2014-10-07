@@ -5,7 +5,7 @@ import ch.fhnw.ether.formats.obj.Material;
 import ch.fhnw.ether.formats.obj.WavefrontObject;
 import ch.fhnw.util.color.RGB;
 
-public class KdParser extends LineParser {
+class KdParser extends LineParser {
 
 	RGB kd = null;
 

@@ -34,7 +34,7 @@ import java.util.List;
 import ch.fhnw.ether.geom.BoundingBox;
 import ch.fhnw.ether.reorg.api.IGeometry;
 
-public interface ISpatialIndex {
+interface ISpatialIndex {
 	public void addGeometry(IGeometry geometry);
 
 	public boolean removeGeometry(IGeometry geometry);

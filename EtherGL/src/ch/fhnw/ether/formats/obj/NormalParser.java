@@ -2,7 +2,7 @@ package ch.fhnw.ether.formats.obj;
 
 import ch.fhnw.util.math.Vec3;
 
-public class NormalParser extends LineParser {
+class NormalParser extends LineParser {
 
 	private Vec3 vertex = null;
 

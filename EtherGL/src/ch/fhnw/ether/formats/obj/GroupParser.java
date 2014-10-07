@@ -1,6 +1,6 @@
 package ch.fhnw.ether.formats.obj;
 
-public class GroupParser extends LineParser {
+class GroupParser extends LineParser {
 
 	Group newGroup = null;
 

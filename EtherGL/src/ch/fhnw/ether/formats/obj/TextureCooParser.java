@@ -1,6 +1,6 @@
 package ch.fhnw.ether.formats.obj;
 
-public class TextureCooParser extends LineParser {
+class TextureCooParser extends LineParser {
 
 	private TexCoord coordinate = null;
 

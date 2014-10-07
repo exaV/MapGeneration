@@ -31,21 +31,20 @@ package ch.fhnw.ether.examples.mapping;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.IRenderer;
-import ch.fhnw.ether.render.Renderable;
 import ch.fhnw.ether.render.IRenderer.Pass;
-import ch.fhnw.ether.render.attribute.IUniformAttributeProvider;
-import ch.fhnw.ether.render.shader.builtin.Triangles;
+import ch.fhnw.ether.render.shader.builtin.MaterialTriangles;
 import ch.fhnw.ether.reorg.api.I3DObject;
 import ch.fhnw.ether.reorg.api.IGeometry;
 import ch.fhnw.ether.reorg.api.IMesh;
 import ch.fhnw.ether.reorg.api.IScene;
+import ch.fhnw.ether.reorg.base.ColorMaterial;
 import ch.fhnw.ether.scene.CubeMesh;
+import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Vec3;
 
 public class MappingTriangleScene implements IScene {
@@ -77,11 +76,11 @@ public class MappingTriangleScene implements IScene {
 
 	@Override
 	public IRenderable[] createRenderables(
-			IUniformAttributeProvider globalAttributes) {
+			IRenderer renderer) {
 		
 		final List<IGeometry> geo = Collections.synchronizedList(objects.stream().map((x) -> {return x.getGeometry();}).collect(Collectors.toList()));
 		
-		IRenderable ret = new Renderable(Pass.DEPTH, EnumSet.noneOf(IRenderer.Flag.class), new Triangles(), globalAttributes, geo);
+		IRenderable ret = renderer.createRenderable(Pass.DEPTH, new MaterialTriangles(true, false, false, false), new ColorMaterial(RGBA.YELLOW), geo);
 		
 		return new IRenderable[]{ret};
 	}

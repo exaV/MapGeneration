@@ -4,7 +4,7 @@ import ch.fhnw.ether.formats.obj.LineParser;
 import ch.fhnw.ether.formats.obj.Material;
 import ch.fhnw.ether.formats.obj.WavefrontObject;
 
-public class MaterialParser extends LineParser {
+class MaterialParser extends LineParser {
 
 	String materialName = "";
 

@@ -4,7 +4,7 @@ import ch.fhnw.ether.formats.obj.CommentParser;
 import ch.fhnw.ether.formats.obj.LineParserFactory;
 import ch.fhnw.ether.formats.obj.WavefrontObject;
 
-public class MtlLineParserFactory extends LineParserFactory {
+class MtlLineParserFactory extends LineParserFactory {
 	public MtlLineParserFactory(WavefrontObject object) {
 		this.object = object;
 		parsers.put("newmtl", new MaterialParser());

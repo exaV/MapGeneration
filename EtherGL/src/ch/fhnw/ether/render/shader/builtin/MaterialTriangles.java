@@ -32,59 +32,50 @@ package ch.fhnw.ether.render.shader.builtin;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.media.opengl.GL3;
-
 import ch.fhnw.ether.render.attribute.IArrayAttribute;
 import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
+import ch.fhnw.ether.render.attribute.IUniformAttribute;
 import ch.fhnw.ether.render.attribute.base.BooleanUniformAttribute;
-import ch.fhnw.ether.render.attribute.base.FloatUniformAttribute;
-import ch.fhnw.ether.render.attribute.base.StateInjectAttribute;
 import ch.fhnw.ether.render.attribute.builtin.ColorArray;
-import ch.fhnw.ether.render.attribute.builtin.PointSizeArray;
+import ch.fhnw.ether.render.attribute.builtin.NormalArray;
 import ch.fhnw.ether.render.attribute.builtin.PositionArray;
 import ch.fhnw.ether.render.attribute.builtin.ProjMatrixUniform;
+import ch.fhnw.ether.render.attribute.builtin.TexCoordArray;
+import ch.fhnw.ether.render.attribute.builtin.TextureUniform;
 import ch.fhnw.ether.render.attribute.builtin.ViewMatrixUniform;
-import ch.fhnw.ether.render.attribute.IUniformAttribute;
 import ch.fhnw.ether.render.shader.base.AbstractShader;
 import ch.fhnw.ether.reorg.base.ColorMaterialAttribute;
 
-public class Points extends AbstractShader {
-	private boolean useVertexColors;
-	private float pointSize;
-	private float pointDecay;
+public class MaterialTriangles extends AbstractShader {
 	private List<IUniformAttribute> uniformAttributes = new ArrayList<>(5);
 	private List<IArrayAttribute> arrayAttributes = new ArrayList<>(5);
-	
-	public Points(boolean useVertexColors) {
-		this(useVertexColors, 1, 0);
-	}
 
-	public Points(boolean useVertexColors, float pointSize, float pointDecay) {
-		super("point_vc", PrimitiveType.POINT);
-		this.useVertexColors = useVertexColors;
-		this.pointSize = pointSize;
-		this.pointDecay = pointDecay;
-		
-		if(!useVertexColors) {
+	public MaterialTriangles(boolean useMaterialColor, boolean useVertexColors, boolean useTexture, boolean normals) {
+		super("unshaded_vct", PrimitiveType.TRIANGLE);
+		if(useMaterialColor) {
 			uniformAttributes.add(new ColorMaterialAttribute());
 		} else {
+			uniformAttributes.add(new ColorMaterialAttribute(() -> new float[]{1,1,1,1}));
+		}
+		if(useVertexColors) {
 			arrayAttributes.add(new ColorArray());
 		}
-		if (pointSize == 0)
-			arrayAttributes.add(new PointSizeArray());		
+		if(useTexture) {
+			uniformAttributes.add(new TextureUniform());
+			arrayAttributes.add(new TexCoordArray());
+		}
+		if(normals) {
+			arrayAttributes.add(new NormalArray());
+		}
 		
 		arrayAttributes.add(new PositionArray());
-		uniformAttributes.add(new FloatUniformAttribute("shader.point_size", "pointSize", () -> pointSize));
-		uniformAttributes.add(new FloatUniformAttribute("shader.point_decay", "pointDecay", () -> pointDecay));
-		uniformAttributes.add(new StateInjectAttribute("shader.point_size_program", (gl, p) -> gl.glEnable(GL3.GL_PROGRAM_POINT_SIZE), (gl, p) -> gl.glDisable(GL3.GL_PROGRAM_POINT_SIZE)));
 		uniformAttributes.add(new ProjMatrixUniform());
 		uniformAttributes.add(new ViewMatrixUniform());
 		uniformAttributes.add(new BooleanUniformAttribute("shader.vertex_colors_flag", "useVertexColors", () -> useVertexColors));
-		uniformAttributes.add(new BooleanUniformAttribute("shader.texture_flag", "useTexture", () -> false));
-
+		uniformAttributes.add(new BooleanUniformAttribute("shader.texture_flag", "useTexture", () -> useTexture));
+		
 	}
 
-	// TODO: point size array flag
 	@Override
 	public void getUniformAttributes(List<IUniformAttribute> dst) {
 		dst.addAll(uniformAttributes);
@@ -97,7 +88,6 @@ public class Points extends AbstractShader {
 
 	@Override
 	public String toString() {
-		return "points[rgba=" + (useVertexColors ? "vertexColors" : "materialColor") + " point_size=" + pointSize
-				+ " point_decay=" + pointDecay + "]";
+		return "triangles[uniforms:" + uniformAttributes + " array attribs:" + arrayAttributes + "]";
 	}
 }

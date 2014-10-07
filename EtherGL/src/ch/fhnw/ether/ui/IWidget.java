@@ -37,7 +37,7 @@ import ch.fhnw.ether.view.IView;
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.MouseEvent;
 
-public interface IWidget {
+interface IWidget {
 	static final Color TEXT_COLOR = Color.WHITE;
 
     public interface IWidgetAction<T extends IWidget> {

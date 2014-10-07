@@ -34,7 +34,7 @@ import ch.fhnw.ether.view.IView;
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.MouseEvent;
 
-public abstract class AbstractWidget implements IWidget {
+abstract class AbstractWidget implements IWidget {
 	private UI ui;
 	private int x;
 	private int y;
