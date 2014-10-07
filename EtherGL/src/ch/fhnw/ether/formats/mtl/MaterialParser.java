@@ -6,7 +6,7 @@ import ch.fhnw.ether.formats.obj.WavefrontObject;
 
 class MaterialParser extends LineParser {
 
-	String materialName = "";
+	private String materialName = "";
 
 	@Override
 	public void incoporateResults(WavefrontObject wavefrontObject) {

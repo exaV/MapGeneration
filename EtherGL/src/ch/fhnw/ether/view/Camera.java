@@ -9,10 +9,10 @@ public class Camera implements ICamera {
 	private static final boolean KEEP_ROT_X_POSITIVE = true;
 	private static final float MIN_ZOOM = 0.02f;
 
-	protected float fov;
-	protected float aspect;
-	protected float near;
-	protected float far;
+	private float fov;
+	private float aspect;
+	private float near;
+	private float far;
 
 	private Mat4 projectionMatrix = Mat4.identityMatrix();
 	private Mat4 cameraMatrix = Mat4.identityMatrix();

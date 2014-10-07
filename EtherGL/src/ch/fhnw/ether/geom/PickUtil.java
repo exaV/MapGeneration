@@ -49,7 +49,7 @@ public final class PickUtil {
         //INTERSECT
     }
 	
-    public static final float PICK_DISTANCE = 5;
+    private static final float PICK_DISTANCE = 5;
 
     // TODO: this needs to be generalized when spatial indices are available (e.g. RTree based)
     public static Map<Float, I3DObject> pickFromModel(PickMode mode, int x, int y, int w, int h, IView view) {

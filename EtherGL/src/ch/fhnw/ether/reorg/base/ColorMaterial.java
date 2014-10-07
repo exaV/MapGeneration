@@ -3,7 +3,6 @@ package ch.fhnw.ether.reorg.base;
 import java.util.Arrays;
 
 import ch.fhnw.ether.render.attribute.IAttribute.ISuppliers;
-import ch.fhnw.ether.render.attribute.IUniformAttribute;
 import ch.fhnw.ether.reorg.api.IMaterial;
 import ch.fhnw.util.color.RGBA;
 
@@ -23,11 +22,6 @@ public class ColorMaterial implements IMaterial {
 	
 	public ColorMaterial(float[] rgba) {
 		this.color = Arrays.copyOf(rgba, 4);
-	}
-
-	@Override
-	public IUniformAttribute[] getUniformAttributes() {
-		return new IUniformAttribute[]{COLOR_ATTRIBUTE};
 	}
 
 	@Override

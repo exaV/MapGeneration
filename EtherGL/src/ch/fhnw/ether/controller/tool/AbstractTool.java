@@ -36,7 +36,7 @@ import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.MouseEvent;
 
 public abstract class AbstractTool implements ITool {
-    public static final int SNAP_SIZE = 4;
+    private static final int SNAP_SIZE = 4;
 
     private IController controller;
 

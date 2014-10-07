@@ -43,13 +43,13 @@ public class Slider extends AbstractWidget {
 		void execute(Slider slider, IView view);
     }
 
-    public static final int SLIDER_WIDTH = 96;
-    public static final int SLIDER_HEIGHT = 24;
+    private static final int SLIDER_WIDTH = 96;
+    private static final int SLIDER_HEIGHT = 24;
 
-    public static final int SLIDER_GAP = 8;
+    private static final int SLIDER_GAP = 8;
     
-    public static final Color SLIDER_BG = new Color(1f, 1f, 1f, 0.25f);
-    public static final Color SLIDER_FG = new Color(0.6f, 0, 0, 0.75f);
+    private static final Color SLIDER_BG = new Color(1f, 1f, 1f, 0.25f);
+    private static final Color SLIDER_FG = new Color(0.6f, 0, 0, 0.75f);
 
     private boolean sliding;
     private float value;

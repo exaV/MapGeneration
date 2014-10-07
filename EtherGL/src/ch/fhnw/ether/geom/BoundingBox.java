@@ -39,9 +39,9 @@ import ch.fhnw.util.math.Vec3;
  * @author radar
  */
 public final class BoundingBox {
-	boolean valid;
-	float minX;
-	float maxX;
+	private boolean valid;
+	private float minX;
+	private float maxX;
 	float minY;
 	float maxY;
 	float minZ;

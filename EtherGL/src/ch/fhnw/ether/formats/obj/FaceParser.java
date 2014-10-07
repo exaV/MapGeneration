@@ -5,9 +5,9 @@ import ch.fhnw.util.math.Vec3;
 class FaceParser extends LineParser {
 
 	private Face face;
-	public int[] vindices;
-	public int[] nindices;
-	public int[] tindices;
+	private int[] vindices;
+	private int[] nindices;
+	private int[] tindices;
 	private Vec3[] vertices;
 	private Vec3[] normals;
 	private TexCoord[] textures;

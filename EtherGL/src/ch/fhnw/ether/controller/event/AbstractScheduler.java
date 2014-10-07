@@ -12,7 +12,7 @@ abstract class AbstractScheduler implements IScheduler {
 	private final List<GLAutoDrawable> drawables = new ArrayList<>();
 
 	protected final BlockingQueue<Runnable> renderQueue = new LinkedBlockingQueue<>();
-	protected final BlockingQueue<Runnable> modelQueue = new LinkedBlockingQueue<>();
+	private final BlockingQueue<Runnable> modelQueue = new LinkedBlockingQueue<>();
 
 	protected AbstractScheduler() {
 		new Thread(this::runRenderThread).start();

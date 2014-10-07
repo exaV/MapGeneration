@@ -43,10 +43,10 @@ public class Button extends AbstractWidget {
 		void execute(Button button, IView view);
     }
 
-    public static final int BUTTON_WIDTH = 48;
-    public static final int BUTTON_HEIGHT = 48;
+    private static final int BUTTON_WIDTH = 48;
+    private static final int BUTTON_HEIGHT = 48;
 
-    public static final int BUTTON_GAP = 8;
+    private static final int BUTTON_GAP = 8;
 
     public enum State {
         DEFAULT(0.6f, 0, 0, 0.75f), PRESSED(1, 0.2f, 0.2f, 0.75f), DISABLED(0.5f, 0.5f, 0.5f, 0.75f);

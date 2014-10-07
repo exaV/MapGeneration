@@ -32,7 +32,7 @@ package ch.fhnw.ether.render.attribute.builtin;
 import ch.fhnw.ether.render.attribute.base.FloatArrayAttribute;
 
 public final class ColorArray extends FloatArrayAttribute {
-	public static final String ID = "builtin.color_array";
+	private static final String ID = "builtin.color_array";
 	private static final String DEFAULT_SHADER_NAME = "vertexColor";
 
 	public ColorArray() {

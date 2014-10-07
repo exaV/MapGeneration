@@ -6,7 +6,7 @@ import ch.fhnw.ether.render.attribute.base.Vec4FloatUniformAttribute;
 
 public class ColorMaterialAttribute extends Vec4FloatUniformAttribute {
 	
-	public final static String ID = "material.color";
+	private final static String ID = "material.color";
 	private static final String DEFAULT_SHADER_NAME = "materialColor";
 	
 	public ColorMaterialAttribute() {

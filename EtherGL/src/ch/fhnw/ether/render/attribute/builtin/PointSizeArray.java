@@ -32,7 +32,7 @@ package ch.fhnw.ether.render.attribute.builtin;
 import ch.fhnw.ether.render.attribute.base.FloatArrayAttribute;
 
 public final class PointSizeArray extends FloatArrayAttribute {
-	public static final String ID = "builtin.point_size_array";
+	private static final String ID = "builtin.point_size_array";
 	private static final String DEFAULT_SHADER_NAME = "vertexPointSize";
 
 	public PointSizeArray() {

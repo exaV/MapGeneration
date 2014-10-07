@@ -2,7 +2,7 @@ package ch.fhnw.ether.formats.obj;
 
 class GroupParser extends LineParser {
 
-	Group newGroup = null;
+	private Group newGroup = null;
 
 	@Override
 	public void incoporateResults(WavefrontObject wavefrontObject) {
