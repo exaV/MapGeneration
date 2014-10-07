@@ -1,4 +1,4 @@
-package ch.fhnw.util;
+package ch.fhnw.util.color;
 
 public final class ColorUtil {
 	public static final float EPS = 216.f / 24389.f;

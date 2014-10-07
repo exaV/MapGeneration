@@ -4,7 +4,7 @@ import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 
 import ch.fhnw.util.BufferUtil;
-import ch.fhnw.util.ColorUtil;
+import ch.fhnw.util.color.ColorUtil;
 
 public abstract class Frame {
 	protected static final byte B0   = 0;

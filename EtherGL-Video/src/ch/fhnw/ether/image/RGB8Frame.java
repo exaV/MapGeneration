@@ -10,7 +10,7 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
 import ch.fhnw.util.BufferUtil;
-import ch.fhnw.util.ColorUtil;
+import ch.fhnw.util.color.ColorUtil;
 
 public class RGB8Frame extends Frame {
 
