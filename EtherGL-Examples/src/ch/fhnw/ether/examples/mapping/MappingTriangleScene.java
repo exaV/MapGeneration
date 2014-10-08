@@ -29,7 +29,6 @@
 
 package ch.fhnw.ether.examples.mapping;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
@@ -43,25 +42,21 @@ import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
 import ch.fhnw.ether.render.shader.IShader;
 import ch.fhnw.ether.render.shader.builtin.MaterialShader;
 import ch.fhnw.ether.render.shader.builtin.MaterialShader.ShaderInput;
-import ch.fhnw.ether.scene.IScene;
-import ch.fhnw.ether.scene.light.ILight;
+import ch.fhnw.ether.scene.AbstractScene;
 import ch.fhnw.ether.scene.mesh.GenericMesh;
-import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Vec3;
-import ch.fhnw.util.math.geometry.I3DObject;
 import ch.fhnw.util.math.geometry.Primitives;
 
-public class MappingTriangleScene implements IScene {
+public class MappingTriangleScene extends AbstractScene {
 	
-	private List<IMesh> objects = new ArrayList<>(10);
 	private IMaterial material = new ColorMaterial(RGBA.WHITE);
-	private ICamera camera;
 	
     public MappingTriangleScene(ICamera camera) {
+    	super(camera);
         for (int i = 0; i < 10; ++i) {
             GenericMesh cube = new GenericMesh(PrimitiveType.TRIANGLE, material);
             cube.setGeometry(Primitives.UNIT_CUBE_TRIANGLES);
@@ -71,40 +66,19 @@ public class MappingTriangleScene implements IScene {
             cube.getGeometry().setScale(new Vec3(s, s, s));
             cube.getGeometry().setRotation(new Vec3(0, 0, 360 * Math.random()));
             cube.getGeometry().setTranslation(new Vec3(tx, ty, 0));
-            objects.add(cube);
+            super.getMeshes().add(cube);
         }
-        this.camera = camera;
     }
-
-	@Override
-	public List<? extends I3DObject> getObjects() {
-		return objects;
-	}
-
-	@Override
-	public List<? extends IMesh> getMeshes() {
-		return objects;
-	}
 
 	@Override
 	public void setRenderer(
 			IRenderer renderer) {
 		
-		final List<IGeometry> geo = Collections.synchronizedList(objects.stream().map((x) -> {return x.getGeometry();}).collect(Collectors.toList()));
+		final List<IGeometry> geo = Collections.synchronizedList(super.getMeshes().stream().map((x) -> {return x.getGeometry();}).collect(Collectors.toList()));
 		IShader s = new MaterialShader(EnumSet.of(ShaderInput.MATERIAL_COLOR));
 		IRenderable ret = renderer.createRenderable(Pass.DEPTH, s, material, geo);
 		
 		renderer.addRenderables(ret);
-	}
-
-	@Override
-	public List<? extends ICamera> getCameras() {
-		return Collections.singletonList(camera);
-	}
-
-	@Override
-	public List<? extends ILight> getLights() {
-		return Collections.emptyList();
 	}
 
 	@Override

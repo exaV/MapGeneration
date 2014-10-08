@@ -285,7 +285,7 @@ public class Scene implements IScene {
 	}
 
 	@Override
-	public List<? extends IMesh> getMeshes() {
+	public List<IMesh> getMeshes() {
 		createGeometries();
 		List<IMesh> l = new ArrayList<>(agentGeometries);
 		l.add(networkGeometryPoints);
@@ -314,12 +314,12 @@ public class Scene implements IScene {
 	}
 
 	@Override
-	public List<? extends ICamera> getCameras() {
+	public List<ICamera> getCameras() {
 		return Collections.singletonList(camera);
 	}
 
 	@Override
-	public List<? extends ILight> getLights() {
+	public List<ILight> getLights() {
 		return Collections.emptyList();
 	}
 

@@ -54,7 +54,7 @@ public class QuaternionExample {
 	        final QuaternionController controller = new QuaternionController();
 	        Camera camera = new Camera();
 	 
-	        SimpleScene s = new SimpleScene();
+	        SimpleScene s = new SimpleScene(camera);
 	        new OBJReader(getClass().getResource("fhnw.obj")).getMeshes().forEach((x) -> {s.addMesh(x);} );
 	        controller.setScene(s);
 	        

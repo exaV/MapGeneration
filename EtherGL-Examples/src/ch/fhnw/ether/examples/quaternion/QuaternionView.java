@@ -35,6 +35,7 @@ import com.jogamp.newt.event.KeyEvent;
 public class QuaternionView extends AbstractView {
 	public QuaternionView(QuaternionController controller, int x, int y, int w, int h, String title, ICamera camera) {
 		super(controller, x, y, w, h,ViewType.INTERACTIVE_VIEW, title, camera);
+		controller.getUI().setMessage("Use 0-6 on keyboard to set camera");
 	}
 
 	private static final float[][] CAM_PARAMS = {
