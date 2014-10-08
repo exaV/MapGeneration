@@ -146,5 +146,10 @@ public class VertexGeometry implements IGeometry {
 	public boolean hasChanged() {
 		return changed;
 	}
+	
+	public float[] getVertexData(int i) {
+		if(i >= vertexData.length) return new float[0];
+		return vertexData[i];
+	}
 
 }
