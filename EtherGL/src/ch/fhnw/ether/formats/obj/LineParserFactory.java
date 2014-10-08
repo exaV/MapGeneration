@@ -1,4 +1,4 @@
-package ch.fhnw.ether.formats.obj.parser;
+package ch.fhnw.ether.formats.obj;
 
 import java.util.Hashtable;
 

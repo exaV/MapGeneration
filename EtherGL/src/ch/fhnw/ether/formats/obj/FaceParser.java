@@ -1,16 +1,13 @@
-package ch.fhnw.ether.formats.obj.parser;
+package ch.fhnw.ether.formats.obj;
 
-import ch.fhnw.ether.formats.obj.Face;
-import ch.fhnw.ether.formats.obj.Group;
-import ch.fhnw.ether.formats.obj.TexCoord;
 import ch.fhnw.util.math.Vec3;
 
 public class FaceParser extends LineParser {
 
 	private Face face;
-	private int[] vindices;
-	private int[] nindices;
-	private int[] tindices;
+	public int[] vindices;
+	public int[] nindices;
+	public int[] tindices;
 	private Vec3[] vertices;
 	private Vec3[] normals;
 	private TexCoord[] textures;

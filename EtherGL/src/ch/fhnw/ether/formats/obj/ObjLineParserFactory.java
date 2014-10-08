@@ -1,9 +1,9 @@
-package ch.fhnw.ether.formats.obj.parser;
-
+package ch.fhnw.ether.formats.obj;
 
 //import java.util.Hashtable;
+import ch.fhnw.ether.formats.mtl.MaterialFileParser;
 
-class ObjLineParserFactory extends LineParserFactory {
+public class ObjLineParserFactory extends LineParserFactory {
 	public ObjLineParserFactory(WavefrontObject object) {
 		this.object = object;
 		parsers.put("v", new VertexParser());

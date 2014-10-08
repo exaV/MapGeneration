@@ -1,10 +1,10 @@
-package ch.fhnw.ether.formats.obj.parser;
+package ch.fhnw.ether.formats.mtl;
 
+import ch.fhnw.ether.formats.obj.LineParser;
 import ch.fhnw.ether.formats.obj.Material;
 import ch.fhnw.ether.formats.obj.Texture;
 import ch.fhnw.ether.formats.obj.TextureLoader;
-
-
+import ch.fhnw.ether.formats.obj.WavefrontObject;
 
 public class KdMapParser extends LineParser {
 

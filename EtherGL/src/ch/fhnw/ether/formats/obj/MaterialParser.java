@@ -1,10 +1,7 @@
-package ch.fhnw.ether.formats.obj.parser;
-
-import ch.fhnw.ether.formats.obj.Material;
-
+package ch.fhnw.ether.formats.obj;
 
 public class MaterialParser extends LineParser {
-	private String materialName = "";
+	String materialName = "";
 
 	@Override
 	public void parse() {

@@ -1,7 +1,4 @@
-package ch.fhnw.ether.formats.obj.parser;
-
-import ch.fhnw.ether.formats.obj.TexCoord;
-
+package ch.fhnw.ether.formats.obj;
 
 public class TextureCooParser extends LineParser {
 

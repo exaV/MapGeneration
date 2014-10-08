@@ -1,5 +1,4 @@
-package ch.fhnw.ether.formats.obj.parser;
-
+package ch.fhnw.ether.formats.obj;
 
 public class CommentParser extends LineParser {
 

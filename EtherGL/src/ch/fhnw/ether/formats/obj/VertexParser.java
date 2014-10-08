@@ -1,4 +1,4 @@
-package ch.fhnw.ether.formats.obj.parser;
+package ch.fhnw.ether.formats.obj;
 
 import ch.fhnw.util.math.Vec3;
 

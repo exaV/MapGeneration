@@ -1,4 +1,4 @@
-package ch.fhnw.ether.formats.obj.parser;
+package ch.fhnw.ether.formats.obj;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -9,9 +9,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import ch.fhnw.ether.formats.obj.Group;
-import ch.fhnw.ether.formats.obj.Material;
-import ch.fhnw.ether.formats.obj.TexCoord;
 import ch.fhnw.util.math.Vec3;
 
 public class WavefrontObject {

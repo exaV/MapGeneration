@@ -1,6 +1,8 @@
-package ch.fhnw.ether.formats.obj.parser;
+package ch.fhnw.ether.formats.mtl;
 
-
+import ch.fhnw.ether.formats.obj.CommentParser;
+import ch.fhnw.ether.formats.obj.LineParserFactory;
+import ch.fhnw.ether.formats.obj.WavefrontObject;
 
 public class MtlLineParserFactory extends LineParserFactory {
 	public MtlLineParserFactory(WavefrontObject object) {

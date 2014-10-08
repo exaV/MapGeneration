@@ -1,9 +1,8 @@
-package ch.fhnw.ether.formats.obj.parser;
+package ch.fhnw.ether.formats.obj;
 
+public class FreeFormParser extends LineParser {
 
-public class DefaultParser extends LineParser {
-
-	public DefaultParser() {
+	public FreeFormParser() {
 	}
 
 	@Override

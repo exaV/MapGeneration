@@ -1,4 +1,4 @@
-package ch.fhnw.ether.formats.obj.parser;
+package ch.fhnw.ether.formats.mtl;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -7,7 +7,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Hashtable;
 
+import ch.fhnw.ether.formats.obj.LineParser;
 import ch.fhnw.ether.formats.obj.Material;
+import ch.fhnw.ether.formats.obj.WavefrontObject;
 
 public class MaterialFileParser extends LineParser {
 

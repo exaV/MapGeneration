@@ -1,4 +1,4 @@
-package ch.fhnw.ether.formats.obj.parser;
+package ch.fhnw.ether.formats.obj;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,17 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.fhnw.ether.formats.AbstractModelReader;
-import ch.fhnw.ether.formats.obj.Face;
-import ch.fhnw.ether.formats.obj.Group;
-import ch.fhnw.ether.formats.obj.Material;
 import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
 import ch.fhnw.ether.scene.mesh.GenericMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
-import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.util.FloatList;
 import ch.fhnw.util.IntList;
 import ch.fhnw.util.color.RGB;
-import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.GeometryUtil;
 
@@ -72,7 +67,6 @@ public class OBJReader extends AbstractModelReader {
 			//mesh.setTriangles(triv, triNormals.size() == triv.length ? triNormals.toArray() : GeometryUtil.calculateNormals(triv), diffuse);
 			
 			mesh.setGeometry(triv, GeometryUtil.calculateNormals(triv), diffuse.generateColorArray(triv.length/3));
-			mesh.setMaterial(new ColorMaterial(new RGBA(diffuse.x, diffuse.y, diffuse.z, 1)));
 			meshes.add(mesh);
 		}
 		return meshes;

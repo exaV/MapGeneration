@@ -1,11 +1,8 @@
-package ch.fhnw.ether.formats.obj.parser;
-
-import ch.fhnw.ether.formats.obj.Group;
-
+package ch.fhnw.ether.formats.obj;
 
 public class GroupParser extends LineParser {
 
-	private Group newGroup = null;
+	Group newGroup = null;
 
 	@Override
 	public void incoporateResults(WavefrontObject wavefrontObject) {
