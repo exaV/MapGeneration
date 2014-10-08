@@ -47,7 +47,7 @@ import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.IRenderer;
 import ch.fhnw.ether.render.IRenderer.Pass;
 import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
-import ch.fhnw.ether.render.shader.builtin.Lines;
+import ch.fhnw.ether.render.shader.builtin.LineShader;
 import ch.fhnw.ether.scene.mesh.GenericMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.view.IView;
@@ -90,8 +90,8 @@ public final class CalibrationTool extends AbstractTool {
 		IRenderer renderer = controller.getRenderer();
 		IMesh mesh = model.getCalibrationMesh();
 
-		renderables.add(renderer.createRenderable(Pass.OVERLAY, new Lines(false), mesh.getMaterial(), mesh.getGeometry()));
-		renderables.add(renderer.createRenderable(Pass.DEVICE_SPACE_OVERLAY, new Lines(false), mesh.getMaterial(), calibratedGeometry.getGeometry()));
+		renderables.add(renderer.createRenderable(Pass.OVERLAY, new LineShader(false), mesh.getMaterial(), mesh.getGeometry()));
+		renderables.add(renderer.createRenderable(Pass.DEVICE_SPACE_OVERLAY, new LineShader(false), mesh.getMaterial(), calibratedGeometry.getGeometry()));
 //		TODO: add also points?
 //		renderables.add(renderer.createRenderable(Pass.OVERLAY, new Points(MODEL_COLOR, POINT_SIZE, 0), model.getCalibrationMesh().getGeometry()));
 //		renderables.add(renderer.createRenderable(Pass.DEVICE_SPACE_OVERsLAY, new Points(null, POINT_SIZE, 0), calibratedGeometry));

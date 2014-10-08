@@ -29,6 +29,8 @@
 
 package ch.fhnw.ether.examples.basic;
 
+import com.jogamp.newt.event.KeyEvent;
+
 import ch.fhnw.ether.camera.Camera;
 import ch.fhnw.ether.controller.AbstractController;
 import ch.fhnw.ether.render.attribute.IArrayAttribute;
@@ -38,11 +40,13 @@ import ch.fhnw.ether.render.attribute.builtin.PositionArray;
 import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.scene.SimpleScene;
 import ch.fhnw.ether.scene.mesh.GenericMesh;
+import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.geometry.VertexGeometry;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.gl.AbstractView;
 import ch.fhnw.util.color.RGBA;
+import ch.fhnw.util.math.Vec3;
 
 public final class Test {
 	public static void main(String[] args) {
@@ -64,7 +68,18 @@ public final class Test {
 	}
 	
 	public Test() {
-		AbstractController controller = new AbstractController(){};
+		AbstractController controller = new AbstractController(){
+			@Override
+			public void keyPressed(KeyEvent e, IView view) {
+				if(e.getKeyCode() == KeyEvent.VK_0) {
+					IMesh m = getScene().getMeshes().get(0);
+					m.getGeometry().setScale(new Vec3(10, 10, 10));
+				} else {
+					super.keyPressed(e, view);
+				}
+				view.repaint();
+			}
+		};
 		Camera camera = new Camera();
 		IScene scene = createScene();
 		AbstractView view = new AbstractView(controller, 100, 100, 500, 500, IView.ViewType.INTERACTIVE_VIEW, "Test", camera);

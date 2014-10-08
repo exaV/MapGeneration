@@ -39,7 +39,7 @@ import ch.fhnw.ether.render.IRenderer.Pass;
 import ch.fhnw.ether.render.attribute.IArrayAttributeProvider;
 import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
 import ch.fhnw.ether.render.shader.IShader;
-import ch.fhnw.ether.render.shader.builtin.Lines;
+import ch.fhnw.ether.render.shader.builtin.LineShader;
 import ch.fhnw.ether.scene.mesh.GenericMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
@@ -66,7 +66,7 @@ public class NavigationTool extends AbstractTool {
 		// XXX hack: currently grid is always enabled
 		IMesh gridMesh = makeGrid();
 		List<IArrayAttributeProvider> l = Collections.singletonList(gridMesh.getGeometry());
-		IShader s = new Lines(false);
+		IShader s = new LineShader(false);
 		renderable = controller.getRenderer().createRenderable(Pass.DEPTH, s, gridMesh.getMaterial(), l);
 		activate();
 	}

@@ -48,18 +48,18 @@ import ch.fhnw.ether.render.attribute.builtin.ViewMatrixUniform;
 import ch.fhnw.ether.render.attribute.IUniformAttribute;
 import ch.fhnw.ether.render.shader.base.AbstractShader;
 
-public class Points extends AbstractShader {
+public class PointShader extends AbstractShader {
 	private boolean useVertexColors;
 	private float pointSize;
 	private float pointDecay;
 	private List<IUniformAttribute> uniformAttributes = new ArrayList<>(5);
 	private List<IArrayAttribute> arrayAttributes = new ArrayList<>(5);
 	
-	public Points(boolean useVertexColors) {
+	public PointShader(boolean useVertexColors) {
 		this(useVertexColors, 1, 0);
 	}
 
-	public Points(boolean useVertexColors, float pointSize, float pointDecay) {
+	public PointShader(boolean useVertexColors, float pointSize, float pointDecay) {
 		super("point_vc", PrimitiveType.POINT);
 		this.useVertexColors = useVertexColors;
 		this.pointSize = pointSize;

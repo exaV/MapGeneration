@@ -49,8 +49,8 @@ import ch.fhnw.ether.render.attribute.builtin.PositionArray;
 import ch.fhnw.ether.render.attribute.builtin.TexCoordArray;
 import ch.fhnw.ether.render.gl.Texture;
 import ch.fhnw.ether.render.shader.IShader;
-import ch.fhnw.ether.render.shader.builtin.MaterialTriangles;
-import ch.fhnw.ether.render.shader.builtin.MaterialTriangles.ShaderInput;
+import ch.fhnw.ether.render.shader.builtin.MaterialShader;
+import ch.fhnw.ether.render.shader.builtin.MaterialShader.ShaderInput;
 import ch.fhnw.ether.scene.mesh.geometry.VertexGeometry;
 import ch.fhnw.ether.scene.mesh.material.TextureMaterial;
 import ch.fhnw.util.math.geometry.Primitives;
@@ -107,7 +107,7 @@ public class TextMesh extends GenericMesh /*implements IArrayAttributeProvider*/
 	}
 
 	public IRenderable getRenderable(IRenderer renderer) {
-		IShader s = new MaterialTriangles(EnumSet.of(ShaderInput.TEXTURE));
+		IShader s = new MaterialShader(EnumSet.of(ShaderInput.TEXTURE));
 		renderable = renderer.createRenderable(Pass.SCREEN_SPACE_OVERLAY, s, getMaterial(), getGeometry());
 		return renderable;
 	}

@@ -40,8 +40,8 @@ import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.IRenderer.Pass;
 import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
 import ch.fhnw.ether.render.shader.IShader;
-import ch.fhnw.ether.render.shader.builtin.MaterialTriangles;
-import ch.fhnw.ether.render.shader.builtin.MaterialTriangles.ShaderInput;
+import ch.fhnw.ether.render.shader.builtin.MaterialShader;
+import ch.fhnw.ether.render.shader.builtin.MaterialShader.ShaderInput;
 import ch.fhnw.ether.scene.mesh.GenericMesh;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
@@ -59,7 +59,7 @@ public final class FillTool extends AbstractTool {
 	public FillTool(IController controller) {
 		super(controller);
 		IMaterial m = new ColorMaterial(RGBA.YELLOW);
-		IShader s = new MaterialTriangles(EnumSet.of(ShaderInput.MATERIAL_COLOR));
+		IShader s = new MaterialShader(EnumSet.of(ShaderInput.MATERIAL_COLOR));
 		quads = controller.getRenderer().createRenderable(
 				Pass.DEVICE_SPACE_OVERLAY,
 				s, m,

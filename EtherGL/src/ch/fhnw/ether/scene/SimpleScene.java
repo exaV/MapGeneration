@@ -12,8 +12,8 @@ import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.IRenderer;
 import ch.fhnw.ether.render.IRenderer.Pass;
 import ch.fhnw.ether.render.shader.IShader;
-import ch.fhnw.ether.render.shader.builtin.MaterialTriangles;
-import ch.fhnw.ether.render.shader.builtin.MaterialTriangles.ShaderInput;
+import ch.fhnw.ether.render.shader.builtin.MaterialShader;
+import ch.fhnw.ether.render.shader.builtin.MaterialShader.ShaderInput;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.IMesh;
 
@@ -32,7 +32,7 @@ public class SimpleScene implements IScene{
 	private final List<ICamera> cameras = Collections.synchronizedList(new ArrayList<>(3));
 	private final Map<IMesh, IRenderable> render_cache = new HashMap<>();
 	private IRenderer renderer = null;
-	private final IShader shader = new MaterialTriangles(EnumSet.of(ShaderInput.MATERIAL_COLOR));
+	private final IShader shader = new MaterialShader(EnumSet.of(ShaderInput.MATERIAL_COLOR));
 
 	public SimpleScene() {
 

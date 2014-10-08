@@ -41,8 +41,8 @@ import ch.fhnw.ether.render.IRenderer;
 import ch.fhnw.ether.render.IRenderer.Pass;
 import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
 import ch.fhnw.ether.render.shader.IShader;
-import ch.fhnw.ether.render.shader.builtin.MaterialTriangles;
-import ch.fhnw.ether.render.shader.builtin.MaterialTriangles.ShaderInput;
+import ch.fhnw.ether.render.shader.builtin.MaterialShader;
+import ch.fhnw.ether.render.shader.builtin.MaterialShader.ShaderInput;
 import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.GenericMesh;
@@ -91,7 +91,7 @@ public class MappingTriangleScene implements IScene {
 			IRenderer renderer) {
 		
 		final List<IGeometry> geo = Collections.synchronizedList(objects.stream().map((x) -> {return x.getGeometry();}).collect(Collectors.toList()));
-		IShader s = new MaterialTriangles(EnumSet.of(ShaderInput.MATERIAL_COLOR));
+		IShader s = new MaterialShader(EnumSet.of(ShaderInput.MATERIAL_COLOR));
 		IRenderable ret = renderer.createRenderable(Pass.DEPTH, s, material, geo);
 		
 		renderer.addRenderables(ret);

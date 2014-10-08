@@ -41,8 +41,8 @@ import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.IRenderer;
 import ch.fhnw.ether.render.IRenderer.Pass;
 import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
-import ch.fhnw.ether.render.shader.builtin.Lines;
-import ch.fhnw.ether.render.shader.builtin.Points;
+import ch.fhnw.ether.render.shader.builtin.LineShader;
+import ch.fhnw.ether.render.shader.builtin.PointShader;
 import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.GenericMesh;
@@ -304,11 +304,11 @@ public class Scene implements IScene {
 		
 		List<IGeometry> line_geometries = agentGeometries.stream().map((x) -> { return x.getGeometry(); }).collect(Collectors.toList());
 		line_geometries.add(networkGeometryLines.getGeometry());
-		agent_renderable = renderer.createRenderable(Pass.DEPTH, new Lines(true), null, line_geometries);
+		agent_renderable = renderer.createRenderable(Pass.DEPTH, new LineShader(true), null, line_geometries);
 		
 		List<IGeometry> point_geometries = new ArrayList<>(1);
 		point_geometries.add(networkGeometryPoints.getGeometry());
-		net_renderable = renderer.createRenderable(Pass.DEPTH, new Points(false), new ColorMaterial(RGBA.YELLOW), point_geometries);
+		net_renderable = renderer.createRenderable(Pass.DEPTH, new PointShader(false), new ColorMaterial(RGBA.YELLOW), point_geometries);
 		
 		renderer.addRenderables(agent_renderable, net_renderable);
 	}
