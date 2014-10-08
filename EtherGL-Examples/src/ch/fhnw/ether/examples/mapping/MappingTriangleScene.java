@@ -31,6 +31,7 @@ package ch.fhnw.ether.examples.mapping;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,7 +40,9 @@ import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.IRenderer;
 import ch.fhnw.ether.render.IRenderer.Pass;
 import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
+import ch.fhnw.ether.render.shader.IShader;
 import ch.fhnw.ether.render.shader.builtin.MaterialTriangles;
+import ch.fhnw.ether.render.shader.builtin.MaterialTriangles.ShaderInput;
 import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.GenericMesh;
@@ -84,14 +87,14 @@ public class MappingTriangleScene implements IScene {
 	}
 
 	@Override
-	public IRenderable[] createRenderables(
+	public void setRenderer(
 			IRenderer renderer) {
 		
 		final List<IGeometry> geo = Collections.synchronizedList(objects.stream().map((x) -> {return x.getGeometry();}).collect(Collectors.toList()));
+		IShader s = new MaterialTriangles(EnumSet.of(ShaderInput.MATERIAL_COLOR));
+		IRenderable ret = renderer.createRenderable(Pass.DEPTH, s, material, geo);
 		
-		IRenderable ret = renderer.createRenderable(Pass.DEPTH, new MaterialTriangles(true, false, false, false), material, geo);
-		
-		return new IRenderable[]{ret};
+		renderer.addRenderables(ret);
 	}
 
 	@Override
@@ -102,6 +105,11 @@ public class MappingTriangleScene implements IScene {
 	@Override
 	public List<? extends ILight> getLights() {
 		return Collections.emptyList();
+	}
+
+	@Override
+	public void renderUpdate() {
+		//updates not needed
 	}
 
 

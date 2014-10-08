@@ -69,6 +69,9 @@ public class Scene implements IScene {
 	private GenericMesh networkGeometryPoints;
 	private GenericMesh networkGeometryLines;
 	private ICamera camera;
+	private IRenderer renderer;
+	private IRenderable agent_renderable;
+	private IRenderable net_renderable;
 
 	public Scene(ICamera camera) {
 		this.camera = camera;
@@ -291,20 +294,23 @@ public class Scene implements IScene {
 	}
 
 	@Override
-	public IRenderable[] createRenderables(
+	public void setRenderer(
 			IRenderer renderer) {
+		if(this.renderer == renderer) return;
+		this.renderer = renderer;
 		
+		renderer.removeRenderables(agent_renderable, net_renderable);
 		createGeometries();
 		
 		List<IGeometry> line_geometries = agentGeometries.stream().map((x) -> { return x.getGeometry(); }).collect(Collectors.toList());
 		line_geometries.add(networkGeometryLines.getGeometry());
-		IRenderable r1 = renderer.createRenderable(Pass.DEPTH, new Lines(true), null, line_geometries);
+		agent_renderable = renderer.createRenderable(Pass.DEPTH, new Lines(true), null, line_geometries);
 		
 		List<IGeometry> point_geometries = new ArrayList<>(1);
 		point_geometries.add(networkGeometryPoints.getGeometry());
-		IRenderable r2 = renderer.createRenderable(Pass.DEPTH, new Points(false), new ColorMaterial(RGBA.YELLOW), point_geometries);
+		net_renderable = renderer.createRenderable(Pass.DEPTH, new Points(false), new ColorMaterial(RGBA.YELLOW), point_geometries);
 		
-		return new IRenderable[]{r1,r2};
+		renderer.addRenderables(agent_renderable, net_renderable);
 	}
 
 	@Override
@@ -315,5 +321,11 @@ public class Scene implements IScene {
 	@Override
 	public List<? extends ILight> getLights() {
 		return Collections.emptyList();
+	}
+
+	@Override
+	public void renderUpdate() {
+		if(agent_renderable != null) agent_renderable.requestUpdate();
+		if(net_renderable != null) net_renderable.requestUpdate();
 	}
 }

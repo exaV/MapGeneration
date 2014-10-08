@@ -59,6 +59,7 @@ public class QuaternionView extends AbstractView {
 			ICamera cam = getCamera();
 			cam.setPosition(params[0], params[1], params[2]);
 			cam.setRotation(params[3], params[4], params[5]);
+			getController().repaintView(this);
 			break;
 		default:
 			super.keyPressed(e);

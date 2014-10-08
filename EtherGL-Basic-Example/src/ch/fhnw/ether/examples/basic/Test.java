@@ -57,7 +57,7 @@ public final class Test {
 		IArrayAttribute[] attribs = {new PositionArray(), new ColorArray()};
 		
 		scene = new SimpleScene();
-		VertexGeometry g = new VertexGeometry(data, attribs, PrimitiveType.LINE);
+		VertexGeometry g = new VertexGeometry(data, attribs, PrimitiveType.TRIANGLE);
 		scene.addMesh(new GenericMesh(g, new ColorMaterial(RGBA.YELLOW)));
 		
 		return scene;

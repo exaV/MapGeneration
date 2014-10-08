@@ -29,6 +29,8 @@
 
 package ch.fhnw.ether.examples.metrobuzz.tool;
 
+import java.util.EnumSet;
+
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.controller.tool.AbstractTool;
 import ch.fhnw.ether.controller.tool.PickUtil;
@@ -36,7 +38,9 @@ import ch.fhnw.ether.controller.tool.PickUtil.PickMode;
 import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.IRenderer.Pass;
 import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
+import ch.fhnw.ether.render.shader.IShader;
 import ch.fhnw.ether.render.shader.builtin.MaterialTriangles;
+import ch.fhnw.ether.render.shader.builtin.MaterialTriangles.ShaderInput;
 import ch.fhnw.ether.scene.mesh.GenericMesh;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
@@ -70,7 +74,8 @@ public final class AreaTool extends AbstractTool {
 	    mesh.setGeometry(Primitives.UNIT_CUBE_TRIANGLES);
 		mesh.getGeometry().setScale(new Vec3(0.1, 0.1, 0.001));
 		IMaterial m = new ColorMaterial(TOOL_COLOR);
-		area = controller.getRenderer().createRenderable(Pass.DEPTH, new MaterialTriangles(true,false,false,false), m, mesh.getGeometry());
+		IShader s = new MaterialTriangles(EnumSet.of(ShaderInput.MATERIAL_COLOR));
+		area = controller.getRenderer().createRenderable(Pass.DEPTH, s, m, mesh.getGeometry());
 	}
 
 	@Override

@@ -34,20 +34,10 @@ import ch.fhnw.ether.render.AbstractRenderer;
 import ch.fhnw.ether.render.IRenderable;
 
 public final class ModelRenderState {
-	protected final Scene model;
+	protected final Scene scene;
 	
-	private final IRenderable[] renderables;
-
-	public ModelRenderState(Scene model, AbstractRenderer renderer) {
-		this.model = model;
-
-		renderables = model.createRenderables(renderer);
-		renderer.addRenderables(renderables);
-		
-		updateRenderables();
-	}
-	
-	public void updateRenderables() {
-		for(IRenderable r : renderables) r.requestUpdate();
+	public ModelRenderState(Scene scene, AbstractRenderer renderer) {
+		this.scene = scene;
+		scene.setRenderer(renderer);
 	}
 }
