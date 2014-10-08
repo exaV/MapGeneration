@@ -141,7 +141,7 @@ public final class Animation {
 		view = new AbstractView(controller, 100, 100, 500, 500, IView.ViewType.INTERACTIVE_VIEW, "Test", camera);
 		
 		// Use our own scene
-		IScene scene = new CoolScene(camera);		
+		IScene scene = new CoolScene(camera);
 		
 		
 		// Setup MVC
