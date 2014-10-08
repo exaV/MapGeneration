@@ -43,47 +43,42 @@ import ch.fhnw.ether.scene.mesh.GenericMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.geometry.VertexGeometry;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
+import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.gl.AbstractView;
 import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Vec3;
 
-public final class Test {
+public final class OwnGeometry {
 	public static void main(String[] args) {
-		new Test();
+		new OwnGeometry();
 	}
 	
-	static IScene createScene() {
-		SimpleScene scene = new SimpleScene();
+	static IMesh makeColoredTriangle() {
 		float[] position = {0f,0,0, 0,0,0.5f, 0.5f,0,0.5f, };
 		float[] color = {1,0,0,1, 0,1,0,1, 0,0,1,1, };
 		float[][] data = {position, color};
 		IArrayAttribute[] attribs = {new PositionArray(), new ColorArray()};
 		
-		scene = new SimpleScene();
 		VertexGeometry g = new VertexGeometry(data, attribs, PrimitiveType.TRIANGLE);
-		scene.addMesh(new GenericMesh(g, new ColorMaterial(RGBA.YELLOW)));
 		
-		return scene;
+		return new GenericMesh(g, null);
 	}
+
 	
-	public Test() {
-		AbstractController controller = new AbstractController(){
-			@Override
-			public void keyPressed(KeyEvent e, IView view) {
-				if(e.getKeyCode() == KeyEvent.VK_0) {
-					IMesh m = getScene().getMeshes().get(0);
-					m.getGeometry().setScale(new Vec3(10, 10, 10));
-				} else {
-					super.keyPressed(e, view);
-				}
-				view.repaint();
-			}
-		};
+	public OwnGeometry() {
+		// As always, make first a controller
+		AbstractController controller = new AbstractController(){};
+		
+		// Use our own triangle geometry
+		SimpleScene scene = new SimpleScene();
+		scene.addMesh(makeColoredTriangle());
+		
+		// And now the default view
 		Camera camera = new Camera();
-		IScene scene = createScene();
 		AbstractView view = new AbstractView(controller, 100, 100, 500, 500, IView.ViewType.INTERACTIVE_VIEW, "Test", camera);
 		
+		// Setup MVC
 		controller.addView(view);
 		controller.setScene(scene);
 	}

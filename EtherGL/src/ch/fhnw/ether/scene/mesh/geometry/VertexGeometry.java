@@ -54,6 +54,19 @@ public class VertexGeometry implements IGeometry {
 
 	}
 	
+	/**
+	 * Copy constructor. Transformation will also be copied.
+	 * 
+	 * @param geo
+	 */
+	public VertexGeometry(VertexGeometry geo) {
+		this(geo.vertexData, geo.attributes, geo.type);
+		this.transform.setOrigin(geo.getOrigin());
+		this.transform.setTranslation(geo.getTranslation());
+		this.transform.setRotation(geo.getRotation());
+		this.transform.setScale(geo.getScale());
+	}
+	
 	public PrimitiveType getPrimitiveType() {
 		return type;
 	}

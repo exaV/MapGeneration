@@ -68,6 +68,11 @@ public class GenericMesh implements IMesh {
 		this.geometry = geometry;
 	}
 	
+	public GenericMesh(VertexGeometry geometry) {
+		this(geometry.getPrimitiveType());
+		this.geometry = geometry;
+	}
+	
 	public void setGeometry(VertexGeometry geometry) {
 		this.type = geometry.getPrimitiveType();
 		this.geometry = geometry;
