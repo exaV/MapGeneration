@@ -1,5 +1,7 @@
 package ch.fhnw.ether.scene.mesh.geometry;
 
+import java.util.Arrays;
+
 import ch.fhnw.ether.render.attribute.IArrayAttribute;
 import ch.fhnw.ether.render.attribute.IAttribute.ISuppliers;
 import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
@@ -17,10 +19,22 @@ public class VertexGeometry implements IGeometry {
 	private IArrayAttribute[] attributes;
 	private BoundingBox boundings;
 	private PrimitiveType type;
+	private boolean changed = false;
 
+	/**
+	 * Generates geometry from the given data with the given attribute-layout.
+	 * All data is copied. Changes on the passed arrays will not affect this geometry.
+	 * 
+	 * @param attribData Vertex Data, may contain positions, colors, normals, etc.
+	 * @param attributes Kind of attributes, must be same order as attribData
+	 * @param type
+	 */
 	public VertexGeometry(float[][] attribData, IArrayAttribute[] attributes, PrimitiveType type) {
-		this.attributes = attributes;
-		this.vertexData = attribData;
+		this.attributes = Arrays.copyOf(attributes, attributes.length);
+		this.vertexData = new float[attribData.length][];
+		for(int i=0; i<attribData.length; ++i) {
+			vertexData[i] = Arrays.copyOf(attribData[i], attribData[i].length);
+		}
 		this.type = type;
 		
 		boundings = new BoundingBox();
@@ -35,6 +49,8 @@ public class VertexGeometry implements IGeometry {
 		if(positionArray == -1) {
 			throw new IllegalArgumentException("Attributes must contain position");
 		}
+		
+		changed = true;
 
 	}
 	
@@ -77,6 +93,7 @@ public class VertexGeometry implements IGeometry {
 	@Override
 	public void setTranslation(Vec3 translation) {
 		transform.setTranslation(translation);
+		changed = true;
 	}
 
 	@Override
@@ -87,6 +104,7 @@ public class VertexGeometry implements IGeometry {
 	@Override
 	public void setRotation(Vec3 rotation) {
 		transform.setRotation(rotation);
+		changed = true;
 	}
 
 	@Override
@@ -97,6 +115,7 @@ public class VertexGeometry implements IGeometry {
 	@Override
 	public void setScale(Vec3 scale) {
 		transform.setScale(scale);
+		changed = true;
 	}
 
 	@Override
@@ -107,6 +126,12 @@ public class VertexGeometry implements IGeometry {
 	@Override
 	public void setOrigin(Vec3 origin) {
 		transform.setOrigin(origin);
+		changed = true;
+	}
+
+	@Override
+	public boolean hasChanged() {
+		return changed;
 	}
 
 }

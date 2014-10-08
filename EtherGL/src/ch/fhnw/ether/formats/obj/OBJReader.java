@@ -10,9 +10,11 @@ import ch.fhnw.ether.formats.AbstractModelReader;
 import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
 import ch.fhnw.ether.scene.mesh.GenericMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
+import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.util.FloatList;
 import ch.fhnw.util.IntList;
 import ch.fhnw.util.color.RGB;
+import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.GeometryUtil;
 
@@ -62,10 +64,8 @@ public class OBJReader extends AbstractModelReader {
 			mesh.setName(path + '/' + g.getName());
 			Material mat = g.getMaterial();
 			RGB diffuse = mat.getKd();
-			//mesh.setLines(edgVertices.toArray(), RGBA.WHITE);
 			float[] triv = triVertices.toArray();
-			//mesh.setTriangles(triv, triNormals.size() == triv.length ? triNormals.toArray() : GeometryUtil.calculateNormals(triv), diffuse);
-			
+			mesh.setMaterial(new ColorMaterial(new RGBA(diffuse.x, diffuse.y, diffuse.z, 1)));
 			mesh.setGeometry(triv, GeometryUtil.calculateNormals(triv), diffuse.generateColorArray(triv.length/3));
 			meshes.add(mesh);
 		}

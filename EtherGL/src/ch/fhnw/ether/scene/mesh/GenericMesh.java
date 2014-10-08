@@ -51,25 +51,27 @@ public class GenericMesh implements IMesh {
 	private IMaterial material = null;
 	private IGeometry geometry = null;
 	private PrimitiveType type;
+	private boolean changed = false;
 
 	public GenericMesh(PrimitiveType type) {
 		this.type = type;
+		changed = true;
 	}
 	
 	public GenericMesh(PrimitiveType type, IMaterial material) {
-		this.type = type;
+		this(type);
 		this.material = material;
 	}
 	
 	public GenericMesh(VertexGeometry geometry, IMaterial material) {
-		this.type = geometry.getPrimitiveType();
-		this.material = material;
+		this(geometry.getPrimitiveType(), material);
 		this.geometry = geometry;
 	}
 	
 	public void setGeometry(VertexGeometry geometry) {
 		this.type = geometry.getPrimitiveType();
 		this.geometry = geometry;
+		changed = true;
 	}
 
 	public void setGeometry(float[] vertices) {
@@ -81,6 +83,7 @@ public class GenericMesh implements IMesh {
 		float[][] data = new float[][]{vertices, colors};
 
 		geometry = new VertexGeometry(data, attributes, type);
+		changed = true;
 	}
 
 	public void setGeometry(float[] vertices, float[] normals, float[] colors, float[] texCoords) {
@@ -92,6 +95,7 @@ public class GenericMesh implements IMesh {
 		float[][] data = new float[][]{vertices, normals, colors, texCoords};
 
 		geometry = new VertexGeometry(data, attributes, type);
+		changed = true;
 	}
 	
 	public void setGeometry(float[] vertices, float[] normals, float[] colors) {
@@ -102,10 +106,12 @@ public class GenericMesh implements IMesh {
 		float[][] data = new float[][]{vertices, normals, colors};
 
 		geometry = new VertexGeometry(data, attributes, type);
+		changed = true;
 	}
 	
 	public void setMaterial(IMaterial material) {
 		this.material = material;
+		changed = true;
 	}
 	
 	public String getName() {
@@ -114,6 +120,7 @@ public class GenericMesh implements IMesh {
 	
 	public void setName(String name) {
 		this.name = name;
+		changed = true;
 	}
 
 	@Override
@@ -145,6 +152,12 @@ public class GenericMesh implements IMesh {
 	@Override
 	public void setPosition(float[] position) {
 		geometry.setOrigin(new Vec3(position[0], position[1], position[2]));
+		changed = true;
+	}
+
+	@Override
+	public boolean hasChanged() {
+		return changed || geometry.hasChanged();
 	}
 
 }

@@ -7,4 +7,7 @@ import ch.fhnw.util.math.geometry.BoundingBox;
 public interface IGeometry extends IArrayAttributeProvider, ITransformable{
 		
 	BoundingBox getBoundings();
+	
+	boolean hasChanged();
+	
 }

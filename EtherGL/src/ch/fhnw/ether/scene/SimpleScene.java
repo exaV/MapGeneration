@@ -2,8 +2,10 @@ package ch.fhnw.ether.scene;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 import ch.fhnw.ether.camera.ICamera;
 import ch.fhnw.ether.render.IRenderable;
@@ -11,15 +13,26 @@ import ch.fhnw.ether.render.IRenderer;
 import ch.fhnw.ether.render.IRenderer.Pass;
 import ch.fhnw.ether.render.shader.IShader;
 import ch.fhnw.ether.render.shader.builtin.MaterialTriangles;
+import ch.fhnw.ether.render.shader.builtin.MaterialTriangles.ShaderInput;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.IMesh;
 
-//only for testing purposes
+/**
+ * @author Samuel Stachelski
+ * 
+ * A very simple implementation of IScene.</br>
+ * - Only triangle geometry will work</br>
+ * - One renderable per mesh
+ *
+ */
 public class SimpleScene implements IScene{
 	
 	private final List<IMesh> meshes = Collections.synchronizedList(new ArrayList<>(10));
 	private final List<ILight> lights = Collections.synchronizedList(new ArrayList<>(3));
 	private final List<ICamera> cameras = Collections.synchronizedList(new ArrayList<>(3));
+	private final Map<IMesh, IRenderable> render_cache = new HashMap<>();
+	private IRenderer renderer = null;
+	private final IShader shader = new MaterialTriangles(EnumSet.of(ShaderInput.MATERIAL_COLOR));
 
 	public SimpleScene() {
 
@@ -31,10 +44,19 @@ public class SimpleScene implements IScene{
 	}
 	
 	public boolean addMesh(IMesh mesh) {
+		if(renderer != null) {
+			IRenderable add = renderer.createRenderable(Pass.DEPTH, shader, mesh.getMaterial(), mesh.getGeometry());
+			render_cache.put(mesh, add);
+			renderer.addRenderables(add);
+		}
+		
 		return meshes.add(mesh);
 	}
 
 	public boolean removeMesh(IMesh mesh) {
+		IRenderable remove = render_cache.get(mesh);
+		if(renderer != null) renderer.removeRenderables(remove);
+		render_cache.remove(mesh);
 		return meshes.remove(mesh);
 	}
 	
@@ -70,14 +92,29 @@ public class SimpleScene implements IScene{
 	}
 	
 	@Override
-	public IRenderable[] createRenderables(IRenderer renderer) {
-
-		List<IRenderable> renderables;
-		IShader shader = new MaterialTriangles(true, false, false, false);
-		renderables = meshes.stream().map((x) -> renderer.createRenderable(Pass.DEPTH, shader, x.getMaterial(), x.getGeometry())).collect(Collectors.toList());
+	public void setRenderer(IRenderer renderer) {
+		if(this.renderer == renderer) return;
+		this.renderer = renderer;
+		render_cache.clear();
 		
-		return renderables.toArray(new IRenderable[0]);
+		IRenderable[] renderables = new IRenderable[meshes.size()];
+		for(int i=0; i<meshes.size(); ++i) {
+			IMesh m = meshes.get(i);
+			renderables[i] = renderer.createRenderable(Pass.DEPTH, shader, m.getMaterial(), m.getGeometry());
+			render_cache.put(m, renderables[i]);
+		}
+		
+		renderer.addRenderables(renderables);
 	}
 
+	@Override
+	public void renderUpdate() {
+		for(IMesh m : meshes) {
+			if(m.hasChanged()) {
+				render_cache.get(m).requestUpdate();
+			}
+		}
+	}
 
+	
 }

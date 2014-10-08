@@ -30,6 +30,7 @@
 package ch.fhnw.ether.render.shader.builtin;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 import ch.fhnw.ether.render.attribute.IArrayAttribute;
@@ -47,33 +48,42 @@ import ch.fhnw.ether.render.attribute.builtin.ViewMatrixUniform;
 import ch.fhnw.ether.render.shader.base.AbstractShader;
 
 public class MaterialTriangles extends AbstractShader {
+	
+	public static enum ShaderInput {
+		MATERIAL_COLOR,
+		VERTEX_COLOR,
+		TEXTURE,
+		NORMALS,
+	}
+	
 	private List<IUniformAttribute> uniformAttributes = new ArrayList<>(5);
 	private List<IArrayAttribute> arrayAttributes = new ArrayList<>(5);
-
-	public MaterialTriangles(boolean useMaterialColor, boolean useVertexColors, boolean useTexture, boolean normals) {
+	
+	public MaterialTriangles(EnumSet<ShaderInput> input) {
 		super("unshaded_vct", PrimitiveType.TRIANGLE);
-		if(useMaterialColor) {
+		if(input.contains(ShaderInput.MATERIAL_COLOR)) {
 			uniformAttributes.add(new ColorMaterialUniform());
 		} else {
 			uniformAttributes.add(new ColorMaterialUniform(() -> new float[]{1,1,1,1}));
 		}
-		if(useVertexColors) {
+		if(input.contains(ShaderInput.VERTEX_COLOR)) {
 			arrayAttributes.add(new ColorArray());
 		}
-		if(useTexture) {
+		if(input.contains(ShaderInput.TEXTURE)) {
 			uniformAttributes.add(new TextureUniform());
 			arrayAttributes.add(new TexCoordArray());
 		}
-		if(normals) {
+		if(input.contains(ShaderInput.NORMALS)) {
 			arrayAttributes.add(new NormalArray());
 		}
 		
+		boolean useVertexColors = input.contains(ShaderInput.VERTEX_COLOR);
+		boolean useTexture = input.contains(ShaderInput.TEXTURE);
 		arrayAttributes.add(new PositionArray());
 		uniformAttributes.add(new ProjMatrixUniform());
 		uniformAttributes.add(new ViewMatrixUniform());
 		uniformAttributes.add(new BooleanUniformAttribute("shader.vertex_colors_flag", "useVertexColors", () -> useVertexColors));
 		uniformAttributes.add(new BooleanUniformAttribute("shader.texture_flag", "useTexture", () -> useTexture));
-		
 	}
 
 	@Override

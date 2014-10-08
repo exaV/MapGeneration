@@ -42,7 +42,6 @@ import ch.fhnw.ether.controller.tool.ITool;
 import ch.fhnw.ether.controller.tool.NavigationTool;
 import ch.fhnw.ether.controller.tool.PickTool;
 import ch.fhnw.ether.render.IRenderer;
-import ch.fhnw.ether.render.attribute.IUniformAttributeProvider;
 import ch.fhnw.ether.render.forward.ForwardRenderer;
 import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.ui.UI;
@@ -95,11 +94,7 @@ public abstract class AbstractController implements IController {
     @Override
     public final void setScene(IScene scene) {
         this.scene = scene;
-        if(renderer instanceof IUniformAttributeProvider) {
-        	renderer.addRenderables(scene.createRenderables(renderer));
-        } else {
-        	renderer.addRenderables(scene.createRenderables(null));
-        }
+        scene.setRenderer(renderer);
     }
 
     @Override
@@ -300,6 +295,7 @@ public abstract class AbstractController implements IController {
     
     @Override
 	public void requestRendering(GL3 gl, IView view) {
+    	if(scene != null) scene.renderUpdate();
 		renderer.render(gl, view.getCamera(), view.getViewport(), view.getViewType() == IView.ViewType.INTERACTIVE_VIEW);
 	}
 

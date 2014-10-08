@@ -36,6 +36,7 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.nio.IntBuffer;
+import java.util.EnumSet;
 
 import javax.media.opengl.GL;
 
@@ -49,6 +50,7 @@ import ch.fhnw.ether.render.attribute.builtin.TexCoordArray;
 import ch.fhnw.ether.render.gl.Texture;
 import ch.fhnw.ether.render.shader.IShader;
 import ch.fhnw.ether.render.shader.builtin.MaterialTriangles;
+import ch.fhnw.ether.render.shader.builtin.MaterialTriangles.ShaderInput;
 import ch.fhnw.ether.scene.mesh.geometry.VertexGeometry;
 import ch.fhnw.ether.scene.mesh.material.TextureMaterial;
 import ch.fhnw.util.math.geometry.Primitives;
@@ -105,7 +107,7 @@ public class TextMesh extends GenericMesh /*implements IArrayAttributeProvider*/
 	}
 
 	public IRenderable getRenderable(IRenderer renderer) {
-		IShader s = new MaterialTriangles(false, false, true, false);
+		IShader s = new MaterialTriangles(EnumSet.of(ShaderInput.TEXTURE));
 		renderable = renderer.createRenderable(Pass.SCREEN_SPACE_OVERLAY, s, getMaterial(), getGeometry());
 		return renderable;
 	}
