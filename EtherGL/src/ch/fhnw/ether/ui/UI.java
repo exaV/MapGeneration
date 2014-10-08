@@ -39,12 +39,13 @@ import ch.fhnw.ether.render.IRenderer;
 import ch.fhnw.ether.scene.mesh.TextMesh;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.util.UpdateRequest;
+
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.MouseEvent;
 
 public final class UI {
 	private final IController controller;
-	private final TextMesh text = new TextMesh(0, 0, 512, 512);
+	private final TextMesh text = new TextMesh(0, 0, 512, 512, true);
 	private final UpdateRequest updater = new UpdateRequest();
 
 	private final List<IWidget> widgets = new ArrayList<>();

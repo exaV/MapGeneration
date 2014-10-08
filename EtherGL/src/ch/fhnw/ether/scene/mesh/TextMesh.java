@@ -55,7 +55,7 @@ import ch.fhnw.ether.scene.mesh.geometry.VertexGeometry;
 import ch.fhnw.ether.scene.mesh.material.TextureMaterial;
 import ch.fhnw.util.math.geometry.Primitives;
 
-public class TextMesh extends GenericMesh /*implements IArrayAttributeProvider*/ {
+public class TextMesh extends GenericMesh {
 	public static final Font FONT = new Font("SansSerif", Font.BOLD, 12);
 
 	private static final Color CLEAR_COLOR = new Color(0, 0, 0, 0);
@@ -67,9 +67,10 @@ public class TextMesh extends GenericMesh /*implements IArrayAttributeProvider*/
 	private int y;
 	private int w;
 	private int h;
-	private IRenderable renderable;
+	private IRenderable renderable = null;
+	private final EnumSet<IRenderer.Flag> interactiveOnlyFlag;
 
-	public TextMesh(int x, int y, int w, int h) {
+	public TextMesh(int x, int y, int w, int h, boolean interactiveOnly) {
 		super(PrimitiveType.TRIANGLE);
 		image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
 		graphics = image.createGraphics();
@@ -84,6 +85,7 @@ public class TextMesh extends GenericMesh /*implements IArrayAttributeProvider*/
 		IArrayAttribute[] attribs = new IArrayAttribute[]{new PositionArray(), new TexCoordArray()};
 		setGeometry(new VertexGeometry(new float[][]{position, tex_coords}, attribs, PrimitiveType.TRIANGLE));
 		setMaterial(new TextureMaterial(texture));
+		interactiveOnlyFlag = interactiveOnly ? EnumSet.of(IRenderer.Flag.INTERACTIVE_VIEW_ONLY) : EnumSet.noneOf(IRenderer.Flag.class);
 	}
 
 	public final Texture getTexture() {
@@ -107,8 +109,10 @@ public class TextMesh extends GenericMesh /*implements IArrayAttributeProvider*/
 	}
 
 	public IRenderable getRenderable(IRenderer renderer) {
-		IShader s = new MaterialShader(EnumSet.of(ShaderInput.TEXTURE));
-		renderable = renderer.createRenderable(Pass.SCREEN_SPACE_OVERLAY, s, getMaterial(), getGeometry());
+		if(renderable == null) {
+			IShader s = new MaterialShader(EnumSet.of(ShaderInput.TEXTURE));
+			renderable = renderer.createRenderable(Pass.SCREEN_SPACE_OVERLAY, interactiveOnlyFlag, s, getMaterial(), getGeometry());
+		}
 		return renderable;
 	}
 

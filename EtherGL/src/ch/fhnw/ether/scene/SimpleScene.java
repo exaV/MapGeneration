@@ -23,24 +23,23 @@ import ch.fhnw.ether.scene.mesh.IMesh;
  * A very simple implementation of IScene.</br>
  * - Only triangle geometry will work</br>
  * - One renderable per mesh
+ * - Only material colors work
  *
  */
-public class SimpleScene implements IScene{
+public class SimpleScene extends AbstractScene{
 	
-	private final List<IMesh> meshes = Collections.synchronizedList(new ArrayList<>(10));
-	private final List<ILight> lights = Collections.synchronizedList(new ArrayList<>(3));
-	private final List<ICamera> cameras = Collections.synchronizedList(new ArrayList<>(3));
+	private final List<ILight> lights = new ArrayList<>(3);
 	private final Map<IMesh, IRenderable> render_cache = new HashMap<>();
 	private IRenderer renderer = null;
 	private final IShader shader = new MaterialShader(EnumSet.of(ShaderInput.MATERIAL_COLOR));
-
-	public SimpleScene() {
-
+	
+	public SimpleScene(ICamera camera) {
+		super(camera);
 	}
 	
 	@Override
-	public List<IMesh> getObjects() {
-		return Collections.unmodifiableList(meshes);
+	public List<IMesh> getMeshes() {
+		return Collections.unmodifiableList(super.getMeshes());
 	}
 	
 	public boolean addMesh(IMesh mesh) {
@@ -50,19 +49,14 @@ public class SimpleScene implements IScene{
 			renderer.addRenderables(add);
 		}
 		
-		return meshes.add(mesh);
+		return super.getMeshes().add(mesh);
 	}
-
+	
 	public boolean removeMesh(IMesh mesh) {
 		IRenderable remove = render_cache.get(mesh);
 		if(renderer != null) renderer.removeRenderables(remove);
 		render_cache.remove(mesh);
-		return meshes.remove(mesh);
-	}
-	
-	@Override
-	public List<IMesh> getMeshes() {
-		return Collections.unmodifiableList(meshes);
+		return super.getMeshes().remove(mesh);
 	}
 
 	public boolean addLight(ILight light) {
@@ -78,24 +72,13 @@ public class SimpleScene implements IScene{
 		return Collections.unmodifiableList(lights);
 	}
 	
-	public boolean addCamera(ICamera camera) {
-		return cameras.add(camera);
-	}
-	
-	public boolean removeCamera(ICamera camera) {
-		return cameras.remove(camera);
-	}
-
-	@Override
-	public List<? extends ICamera> getCameras() {
-		return Collections.unmodifiableList(cameras);
-	}
-	
 	@Override
 	public void setRenderer(IRenderer renderer) {
 		if(this.renderer == renderer) return;
 		this.renderer = renderer;
 		render_cache.clear();
+		
+		List<IMesh> meshes = super.getMeshes();
 		
 		IRenderable[] renderables = new IRenderable[meshes.size()];
 		for(int i=0; i<meshes.size(); ++i) {
@@ -109,7 +92,7 @@ public class SimpleScene implements IScene{
 
 	@Override
 	public void renderUpdate() {
-		for(IMesh m : meshes) {
+		for(IMesh m : super.getMeshes()) {
 			if(m.hasChanged()) {
 				render_cache.get(m).requestUpdate();
 			}

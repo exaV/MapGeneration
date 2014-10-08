@@ -12,11 +12,11 @@ public interface IScene {
 
 	List<? extends I3DObject> getObjects();
 	
-	List<? extends IMesh> getMeshes();
+	List< IMesh> getMeshes();
 	
-	List<? extends ICamera> getCameras();
+	List<ICamera> getCameras();
 	
-	List<? extends ILight> getLights();
+	List<ILight> getLights();
 
 	void setRenderer(IRenderer renderer);
 	

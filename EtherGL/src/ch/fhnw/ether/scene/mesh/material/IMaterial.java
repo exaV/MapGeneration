@@ -8,7 +8,7 @@ public interface IMaterial extends IUniformAttributeProvider {
 	/**
 	 * Some empty material, does just provide zero attributes
 	 */
-	public final static IMaterial EmptyMaterial = new IMaterial() {
+	public static final IMaterial EmptyMaterial = new IMaterial() {
 		@Override
 		public void getAttributeSuppliers(ISuppliers dst) {}
 	};
