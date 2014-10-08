@@ -43,9 +43,10 @@ public final class MostBasic {
 
 	
 	public MostBasic() {
+		Camera camera = new Camera();
 
 		//Let's setup some basic scene with one predefined cube
-		SimpleScene scene = new SimpleScene();		
+		SimpleScene scene = new SimpleScene(camera);	
 		scene.addMesh(MeshLibrary.getCube());
 		
 		
@@ -54,8 +55,7 @@ public final class MostBasic {
 		};
 		
 		
-		// Create a camera and a view (aka rendering window). The view has to know what camera it uses.
-		Camera camera = new Camera();
+		// Create a view (aka rendering window). The view has to know what camera it uses.
 		AbstractView view = new AbstractView(controller, 100, 100, 500, 500, IView.ViewType.INTERACTIVE_VIEW, "Test", camera);
 		
 		

@@ -29,34 +29,59 @@
 
 package ch.fhnw.ether.examples.basic;
 
-import com.jogamp.newt.event.KeyEvent;
+import java.util.EnumSet;
 
 import ch.fhnw.ether.camera.Camera;
+import ch.fhnw.ether.camera.ICamera;
 import ch.fhnw.ether.controller.AbstractController;
+import ch.fhnw.ether.render.IRenderable;
+import ch.fhnw.ether.render.IRenderer;
+import ch.fhnw.ether.render.IRenderer.Pass;
 import ch.fhnw.ether.render.attribute.IArrayAttribute;
 import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
 import ch.fhnw.ether.render.attribute.builtin.ColorArray;
 import ch.fhnw.ether.render.attribute.builtin.PositionArray;
+import ch.fhnw.ether.render.shader.IShader;
+import ch.fhnw.ether.render.shader.builtin.MaterialShader;
+import ch.fhnw.ether.render.shader.builtin.MaterialShader.ShaderInput;
+import ch.fhnw.ether.scene.AbstractScene;
 import ch.fhnw.ether.scene.IScene;
-import ch.fhnw.ether.scene.SimpleScene;
 import ch.fhnw.ether.scene.mesh.GenericMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.geometry.VertexGeometry;
-import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
-import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.gl.AbstractView;
-import ch.fhnw.util.color.RGBA;
-import ch.fhnw.util.math.Vec3;
 
 public final class OwnGeometry {
+	
+	//This is our own scene. Has its own Shader and own mesh.
+	private static class CoolScene extends AbstractScene {
+		
+		private IShader s = new MaterialShader(EnumSet.of(ShaderInput.VERTEX_COLOR));
+		private IMesh mesh = makeColoredTriangle();
+
+		public CoolScene(ICamera camera) {
+			super(camera);
+		}
+
+		@Override
+		public void setRenderer(IRenderer renderer) {
+			IRenderable r = renderer.createRenderable(Pass.DEPTH, s, mesh.getMaterial(), mesh.getGeometry());
+			renderer.addRenderables(r);
+		}
+		
+	}
+	
+	// does anybody know why we need  a "main"-procedure even though we use OOP?
 	public static void main(String[] args) {
 		new OwnGeometry();
 	}
 	
+	
+	// Let's generate a colored triangle
 	static IMesh makeColoredTriangle() {
-		float[] position = {0f,0,0, 0,0,0.5f, 0.5f,0,0.5f, };
-		float[] color = {1,0,0,1, 0,1,0,1, 0,0,1,1, };
+		float[] position = {0f,0,0, 0,0,0.5f, 0.5f,0,0.5f};
+		float[] color = {1,0,0,1, 0,1,0,1, 0,0,1,1};
 		float[][] data = {position, color};
 		IArrayAttribute[] attribs = {new PositionArray(), new ColorArray()};
 		
@@ -64,19 +89,23 @@ public final class OwnGeometry {
 		
 		return new GenericMesh(g, null);
 	}
-
 	
+	
+	//Setup the whole thing
 	public OwnGeometry() {
+		
 		// As always, make first a controller
 		AbstractController controller = new AbstractController(){};
 		
-		// Use our own triangle geometry
-		SimpleScene scene = new SimpleScene();
-		scene.addMesh(makeColoredTriangle());
 		
 		// And now the default view
-		Camera camera = new Camera();
+		ICamera camera = new Camera();
 		AbstractView view = new AbstractView(controller, 100, 100, 500, 500, IView.ViewType.INTERACTIVE_VIEW, "Test", camera);
+		
+		
+		// Use our own scene
+		IScene scene = new CoolScene(camera);		
+		
 		
 		// Setup MVC
 		controller.addView(view);
