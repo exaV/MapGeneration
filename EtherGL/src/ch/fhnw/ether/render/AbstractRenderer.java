@@ -45,18 +45,8 @@ public abstract class AbstractRenderer implements IRenderer, IUniformAttributePr
 	private final Renderables renderables = new Renderables();
 
 	@Override
-	public IRenderable createRenderable(Pass pass, IShader shader, IUniformAttributeProvider uniforms, IArrayAttributeProvider... providers) {
-		return createRenderable(pass, EnumSet.noneOf(Flag.class), shader, uniforms, Arrays.asList(providers));
-	}
-
-	@Override
 	public IRenderable createRenderable(Pass pass, IShader shader, IUniformAttributeProvider uniforms, List<? extends IArrayAttributeProvider> providers) {
 		return createRenderable(pass, EnumSet.noneOf(Flag.class), shader, uniforms, providers);
-	}
-
-	@Override
-	public IRenderable createRenderable(Pass pass, EnumSet<Flag> flags, IShader shader, IUniformAttributeProvider uniforms, IArrayAttributeProvider... providers) {
-		return createRenderable(pass, flags, shader, uniforms, Arrays.asList(providers));
 	}
 
 	@Override
@@ -71,35 +61,17 @@ public abstract class AbstractRenderer implements IRenderer, IUniformAttributePr
 		return new Renderable(pass, flags, shader, composed, providers);
 	}
 
-	@Override
-	public void addRenderables(IRenderable renderable) {
-		this.renderables.add(renderable);
-	}
 
 	@Override
 	public void addRenderables(IRenderable... renderables) {
-		addRenderables(Arrays.asList(renderables));
-	}
-	
-	@Override
-	public void addRenderables(List<IRenderable> renderables) {
-		this.renderables.add(renderables);
-	}
-
-	@Override
-	public void removeRenderables(IRenderable renderable) {
-		this.renderables.remove(renderable);
+		this.renderables.add(Arrays.asList(renderables));
 	}
 
 	@Override
 	public void removeRenderables(IRenderable... renderables) {
-		removeRenderables(Arrays.asList(renderables));
+		this.renderables.remove(Arrays.asList(renderables));
 	}
-	
-	@Override
-	public void removeRenderables(List<IRenderable> renderables) {
-		this.renderables.remove(renderables);
-	}
+
 
 	protected void update(GL3 gl) {
 		this.renderables.update(gl);

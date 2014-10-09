@@ -36,6 +36,7 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.nio.IntBuffer;
+import java.util.Collections;
 import java.util.EnumSet;
 
 import javax.media.opengl.GL;
@@ -111,7 +112,7 @@ public class TextMesh extends GenericMesh {
 	public IRenderable getRenderable(IRenderer renderer) {
 		if(renderable == null) {
 			IShader s = new MaterialShader(EnumSet.of(ShaderInput.TEXTURE));
-			renderable = renderer.createRenderable(Pass.SCREEN_SPACE_OVERLAY, interactiveOnlyFlag, s, getMaterial(), getGeometry());
+			renderable = renderer.createRenderable(Pass.SCREEN_SPACE_OVERLAY, interactiveOnlyFlag, s, getMaterial(), Collections.singletonList(getGeometry()));
 		}
 		return renderable;
 	}

@@ -68,25 +68,13 @@ public interface IRenderer {
 	public final static EnumSet<Flag> NO_FLAGS = EnumSet.noneOf(Flag.class);
 
 	void render(GL3 gl, ICamera camera, Viewport viewport, boolean interactive);
-	
-	IRenderable createRenderable(Pass pass, IShader shader, IUniformAttributeProvider uniforms, IArrayAttributeProvider... providers);
-
-	IRenderable createRenderable(Pass pass, EnumSet<Flag> flags, IShader shader, IUniformAttributeProvider uniforms, IArrayAttributeProvider... providers);
 
 	IRenderable createRenderable(Pass pass, IShader shader,IUniformAttributeProvider uniforms, List<? extends IArrayAttributeProvider> providers);
 
 	IRenderable createRenderable(Pass pass, EnumSet<Flag> flags, IShader shader, IUniformAttributeProvider uniforms, List<? extends IArrayAttributeProvider> providers);
 
-	void addRenderables(IRenderable renderable);
-
 	void addRenderables(IRenderable... renderables);
 
-	void addRenderables(List<IRenderable> renderables);
-
-	void removeRenderables(IRenderable renderable);
-
 	void removeRenderables(IRenderable... renderables);
-
-	void removeRenderables(List<IRenderable> renderables);
 
 }

@@ -73,7 +73,7 @@ public class SimpleScene extends AbstractScene{
 	
 	public boolean addMesh(IMesh mesh) {
 		if(renderer != null) {
-			IRenderable add = renderer.createRenderable(Pass.DEPTH, shader, mesh.getMaterial(), mesh.getGeometry());
+			IRenderable add = renderer.createRenderable(Pass.DEPTH, shader, mesh.getMaterial(), Collections.singletonList(mesh.getGeometry()));
 			render_cache.put(mesh, add);
 			renderer.addRenderables(add);
 		}
@@ -112,7 +112,7 @@ public class SimpleScene extends AbstractScene{
 		IRenderable[] renderables = new IRenderable[meshes.size()];
 		for(int i=0; i<meshes.size(); ++i) {
 			IMesh m = meshes.get(i);
-			renderables[i] = renderer.createRenderable(Pass.DEPTH, shader, m.getMaterial(), m.getGeometry());
+			renderables[i] = renderer.createRenderable(Pass.DEPTH, shader, m.getMaterial(), Collections.singletonList(m.getGeometry()));
 			render_cache.put(m, renderables[i]);
 		}
 		
