@@ -90,8 +90,8 @@ public final class CalibrationTool extends AbstractTool {
 		IRenderer renderer = controller.getRenderer();
 		IMesh mesh = model.getCalibrationMesh();
 
-		renderables.add(renderer.createRenderable(Pass.OVERLAY, new LineShader(false), mesh.getMaterial(), mesh.getGeometry()));
-		renderables.add(renderer.createRenderable(Pass.DEVICE_SPACE_OVERLAY, new LineShader(false), mesh.getMaterial(), calibratedGeometry.getGeometry()));
+		renderables.add(renderer.createRenderable(Pass.OVERLAY, new LineShader(false), mesh.getMaterial(), Collections.singletonList(mesh.getGeometry())));
+		renderables.add(renderer.createRenderable(Pass.DEVICE_SPACE_OVERLAY, new LineShader(false), mesh.getMaterial(), Collections.singletonList(calibratedGeometry.getGeometry())));
 //		TODO: add also points?
 //		renderables.add(renderer.createRenderable(Pass.OVERLAY, new Points(MODEL_COLOR, POINT_SIZE, 0), model.getCalibrationMesh().getGeometry()));
 //		renderables.add(renderer.createRenderable(Pass.DEVICE_SPACE_OVERsLAY, new Points(null, POINT_SIZE, 0), calibratedGeometry));
@@ -99,12 +99,12 @@ public final class CalibrationTool extends AbstractTool {
 
 	@Override
 	public void activate() {
-		getController().getRenderer().addRenderables(renderables);
+		getController().getRenderer().addRenderables(renderables.toArray(new IRenderable[0]));
 	}
 
 	@Override
 	public void deactivate() {
-		getController().getRenderer().removeRenderables(renderables);
+		getController().getRenderer().removeRenderables(renderables.toArray(new IRenderable[0]));
 		getController().enableViews(null);
 	}
 

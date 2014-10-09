@@ -29,6 +29,7 @@
 
 package ch.fhnw.ether.examples.basic;
 
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -104,7 +105,7 @@ public final class Animation {
 
 		@Override
 		public void setRenderer(IRenderer renderer) {
-			r = renderer.createRenderable(Pass.DEPTH, s, mesh.getMaterial(), mesh.getGeometry());
+			r = renderer.createRenderable(Pass.DEPTH, s, mesh.getMaterial(), Collections.singletonList(mesh.getGeometry()));
 			renderer.addRenderables(r);
 		}
 
@@ -142,7 +143,6 @@ public final class Animation {
 		
 		// Use our own scene
 		IScene scene = new CoolScene(camera);
-		
 		
 		// Setup MVC
 		controller.addView(view);

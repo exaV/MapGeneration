@@ -29,6 +29,7 @@
 
 package ch.fhnw.ether.examples.basic;
 
+import java.util.Collections;
 import java.util.EnumSet;
 
 import ch.fhnw.ether.camera.Camera;
@@ -66,7 +67,7 @@ public final class OwnGeometry {
 
 		@Override
 		public void setRenderer(IRenderer renderer) {
-			IRenderable r = renderer.createRenderable(Pass.DEPTH, s, mesh.getMaterial(), mesh.getGeometry());
+			IRenderable r = renderer.createRenderable(Pass.DEPTH, s, mesh.getMaterial(), Collections.singletonList(mesh.getGeometry()));
 			renderer.addRenderables(r);
 		}
 		

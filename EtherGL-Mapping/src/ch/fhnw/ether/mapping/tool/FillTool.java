@@ -63,7 +63,7 @@ public final class FillTool extends AbstractTool {
 		quads = controller.getRenderer().createRenderable(
 				Pass.DEVICE_SPACE_OVERLAY,
 				s, m,
-				makeQuads().getGeometry());
+				Collections.singletonList(makeQuads().getGeometry()));
 	}
 
 	@Override

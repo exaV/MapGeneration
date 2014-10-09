@@ -29,6 +29,7 @@
 
 package ch.fhnw.ether.examples.metrobuzz.tool;
 
+import java.util.Collections;
 import java.util.EnumSet;
 
 import ch.fhnw.ether.controller.IController;
@@ -75,7 +76,7 @@ public final class AreaTool extends AbstractTool {
 		mesh.getGeometry().setScale(new Vec3(0.1, 0.1, 0.001));
 		IMaterial m = new ColorMaterial(TOOL_COLOR);
 		IShader s = new MaterialShader(EnumSet.of(ShaderInput.MATERIAL_COLOR));
-		area = controller.getRenderer().createRenderable(Pass.DEPTH, s, m, mesh.getGeometry());
+		area = controller.getRenderer().createRenderable(Pass.DEPTH, s, m, Collections.singletonList(mesh.getGeometry()));
 	}
 
 	@Override
