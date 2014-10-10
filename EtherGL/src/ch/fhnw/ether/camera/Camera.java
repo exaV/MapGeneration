@@ -172,8 +172,8 @@ public class Camera implements ICamera {
 	}
 
 	@Override
-	public void setPosition(float[] position) {
-		setPosition(position[0], position[1], position[2]);
+	public void setPosition(Vec3 position) {
+		setPosition(position.x, position.y, position.z);
 	}
 
 	@Override
@@ -184,9 +184,9 @@ public class Camera implements ICamera {
 	}
 
 	@Override
-	public float[] getPosition() {
-		return new float[] {cameraMatrix.m[Mat4.M03],
-				cameraMatrix.m[Mat4.M13], cameraMatrix.m[Mat4.M23]};
+	public Vec3 getPosition() {
+		return new Vec3(cameraMatrix.m[Mat4.M03],
+				cameraMatrix.m[Mat4.M13], cameraMatrix.m[Mat4.M23]);
 	}
 
 	@Override
@@ -301,8 +301,7 @@ public class Camera implements ICamera {
 
 	@Override
 	public Vec3 ORBITgetPivotPosition() {
-		float[] p = getPosition();
-		Vec3 cameraPosition = new Vec3(p[0], p[1], p[2]);
+		Vec3 cameraPosition = getPosition();
 		Vec3 pivot_position = cameraPosition.add(getLookDirection().scale(
 				orbitRadius));
 		return pivot_position;

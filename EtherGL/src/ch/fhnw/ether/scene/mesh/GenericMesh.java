@@ -149,14 +149,13 @@ public class GenericMesh implements IMesh {
 	}
 
 	@Override
-	public float[] getPosition() {
-		Vec3 o = geometry.getOrigin();
-		return new float[]{o.x, o.y, o.z};
+	public Vec3 getPosition() {
+		return geometry.getTranslation();
 	}
 
 	@Override
-	public void setPosition(float[] position) {
-		geometry.setOrigin(new Vec3(position[0], position[1], position[2]));
+	public void setPosition(Vec3 position) {
+		geometry.setTranslation(position);
 		changed = true;
 	}
 

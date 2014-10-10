@@ -162,6 +162,6 @@ public class TextMesh extends GenericMesh {
 
 	private void requestUpdate() {
 		texture.setData(w, h, IntBuffer.wrap(((DataBufferInt) image.getRaster().getDataBuffer()).getData()), GL.GL_BGRA);
-		renderable.requestUpdate();
+		if(renderable != null) renderable.requestUpdate();
 	}
 }

@@ -29,14 +29,16 @@
 
 package ch.fhnw.util.math.geometry;
 
+import ch.fhnw.util.math.Vec3;
+
 
 
 public interface I3DObject {
 
 	BoundingBox getBoundings();	
 	
-	float[] getPosition();
+	Vec3 getPosition();
 	
-	void setPosition(float[] position);
+	void setPosition(Vec3 position);
 	
 }

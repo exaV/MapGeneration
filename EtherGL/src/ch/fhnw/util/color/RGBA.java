@@ -55,6 +55,10 @@ public class RGBA extends Vec4 implements IColor {
 	public RGBA(float r, float g, float b, float a) {
 		super(r, g, b, a);
 	}
+	
+	public RGBA(Vec4 c) {
+		super(c.x,c.y,c.z);
+	}
 
 	@Override
 	public float red() {
@@ -91,5 +95,13 @@ public class RGBA extends Vec4 implements IColor {
 			ret[i+3] = w;
 		}
 		return ret;
+	}
+	
+	public int toInt() {
+		int r = (int)x*255;
+		int g = (int)y*255;
+		int b = (int)z*255;
+		int a = (int)w*255;
+		return (a<<24 | b<<16 | g<<8 | r<<0);
 	}
 }
