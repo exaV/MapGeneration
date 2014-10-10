@@ -77,7 +77,9 @@ public interface ICamera extends I3DObject{
 
 	void setPosition(float x, float y, float z);
 
-	Vec3 getLookDirection();
+	Vec3 getLookVector();
+	
+	Vec3 getUpVector();
 	
 	// orbit-related changes, camera transformations around pivot point
 
@@ -97,6 +99,7 @@ public interface ICamera extends I3DObject{
 	void ORBITmovePivot(float x, float y, float z, boolean localTransformation);
 
 	Vec3 ORBITgetPivotPosition();
+
 
 
 }

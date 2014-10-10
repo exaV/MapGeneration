@@ -91,7 +91,6 @@ public class NavigationTool extends AbstractTool {
 	public void mouseMoved(MouseEvent e, IView view) {
 		mouseX = e.getX();
 		mouseY = e.getY();
-		view.repaint();
 	}
 
 	@Override

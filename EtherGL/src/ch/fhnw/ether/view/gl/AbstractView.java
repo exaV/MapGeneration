@@ -174,7 +174,7 @@ public class AbstractView implements IView {
 			height = 1; // prevent divide by zero
 		gl.glViewport(0, 0, width, height);
 		viewport = new Viewport(0, 0, width, height);
-		//camera.refresh();
+		camera.setAspect((float)width/height);
 	}
 
 	@Override

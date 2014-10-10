@@ -190,9 +190,15 @@ public class Camera implements ICamera {
 	}
 
 	@Override
-	public Vec3 getLookDirection() {
+	public Vec3 getLookVector() {
 		return new Vec3(cameraMatrix.m[Mat4.M01], cameraMatrix.m[Mat4.M11],
 				cameraMatrix.m[Mat4.M21]);
+	}
+	
+	@Override
+	public Vec3 getUpVector() {
+		return new Vec3(cameraMatrix.m[Mat4.M02], cameraMatrix.m[Mat4.M12],
+				cameraMatrix.m[Mat4.M22]);
 	}
 
 	@Override
@@ -302,7 +308,7 @@ public class Camera implements ICamera {
 	@Override
 	public Vec3 ORBITgetPivotPosition() {
 		Vec3 cameraPosition = getPosition();
-		Vec3 pivot_position = cameraPosition.add(getLookDirection().scale(
+		Vec3 pivot_position = cameraPosition.add(getLookVector().scale(
 				orbitRadius));
 		return pivot_position;
 	}
