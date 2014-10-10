@@ -33,4 +33,13 @@ public class Plane implements IParametricSurface {
 		return "plane(n=" + normal + ",d=" + distance + ")";
 	}
 
+	@Override
+	public void setPosition(Vec3 position) {
+	}
+
+	@Override
+	public Vec3 getPosition() {
+		return normal.scale(distance);
+	}
+
 }

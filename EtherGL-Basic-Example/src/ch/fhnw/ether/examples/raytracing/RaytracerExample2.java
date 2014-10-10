@@ -1,5 +1,8 @@
 package ch.fhnw.ether.examples.raytracing;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import ch.fhnw.ether.camera.Camera;
 import ch.fhnw.ether.camera.ICamera;
 import ch.fhnw.ether.controller.AbstractController;
@@ -14,23 +17,21 @@ import ch.fhnw.ether.view.gl.AbstractView;
 import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Vec3;
 
-public class RaytracerExample {
+public class RaytracerExample2 {
 	
 	public static void main(String[] args) {
-		new RaytracerExample();
+		new RaytracerExample2();
 	}
 	
-	public RaytracerExample() {
+	public RaytracerExample2() {
 		
-		ICamera cam = new Camera();
-		cam.setNear(0.5f);
-		cam.setFov(2.5f);
-		cam.setPosition(0, -2, 1);
+		ICamera cam = new Camera(2.5f, 1, 0.5f, Float.POSITIVE_INFINITY);
+		cam.move(0, 0, 1, false);
 		ILight l = new PointLight(new Vec3(-1, -1, 3), RGBA.WHITE);
 		ParametricScene s = new ParametricScene(cam, l);
 		
 		Sphere sphere = new Sphere(0.5f);
-		sphere.setPosition(new Vec3(0,0,2));
+		sphere.setPosition(new Vec3(0,0,0.5f));
 		RayTraceObject chugeli = new RayTraceObject(sphere);
 		RayTraceObject bode = new RayTraceObject(new Plane());
 		RayTraceObject waendli = new RayTraceObject(new Plane(Vec3.X_NEG, 4), RGBA.YELLOW);
@@ -45,15 +46,28 @@ public class RaytracerExample {
 		s.addMesh(dach);
 		s.addMesh(wand);
 		s.addMesh(henderi_wand);
+
 		IController c = new AbstractController(new EventDrivenScheduler(), new RayTracingRenderer(s)) {
 			@Override
-			public void updateUI() {}
+			public void updateUI() {} //UI needs forward renderer
 		};
 		
 		IView v = new AbstractView(c, 100, 100, 100, 100, ViewType.INTERACTIVE_VIEW, "Raytracing", cam);
 		
 		c.addView(v);
 		c.setScene(s);
+		
+		Timer t = new Timer();
+		t.scheduleAtFixedRate(new TimerTask() {
+			private float n = 0;
+			@Override
+			public void run() {
+				chugeli.setPosition(Vec3.Z.scale((float) Math.sin(n)+0.5f));
+				n += 0.1;
+				if(n >= Math.PI) n = 0;
+				v.repaint();
+			}
+		}, 1000, 50);
 	}
 	
 }

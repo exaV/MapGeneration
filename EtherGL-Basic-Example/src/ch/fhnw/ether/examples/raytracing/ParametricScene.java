@@ -78,7 +78,7 @@ public class ParametricScene implements IScene {
 		Vec3 position_ontop_surface = nearest.position.subtract(ray.direction.scale(0.01f));
 		position_ontop_surface = position_ontop_surface.add(nearest.surface.getNormalAt(nearest.position).scale(0.0001f));
 
-float dist_to_light = light.getPosition().subtract(nearest.position).length();
+		float dist_to_light = light.getPosition().subtract(nearest.position).length();
 		
 		//check if path to light is clear
 		Ray light_ray = new Ray(position_ontop_surface, light.getPosition().subtract(position_ontop_surface));
@@ -90,8 +90,11 @@ float dist_to_light = light.getPosition().subtract(nearest.position).length();
 		}
 		
 		// diffuse color
-		float dot = light_ray.direction.dot(nearest.surface.getNormalAt(nearest.position));
-		return nearest.color.scaleRGB(Math.max(dot, 0));
+		float f = Math.max(0, light_ray.direction.dot(nearest.surface.getNormalAt(nearest.position)));
+		RGBA c = nearest.color;
+		RGBA lc = light.getColor();
+		
+		return new RGBA(f*c.x*lc.x, f*c.y*lc.y, f*c.z*lc.z, c.w);
 	}
 	
 	public void addMesh(RayTraceObject mesh) {

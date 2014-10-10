@@ -38,8 +38,6 @@ public class Sphere implements IParametricSurface {
 		return position.subtract(pos).normalize();
 	}
 	
-	
-	
 	public float getR() {
 		return r;
 	}

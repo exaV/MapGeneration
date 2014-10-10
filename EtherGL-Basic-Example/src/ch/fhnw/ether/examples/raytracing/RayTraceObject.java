@@ -33,12 +33,12 @@ public class RayTraceObject implements IMesh{
 
 	@Override
 	public Vec3 getPosition() {
-		return position;
+		return surface.getPosition();
 	}
 
 	@Override
 	public void setPosition(Vec3 position) {
-		this.position = position;
+		surface.setPosition(position);
 	}
 
 	@Override
@@ -47,7 +47,7 @@ public class RayTraceObject implements IMesh{
 	}
 
 	public IntersectResult intersect(Ray ray) {
-		Vec3 point = surface.intersect(ray);
+		Vec3 point = surface.intersect(new Ray(ray.origin.add(position.negate()), ray.direction));
 		if(point == null) {
 			return IntersectResult.VOID;
 		}else {
