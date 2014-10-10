@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2013 - 2014 FHNW & ETH Zurich (Stefan Muller Arisona & Simon Schubiger)
- * Copyright (c) 2013 - 2014 Stefan Muller Arisona & Simon Schubiger
+ * Copyright (c) 2013 - 2014 Stefan Muller Arisona, Simon Schubiger, Samuel von Stachelski
+ * Copyright (c) 2013 - 2014 FHNW & ETH Zurich
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,12 +29,10 @@
 
 package ch.fhnw.ether.render.attribute.builtin;
 
-import java.util.function.Supplier;
-
-import ch.fhnw.ether.render.attribute.FloatArrayAttribute;
+import ch.fhnw.ether.render.attribute.base.FloatArrayAttribute;
 
 public final class PointSizeArray extends FloatArrayAttribute {
-	public static final String ID = "builtin.point_size_array";
+	private static final String ID = "builtin.point_size_array";
 	private static final String DEFAULT_SHADER_NAME = "vertexPointSize";
 
 	public PointSizeArray() {
@@ -43,9 +41,5 @@ public final class PointSizeArray extends FloatArrayAttribute {
 
 	public PointSizeArray(String shaderName) {
 		super(ID, shaderName, NumComponents.ONE);
-	}
-	
-	public static IdSupplierPair supply(Supplier<float[]> supplier) {
-		return new IdSupplierPair(ID, supplier);
 	}
 }

@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2013 - 2014 FHNW & ETH Zurich (Stefan Muller Arisona & Simon Schubiger)
- * Copyright (c) 2013 - 2014 Stefan Muller Arisona & Simon Schubiger
+ * Copyright (c) 2013 - 2014 Stefan Muller Arisona, Simon Schubiger, Samuel von Stachelski
+ * Copyright (c) 2013 - 2014 FHNW & ETH Zurich
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,22 +25,33 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */package ch.fhnw.ether.examples.metrobuzz.tool;
+ */
 
-import ch.fhnw.ether.geom.Line;
-import ch.fhnw.ether.geom.Plane;
-import ch.fhnw.ether.geom.ProjectionUtil;
-import ch.fhnw.ether.geom.RGBA;
-import ch.fhnw.ether.geom.Vec3;
-import ch.fhnw.ether.model.CubeMesh;
-import ch.fhnw.ether.model.CubeMesh.Origin;
-import ch.fhnw.ether.model.IPickable;
+package ch.fhnw.ether.examples.metrobuzz.tool;
+
+import java.util.Collections;
+import java.util.EnumSet;
+
+import ch.fhnw.ether.controller.IController;
+import ch.fhnw.ether.controller.tool.AbstractTool;
+import ch.fhnw.ether.controller.tool.PickUtil;
+import ch.fhnw.ether.controller.tool.PickUtil.PickMode;
 import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.IRenderer.Pass;
-import ch.fhnw.ether.render.shader.Triangles;
-import ch.fhnw.ether.scene.IScene;
-import ch.fhnw.ether.tool.AbstractTool;
+import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
+import ch.fhnw.ether.render.shader.IShader;
+import ch.fhnw.ether.render.shader.builtin.MaterialShader;
+import ch.fhnw.ether.render.shader.builtin.MaterialShader.ShaderInput;
+import ch.fhnw.ether.scene.mesh.GenericMesh;
+import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
+import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.ether.view.IView;
+import ch.fhnw.ether.view.ProjectionUtil;
+import ch.fhnw.util.color.RGBA;
+import ch.fhnw.util.math.Vec3;
+import ch.fhnw.util.math.geometry.Line;
+import ch.fhnw.util.math.geometry.Plane;
+import ch.fhnw.util.math.geometry.Primitives;
 
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.MouseEvent;
@@ -50,7 +61,7 @@ public final class AreaTool extends AbstractTool {
 
 	private static final float KEY_INCREMENT = 0.01f;
 
-	private CubeMesh mesh = new CubeMesh(Origin.BOTTOM_CENTER);
+    private GenericMesh mesh = new GenericMesh(PrimitiveType.TRIANGLE);
 
 	private boolean moving = false;
 
@@ -59,20 +70,23 @@ public final class AreaTool extends AbstractTool {
 
 	private final IRenderable area;
 
-	public AreaTool(IScene scene) {
-		super(scene);
-		mesh.setScale(new Vec3(0.1, 0.1, 0.001));
-		area = scene.getRenderer().createRenderable(Pass.DEPTH, new Triangles(TOOL_COLOR, false), mesh);
+	public AreaTool(IController controller) {
+		super(controller);
+	    mesh.setGeometry(Primitives.UNIT_CUBE_TRIANGLES);
+		mesh.getGeometry().setScale(new Vec3(0.1, 0.1, 0.001));
+		IMaterial m = new ColorMaterial(TOOL_COLOR);
+		IShader s = new MaterialShader(EnumSet.of(ShaderInput.MATERIAL_COLOR));
+		area = controller.getRenderer().createRenderable(Pass.DEPTH, s, m, Collections.singletonList(mesh.getGeometry()));
 	}
 
 	@Override
 	public void activate() {
-		getScene().getRenderer().addRenderables(area);
+		getController().getRenderer().addRenderables(area);
 	}
 
 	@Override
 	public void deactivate() {
-		getScene().getRenderer().removeRenderables(area);
+		getController().getRenderer().removeRenderables(area);
 	}
 
 	@Override
@@ -92,16 +106,17 @@ public final class AreaTool extends AbstractTool {
 			break;
 		}
 
-		mesh.setTranslation(new Vec3(xOffset, yOffset, 0));
+		mesh.getGeometry().setTranslation(new Vec3(xOffset, yOffset, 0));
 		area.requestUpdate();
-		view.getScene().repaintViews();
+		view.getController().repaintViews();
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e, IView view) {
 		int x = e.getX();
 		int y = view.getViewport().h - e.getY();
-		if (mesh.pick(IPickable.PickMode.POINT, x, y, 0, 0, view, null))
+		float d = PickUtil.pickBoundingBox(PickMode.POINT, x, y, 0, 0, view.getCamera(), view.getViewport(), mesh.getBoundings());
+		if (d < Float.POSITIVE_INFINITY)
 			moving = true;
 	}
 
@@ -114,9 +129,9 @@ public final class AreaTool extends AbstractTool {
 			if (p != null) {
 				xOffset = p.x;
 				yOffset = p.y;
-				mesh.setTranslation(new Vec3(xOffset, yOffset, 0));
+				mesh.getGeometry().setTranslation(new Vec3(xOffset, yOffset, 0));
 				area.requestUpdate();
-				view.getScene().repaintViews();
+				view.getController().repaintViews();
 			}
 		}
 	}

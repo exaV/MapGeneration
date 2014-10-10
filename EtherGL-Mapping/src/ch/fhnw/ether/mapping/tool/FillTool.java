@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2013 - 2014 FHNW & ETH Zurich (Stefan Muller Arisona & Simon Schubiger)
- * Copyright (c) 2013 - 2014 Stefan Muller Arisona & Simon Schubiger
+ * Copyright (c) 2013 - 2014 Stefan Muller Arisona, Simon Schubiger, Samuel von Stachelski
+ * Copyright (c) 2013 - 2014 FHNW & ETH Zurich
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,53 +31,65 @@ package ch.fhnw.ether.mapping.tool;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 
-import ch.fhnw.ether.geom.RGBA;
-import ch.fhnw.ether.geom.Vec3;
-import ch.fhnw.ether.model.GenericMesh;
+import ch.fhnw.ether.controller.IController;
+import ch.fhnw.ether.controller.tool.AbstractTool;
 import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.IRenderer.Pass;
-import ch.fhnw.ether.render.shader.Triangles;
-import ch.fhnw.ether.render.util.Primitives;
-import ch.fhnw.ether.scene.IScene;
-import ch.fhnw.ether.tool.AbstractTool;
+import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
+import ch.fhnw.ether.render.shader.IShader;
+import ch.fhnw.ether.render.shader.builtin.MaterialShader;
+import ch.fhnw.ether.render.shader.builtin.MaterialShader.ShaderInput;
+import ch.fhnw.ether.scene.mesh.GenericMesh;
+import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
+import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.ether.view.IView;
+import ch.fhnw.util.color.RGBA;
+import ch.fhnw.util.math.Vec3;
+import ch.fhnw.util.math.geometry.Primitives;
 
 public final class FillTool extends AbstractTool {
-	static final String[] FILL_HELP = { "Fill Tool for Projector Adjustment", "", "[0] Return" };
+	static final String[] FILL_HELP = { "Fill Tool for Projector Adjustment",
+			"", "[0] Return" };
 
 	private final IRenderable quads;
 
-	public FillTool(IScene scene) {
-		super(scene);
-		quads = scene.getRenderer().createRenderable(Pass.DEVICE_SPACE_OVERLAY, new Triangles(RGBA.WHITE), makeQuads());
+	public FillTool(IController controller) {
+		super(controller);
+		IMaterial m = new ColorMaterial(RGBA.YELLOW);
+		IShader s = new MaterialShader(EnumSet.of(ShaderInput.MATERIAL_COLOR));
+		quads = controller.getRenderer().createRenderable(
+				Pass.DEVICE_SPACE_OVERLAY,
+				s, m,
+				Collections.singletonList(makeQuads().getGeometry()));
 	}
 
 	@Override
 	public void activate() {
-		getScene().getRenderer().addRenderables(quads);
+		getController().getRenderer().addRenderables(quads);
 	}
 
 	@Override
 	public void deactivate() {
-		getScene().getRenderer().removeRenderables(quads);
-		getScene().enableViews(null);
+		getController().getRenderer().removeRenderables(quads);
+		getController().enableViews(null);
 	}
 
 	@Override
 	public void refresh(IView view) {
-		getScene().enableViews(Collections.singleton(view));
+		getController().enableViews(Collections.singleton(view));
 	}
 
 	private static GenericMesh makeQuads() {
-		GenericMesh geometry = new GenericMesh();
+		GenericMesh geometry = new GenericMesh(PrimitiveType.TRIANGLE);
 		List<Vec3> dst = new ArrayList<>();
 		Primitives.addRectangle(dst, -1.0f, -1.0f, -0.1f, -0.1f);
 		Primitives.addRectangle(dst, 0.1f, -1.0f, 1.0f, -0.1f);
 		Primitives.addRectangle(dst, 0.1f, 0.1f, 1.0f, 1.0f);
 		Primitives.addRectangle(dst, -1.0f, 0.1f, -0.1f, 1.0f);
-		geometry.setTriangles(Vec3.toArray(dst));
+		geometry.setGeometry(Vec3.toArray(dst));
 		return geometry;
 	}
 }

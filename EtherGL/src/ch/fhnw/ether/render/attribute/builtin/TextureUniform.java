@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2013 - 2014 FHNW & ETH Zurich (Stefan Muller Arisona & Simon Schubiger)
- * Copyright (c) 2013 - 2014 Stefan Muller Arisona & Simon Schubiger
+ * Copyright (c) 2013 - 2014 Stefan Muller Arisona, Simon Schubiger, Samuel von Stachelski
+ * Copyright (c) 2013 - 2014 FHNW & ETH Zurich
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,8 +31,8 @@ package ch.fhnw.ether.render.attribute.builtin;
 
 import java.util.function.Supplier;
 
-import ch.fhnw.ether.gl.Texture;
-import ch.fhnw.ether.render.attribute.SamplerUniformAttribute;
+import ch.fhnw.ether.render.attribute.base.SamplerUniformAttribute;
+import ch.fhnw.ether.render.gl.Texture;
 
 public final class TextureUniform extends SamplerUniformAttribute {
 	public static final String ID = "builtin.texture";
@@ -52,9 +52,5 @@ public final class TextureUniform extends SamplerUniformAttribute {
 
 	public TextureUniform(String shaderName, Supplier<Texture> supplier) {
 		super(ID, shaderName, supplier);
-	}
-	
-	public static IdSupplierPair supply(Supplier<Texture> supplier) {
-		return new IdSupplierPair(ID, supplier);
 	}
 }

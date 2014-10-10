@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2013 - 2014 FHNW & ETH Zurich (Stefan Muller Arisona & Simon Schubiger)
- * Copyright (c) 2013 - 2014 Stefan Muller Arisona & Simon Schubiger
+ * Copyright (c) 2013 - 2014 Stefan Muller Arisona, Simon Schubiger, Samuel von Stachelski
+ * Copyright (c) 2013 - 2014 FHNW & ETH Zurich
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,16 +25,20 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */package ch.fhnw.ether.examples.metrobuzz;
+ */
+
+package ch.fhnw.ether.examples.metrobuzz;
 
 import java.io.IOException;
 
 import javax.swing.SwingUtilities;
 
+import ch.fhnw.ether.camera.Camera;
+import ch.fhnw.ether.examples.metrobuzz.controller.MetroBuzzController;
+import ch.fhnw.ether.examples.metrobuzz.controller.View;
 import ch.fhnw.ether.examples.metrobuzz.io.matsim.Loader;
-import ch.fhnw.ether.examples.metrobuzz.model.Model;
-import ch.fhnw.ether.examples.metrobuzz.scene.Scene;
-import ch.fhnw.ether.examples.metrobuzz.scene.View;
+import ch.fhnw.ether.examples.metrobuzz.model.Scene;
+import ch.fhnw.ether.view.IView.ViewType;
 
 public class MetroBuzz {
     public static void main(final String[] args) {
@@ -48,26 +52,28 @@ public class MetroBuzz {
     }
 
 	public MetroBuzz(String[] args) {
-		Scene scene = new Scene();
-		scene.addView(new View(scene, 0, 10, 512, 512));
-		scene.addView(new View(scene, 512, 10, 512, 512));
-
-		Model model = new Model(scene);
+		if(args.length < 1) throw new IllegalArgumentException("Pass path to Sioux OSM as command line argument");
+		
+		MetroBuzzController controller = new MetroBuzzController();
+		Camera camera = new Camera();
+		controller.addView(new View(controller, 0, 10, 512, 512, ViewType.INTERACTIVE_VIEW, camera));
+		controller.addView(new View(controller, 512, 10, 512, 512, ViewType.MAPPED_VIEW, camera));
+		
+		Scene model = new Scene(camera);
 		System.out.println("Loading Data");
 		try {
-			Loader.load(model, "/Users/radar/devel/data/sioux_osm", 100 /*Integer.MAX_VALUE*/);
+			Loader.load(model, args[0], 100 /*Integer.MAX_VALUE*/);
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);
 		}
-		model.getNetworkGeometry();
 		System.out.println("Done.");
 
-		Model.printAgent(model.getAgents().get(0));
+		Scene.printAgent(model.getAgents().get(0));
 		//Model.printAgent(model.getAgents().get(1));
 		//Model.printAgent(model.getAgents().get(2));
 		
-		scene.setModel(model);
+		controller.setScene(model);
 	}
 
 }

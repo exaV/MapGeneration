@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2013 - 2014 FHNW & ETH Zurich (Stefan Muller Arisona & Simon Schubiger)
- * Copyright (c) 2013 - 2014 Stefan Muller Arisona & Simon Schubiger
+ * Copyright (c) 2013 - 2014 Stefan Muller Arisona, Simon Schubiger, Samuel von Stachelski
+ * Copyright (c) 2013 - 2014 FHNW & ETH Zurich
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,9 +31,9 @@ package ch.fhnw.ether.ui;
 
 import java.awt.Color;
 
-import ch.fhnw.ether.model.TextGeometry;
+import ch.fhnw.ether.scene.mesh.TextMesh;
 import ch.fhnw.ether.view.IView;
-import ch.fhnw.util.MathUtil;
+import ch.fhnw.util.math.MathUtil;
 
 import com.jogamp.newt.event.MouseEvent;
 
@@ -43,13 +43,13 @@ public class Slider extends AbstractWidget {
 		void execute(Slider slider, IView view);
     }
 
-    public static final int SLIDER_WIDTH = 96;
-    public static final int SLIDER_HEIGHT = 24;
+    private static final int SLIDER_WIDTH = 96;
+    private static final int SLIDER_HEIGHT = 24;
 
-    public static final int SLIDER_GAP = 8;
+    private static final int SLIDER_GAP = 8;
     
-    public static final Color SLIDER_BG = new Color(1f, 1f, 1f, 0.25f);
-    public static final Color SLIDER_FG = new Color(0.6f, 0, 0, 0.75f);
+    private static final Color SLIDER_BG = new Color(1f, 1f, 1f, 0.25f);
+    private static final Color SLIDER_FG = new Color(0.6f, 0, 0, 0.75f);
 
     private boolean sliding;
     private float value;
@@ -80,7 +80,7 @@ public class Slider extends AbstractWidget {
     }
     
     @Override
-    public void draw(TextGeometry surface) {
+    public void draw(TextMesh surface) {
         int bw = Slider.SLIDER_WIDTH;
         int bh = Slider.SLIDER_HEIGHT;
         int bg = Slider.SLIDER_GAP;

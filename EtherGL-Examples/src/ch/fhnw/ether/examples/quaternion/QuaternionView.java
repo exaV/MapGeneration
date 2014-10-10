@@ -27,38 +27,40 @@
  */
 package ch.fhnw.ether.examples.quaternion;
 
-import ch.fhnw.ether.view.AbstractView;
-import ch.fhnw.ether.view.Camera;
+import ch.fhnw.ether.camera.ICamera;
+import ch.fhnw.ether.view.gl.AbstractView;
 
 import com.jogamp.newt.event.KeyEvent;
 
 public class QuaternionView extends AbstractView {
-	public QuaternionView(QuaternionScene scene, int x, int y, int w, int h, String title) {
-		super(scene, x, y, w, h,ViewType.INTERACTIVE_VIEW, title);
+	public QuaternionView(QuaternionController controller, int x, int y, int w, int h, String title, ICamera camera) {
+		super(controller, x, y, w, h,ViewType.INTERACTIVE_VIEW, title, camera);
+		controller.getUI().setMessage("Use 0-6 on keyboard to set camera");
 	}
 
 	private static final float[][] CAM_PARAMS = {
-		{ 0, 0, 5,   0,   0, 0},
-		{ 0, 5, 0,   0, -90, 0},
-		{ 0, 0,-5,   0, 180, 0},
-		{ 0,-5, 0,   0,  90, 0},
-		{-5, 0, 0,  90,   0, 0},
-		{ 5, 0, 0, -90,   0, 0},
+		{ 5, 0, 0,   0,   0,  90},
+		{-5, 0, 0,   0,   0, -90},
+		{ 0, 5, 0,   0,   0, 180},
+		{ 0,-5, 0,   0,   0,   0},
+		{ 0, 0, 5, -90,   0,   0},
+		{ 0, 0,-5,  90,   0,   0},
 	};
 	
 	@Override
 	public void keyPressed(KeyEvent e) {
 		switch (e.getKeyCode()) {
-		case KeyEvent.VK_0:
 		case KeyEvent.VK_1:
 		case KeyEvent.VK_2:
 		case KeyEvent.VK_3:
 		case KeyEvent.VK_4:
 		case KeyEvent.VK_5:
-			float[] params = CAM_PARAMS[e.getKeyCode() - KeyEvent.VK_0];
-			Camera  cam    = getCamera();
+		case KeyEvent.VK_6:
+			float[] params = CAM_PARAMS[e.getKeyCode() - KeyEvent.VK_1];
+			ICamera cam = getCamera();
 			cam.setPosition(params[0], params[1], params[2]);
-			cam.setOrientation(params[3], params[4], params[5]);
+			cam.setRotation(params[3], params[4], params[5]);
+			getController().repaintView(this);
 			break;
 		default:
 			super.keyPressed(e);

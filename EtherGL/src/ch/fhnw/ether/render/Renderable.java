@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2013 - 2014 FHNW & ETH Zurich (Stefan Muller Arisona & Simon Schubiger)
- * Copyright (c) 2013 - 2014 Stefan Muller Arisona & Simon Schubiger
+ * Copyright (c) 2013 - 2014 Stefan Muller Arisona, Simon Schubiger, Samuel von Stachelski
+ * Copyright (c) 2013 - 2014 FHNW & ETH Zurich
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,6 +29,7 @@
 
 package ch.fhnw.ether.render;
 
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -39,21 +40,20 @@ import java.util.function.Supplier;
 
 import javax.media.opengl.GL3;
 
-import ch.fhnw.ether.gl.FloatArrayBuffer;
-import ch.fhnw.ether.gl.Program;
-import ch.fhnw.ether.render.attribute.FloatArrayAttribute;
 import ch.fhnw.ether.render.attribute.IArrayAttribute;
 import ch.fhnw.ether.render.attribute.IArrayAttributeProvider;
+import ch.fhnw.ether.render.attribute.IAttribute;
 import ch.fhnw.ether.render.attribute.IUniformAttribute;
 import ch.fhnw.ether.render.attribute.IUniformAttributeProvider;
+import ch.fhnw.ether.render.attribute.base.FloatArrayAttribute;
+import ch.fhnw.ether.render.gl.FloatArrayBuffer;
+import ch.fhnw.ether.render.gl.Program;
 import ch.fhnw.ether.render.shader.IShader;
-import ch.fhnw.ether.render.util.FloatList;
-import ch.fhnw.ether.view.IView;
+import ch.fhnw.util.FloatList;
 import ch.fhnw.util.UpdateRequest;
-import ch.fhnw.ether.render.attribute.*;
 
 // TODO: we currently support float arrays only
-final class Renderable implements IRenderable {
+public final class Renderable implements IRenderable {
 	private IRenderer.Pass pass;
 	private EnumSet<IRenderer.Flag> flags;
 	private IShader shader;
@@ -99,7 +99,7 @@ final class Renderable implements IRenderable {
 	}
 
 	@Override
-	public void update(GL3 gl, IView view, FloatList dst) {
+	public void update(GL3 gl, FloatList dst) {
 		if (updater.needsUpdate()) {
 			dst.clear();
 			shader.update(gl);
@@ -108,7 +108,7 @@ final class Renderable implements IRenderable {
 	}
 
 	@Override
-	public void render(GL3 gl, IView view, IRenderer.RenderState state) {
+	public void render(GL3 gl, IRenderer.RenderState state) {
 		// TODO: generally, sorting of any kind is not implemented yet...
 		// e.g. sort by program, shader params, instance params, ... (we should come up with some flexible mechanism for
 		// implementing sorting strategies)
@@ -206,11 +206,6 @@ final class Renderable implements IRenderable {
 			}
 
 			@Override
-			public void add(IAttribute.IdSupplierPair entry) {
-				add(entry.id, entry.supplier);
-			}
-
-			@Override
 			public Supplier<?> get(String id) {
 				Supplier<?> supplier = map.get(id);
 				if (supplier == null)
@@ -288,6 +283,7 @@ final class Renderable implements IRenderable {
 
 		final float[] interleavedData = new float[size];
 		final float[][] data = new float[arrayAttributes.size()][];
+		
 
 		int index = 0;
 		for (int supplierIndex = 0; supplierIndex < attr.getSuppliers().size(); ++supplierIndex) {
@@ -296,10 +292,9 @@ final class Renderable implements IRenderable {
 			}
 			index = interleave(interleavedData, index, data, sizes);
 		}
-
-		dst.clear();
+		
 		dst.add(interleavedData);
-		buffer.load(gl, dst.buffer());
+		buffer.load(gl, FloatBuffer.wrap(dst.toArray()));
 	}
 
 	private static int interleave(final float[] interleavedData, int index, final float[][] data, final int[] sizes) {

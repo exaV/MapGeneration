@@ -1,5 +1,5 @@
-OSC Package: Copyright (c) 2001 - 2013, Corebounce Association (Pascal Mueller, Stefan Mueller Arisona, Simon Schubiger, Matthias Specht)
-Other Packages: Copyright (c) 2013, ETH Zurich (Stefan Mueller Arisona, Eva Friedrich)
+Copyright (c) 2013 - 2014 Stefan Muller Arisona, Simon Schubiger, Samuel von Stachelski
+Copyright (c) 2013 - 2014 FHNW & ETH Zurich
 3rd-party Libraries: Copyright by respective authors. Specific licenses for each library apply.
 All rights reserved.
 

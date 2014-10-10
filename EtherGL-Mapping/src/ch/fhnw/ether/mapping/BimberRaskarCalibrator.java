@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2013 - 2014 FHNW & ETH Zurich (Stefan Muller Arisona & Simon Schubiger)
- * Copyright (c) 2013 - 2014 Stefan Muller Arisona & Simon Schubiger
+ * Copyright (c) 2013 - 2014 Stefan Muller Arisona, Simon Schubiger, Samuel von Stachelski
+ * Copyright (c) 2013 - 2014 FHNW & ETH Zurich
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,10 +29,11 @@
 
 package ch.fhnw.ether.mapping;
 
-import ch.fhnw.ether.geom.Mat4;
-import ch.fhnw.ether.geom.Vec3;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.math3.linear.*;
+
+import ch.fhnw.util.math.Mat4;
+import ch.fhnw.util.math.Vec3;
 
 import java.util.ArrayList;
 import java.util.List;

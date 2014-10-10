@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2013 - 2014 FHNW & ETH Zurich (Stefan Muller Arisona & Simon Schubiger)
- * Copyright (c) 2013 - 2014 Stefan Muller Arisona & Simon Schubiger
+ * Copyright (c) 2013 - 2014 Stefan Muller Arisona, Simon Schubiger, Samuel von Stachelski
+ * Copyright (c) 2013 - 2014 FHNW & ETH Zurich
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,8 +32,9 @@ package ch.fhnw.ether.view;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
 
-import ch.fhnw.ether.gl.Viewport;
-import ch.fhnw.ether.scene.IScene;
+import ch.fhnw.ether.camera.ICamera;
+import ch.fhnw.ether.controller.IController;
+import ch.fhnw.util.Viewport;
 
 import com.jogamp.newt.event.KeyListener;
 import com.jogamp.newt.event.MouseListener;
@@ -52,18 +53,18 @@ public interface IView extends GLEventListener, MouseListener, KeyListener {
 	GLAutoDrawable getDrawable();
 
 	/**
-	 * Get the scene this view belongs to.
+	 * Get the controller this view belongs to.
 	 * 
-	 * @return the scene
+	 * @return the controller
 	 */
-	IScene getScene();
+	IController getController();
 
 	/**
 	 * Get associated camera.
 	 * 
 	 * @return the camera
 	 */
-	Camera getCamera();
+	ICamera getCamera();
 
 	/**
 	 * Get viewport [x, y, w, h].

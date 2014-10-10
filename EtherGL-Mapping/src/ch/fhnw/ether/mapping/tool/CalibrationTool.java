@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2013 - 2014 FHNW & ETH Zurich (Stefan Muller Arisona & Simon Schubiger)
- * Copyright (c) 2013 - 2014 Stefan Muller Arisona & Simon Schubiger
+ * Copyright (c) 2013 - 2014 Stefan Muller Arisona, Simon Schubiger, Samuel von Stachelski
+ * Copyright (c) 2013 - 2014 FHNW & ETH Zurich
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,26 +36,27 @@ import java.util.List;
 import java.util.Map;
 import java.util.prefs.Preferences;
 
-import ch.fhnw.ether.geom.ProjectionUtil;
-import ch.fhnw.ether.geom.RGBA;
-import ch.fhnw.ether.geom.Vec3;
-import ch.fhnw.ether.gl.Viewport;
+import ch.fhnw.ether.camera.ICamera;
+import ch.fhnw.ether.controller.AbstractController;
+import ch.fhnw.ether.controller.IController;
+import ch.fhnw.ether.controller.tool.AbstractTool;
 import ch.fhnw.ether.mapping.BimberRaskarCalibrator;
 import ch.fhnw.ether.mapping.ICalibrationModel;
 import ch.fhnw.ether.mapping.ICalibrator;
-import ch.fhnw.ether.model.GenericMesh;
 import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.IRenderer;
 import ch.fhnw.ether.render.IRenderer.Pass;
-import ch.fhnw.ether.render.shader.Lines;
-import ch.fhnw.ether.render.shader.Points;
-import ch.fhnw.ether.render.util.Primitives;
-import ch.fhnw.ether.scene.AbstractScene;
-import ch.fhnw.ether.scene.IScene;
-import ch.fhnw.ether.tool.AbstractTool;
-import ch.fhnw.ether.view.Camera;
+import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
+import ch.fhnw.ether.render.shader.builtin.LineShader;
+import ch.fhnw.ether.scene.mesh.GenericMesh;
+import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.view.IView;
+import ch.fhnw.ether.view.ProjectionUtil;
 import ch.fhnw.util.PreferencesStore;
+import ch.fhnw.util.Viewport;
+import ch.fhnw.util.color.RGBA;
+import ch.fhnw.util.math.Vec3;
+import ch.fhnw.util.math.geometry.Primitives;
 
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.MouseEvent;
@@ -70,7 +71,6 @@ public final class CalibrationTool extends AbstractTool {
 	public static final RGBA CALIBRATION_COLOR_UNCALIBRATED = RGBA.YELLOW;
 	public static final RGBA CALIBRATION_COLOR_CALIBRATED = RGBA.GREEN;
 
-	private static final float POINT_SIZE = 10;
 	private static final float CROSSHAIR_SIZE = 20;
 
 	private final ICalibrator calibrator = new BimberRaskarCalibrator();
@@ -78,36 +78,39 @@ public final class CalibrationTool extends AbstractTool {
 
 	private Map<IView, CalibrationContext> contexts = new HashMap<>();
 
-	private GenericMesh calibratedGeometry = new GenericMesh();
+	private GenericMesh calibratedGeometry = new GenericMesh(PrimitiveType.LINE);
 
 	private List<IRenderable> renderables = new ArrayList<>();
 
-	public CalibrationTool(IScene scene, ICalibrationModel model) {
-		super(scene);
+	public CalibrationTool(IController controller, ICalibrationModel model) {
+		super(controller);
 		this.model = model;
+		calibratedGeometry.setGeometry(new float[0]);
 
-		IRenderer renderer = scene.getRenderer();
+		IRenderer renderer = controller.getRenderer();
+		IMesh mesh = model.getCalibrationMesh();
 
-		renderables.add(renderer.createRenderable(Pass.OVERLAY, new Points(MODEL_COLOR, POINT_SIZE, 0), model.getCalibrationMesh()));
-		renderables.add(renderer.createRenderable(Pass.OVERLAY, new Lines(MODEL_COLOR), model.getCalibrationMesh()));
-		renderables.add(renderer.createRenderable(Pass.DEVICE_SPACE_OVERLAY, new Points(null, POINT_SIZE, 0), calibratedGeometry));
-		renderables.add(renderer.createRenderable(Pass.DEVICE_SPACE_OVERLAY, new Lines(null), calibratedGeometry));
+		renderables.add(renderer.createRenderable(Pass.OVERLAY, new LineShader(false), mesh.getMaterial(), Collections.singletonList(mesh.getGeometry())));
+		renderables.add(renderer.createRenderable(Pass.DEVICE_SPACE_OVERLAY, new LineShader(false), mesh.getMaterial(), Collections.singletonList(calibratedGeometry.getGeometry())));
+//		TODO: add also points?
+//		renderables.add(renderer.createRenderable(Pass.OVERLAY, new Points(MODEL_COLOR, POINT_SIZE, 0), model.getCalibrationMesh().getGeometry()));
+//		renderables.add(renderer.createRenderable(Pass.DEVICE_SPACE_OVERsLAY, new Points(null, POINT_SIZE, 0), calibratedGeometry));
 	}
 
 	@Override
 	public void activate() {
-		getScene().getRenderer().addRenderables(renderables);
+		getController().getRenderer().addRenderables(renderables.toArray(new IRenderable[0]));
 	}
 
 	@Override
 	public void deactivate() {
-		getScene().getRenderer().removeRenderables(renderables);
-		getScene().enableViews(null);
+		getController().getRenderer().removeRenderables(renderables.toArray(new IRenderable[0]));
+		getController().enableViews(null);
 	}
 
 	@Override
 	public void refresh(IView view) {
-		getScene().enableViews(Collections.singleton(view));
+		getController().enableViews(Collections.singleton(view));
 
 		updateCalibratedGeometry(view);
 	}
@@ -137,14 +140,14 @@ public final class CalibrationTool extends AbstractTool {
 			clearCalibration(view);
 			break;
 		case KeyEvent.VK_H:
-			AbstractScene.printHelp(HELP);
+			AbstractController.printHelp(HELP);
 			break;
 		case KeyEvent.VK_BACK_SPACE:
 		case KeyEvent.VK_DELETE:
 			deleteCurrent(view);
 			break;
 		}
-		view.getScene().repaintViews();
+		view.getController().repaintViews();
 	}
 
 	@Override
@@ -236,7 +239,7 @@ public final class CalibrationTool extends AbstractTool {
 	private void loadCalibration(IView view) {
 		Preferences p = PreferencesStore.get();
 		int iv = 0;
-		for (IView v : view.getScene().getViews()) {
+		for (IView v : view.getController().getViews()) {
 			getContext(v).load(p, iv);
 			calibrate(v);
 			iv++;
@@ -246,7 +249,7 @@ public final class CalibrationTool extends AbstractTool {
 	private void saveCalibration(IView view) {
 		Preferences p = PreferencesStore.get();
 		int iv = 0;
-		for (IView v : view.getScene().getViews()) {
+		for (IView v : view.getController().getViews()) {
 			getContext(v).save(p, iv);
 			iv++;
 		}
@@ -254,40 +257,44 @@ public final class CalibrationTool extends AbstractTool {
 
 	private void clearCalibration(IView view) {
 		contexts.put(view, new CalibrationContext());
-		view.getCamera().setMatrices(null, null);
+		view.getCamera().setProjectionMatrix(null);
+		view.getCamera().setViewMatrix(null);
 		calibrate(view);
 	}
 
 	private void calibrate(IView view) {
-		Camera camera = view.getCamera();
+		ICamera camera = view.getCamera();
 		CalibrationContext context = getContext(view);
 		context.calibrated = false;
 		try {
-			double error = calibrator.calibrate(context.modelVertices, context.projectedVertices, camera.getNearClippingPlane(), camera.getFarClippingPlane());
+			double error = calibrator.calibrate(
+					context.modelVertices, 
+					context.projectedVertices, 
+					camera.getNear(), 
+					camera.getFar());
 			if (error < MAX_CALIBRATION_ERROR)
 				context.calibrated = true;
 			// System.out.println("error: " + error);
 		} catch (Throwable ignored) {
 		}
-		if (context.calibrated)
-			camera.setMatrices(calibrator.getProjMatrix(), calibrator.getViewMatrix());
-		else
-			camera.setMatrices(null, null);
+		if (context.calibrated) {
+			camera.setProjectionMatrix(calibrator.getProjMatrix());
+			camera.setViewMatrix(calibrator.getViewMatrix());
+		}
 
 		// need to update VBOs
 		refresh(view);
 
 		// lazily repaint all views
-		view.getScene().repaintViews();
+		view.getController().repaintViews();
 	}
 
 	private void updateCalibratedGeometry(IView view) {
 		CalibrationContext context = getContext(view);
 
-		RGBA color = context.calibrated ? CALIBRATION_COLOR_CALIBRATED : CALIBRATION_COLOR_UNCALIBRATED;
-
 		// prepare points
-		calibratedGeometry.setPoints(Vec3.toArray(context.projectedVertices), color, null);
+//		TODO: add points?
+//		calibratedGeometry.setPoints(Vec3.toArray(context.projectedVertices), color, null);
 
 		// prepare lines
 		List<Vec3> v = new ArrayList<>();
@@ -305,7 +312,8 @@ public final class CalibrationTool extends AbstractTool {
 				Primitives.addLine(v, a.x, a.y - CROSSHAIR_SIZE / viewport.h, a.z, a.x, a.y + CROSSHAIR_SIZE / viewport.h, a.z);
 			}
 		}
-		calibratedGeometry.setLines(Vec3.toArray(v), color);
+//		calibratedGeometry.setLines(Vec3.toArray(v), color);
+		calibratedGeometry.setGeometry(Vec3.toArray(v));
 
 		// request refresh
 		for (IRenderable renderable : renderables)

@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2013 - 2014 FHNW & ETH Zurich (Stefan Muller Arisona & Simon Schubiger)
- * Copyright (c) 2013 - 2014 Stefan Muller Arisona & Simon Schubiger
+ * Copyright (c) 2013 - 2014 Stefan Muller Arisona, Simon Schubiger, Samuel von Stachelski
+ * Copyright (c) 2013 - 2014 FHNW & ETH Zurich
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,8 +31,8 @@ package ch.fhnw.ether.render.attribute.builtin;
 
 import java.util.function.Supplier;
 
-import ch.fhnw.ether.geom.Mat4;
-import ch.fhnw.ether.render.attribute.Mat4FloatUniformAttribute;
+import ch.fhnw.ether.render.attribute.base.Mat4FloatUniformAttribute;
+import ch.fhnw.util.math.Mat4;
 
 public final class ViewMatrixUniform extends Mat4FloatUniformAttribute {
 	public static final String ID = "builtin.view_matrix";
@@ -52,9 +52,5 @@ public final class ViewMatrixUniform extends Mat4FloatUniformAttribute {
 
 	public ViewMatrixUniform(String shaderName, Supplier<Mat4> supplier) {
 		super(ID, shaderName, supplier);
-	}
-	
-	public static IdSupplierPair supply(Supplier<Mat4> supplier) {
-		return new IdSupplierPair(ID, supplier);
 	}
 }

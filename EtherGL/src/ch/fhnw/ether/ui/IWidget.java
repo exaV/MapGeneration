@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2013 - 2014 FHNW & ETH Zurich (Stefan Muller Arisona & Simon Schubiger)
- * Copyright (c) 2013 - 2014 Stefan Muller Arisona & Simon Schubiger
+ * Copyright (c) 2013 - 2014 Stefan Muller Arisona, Simon Schubiger, Samuel von Stachelski
+ * Copyright (c) 2013 - 2014 FHNW & ETH Zurich
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,7 +31,7 @@ package ch.fhnw.ether.ui;
 
 import java.awt.Color;
 
-import ch.fhnw.ether.model.TextGeometry;
+import ch.fhnw.ether.scene.mesh.TextMesh;
 import ch.fhnw.ether.view.IView;
 
 import com.jogamp.newt.event.KeyEvent;
@@ -58,7 +58,7 @@ public interface IWidget {
 	
 	boolean hit(int x, int y, IView view);
 	
-	void draw(TextGeometry surface);
+	void draw(TextMesh surface);
 	
 	IWidgetAction<? extends IWidget> getAction();
 	

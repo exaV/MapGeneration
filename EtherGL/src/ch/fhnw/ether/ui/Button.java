@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2013 - 2014 FHNW & ETH Zurich (Stefan Muller Arisona & Simon Schubiger)
- * Copyright (c) 2013 - 2014 Stefan Muller Arisona & Simon Schubiger
+ * Copyright (c) 2013 - 2014 Stefan Muller Arisona, Simon Schubiger, Samuel von Stachelski
+ * Copyright (c) 2013 - 2014 FHNW & ETH Zurich
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,7 +31,7 @@ package ch.fhnw.ether.ui;
 
 import java.awt.Color;
 
-import ch.fhnw.ether.model.TextGeometry;
+import ch.fhnw.ether.scene.mesh.TextMesh;
 import ch.fhnw.ether.view.IView;
 
 import com.jogamp.newt.event.KeyEvent;
@@ -43,10 +43,10 @@ public class Button extends AbstractWidget {
 		void execute(Button button, IView view);
     }
 
-    public static final int BUTTON_WIDTH = 48;
-    public static final int BUTTON_HEIGHT = 48;
+    private static final int BUTTON_WIDTH = 48;
+    private static final int BUTTON_HEIGHT = 48;
 
-    public static final int BUTTON_GAP = 8;
+    private static final int BUTTON_GAP = 8;
 
     public enum State {
         DEFAULT(0.6f, 0, 0, 0.75f), PRESSED(1, 0.2f, 0.2f, 0.75f), DISABLED(0.5f, 0.5f, 0.5f, 0.75f);
@@ -111,7 +111,7 @@ public class Button extends AbstractWidget {
     }
     
     @Override
-    public void draw(TextGeometry surface) {
+    public void draw(TextMesh surface) {
         int bw = Button.BUTTON_WIDTH;
         int bh = Button.BUTTON_HEIGHT;
         int bg = Button.BUTTON_GAP;
@@ -138,7 +138,7 @@ public class Button extends AbstractWidget {
     public boolean keyPressed(KeyEvent e, IView view) {
     	if (getKey() == e.getKeyCode()) {
     		fire(view);
-    		view.getScene().repaintViews();
+    		view.getController().repaintViews();
     		return true;
     	}
     	return false;
@@ -148,7 +148,7 @@ public class Button extends AbstractWidget {
     public boolean mousePressed(MouseEvent e, IView view) {
         if (hit(e.getX(), e.getY(), view)) {
             fire(view);
-            view.getScene().repaintViews();
+            view.getController().repaintViews();
             return true;
         }
         return false;

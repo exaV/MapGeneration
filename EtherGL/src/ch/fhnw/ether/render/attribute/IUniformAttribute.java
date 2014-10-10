@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2013 - 2014 FHNW & ETH Zurich (Stefan Muller Arisona & Simon Schubiger)
- * Copyright (c) 2013 - 2014 Stefan Muller Arisona & Simon Schubiger
+ * Copyright (c) 2013 - 2014 Stefan Muller Arisona, Simon Schubiger, Samuel von Stachelski
+ * Copyright (c) 2013 - 2014 FHNW & ETH Zurich
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,7 +33,7 @@ import java.util.function.Supplier;
 
 import javax.media.opengl.GL3;
 
-import ch.fhnw.ether.gl.Program;
+import ch.fhnw.ether.render.gl.Program;
 
 public interface IUniformAttribute extends IAttribute {
 	boolean hasSupplier();

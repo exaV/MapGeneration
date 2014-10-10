@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2013 - 2014 FHNW & ETH Zurich (Stefan Muller Arisona & Simon Schubiger)
- * Copyright (c) 2013 - 2014 Stefan Muller Arisona & Simon Schubiger
+ * Copyright (c) 2013 - 2014 Stefan Muller Arisona, Simon Schubiger, Samuel von Stachelski
+ * Copyright (c) 2013 - 2014 FHNW & ETH Zurich
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,69 +37,48 @@ import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.render.attribute.IArrayAttributeProvider;
 import ch.fhnw.ether.render.attribute.IUniformAttributeProvider;
+import ch.fhnw.ether.render.attribute.IAttribute.ISuppliers;
 import ch.fhnw.ether.render.shader.IShader;
-import ch.fhnw.ether.view.IView;
 
 public abstract class AbstractRenderer implements IRenderer, IUniformAttributeProvider {
 
 	private final Renderables renderables = new Renderables();
 
 	@Override
-	public IRenderable createRenderable(Pass pass, IShader shader, IArrayAttributeProvider... providers) {
-		return createRenderable(pass, EnumSet.noneOf(Flag.class), shader, Arrays.asList(providers));
+	public IRenderable createRenderable(Pass pass, IShader shader, IUniformAttributeProvider uniforms, List<? extends IArrayAttributeProvider> providers) {
+		return createRenderable(pass, EnumSet.noneOf(Flag.class), shader, uniforms, providers);
 	}
 
 	@Override
-	public IRenderable createRenderable(Pass pass, IShader shader, List<? extends IArrayAttributeProvider> providers) {
-		return createRenderable(pass, EnumSet.noneOf(Flag.class), shader, providers);
+	public IRenderable createRenderable(Pass pass, EnumSet<Flag> flags, IShader shader, IUniformAttributeProvider uniforms, List<? extends IArrayAttributeProvider> providers) {
+		IUniformAttributeProvider composed = new IUniformAttributeProvider() {
+			@Override
+			public void getAttributeSuppliers(ISuppliers dst) {
+				if(uniforms != null) uniforms.getAttributeSuppliers(dst);
+				AbstractRenderer.this.getAttributeSuppliers(dst);
+			}
+		};
+		return new Renderable(pass, flags, shader, composed, providers);
 	}
 
-	@Override
-	public IRenderable createRenderable(Pass pass, EnumSet<Flag> flags, IShader shader, IArrayAttributeProvider... providers) {
-		return createRenderable(pass, flags, shader, Arrays.asList(providers));
-	}
-
-	@Override
-	public IRenderable createRenderable(Pass pass, EnumSet<Flag> flags, IShader shader, List<? extends IArrayAttributeProvider> providers) {
-		return new Renderable(pass, flags, shader, this, providers);
-	}
-
-	@Override
-	public void addRenderables(IRenderable renderable) {
-		this.renderables.add(renderable);
-	}
 
 	@Override
 	public void addRenderables(IRenderable... renderables) {
-		addRenderables(Arrays.asList(renderables));
-	}
-	
-	@Override
-	public void addRenderables(List<IRenderable> renderables) {
-		this.renderables.add(renderables);
-	}
-
-	@Override
-	public void removeRenderables(IRenderable renderable) {
-		this.renderables.remove(renderable);
+		this.renderables.add(Arrays.asList(renderables));
 	}
 
 	@Override
 	public void removeRenderables(IRenderable... renderables) {
-		removeRenderables(Arrays.asList(renderables));
+		this.renderables.remove(Arrays.asList(renderables));
 	}
-	
-	@Override
-	public void removeRenderables(List<IRenderable> renderables) {
-		this.renderables.remove(renderables);
-	}
+
 
 	protected void update(GL3 gl) {
 		this.renderables.update(gl);
 		
 	}
 
-	protected void renderPass(GL3 gl, IView view, RenderState state, Pass pass) {
-		this.renderables.render(gl, view, state, pass);
+	protected void renderPass(GL3 gl, RenderState state, Pass pass, boolean interactive) {
+		this.renderables.render(gl, state, pass, interactive);
 	}
 }

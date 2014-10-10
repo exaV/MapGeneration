@@ -2,7 +2,7 @@
 
 uniform sampler2D tex;
 
-uniform bool hasTex;
+uniform bool useTexture;
 
 in vec4 vsColor;
 in vec2 vsTexCoord;
@@ -10,5 +10,5 @@ in vec2 vsTexCoord;
 out vec4 fragColor;
 
 void main() {
-	fragColor = hasTex ? vsColor * texture(tex, vsTexCoord) : vsColor;
+	fragColor = useTexture ? vsColor * texture(tex, vsTexCoord) : vsColor;
 }
