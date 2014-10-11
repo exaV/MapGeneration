@@ -28,11 +28,11 @@
 package ch.fhnw.ether.examples.objloader;
 
 import ch.fhnw.ether.camera.ICamera;
-import ch.fhnw.ether.view.gl.AbstractView;
+import ch.fhnw.ether.view.gl.DefaultView;
 
 import com.jogamp.newt.event.KeyEvent;
 
-public class ObjLoaderView extends AbstractView {
+public class ObjLoaderView extends DefaultView {
 	public ObjLoaderView(ObjLoaderController controller, int x, int y, int w, int h, String title, ICamera camera) {
 		super(controller, x, y, w, h, ViewType.INTERACTIVE_VIEW, title, camera);
 		controller.getUI().setMessage("Use 0-6 on keyboard to set camera");

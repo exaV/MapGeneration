@@ -29,9 +29,9 @@
 package ch.fhnw.ether.examples.mapping;
 
 import ch.fhnw.ether.camera.ICamera;
-import ch.fhnw.ether.view.gl.AbstractView;
+import ch.fhnw.ether.view.gl.DefaultView;
 
-public class MappingView extends AbstractView {
+public class MappingView extends DefaultView {
 	/**
 	 * Create a MPM control or projection view.
 	 *

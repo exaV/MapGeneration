@@ -29,23 +29,17 @@
 
 import java.awt.event.KeyEvent;
 
-import ch.fhnw.ether.controller.AbstractController;
+import ch.fhnw.ether.controller.DefaultController;
 import ch.fhnw.ether.controller.tool.ITool;
-import ch.fhnw.ether.examples.metrobuzz.model.Scene;
 import ch.fhnw.ether.examples.metrobuzz.tool.AreaTool;
 import ch.fhnw.ether.ui.Button;
 import ch.fhnw.ether.ui.Slider;
 
-public class MetroBuzzController extends AbstractController {
+public class MetroBuzzController extends DefaultController {
 	private final ITool areaTool = new AreaTool(this);
 
 	public MetroBuzzController() {
 		addUI();
-	}
-
-	@Override
-	public Scene getScene() {
-		return (Scene) super.getScene();
 	}
 
 	private void addUI() {
@@ -59,5 +53,4 @@ public class MetroBuzzController extends AbstractController {
 		getUI().addWidget(new Button(1, 1, "Quit", "Quit", KeyEvent.VK_ESCAPE, (button, view) -> System.exit(0)));
 		getUI().addWidget(new Slider(2, 0, "Slider", "Slider", 0.3f, (slider, view) -> System.out.println("I slide... " + slider.getValue())));
 	}
-
 }

@@ -37,7 +37,7 @@ import java.util.Map;
 import java.util.prefs.Preferences;
 
 import ch.fhnw.ether.camera.ICamera;
-import ch.fhnw.ether.controller.AbstractController;
+import ch.fhnw.ether.controller.DefaultController;
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.controller.tool.AbstractTool;
 import ch.fhnw.ether.mapping.BimberRaskarCalibrator;
@@ -143,7 +143,7 @@ public final class CalibrationTool extends AbstractTool {
 			clearCalibration(view);
 			break;
 		case KeyEvent.VK_H:
-			AbstractController.printHelp(HELP);
+			DefaultController.printHelp(HELP);
 			break;
 		case KeyEvent.VK_BACK_SPACE:
 		case KeyEvent.VK_DELETE:

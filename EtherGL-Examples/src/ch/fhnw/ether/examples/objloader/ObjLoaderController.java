@@ -27,12 +27,12 @@
  */
 package ch.fhnw.ether.examples.objloader;
 
-import ch.fhnw.ether.controller.AbstractController;
+import ch.fhnw.ether.controller.DefaultController;
 import ch.fhnw.ether.view.IView;
 
 import com.jogamp.newt.event.KeyEvent;
 
-public class ObjLoaderController extends AbstractController {
+public class ObjLoaderController extends DefaultController {
 	private static final String[] HELP = { "Simple Quaternion Example", "", "[1-6] Side Views", "", "Use Mouse Buttons + Shift or Mouse Wheel to Navigate" };
 
 	public ObjLoaderController() {

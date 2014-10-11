@@ -42,11 +42,11 @@ import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.MouseEvent;
 
 /**
- * Abstract view class that implements some basic functionality. Use as base for implementations.
+ * Default view class that implements some basic functionality. Use as base for more complex implementations.
  *
  * @author radar
  */
-public class AbstractView implements IView {
+public class DefaultView implements IView {
 	private final NEWTWindow window;
 
 	private final IController controller;
@@ -59,7 +59,7 @@ public class AbstractView implements IView {
 
 	private boolean enabled = true;
 
-	public AbstractView(IController controller, int x, int y, int w, int h, ViewType viewType, String title, ICamera camera) {
+	public DefaultView(IController controller, int x, int y, int w, int h, ViewType viewType, String title, ICamera camera) {
 		this.window = new NEWTWindow(w, h, title);
 		this.controller = controller;
 		this.viewType = viewType;

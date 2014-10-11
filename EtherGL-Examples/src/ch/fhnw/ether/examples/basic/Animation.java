@@ -36,7 +36,8 @@ import java.util.TimerTask;
 
 import ch.fhnw.ether.camera.Camera;
 import ch.fhnw.ether.camera.ICamera;
-import ch.fhnw.ether.controller.AbstractController;
+import ch.fhnw.ether.controller.DefaultController;
+import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.IRenderer;
 import ch.fhnw.ether.render.IRenderer.Pass;
@@ -53,7 +54,7 @@ import ch.fhnw.ether.scene.mesh.GenericMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.geometry.VertexGeometry;
 import ch.fhnw.ether.view.IView;
-import ch.fhnw.ether.view.gl.AbstractView;
+import ch.fhnw.ether.view.gl.DefaultView;
 import ch.fhnw.util.math.Vec3;
 
 public final class Animation {
@@ -137,12 +138,11 @@ public final class Animation {
 	public Animation() {
 
 		// As always, make first a controller
-		AbstractController controller = new AbstractController() {
-		};
+		IController controller = new DefaultController();
 
 		// And now the default view
 		ICamera camera = new Camera();
-		view = new AbstractView(controller, 100, 100, 500, 500, IView.ViewType.INTERACTIVE_VIEW, "Test", camera);
+		view = new DefaultView(controller, 100, 100, 500, 500, IView.ViewType.INTERACTIVE_VIEW, "Test", camera);
 
 		// Use our own scene
 		IScene scene = new CoolScene(camera);

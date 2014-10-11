@@ -32,7 +32,7 @@ import java.util.TimerTask;
 
 import ch.fhnw.ether.camera.Camera;
 import ch.fhnw.ether.camera.ICamera;
-import ch.fhnw.ether.controller.AbstractController;
+import ch.fhnw.ether.controller.DefaultController;
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.controller.event.EventDrivenScheduler;
 import ch.fhnw.ether.examples.raytracing.surface.Plane;
@@ -40,7 +40,7 @@ import ch.fhnw.ether.examples.raytracing.surface.Sphere;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.IView.ViewType;
-import ch.fhnw.ether.view.gl.AbstractView;
+import ch.fhnw.ether.view.gl.DefaultView;
 import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Vec3;
 
@@ -74,13 +74,13 @@ public class RaytracerExample2 {
 		s.addMesh(wand);
 		s.addMesh(henderi_wand);
 
-		IController c = new AbstractController(new EventDrivenScheduler(), new RayTracingRenderer(s)) {
+		IController c = new DefaultController(new EventDrivenScheduler(), new RayTracingRenderer(s)) {
 			@Override
 			public void updateUI() {
 			} // UI needs forward renderer
 		};
 
-		IView v = new AbstractView(c, 100, 100, 100, 100, ViewType.INTERACTIVE_VIEW, "Raytracing", cam);
+		IView v = new DefaultView(c, 100, 100, 100, 100, ViewType.INTERACTIVE_VIEW, "Raytracing", cam);
 
 		c.addView(v);
 		c.setScene(s);

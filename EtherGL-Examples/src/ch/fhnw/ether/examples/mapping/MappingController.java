@@ -29,7 +29,7 @@
 
 package ch.fhnw.ether.examples.mapping;
 
-import ch.fhnw.ether.controller.AbstractController;
+import ch.fhnw.ether.controller.DefaultController;
 import ch.fhnw.ether.controller.tool.AbstractTool;
 import ch.fhnw.ether.controller.tool.ITool;
 import ch.fhnw.ether.mapping.BoxCalibrationModel;
@@ -40,7 +40,7 @@ import ch.fhnw.ether.view.IView;
 import com.jogamp.newt.event.KeyEvent;
 
 // XXX light position currently not implemented
-public class MappingController extends AbstractController {
+public class MappingController extends DefaultController {
 	private float[] lightPosition = { 10.0f, 6.0f, 8.0f };
 
 	private static final String[] HELP = { "Simple Mapping Example (Without Content)", "", "[1] Default Tool / View", "[2] Mapping Calibration",

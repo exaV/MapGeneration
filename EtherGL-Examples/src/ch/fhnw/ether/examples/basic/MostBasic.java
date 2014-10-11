@@ -28,11 +28,12 @@
  */package ch.fhnw.ether.examples.basic;
 
 import ch.fhnw.ether.camera.Camera;
-import ch.fhnw.ether.controller.AbstractController;
+import ch.fhnw.ether.controller.DefaultController;
+import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.scene.SimpleScene;
 import ch.fhnw.ether.scene.mesh.MeshLibrary;
 import ch.fhnw.ether.view.IView;
-import ch.fhnw.ether.view.gl.AbstractView;
+import ch.fhnw.ether.view.gl.DefaultView;
 
 public final class MostBasic {
 	public static void main(String[] args) {
@@ -47,11 +48,10 @@ public final class MostBasic {
 		scene.addMesh(MeshLibrary.getCube());
 
 		// Create a controller, no need to override anything in this example.
-		AbstractController controller = new AbstractController() {
-		};
+		IController controller = new DefaultController();
 
 		// Create a view (aka rendering window). The view has to know what camera it uses.
-		AbstractView view = new AbstractView(controller, 100, 100, 500, 500, IView.ViewType.INTERACTIVE_VIEW, "Test", camera);
+		IView view = new DefaultView(controller, 100, 100, 500, 500, IView.ViewType.INTERACTIVE_VIEW, "Test", camera);
 
 		// Add the scene (aka "model") and the view to the controller
 		controller.addView(view);

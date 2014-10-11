@@ -51,12 +51,12 @@ import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.MouseEvent;
 
 /**
- * Abstract controller that implements some basic common functionality. Use as base for common implementations.
+ * Default controller that implements some basic common functionality. Use as base for more complex implementations.
  *
  * @author radar
  */
 // TODO: PickTool doesn't really belong here (any tools at all?)
-public abstract class AbstractController implements IController {
+public class DefaultController implements IController {
 	private final IScheduler scheduler;
 	private final IRenderer renderer;
 
@@ -71,11 +71,11 @@ public abstract class AbstractController implements IController {
 	private IView currentView;
 	private ITool activeTool;
 
-	protected AbstractController() {
+	public DefaultController() {
 		this(new EventDrivenScheduler(), new ForwardRenderer());
 	}
 
-	protected AbstractController(IScheduler scheduler, IRenderer renderer) {
+	public DefaultController(IScheduler scheduler, IRenderer renderer) {
 		this.scheduler = scheduler;
 		this.renderer = renderer;
 		this.ui = new UI(this);

@@ -30,9 +30,9 @@
 package ch.fhnw.ether.examples.metrobuzz.controller;
 
 import ch.fhnw.ether.camera.ICamera;
-import ch.fhnw.ether.view.gl.AbstractView;
+import ch.fhnw.ether.view.gl.DefaultView;
 
-public class View extends AbstractView {
+public class View extends DefaultView {
 	public View(MetroBuzzController controller, int x, int y, int w, int h, ViewType type, ICamera camera) {
 		super(controller, x, y, w, h, type, "MetroBuzz", camera);
 	}
