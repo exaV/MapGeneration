@@ -25,17 +25,17 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package ch.fhnw.ether.examples.quaternion;
+package ch.fhnw.ether.examples.objloader;
 
 import ch.fhnw.ether.controller.AbstractController;
 import ch.fhnw.ether.view.IView;
 
 import com.jogamp.newt.event.KeyEvent;
 
-public class QuaternionController extends AbstractController {
+public class ObjLoaderController extends AbstractController {
 	private static final String[] HELP = { "Simple Quaternion Example", "", "[1-6] Side Views", "", "Use Mouse Buttons + Shift or Mouse Wheel to Navigate" };
 
-	public QuaternionController() {
+	public ObjLoaderController() {
 	}
 
 	public void modelChanged() {

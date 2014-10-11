@@ -25,41 +25,41 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package ch.fhnw.ether.examples.quaternion;
+package ch.fhnw.ether.examples.objloader;
 
-import java.io.IOException;
+import ch.fhnw.ether.camera.ICamera;
+import ch.fhnw.ether.view.gl.AbstractView;
 
-import javax.swing.SwingUtilities;
+import com.jogamp.newt.event.KeyEvent;
 
-import ch.fhnw.ether.camera.Camera;
-import ch.fhnw.ether.formats.obj.OBJReader;
-import ch.fhnw.ether.scene.SimpleScene;
-
-public class QuaternionExample {
-	public static void main(String[] args) {
-		// Make sure everything runs on GUI thread...
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					new QuaternionExample();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		});
+public class ObjLoaderView extends AbstractView {
+	public ObjLoaderView(ObjLoaderController controller, int x, int y, int w, int h, String title, ICamera camera) {
+		super(controller, x, y, w, h, ViewType.INTERACTIVE_VIEW, title, camera);
+		controller.getUI().setMessage("Use 0-6 on keyboard to set camera");
 	}
 
-	public QuaternionExample() throws IOException {
-		final QuaternionController controller = new QuaternionController();
-		Camera camera = new Camera();
+	private static final float[][] CAM_PARAMS = { { 5, 0, 0, 0, 0, 90 }, { -5, 0, 0, 0, 0, -90 }, { 0, 5, 0, 0, 0, 180 }, { 0, -5, 0, 0, 0, 0 },
+			{ 0, 0, 5, -90, 0, 0 }, { 0, 0, -5, 90, 0, 0 }, };
 
-		SimpleScene s = new SimpleScene(camera);
-		new OBJReader(getClass().getResource("fhnw.obj")).getMeshes().forEach((x) -> {
-			s.addMesh(x);
-		});
-		controller.setScene(s);
+	@Override
+	public void keyPressed(KeyEvent e) {
+		switch (e.getKeyCode()) {
+		case KeyEvent.VK_1:
+		case KeyEvent.VK_2:
+		case KeyEvent.VK_3:
+		case KeyEvent.VK_4:
+		case KeyEvent.VK_5:
+		case KeyEvent.VK_6:
+			float[] params = CAM_PARAMS[e.getKeyCode() - KeyEvent.VK_1];
+			ICamera cam = getCamera();
+			cam.setPosition(params[0], params[1], params[2]);
+			cam.setRotation(params[3], params[4], params[5]);
+			getController().repaintView(this);
+			break;
+		default:
+			super.keyPressed(e);
+			break;
+		}
 
-		controller.addView(new QuaternionView(controller, 0, 10, 512, 512, "Quaternion View", camera));
 	}
 }
