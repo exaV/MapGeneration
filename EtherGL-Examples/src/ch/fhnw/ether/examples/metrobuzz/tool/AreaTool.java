@@ -61,7 +61,7 @@ public final class AreaTool extends AbstractTool {
 
 	private static final float KEY_INCREMENT = 0.01f;
 
-    private GenericMesh mesh = new GenericMesh(PrimitiveType.TRIANGLE);
+	private GenericMesh mesh = new GenericMesh(PrimitiveType.TRIANGLE);
 
 	private boolean moving = false;
 
@@ -72,7 +72,7 @@ public final class AreaTool extends AbstractTool {
 
 	public AreaTool(IController controller) {
 		super(controller);
-	    mesh.setGeometry(Primitives.UNIT_CUBE_TRIANGLES);
+		mesh.setGeometry(Primitives.UNIT_CUBE_TRIANGLES);
 		mesh.getGeometry().setScale(new Vec3(0.1, 0.1, 0.001));
 		IMaterial m = new ColorMaterial(TOOL_COLOR);
 		IShader s = new MaterialShader(EnumSet.of(ShaderInput.MATERIAL_COLOR));

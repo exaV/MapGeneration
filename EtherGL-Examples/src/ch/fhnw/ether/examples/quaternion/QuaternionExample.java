@@ -36,28 +36,30 @@ import ch.fhnw.ether.formats.obj.OBJReader;
 import ch.fhnw.ether.scene.SimpleScene;
 
 public class QuaternionExample {
-	 public static void main(String[] args) {
-	        // Make sure everything runs on GUI thread...
-	        SwingUtilities.invokeLater(new Runnable() {
-	            @Override
-	            public void run() {
-	                try {
-						new QuaternionExample();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-	            }
-	        });
-	    }
+	public static void main(String[] args) {
+		// Make sure everything runs on GUI thread...
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					new QuaternionExample();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
 
-	    public QuaternionExample() throws IOException {
-	        final QuaternionController controller = new QuaternionController();
-	        Camera camera = new Camera();
-	 
-	        SimpleScene s = new SimpleScene(camera);
-	        new OBJReader(getClass().getResource("fhnw.obj")).getMeshes().forEach((x) -> {s.addMesh(x);} );
-	        controller.setScene(s);
-	        
-	        controller.addView(new QuaternionView(controller, 0, 10, 512, 512, "Quaternion View", camera));
-	    }
+	public QuaternionExample() throws IOException {
+		final QuaternionController controller = new QuaternionController();
+		Camera camera = new Camera();
+
+		SimpleScene s = new SimpleScene(camera);
+		new OBJReader(getClass().getResource("fhnw.obj")).getMeshes().forEach((x) -> {
+			s.addMesh(x);
+		});
+		controller.setScene(s);
+
+		controller.addView(new QuaternionView(controller, 0, 10, 512, 512, "Quaternion View", camera));
+	}
 }

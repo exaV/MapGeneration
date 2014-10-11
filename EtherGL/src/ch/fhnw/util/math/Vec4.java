@@ -61,15 +61,15 @@ public class Vec4 {
 	}
 
 	public Vec4(double x, double y, double z, double w) {
-		this((float)x, (float)y, (float)z, (float)w);
+		this((float) x, (float) y, (float) z, (float) w);
 	}
-	
+
 	public Vec4(float x, float y, float z) {
 		this(x, y, z, 1);
 	}
 
 	public Vec4(double x, double y, double z) {
-		this((float)x, (float)y, (float)z);
+		this((float) x, (float) y, (float) z);
 	}
 
 	public Vec4(Vec3 v) {

@@ -38,56 +38,56 @@ import java.util.prefs.Preferences;
 import ch.fhnw.util.math.Vec3;
 
 class CalibrationContext {
-    boolean calibrated = false;
-    int currentSelection = -1;
-    List<Vec3> modelVertices = new ArrayList<>();
-    List<Vec3> projectedVertices = new ArrayList<>();
+	boolean calibrated = false;
+	int currentSelection = -1;
+	List<Vec3> modelVertices = new ArrayList<>();
+	List<Vec3> projectedVertices = new ArrayList<>();
 
-    CalibrationContext() {
+	CalibrationContext() {
 	}
-    
-    void load(Preferences p, int index) {
-        byte[] mv = p.getByteArray("modelVertices_" + index, null);
-        byte[] pv = p.getByteArray("projectedVertices_" + index, null);
-        if (mv != null) {
-            modelVertices = fromByteArray(mv);
-            projectedVertices = fromByteArray(pv);
-            calibrated = true;
-        } else {
-            modelVertices = new ArrayList<>();
-            projectedVertices = new ArrayList<>();
-            calibrated = false;
-        }
-    }
 
-    void save(Preferences p, int index) {
-        if (calibrated) {
-            p.putByteArray("modelVertices_" + index, toByteArray(modelVertices));
-            p.putByteArray("projectedVertices_" + index, toByteArray(projectedVertices));
-        } else {
-            p.remove("modelVertices_" + index);
-            p.remove("projectedVertices_" + index);
-        }
-    }
+	void load(Preferences p, int index) {
+		byte[] mv = p.getByteArray("modelVertices_" + index, null);
+		byte[] pv = p.getByteArray("projectedVertices_" + index, null);
+		if (mv != null) {
+			modelVertices = fromByteArray(mv);
+			projectedVertices = fromByteArray(pv);
+			calibrated = true;
+		} else {
+			modelVertices = new ArrayList<>();
+			projectedVertices = new ArrayList<>();
+			calibrated = false;
+		}
+	}
 
-    private byte[] toByteArray(List<Vec3> vertices) {
-        ByteBuffer bb = ByteBuffer.allocate(vertices.size() * 3 * 8);
-        FloatBuffer fb = bb.asFloatBuffer();
-        for (Vec3 v : vertices) {
-            fb.put(v.x);
-            fb.put(v.y);
-            fb.put(v.z);
-        }
-        return bb.array();
-    }
+	void save(Preferences p, int index) {
+		if (calibrated) {
+			p.putByteArray("modelVertices_" + index, toByteArray(modelVertices));
+			p.putByteArray("projectedVertices_" + index, toByteArray(projectedVertices));
+		} else {
+			p.remove("modelVertices_" + index);
+			p.remove("projectedVertices_" + index);
+		}
+	}
 
-    private List<Vec3> fromByteArray(byte[] bytes) {
-        List<Vec3> list = new ArrayList<>();
-        ByteBuffer bb = ByteBuffer.wrap(bytes);
-        FloatBuffer dd = bb.asFloatBuffer();
-        for (int i = 0; i < dd.capacity(); i += 3) {
-            list.add(new Vec3(dd.get(), dd.get(), dd.get()));
-        }
-        return list;
-    }
+	private byte[] toByteArray(List<Vec3> vertices) {
+		ByteBuffer bb = ByteBuffer.allocate(vertices.size() * 3 * 8);
+		FloatBuffer fb = bb.asFloatBuffer();
+		for (Vec3 v : vertices) {
+			fb.put(v.x);
+			fb.put(v.y);
+			fb.put(v.z);
+		}
+		return bb.array();
+	}
+
+	private List<Vec3> fromByteArray(byte[] bytes) {
+		List<Vec3> list = new ArrayList<>();
+		ByteBuffer bb = ByteBuffer.wrap(bytes);
+		FloatBuffer dd = bb.asFloatBuffer();
+		for (int i = 0; i < dd.capacity(); i += 3) {
+			list.add(new Vec3(dd.get(), dd.get(), dd.get()));
+		}
+		return list;
+	}
 }

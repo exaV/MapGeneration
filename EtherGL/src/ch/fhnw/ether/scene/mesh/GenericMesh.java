@@ -57,22 +57,22 @@ public class GenericMesh implements IMesh {
 		this.type = type;
 		changed = true;
 	}
-	
+
 	public GenericMesh(PrimitiveType type, IMaterial material) {
 		this(type);
 		this.material = material;
 	}
-	
+
 	public GenericMesh(VertexGeometry geometry, IMaterial material) {
 		this(geometry.getPrimitiveType(), material);
 		this.geometry = geometry;
 	}
-	
+
 	public GenericMesh(VertexGeometry geometry) {
 		this(geometry.getPrimitiveType());
 		this.geometry = geometry;
 	}
-	
+
 	public void setGeometry(VertexGeometry geometry) {
 		this.type = geometry.getPrimitiveType();
 		this.geometry = geometry;
@@ -80,49 +80,42 @@ public class GenericMesh implements IMesh {
 	}
 
 	public void setGeometry(float[] vertices) {
-		setGeometry(vertices, RGBA.WHITE.generateColorArray(vertices.length/3));
+		setGeometry(vertices, RGBA.WHITE.generateColorArray(vertices.length / 3));
 	}
-	
+
 	public void setGeometry(float[] vertices, float[] colors) {
-		IArrayAttribute[] attributes = new IArrayAttribute[]{new PositionArray(), new ColorArray()};
-		float[][] data = new float[][]{vertices, colors};
+		IArrayAttribute[] attributes = new IArrayAttribute[] { new PositionArray(), new ColorArray() };
+		float[][] data = new float[][] { vertices, colors };
 
 		geometry = new VertexGeometry(data, attributes, type);
 		changed = true;
 	}
 
 	public void setGeometry(float[] vertices, float[] normals, float[] colors, float[] texCoords) {
-		IArrayAttribute[] attributes = new IArrayAttribute[]{
-				new PositionArray(), 
-				new NormalArray(), 
-				new ColorArray(), 
-				new TexCoordArray()};
-		float[][] data = new float[][]{vertices, normals, colors, texCoords};
+		IArrayAttribute[] attributes = new IArrayAttribute[] { new PositionArray(), new NormalArray(), new ColorArray(), new TexCoordArray() };
+		float[][] data = new float[][] { vertices, normals, colors, texCoords };
 
 		geometry = new VertexGeometry(data, attributes, type);
 		changed = true;
 	}
-	
+
 	public void setGeometry(float[] vertices, float[] normals, float[] colors) {
-		IArrayAttribute[] attributes = new IArrayAttribute[]{
-				new PositionArray(), 
-				new NormalArray(), 
-				new ColorArray()};
-		float[][] data = new float[][]{vertices, normals, colors};
+		IArrayAttribute[] attributes = new IArrayAttribute[] { new PositionArray(), new NormalArray(), new ColorArray() };
+		float[][] data = new float[][] { vertices, normals, colors };
 
 		geometry = new VertexGeometry(data, attributes, type);
 		changed = true;
 	}
-	
+
 	public void setMaterial(IMaterial material) {
 		this.material = material;
 		changed = true;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
-	
+
 	public void setName(String name) {
 		this.name = name;
 		changed = true;

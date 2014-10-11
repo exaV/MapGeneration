@@ -29,24 +29,23 @@
 
 package ch.fhnw.util.math;
 
-
 /**
  * Created by radar on 05/12/13.
  */
 public interface ITransformable {
-    Vec3 getOrigin();
+	Vec3 getOrigin();
 
-    void setOrigin(Vec3 origin);
+	void setOrigin(Vec3 origin);
 
-    Vec3 getTranslation();
+	Vec3 getTranslation();
 
-    void setTranslation(Vec3 translation);
+	void setTranslation(Vec3 translation);
 
-    Vec3 getRotation();
+	Vec3 getRotation();
 
-    void setRotation(Vec3 rotation);
+	void setRotation(Vec3 rotation);
 
-    Vec3 getScale();
+	Vec3 getScale();
 
-    void setScale(Vec3 scale);
+	void setScale(Vec3 scale);
 }

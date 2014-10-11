@@ -35,190 +35,190 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class OSCDispatcher {
-    private static final boolean DBG = true;
+	private static final boolean DBG = true;
 
-    private static final OSCHandler DEFAULT_HANDLER = new OSCHandler() {
-        @Override
-        public Object[] handle(String[] address, int addrIdx, StringBuilder typeString, long timetag, Object... args) {
-            if (DBG) {
-                System.out.print("[");
-                for (int i = 0; i < address.length; i++)
-                    System.out.print((i == addrIdx ? ':' : '/') + address[i]);
-                System.out.print("(" + typeString + ")@" + timetag + ":");
-                for (Object o : args) {
-                    if (o instanceof String)
-                        System.out.print('"' + o.toString() + '"');
-                    else if (o instanceof byte[])
-                        System.out.print('{' + OSCCommon.toHex((byte[]) o) + '}');
-                    else
-                        System.out.print(o + " ");
-                }
-                System.out.println("]");
-            }
-            return null;
-        }
-    };
+	private static final OSCHandler DEFAULT_HANDLER = new OSCHandler() {
+		@Override
+		public Object[] handle(String[] address, int addrIdx, StringBuilder typeString, long timetag, Object... args) {
+			if (DBG) {
+				System.out.print("[");
+				for (int i = 0; i < address.length; i++)
+					System.out.print((i == addrIdx ? ':' : '/') + address[i]);
+				System.out.print("(" + typeString + ")@" + timetag + ":");
+				for (Object o : args) {
+					if (o instanceof String)
+						System.out.print('"' + o.toString() + '"');
+					else if (o instanceof byte[])
+						System.out.print('{' + OSCCommon.toHex((byte[]) o) + '}');
+					else
+						System.out.print(o + " ");
+				}
+				System.out.println("]");
+			}
+			return null;
+		}
+	};
 
-    private OSCNode addressSpace = new OSCNode(DEFAULT_HANDLER);
-    protected int messageCount;
+	private OSCNode addressSpace = new OSCNode(DEFAULT_HANDLER);
+	protected int messageCount;
 
-    protected OSCDispatcher() {
-    }
+	protected OSCDispatcher() {
+	}
 
-    public void installHandler(String address, OSCHandler handler) {
-        if (address.equals("/"))
-            addressSpace.setHandler(handler);
-        else {
-            String[] parts = OSCCommon.split(address, '/');
-            OSCNode node = addressSpace;
-            for (int i = 1; i < parts.length - 1; i++)
-                node = node.get(parts[i]);
-            node.get(parts[parts.length - 1]).setHandler(handler);
-        }
-    }
+	public void installHandler(String address, OSCHandler handler) {
+		if (address.equals("/"))
+			addressSpace.setHandler(handler);
+		else {
+			String[] parts = OSCCommon.split(address, '/');
+			OSCNode node = addressSpace;
+			for (int i = 1; i < parts.length - 1; i++)
+				node = node.get(parts[i]);
+			node.get(parts[parts.length - 1]).setHandler(handler);
+		}
+	}
 
-    protected void process(SocketAddress peer, ByteBuffer packet, long timetag, OSCSender sender) {
-        StringBuilder address = new StringBuilder();
-        for (; ; ) {
-            char c = (char) packet.get();
-            if (c == 0)
-                break;
-            address.append(c);
-        }
-        OSCCommon.align(packet);
-        dispatch(peer, address.toString(), packet, timetag, sender);
-    }
+	protected void process(SocketAddress peer, ByteBuffer packet, long timetag, OSCSender sender) {
+		StringBuilder address = new StringBuilder();
+		for (;;) {
+			char c = (char) packet.get();
+			if (c == 0)
+				break;
+			address.append(c);
+		}
+		OSCCommon.align(packet);
+		dispatch(peer, address.toString(), packet, timetag, sender);
+	}
 
-    private void dispatch(SocketAddress peer, String address, ByteBuffer packet, long timetag, OSCSender sender) {
-        if (address.equals("#bundle")) {
-            timetag = packet.getLong();
-            while (packet.position() < packet.limit()) {
-                packet.getInt(); // skip size
-                process(peer, packet, timetag, sender);
-            }
-        } else {
-            messageCount++;
-            int messageStart = packet.position() - (4 * ((address.length() / 4) + 1));
-            StringBuilder typeString = new StringBuilder();
-            for (; ; ) {
-                char c = (char) packet.get();
-                if (c == 0)
-                    break;
-                typeString.append(c);
-            }
-            OSCCommon.align(packet);
-            Object[] args = new Object[typeString.length() - 1];
-            for (int i = 1; i < typeString.length(); i++) {
-                switch (typeString.charAt(i)) {
-                    case 'i':
-                        args[i - 1] = packet.getInt();
-                        break;
-                    case 'f':
-                        args[i - 1] = packet.getFloat();
-                        break;
-                    case 'd':
-                        args[i - 1] = packet.getDouble();
-                        break;
-                    case 's':
-                        StringBuilder tmp = new StringBuilder();
-                        for (; ; ) {
-                            char c = (char) packet.get();
-                            if (c == 0)
-                                break;
-                            tmp.append(c);
-                        }
-                        args[i - 1] = tmp.toString();
-                        OSCCommon.align(packet);
-                        break;
-                    case 'T':
-                        args[i - 1] = true;
-                        break;
-                    case 'F':
-                        args[i - 1] = false;
-                        break;
-                    case 'N':
-                        args[i - 1] = null;
-                        break;
-                    case 'b':
-                        int size = packet.getInt();
-                        byte[] blob = new byte[size];
-                        packet.get(blob);
-                        args[i - 1] = blob;
-                        OSCCommon.align(packet);
-                        break;
-                    default:
-                        throw new IllegalArgumentException("Illegal type string: '" + typeString.charAt(i) + "' in " + typeString);
-                }
-            }
-            int messageEnd = packet.position();
+	private void dispatch(SocketAddress peer, String address, ByteBuffer packet, long timetag, OSCSender sender) {
+		if (address.equals("#bundle")) {
+			timetag = packet.getLong();
+			while (packet.position() < packet.limit()) {
+				packet.getInt(); // skip size
+				process(peer, packet, timetag, sender);
+			}
+		} else {
+			messageCount++;
+			int messageStart = packet.position() - (4 * ((address.length() / 4) + 1));
+			StringBuilder typeString = new StringBuilder();
+			for (;;) {
+				char c = (char) packet.get();
+				if (c == 0)
+					break;
+				typeString.append(c);
+			}
+			OSCCommon.align(packet);
+			Object[] args = new Object[typeString.length() - 1];
+			for (int i = 1; i < typeString.length(); i++) {
+				switch (typeString.charAt(i)) {
+				case 'i':
+					args[i - 1] = packet.getInt();
+					break;
+				case 'f':
+					args[i - 1] = packet.getFloat();
+					break;
+				case 'd':
+					args[i - 1] = packet.getDouble();
+					break;
+				case 's':
+					StringBuilder tmp = new StringBuilder();
+					for (;;) {
+						char c = (char) packet.get();
+						if (c == 0)
+							break;
+						tmp.append(c);
+					}
+					args[i - 1] = tmp.toString();
+					OSCCommon.align(packet);
+					break;
+				case 'T':
+					args[i - 1] = true;
+					break;
+				case 'F':
+					args[i - 1] = false;
+					break;
+				case 'N':
+					args[i - 1] = null;
+					break;
+				case 'b':
+					int size = packet.getInt();
+					byte[] blob = new byte[size];
+					packet.get(blob);
+					args[i - 1] = blob;
+					OSCCommon.align(packet);
+					break;
+				default:
+					throw new IllegalArgumentException("Illegal type string: '" + typeString.charAt(i) + "' in " + typeString);
+				}
+			}
+			int messageEnd = packet.position();
 
-            OSCNode node = addressSpace;
-            OSCHandler handler = node.getHandler();
-            String[] parts = OSCCommon.split(address, '/');
-            int idx = 0;
-            for (int i = 1; i < parts.length; i++) {
-                OSCNode tmp = node.lookup(parts[i]);
-                if (tmp != null) {
-                    if (tmp.getHandler() != null) {
-                        handler = tmp.getHandler();
-                        idx = i;
-                    }
-                    node = tmp;
-                } else
-                    break;
-            }
+			OSCNode node = addressSpace;
+			OSCHandler handler = node.getHandler();
+			String[] parts = OSCCommon.split(address, '/');
+			int idx = 0;
+			for (int i = 1; i < parts.length; i++) {
+				OSCNode tmp = node.lookup(parts[i]);
+				if (tmp != null) {
+					if (tmp.getHandler() != null) {
+						handler = tmp.getHandler();
+						idx = i;
+					}
+					node = tmp;
+				} else
+					break;
+			}
 
-            Object[] reply = handler.handle(parts, idx + 1, typeString, timetag, args);
-            if (reply != null) {
-                byte[] request = new byte[messageEnd - messageStart];
-                packet.position(messageStart);
-                packet.get(request);
-                ByteBuffer msg = OSCMessage.getBytes("#reply", request, reply);
-                try {
-                    sender.send(peer, msg);
-                } catch (IOException ex) {
-                    OSCCommon.handleException(ex, OSCDispatcher.this);
-                }
-            }
-        }
-    }
+			Object[] reply = handler.handle(parts, idx + 1, typeString, timetag, args);
+			if (reply != null) {
+				byte[] request = new byte[messageEnd - messageStart];
+				packet.position(messageStart);
+				packet.get(request);
+				ByteBuffer msg = OSCMessage.getBytes("#reply", request, reply);
+				try {
+					sender.send(peer, msg);
+				} catch (IOException ex) {
+					OSCCommon.handleException(ex, OSCDispatcher.this);
+				}
+			}
+		}
+	}
 
-    public int getMessageCount() {
-        return messageCount;
-    }
+	public int getMessageCount() {
+		return messageCount;
+	}
 
-    class OSCNode {
-        private ConcurrentHashMap<String, OSCNode> children;
-        private OSCHandler handler;
+	class OSCNode {
+		private ConcurrentHashMap<String, OSCNode> children;
+		private OSCHandler handler;
 
-        public OSCNode() {
-        }
+		public OSCNode() {
+		}
 
-        public OSCNode(OSCHandler handler) {
-            setHandler(handler);
-        }
+		public OSCNode(OSCHandler handler) {
+			setHandler(handler);
+		}
 
-        public OSCHandler getHandler() {
-            return handler;
-        }
+		public OSCHandler getHandler() {
+			return handler;
+		}
 
-        public OSCNode lookup(String name) {
-            return children == null ? null : children.get(name);
-        }
+		public OSCNode lookup(String name) {
+			return children == null ? null : children.get(name);
+		}
 
-        public OSCNode get(String name) {
-            if (children == null)
-                children = new ConcurrentHashMap<>();
-            OSCNode result = children.get(name);
-            if (result == null) {
-                result = new OSCNode();
-                children.put(name, result);
-            }
-            return result;
-        }
+		public OSCNode get(String name) {
+			if (children == null)
+				children = new ConcurrentHashMap<>();
+			OSCNode result = children.get(name);
+			if (result == null) {
+				result = new OSCNode();
+				children.put(name, result);
+			}
+			return result;
+		}
 
-        public void setHandler(OSCHandler handler) {
-            this.handler = handler;
-        }
-    }
+		public void setHandler(OSCHandler handler) {
+			this.handler = handler;
+		}
+	}
 }

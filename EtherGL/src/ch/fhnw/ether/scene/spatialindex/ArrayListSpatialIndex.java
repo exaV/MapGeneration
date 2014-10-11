@@ -76,7 +76,7 @@ class ArrayListSpatialIndex implements ISpatialIndex {
 		}
 		return result;
 	}
-	
+
 	@Override
 	public List<IGeometry> getGeometries() {
 		return Collections.unmodifiableList(geometries);

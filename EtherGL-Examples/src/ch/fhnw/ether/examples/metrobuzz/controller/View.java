@@ -33,7 +33,7 @@ import ch.fhnw.ether.camera.ICamera;
 import ch.fhnw.ether.view.gl.AbstractView;
 
 public class View extends AbstractView {
-    public View(MetroBuzzController controller, int x, int y, int w, int h, ViewType type, ICamera camera) {
-        super(controller, x, y, w, h, type, "MetroBuzz", camera);
-    }
+	public View(MetroBuzzController controller, int x, int y, int w, int h, ViewType type, ICamera camera) {
+		super(controller, x, y, w, h, type, "MetroBuzz", camera);
+	}
 }

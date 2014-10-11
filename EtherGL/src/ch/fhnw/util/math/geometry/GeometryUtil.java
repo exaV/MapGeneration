@@ -40,15 +40,16 @@ import ch.fhnw.util.IntList;
 import ch.fhnw.util.math.Vec3;
 
 public class GeometryUtil {
-	private static final IntList TRIANGLE = new IntList(new int[] {0, 1, 2}); 
+	private static final IntList TRIANGLE = new IntList(new int[] { 0, 1, 2 });
 
 	public static IntList triangualte(float[] polygon) {
-		if(polygon.length == 9) return TRIANGLE;
+		if (polygon.length == 9)
+			return TRIANGLE;
 
 		final IntList result = new IntList(polygon.length * 2);
 
-		if(isConvex(polygon)) {
-			for(int i = 2; i < polygon.length / 3; i++) {
+		if (isConvex(polygon)) {
+			for (int i = 2; i < polygon.length / 3; i++) {
 				result.add(0);
 				result.add(i - 1);
 				result.add(i);
@@ -59,8 +60,8 @@ public class GeometryUtil {
 		GLUtessellatorCallback callback = new GLUtessellatorCallbackAdapter() {
 			@Override
 			public void vertex(Object vertexData) {
-				if(vertexData instanceof Integer)
-					result.add(((Integer)vertexData).intValue());
+				if (vertexData instanceof Integer)
+					result.add(((Integer) vertexData).intValue());
 			}
 
 			@Override
@@ -69,18 +70,18 @@ public class GeometryUtil {
 			}
 		};
 		GLUtessellator tess = GLU.gluNewTess();
-		GLU.gluTessCallback(tess, GLU.GLU_TESS_VERTEX,         callback);
-		GLU.gluTessCallback(tess, GLU.GLU_TESS_BEGIN,          callback);
-		GLU.gluTessCallback(tess, GLU.GLU_TESS_EDGE_FLAG_DATA, callback); 
-		GLU.gluTessCallback(tess, GLU.GLU_TESS_END,            callback);
+		GLU.gluTessCallback(tess, GLU.GLU_TESS_VERTEX, callback);
+		GLU.gluTessCallback(tess, GLU.GLU_TESS_BEGIN, callback);
+		GLU.gluTessCallback(tess, GLU.GLU_TESS_EDGE_FLAG_DATA, callback);
+		GLU.gluTessCallback(tess, GLU.GLU_TESS_END, callback);
 
 		GLU.gluTessBeginPolygon(tess, null);
 		GLU.gluTessBeginContour(tess);
 		double[] tmp = new double[3];
-		for(int i = 0; i < polygon.length; i += 3) {
-			tmp[0] = polygon[i+0];
-			tmp[1] = polygon[i+1];
-			tmp[2] = polygon[i+2];
+		for (int i = 0; i < polygon.length; i += 3) {
+			tmp[0] = polygon[i + 0];
+			tmp[1] = polygon[i + 1];
+			tmp[2] = polygon[i + 2];
 			GLU.gluTessVertex(tess, tmp, 0, Integer.valueOf(i / 3));
 		}
 		GLU.gluTessEndContour(tess);
@@ -90,102 +91,100 @@ public class GeometryUtil {
 		return result;
 	}
 
-	public static boolean isConvex(float[] polygon) {  
-		if(polygon.length < 9)  return false;
-		if(polygon.length == 9) return true;  
-		
+	public static boolean isConvex(float[] polygon) {
+		if (polygon.length < 9)
+			return false;
+		if (polygon.length == 9)
+			return true;
+
 		// At this point we know that the polygon has at least 4 sides.
-		
+
 		/*
-		 *  Process will be to step through the sides, 3 vertices at a time.
-		 *  As long the signed area for the triangles formed by each set of
-		 *  vertices is the same (negative or positive), then the polygon is convex.
-		 *  
-		 *  Using a shortcut by projecting onto the (x, z) or (x, y) plane for all calculations.
-		 *  For a proper polygon, if the 2D projection is convex, the 3D polygon is convex.
-		 *  
-		 *  There is one special case: A polygon that is vertical.  I.e. 2D on the (x, z) plane.
-		 *  This is detected during the first test.
+		 * Process will be to step through the sides, 3 vertices at a time. As long the signed area for the triangles
+		 * formed by each set of vertices is the same (negative or positive), then the polygon is convex.
+		 * 
+		 * Using a shortcut by projecting onto the (x, z) or (x, y) plane for all calculations. For a proper polygon, if
+		 * the 2D projection is convex, the 3D polygon is convex.
+		 * 
+		 * There is one special case: A polygon that is vertical. I.e. 2D on the (x, z) plane. This is detected during
+		 * the first test.
 		 */
 
-		int offset = 2;  // Start by projecting to the (x, z) plane.
-		
+		int offset = 2; // Start by projecting to the (x, z) plane.
+
 		int pStartVert = 0;
-		
-		float initDirection = getSignedAreaX2(polygon[pStartVert]
-		                          , polygon[pStartVert+2]
-		                          , polygon[pStartVert+3]
-		                          , polygon[pStartVert+5]
-		                          , polygon[pStartVert+6]
-		                          , polygon[pStartVert+8]);
-		
-		if (initDirection > -2 * EPSILON 
-				&& initDirection < 2 * EPSILON)
-		{
-			// The polygon is on or very close to the vertical plane.  Switch to projecting on the (x, y) plane.
+
+		float initDirection = getSignedAreaX2(polygon[pStartVert], polygon[pStartVert + 2], polygon[pStartVert + 3], polygon[pStartVert + 5],
+				polygon[pStartVert + 6], polygon[pStartVert + 8]);
+
+		if (initDirection > -2 * EPSILON && initDirection < 2 * EPSILON) {
+			// The polygon is on or very close to the vertical plane. Switch to projecting on the (x, y) plane.
 			offset = 1;
-			initDirection = getSignedAreaX2(polygon[pStartVert]
-			                    , polygon[pStartVert+1]
-			                    , polygon[pStartVert+3]
-			                    , polygon[pStartVert+4]
-			                    , polygon[pStartVert+6]
-			                    , polygon[pStartVert+7]);
+			initDirection = getSignedAreaX2(polygon[pStartVert], polygon[pStartVert + 1], polygon[pStartVert + 3], polygon[pStartVert + 4],
+					polygon[pStartVert + 6], polygon[pStartVert + 7]);
 			// Dev note: This is meant to be a strict zero test.
 			if (initDirection == 0)
-				// Some sort of problem.  Should very rarely ever get here.
-				return false;  
+				// Some sort of problem. Should very rarely ever get here.
+				return false;
 		}
-		
+
 		int vertLength = polygon.length;
-		for (int vertAPointer = pStartVert+3; vertAPointer < vertLength; vertAPointer += 3)
-		{
-			int vertBPointer = vertAPointer+3;
-			if (vertBPointer >= vertLength) 
+		for (int vertAPointer = pStartVert + 3; vertAPointer < vertLength; vertAPointer += 3) {
+			int vertBPointer = vertAPointer + 3;
+			if (vertBPointer >= vertLength)
 				// Wrap it back to the start.
-				vertBPointer = pStartVert;  
-			int vertCPointer = vertBPointer+3;
+				vertBPointer = pStartVert;
+			int vertCPointer = vertBPointer + 3;
 			if (vertCPointer >= vertLength)
 				// Wrap it back to the start.
 				vertCPointer = pStartVert;
-			float direction = getSignedAreaX2(
-					  polygon[vertAPointer]
-					, polygon[vertAPointer+offset]
-			        , polygon[vertBPointer]
-			        , polygon[vertBPointer+offset]
-			        , polygon[vertCPointer]
-			        , polygon[vertCPointer+offset]);
+			float direction = getSignedAreaX2(polygon[vertAPointer], polygon[vertAPointer + offset], polygon[vertBPointer], polygon[vertBPointer + offset],
+					polygon[vertCPointer], polygon[vertCPointer + offset]);
 			if (!(initDirection < 0 && direction < 0) && !(initDirection > 0 && direction > 0))
 				// The sign of the current direction is not the same as the sign of the
-				// initial direction.  Can't be convex.
+				// initial direction. Can't be convex.
 				return false;
 		}
-		
-		return true;	
+
+		return true;
 	}
 
 	/**
-	 * The absolute value of the returned value is two times the area of the
-	 * triangle ABC.
-	 * <p>A positive value indicates:</p>
+	 * The absolute value of the returned value is two times the area of the triangle ABC.
+	 * <p>
+	 * A positive value indicates:
+	 * </p>
 	 * <ul>
 	 * <li>Counterclockwise wrapping of the vertices.</li>
 	 * <li>Vertex B lies to the right of line AC, looking from A toward C.</li>
 	 * </ul>
-	 * <p>A negative value indicates:</p>
+	 * <p>
+	 * A negative value indicates:
+	 * </p>
 	 * <ul>
 	 * <li>Clockwise wrapping of the vertices.</li>
 	 * <li>Vertex B lies to the left of line AC, looking from A toward C.</li>
 	 * </ul>
-	 * <p>A value of zero indicates that all points are collinear or represent the same point.</p>
-	 * <p>This is a low cost operation.</p>
-	 * @param ax The x-value for vertex A in triangle ABC
-	 * @param ay The y-value for vertex A in triangle ABC
-	 * @param bx The x-value for vertex B in triangle ABC
-	 * @param by The y-value for vertex B in triangle ABC
-	 * @param cx The x-value for vertex C in triangle ABC
-	 * @param cy The y-value for vertex C in triangle ABC
-	 * @return The absolute value of the returned value is two times the area of the
-	 * triangle ABC.
+	 * <p>
+	 * A value of zero indicates that all points are collinear or represent the same point.
+	 * </p>
+	 * <p>
+	 * This is a low cost operation.
+	 * </p>
+	 * 
+	 * @param ax
+	 *            The x-value for vertex A in triangle ABC
+	 * @param ay
+	 *            The y-value for vertex A in triangle ABC
+	 * @param bx
+	 *            The x-value for vertex B in triangle ABC
+	 * @param by
+	 *            The y-value for vertex B in triangle ABC
+	 * @param cx
+	 *            The x-value for vertex C in triangle ABC
+	 * @param cy
+	 *            The y-value for vertex C in triangle ABC
+	 * @return The absolute value of the returned value is two times the area of the triangle ABC.
 	 */
 	private static float getSignedAreaX2(float ax, float ay, float bx, float by, float cx, float cy) {
 		// References:
@@ -193,7 +192,7 @@ public class GeometryUtil {
 		// http://mathworld.wolfram.com/TriangleArea.html (Search for "signed".)
 		return (bx - ax) * (cy - ay) - (cx - ax) * (by - ay);
 	}
-	
+
 	public static float[] calculateNormals(float[] triangles) {
 		float[] normals = new float[triangles.length];
 		for (int i = 0; i < triangles.length; i += 9) {
@@ -201,7 +200,7 @@ public class GeometryUtil {
 			Vec3 a = new Vec3(triangles[i + 3] - triangles[i], triangles[i + 4] - triangles[i + 1], triangles[i + 5] - triangles[i + 2]);
 			Vec3 b = new Vec3(triangles[i + 6] - triangles[i], triangles[i + 7] - triangles[i + 1], triangles[i + 8] - triangles[i + 2]);
 			n = a.cross(b).normalize();
-			if(n == null)
+			if (n == null)
 				n = new Vec3(0, 0, 1);
 			normals[i] = normals[i + 3] = normals[i + 6] = n.x;
 			normals[i + 1] = normals[i + 4] = normals[i + 7] = n.y;
@@ -225,7 +224,6 @@ public class GeometryUtil {
 	public static float intersectScreenRayWithPlane(float x, float y, float[] triangle, int index) {
 		return intersectRayWithTriangleOrPlane(new Vec3(x, y, 0), new Vec3(0, 0, -1), triangle, index, false);
 	}
-
 
 	// http://en.wikipedia.org/wiki/Möller–Trumbore_intersection_algorithm
 	private static final float EPSILON = 0.000001f;
@@ -251,7 +249,6 @@ public class GeometryUtil {
 
 		// float det = e1 * p
 		float det = e1x * px + e1y * py + e1z * pz;
-
 
 		if (det > -EPSILON && det < EPSILON)
 			return Float.POSITIVE_INFINITY;

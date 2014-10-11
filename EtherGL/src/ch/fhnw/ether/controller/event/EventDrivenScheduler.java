@@ -48,7 +48,7 @@ public final class EventDrivenScheduler extends AbstractScheduler {
 
 	public EventDrivenScheduler() {
 	}
-	
+
 	@Override
 	protected void runRenderThread() {
 		try {

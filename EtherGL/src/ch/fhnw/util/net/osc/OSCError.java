@@ -30,23 +30,23 @@
 package ch.fhnw.util.net.osc;
 
 public class OSCError extends Exception {
-    private static final long serialVersionUID = -1635557595316200871L;
+	private static final long serialVersionUID = -1635557595316200871L;
 
-    public enum Error {
-        noerror, undefined, relocated, corrupt, mismatch, infeasable, missing, failed
-    }
+	public enum Error {
+		noerror, undefined, relocated, corrupt, mismatch, infeasable, missing, failed
+	}
 
-    private Error error = Error.noerror;
+	private Error error = Error.noerror;
 
-    public OSCError(Error error) {
-        this.error = error;
-    }
+	public OSCError(Error error) {
+		this.error = error;
+	}
 
-    public Error getCode() {
-        return error;
-    }
+	public Error getCode() {
+		return error;
+	}
 
-    public String getDocumentation() {
-        return error.toString();
-    }
+	public String getDocumentation() {
+		return error.toString();
+	}
 }

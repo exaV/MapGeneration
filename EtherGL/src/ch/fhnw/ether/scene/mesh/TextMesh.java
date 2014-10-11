@@ -80,11 +80,11 @@ public class TextMesh extends GenericMesh {
 		this.y = y;
 		this.w = w;
 		this.h = h;
-		
-		float[] position = new float[]{x, y, 0, x + w, y, 0, x + w, y + h, 0, x, y, 0, x + w, y + h, 0, x, y + h, 0};
+
+		float[] position = new float[] { x, y, 0, x + w, y, 0, x + w, y + h, 0, x, y, 0, x + w, y + h, 0, x, y + h, 0 };
 		float[] tex_coords = Primitives.DEFAULT_QUAD_TEX_COORDS;
-		IArrayAttribute[] attribs = new IArrayAttribute[]{new PositionArray(), new TexCoordArray()};
-		setGeometry(new VertexGeometry(new float[][]{position, tex_coords}, attribs, PrimitiveType.TRIANGLE));
+		IArrayAttribute[] attribs = new IArrayAttribute[] { new PositionArray(), new TexCoordArray() };
+		setGeometry(new VertexGeometry(new float[][] { position, tex_coords }, attribs, PrimitiveType.TRIANGLE));
 		setMaterial(new TextureMaterial(texture));
 		interactiveOnlyFlag = interactiveOnly ? EnumSet.of(IRenderer.Flag.INTERACTIVE_VIEW_ONLY) : EnumSet.noneOf(IRenderer.Flag.class);
 	}
@@ -110,7 +110,7 @@ public class TextMesh extends GenericMesh {
 	}
 
 	public IRenderable getRenderable(IRenderer renderer) {
-		if(renderable == null) {
+		if (renderable == null) {
 			IShader s = new MaterialShader(EnumSet.of(ShaderInput.TEXTURE));
 			renderable = renderer.createRenderable(Pass.SCREEN_SPACE_OVERLAY, interactiveOnlyFlag, s, getMaterial(), Collections.singletonList(getGeometry()));
 		}
@@ -162,6 +162,7 @@ public class TextMesh extends GenericMesh {
 
 	private void requestUpdate() {
 		texture.setData(w, h, IntBuffer.wrap(((DataBufferInt) image.getRaster().getDataBuffer()).getData()), GL.GL_BGRA);
-		if(renderable != null) renderable.requestUpdate();
+		if (renderable != null)
+			renderable.requestUpdate();
 	}
 }

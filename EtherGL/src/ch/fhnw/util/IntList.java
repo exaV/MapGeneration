@@ -33,17 +33,17 @@ import java.util.Arrays;
 
 public final class IntList {
 	private int[] data;;
-	private int   size;
-	
+	private int size;
+
 	public IntList() {
 		this(16);
 	}
-	
+
 	public IntList(int size) {
 		this.data = new int[size];
 	}
 
-	public IntList(int ... ints) {
+	public IntList(int... ints) {
 		this.data = Arrays.copyOf(ints, ints.length);
 		this.size = ints.length;
 	}
@@ -54,10 +54,11 @@ public final class IntList {
 	}
 
 	private void ensureCapacity(int capacity) {
-		if(data.length > capacity) return;
-		
+		if (data.length > capacity)
+			return;
+
 		int newCap = capacity;
-		while(newCap < capacity)
+		while (newCap < capacity)
 			newCap *= 2;
 		int[] tmp = data;
 		data = new int[newCap];

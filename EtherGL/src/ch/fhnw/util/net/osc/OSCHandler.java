@@ -30,11 +30,14 @@
 package ch.fhnw.util.net.osc;
 
 public interface OSCHandler {
-    /**
-     * @param address    OSC address parts (without the "/")
-     * @param addrIdx    index of handled address
-     * @param typeString OSC method signature
-     * @return the OSC reply or null if now reply
-     */
-    public Object[] handle(String[] address, int addrIdx, StringBuilder typeString, long timestamp, Object... args);
+	/**
+	 * @param address
+	 *            OSC address parts (without the "/")
+	 * @param addrIdx
+	 *            index of handled address
+	 * @param typeString
+	 *            OSC method signature
+	 * @return the OSC reply or null if now reply
+	 */
+	public Object[] handle(String[] address, int addrIdx, StringBuilder typeString, long timestamp, Object... args);
 }

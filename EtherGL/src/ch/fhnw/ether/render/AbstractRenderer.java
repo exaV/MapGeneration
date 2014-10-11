@@ -50,17 +50,18 @@ public abstract class AbstractRenderer implements IRenderer, IUniformAttributePr
 	}
 
 	@Override
-	public IRenderable createRenderable(Pass pass, EnumSet<Flag> flags, IShader shader, IUniformAttributeProvider uniforms, List<? extends IArrayAttributeProvider> providers) {
+	public IRenderable createRenderable(Pass pass, EnumSet<Flag> flags, IShader shader, IUniformAttributeProvider uniforms,
+			List<? extends IArrayAttributeProvider> providers) {
 		IUniformAttributeProvider composed = new IUniformAttributeProvider() {
 			@Override
 			public void getAttributeSuppliers(ISuppliers dst) {
-				if(uniforms != null) uniforms.getAttributeSuppliers(dst);
+				if (uniforms != null)
+					uniforms.getAttributeSuppliers(dst);
 				AbstractRenderer.this.getAttributeSuppliers(dst);
 			}
 		};
 		return new Renderable(pass, flags, shader, composed, providers);
 	}
-
 
 	@Override
 	public void addRenderables(IRenderable... renderables) {
@@ -72,10 +73,9 @@ public abstract class AbstractRenderer implements IRenderer, IUniformAttributePr
 		this.renderables.remove(Arrays.asList(renderables));
 	}
 
-
 	protected void update(GL3 gl) {
 		this.renderables.update(gl);
-		
+
 	}
 
 	protected void renderPass(GL3 gl, RenderState state, Pass pass, boolean interactive) {

@@ -164,7 +164,8 @@ public final class Renderable implements IRenderable {
 
 	@Override
 	public void requestRefresh() {
-		// NOTE: requestRefresh() is immediate. call it after you modify the array attribute provider list (e.g. add / remove)
+		// NOTE: requestRefresh() is immediate. call it after you modify the array attribute provider list (e.g. add /
+		// remove)
 		createAttributes(null, arrayAttributeProviders);
 	}
 
@@ -178,7 +179,7 @@ public final class Renderable implements IRenderable {
 	public IRenderer.Pass getPass() {
 		return pass;
 	}
-	
+
 	@Override
 	public List<? extends IArrayAttributeProvider> getArrayAttributeProviders() {
 		return arrayAttributeProviders;
@@ -283,7 +284,6 @@ public final class Renderable implements IRenderable {
 
 		final float[] interleavedData = new float[size];
 		final float[][] data = new float[arrayAttributes.size()][];
-		
 
 		int index = 0;
 		for (int supplierIndex = 0; supplierIndex < attr.getSuppliers().size(); ++supplierIndex) {
@@ -292,7 +292,7 @@ public final class Renderable implements IRenderable {
 			}
 			index = interleave(interleavedData, index, data, sizes);
 		}
-		
+
 		dst.add(interleavedData);
 		buffer.load(gl, FloatBuffer.wrap(dst.toArray()));
 	}

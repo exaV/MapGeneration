@@ -57,13 +57,13 @@ import ch.fhnw.ether.view.gl.AbstractView;
 import ch.fhnw.util.math.Vec3;
 
 public final class Animation {
-	
+
 	private static IView view = null;
-	
+
 	// This is our own scene. Has its own Shader and own mesh.
 	// And now also its own timer to animate things
 	private static class CoolScene extends AbstractScene {
-		
+
 		private IShader s = new MaterialShader(EnumSet.of(ShaderInput.VERTEX_COLOR));
 		private IMesh mesh = makeColoredTriangle();
 		private Timer timer = new Timer();
@@ -71,34 +71,39 @@ public final class Animation {
 
 		public CoolScene(ICamera camera) {
 			super(camera);
-			mesh.getGeometry().setOrigin(new Vec3(0,0,0.25));
-			mesh.getGeometry().setTranslation(new Vec3(0,0,0.5f));
-			// setup an event timer 
+			mesh.getGeometry().setOrigin(new Vec3(0, 0, 0.25));
+			mesh.getGeometry().setTranslation(new Vec3(0, 0, 0.5f));
+			// setup an event timer
 			timer.scheduleAtFixedRate(new TimerTask() {
-				private int c=0;
+				private int c = 0;
+
 				@Override
 				public void run() {
-					
+
 					// make some heavy animation calculation
-					c+=4;
-					if(c >= 360) c = 0;
-					float f = 0.4f + 0.6f*(float) (Math.sin(Math.toRadians(c))*0.5+1);
-					
+					c += 4;
+					if (c >= 360)
+						c = 0;
+					float f = 0.4f + 0.6f * (float) (Math.sin(Math.toRadians(c)) * 0.5 + 1);
+
 					// apply changes to geometry
-					mesh.getGeometry().setScale(new Vec3(f,f,f));
+					mesh.getGeometry().setScale(new Vec3(f, f, f));
 					VertexGeometry g = (VertexGeometry) mesh.getGeometry();
 					float[] colors = g.getVertexData(1);
-					for(int i=0; i<colors.length; ++i) {
-						if(i%4 == 3) continue;
-						colors[i] -= 0.2f * (1-f);
-						if(colors[i+0] <=0) colors[i+0] = 1;
+					for (int i = 0; i < colors.length; ++i) {
+						if (i % 4 == 3)
+							continue;
+						colors[i] -= 0.2f * (1 - f);
+						if (colors[i + 0] <= 0)
+							colors[i + 0] = 1;
 					}
-					
+
 					// update renderable
 					r.requestUpdate();
-					
+
 					// update view, because we have no fix rendering loop but event-based rendering
-					if(view != null) view.repaint();
+					if (view != null)
+						view.repaint();
 				}
 			}, 1000, 50);
 		}
@@ -110,40 +115,38 @@ public final class Animation {
 		}
 
 	}
-	
-	// does anybody know why we need  a "main"-procedure even though we use OOP?
+
+	// does anybody know why we need a "main"-procedure even though we use OOP?
 	public static void main(String[] args) {
 		new Animation();
 	}
-	
-	
+
 	// Let's generate a colored triangle
 	static IMesh makeColoredTriangle() {
-		float[] position = {0f,0,0, 0,0,0.5f, 0.5f,0,0.5f};
-		float[] color = {1,0.1f,0.1f,1, 0.1f,1,0.1f,1, 0,0,1,1};
-		float[][] data = {position, color};
-		IArrayAttribute[] attribs = {new PositionArray(), new ColorArray()};
-		
+		float[] position = { 0f, 0, 0, 0, 0, 0.5f, 0.5f, 0, 0.5f };
+		float[] color = { 1, 0.1f, 0.1f, 1, 0.1f, 1, 0.1f, 1, 0, 0, 1, 1 };
+		float[][] data = { position, color };
+		IArrayAttribute[] attribs = { new PositionArray(), new ColorArray() };
+
 		VertexGeometry g = new VertexGeometry(data, attribs, PrimitiveType.TRIANGLE);
-		
+
 		return new GenericMesh(g, null);
 	}
-	
-	
-	//Setup the whole thing
+
+	// Setup the whole thing
 	public Animation() {
-		
+
 		// As always, make first a controller
-		AbstractController controller = new AbstractController(){};
-		
-		
+		AbstractController controller = new AbstractController() {
+		};
+
 		// And now the default view
 		ICamera camera = new Camera();
 		view = new AbstractView(controller, 100, 100, 500, 500, IView.ViewType.INTERACTIVE_VIEW, "Test", camera);
-		
+
 		// Use our own scene
 		IScene scene = new CoolScene(camera);
-		
+
 		// Setup MVC
 		controller.addView(view);
 		controller.setScene(scene);

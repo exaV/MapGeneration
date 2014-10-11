@@ -47,7 +47,8 @@ public class PickTool extends AbstractTool {
 	public void mousePressed(MouseEvent e, IView view) {
 		int x = e.getX();
 		int y = view.getViewport().h - e.getY();
-		Map<Float, I3DObject> pickables = PickUtil.pickFromModel(PickMode.POINT, x, y, 0, 0, view.getController().getScene(), view.getCamera(), view.getViewport());
+		Map<Float, I3DObject> pickables = PickUtil.pickFromModel(PickMode.POINT, x, y, 0, 0, view.getController().getScene(), view.getCamera(),
+				view.getViewport());
 		if (pickables.isEmpty())
 			System.out.println("no pick");
 		else

@@ -74,19 +74,19 @@ public class RGB8Frame extends Frame {
 
 	public RGB8Frame(Frame frame) {
 		this(frame.dimI, frame.dimJ, frame.dimK, 3);
-		if(pixelSize == frame.pixelSize)
+		if (pixelSize == frame.pixelSize)
 			BufferUtil.arraycopy(frame.pixels, 0, pixels, 0, pixels.capacity());
 		else {
-			if(frame instanceof Grey16Frame) {
+			if (frame instanceof Grey16Frame) {
 				final ByteBuffer src = frame.pixels;
 				final ByteBuffer dst = pixels;
-				int    sps = frame.pixelSize;
-				for(int k = 0; k < dimK; k++) {
+				int sps = frame.pixelSize;
+				for (int k = 0; k < dimK; k++) {
 					int spos = k * dimJ * dimI * sps;
 					spos++; // assume little endian
 					dst.position(k * dimJ * dimI * pixelSize);
-					for(int j = 0; j < dimJ; j++) {
-						for(int i = 0; i < dimI; i++) {
+					for (int j = 0; j < dimJ; j++) {
+						for (int i = 0; i < dimI; i++) {
 							byte val = src.get(spos);
 							dst.put(val);
 							dst.put(val);
@@ -95,34 +95,34 @@ public class RGB8Frame extends Frame {
 						}
 					}
 				}
-			} else if(frame instanceof FloatFrame) {
-				FloatBuffer src = ((FloatFrame)frame).pixels.asFloatBuffer();
-				final float min = ((FloatFrame)frame).getMinMax()[0];
-				final float rng = ((FloatFrame)frame).getMinMax()[1] - min;
+			} else if (frame instanceof FloatFrame) {
+				FloatBuffer src = ((FloatFrame) frame).pixels.asFloatBuffer();
+				final float min = ((FloatFrame) frame).getMinMax()[0];
+				final float rng = ((FloatFrame) frame).getMinMax()[1] - min;
 
 				final ByteBuffer dst = pixels;
-				for(int k = 0; k < dimK; k++) {
+				for (int k = 0; k < dimK; k++) {
 					int spos = k * dimJ * dimI;
 					dst.position(k * dimJ * dimI * pixelSize);
-					for(int j = 0; j < dimJ; j++) {
-						for(int i = 0; i < dimI; i++) {
+					for (int j = 0; j < dimJ; j++) {
+						for (int i = 0; i < dimI; i++) {
 							byte val = (byte) ((255f * (src.get(spos) - min)) / rng);
 							dst.put(val);
 							dst.put(val);
 							dst.put(val);
-							spos ++;
+							spos++;
 						}
 					}
 				}
 			} else {
 				final ByteBuffer src = frame.pixels;
 				final ByteBuffer dst = pixels;
-				int              sps = frame.pixelSize;
-				for(int k = 0; k < dimK; k++) {
+				int sps = frame.pixelSize;
+				for (int k = 0; k < dimK; k++) {
 					int spos = k * dimJ * dimI * sps;
 					dst.position(k * dimJ * dimI * pixelSize);
-					for(int j = 0; j < dimJ; j++) {
-						for(int i = 0; i < dimI; i++) {
+					for (int j = 0; j < dimJ; j++) {
+						for (int i = 0; i < dimI; i++) {
 							dst.put(src.get(spos));
 							dst.put(src.get(spos + 1));
 							dst.put(src.get(spos + 2));
@@ -135,25 +135,25 @@ public class RGB8Frame extends Frame {
 	}
 
 	public void setPixels(int i, int j, int w, int h, ColorModel model, int[] pixels, int off, int scansize) {
-		if(model instanceof DirectColorModel) {
-			DirectColorModel dm = (DirectColorModel)model;
+		if (model instanceof DirectColorModel) {
+			DirectColorModel dm = (DirectColorModel) model;
 
-			int redMask   = dm.getRedMask();
-			int blueMask  = dm.getBlueMask();
+			int redMask = dm.getRedMask();
+			int blueMask = dm.getBlueMask();
 			int greenMask = dm.getGreenMask();
 
-			int redShift   = 0;
-			int blueShift  = 0;
+			int redShift = 0;
+			int blueShift = 0;
 			int greenShift = 0;
 
-			switch(redMask) {
+			switch (redMask) {
 			case 0xFF0000:
-				redShift   = 16;
+				redShift = 16;
 				greenShift = 8;
-				blueShift  = 0;
+				blueShift = 0;
 				break;
 			default:
-				throw new UnsupportedOperationException("Unsupported color model:" + dm);		
+				throw new UnsupportedOperationException("Unsupported color model:" + dm);
 			}
 
 			h += j;
@@ -163,14 +163,14 @@ public class RGB8Frame extends Frame {
 				int lineoff = jj * scansize + off;
 				dst.position(((jj * dimI) + i) * pixelSize);
 				for (int ii = i; ii < w; ii++) {
-					int pixelValue = pixels[lineoff + ii]; 
-					dst.put((byte)((pixelValue & redMask)   >> redShift));
-					dst.put((byte)((pixelValue & greenMask) >> greenShift));
-					dst.put((byte)((pixelValue & blueMask)  >> blueShift));
+					int pixelValue = pixels[lineoff + ii];
+					dst.put((byte) ((pixelValue & redMask) >> redShift));
+					dst.put((byte) ((pixelValue & greenMask) >> greenShift));
+					dst.put((byte) ((pixelValue & blueMask) >> blueShift));
 				}
-			}			
+			}
 		} else {
-			throw new UnsupportedOperationException("only direct color supported");			
+			throw new UnsupportedOperationException("only direct color supported");
 		}
 	}
 
@@ -188,25 +188,26 @@ public class RGB8Frame extends Frame {
 	@Override
 	public BufferedImage toBufferedImage() {
 		BufferedImage result = new BufferedImage(dimI, dimJ, BufferedImage.TYPE_INT_RGB);
-		final int[]      line = new int[dimI];
-		final ByteBuffer src  = pixels;
+		final int[] line = new int[dimI];
+		final ByteBuffer src = pixels;
 		src.clear();
-		for(int j = dimJ; --j >= 0;) {
-			for(int i = 0; i < line.length; i++) {
+		for (int j = dimJ; --j >= 0;) {
+			for (int i = 0; i < line.length; i++) {
 				int tmp = (src.get() & 0xFF) << 16;
-				tmp    |= (src.get() & 0xFF) << 8;
-				tmp    |= (src.get() & 0xFF);
-				tmp    |= 0xFF000000;
+				tmp |= (src.get() & 0xFF) << 8;
+				tmp |= (src.get() & 0xFF);
+				tmp |= 0xFF000000;
 				line[i] = tmp;
 			}
 			result.setRGB(0, j, dimI, 1, line, 0, dimI);
 		}
 		return result;
-	}	
+	}
 
 	@Override
 	public float getFloatComponent(int i, int j, int k, int component) {
-		if (component == 3) return 1.0f;
+		if (component == 3)
+			return 1.0f;
 		return (pixels.get(((k * dimI * dimJ) + (j * dimI) + i) * pixelSize + component) & 0xFF) / 255f;
 	}
 
@@ -223,32 +224,31 @@ public class RGB8Frame extends Frame {
 
 	protected final static byte bits2byte(int val, final int shift, final int size, int m) {
 		val &= m;
-		if(shift > 0)
+		if (shift > 0)
 			val >>= shift;
-				else
-					val <<= shift;
-				val |= val >> size;
-				return (byte)val;
+		else
+			val <<= shift;
+		val |= val >> size;
+		return (byte) val;
 	}
 
 	@Override
 	public void setPixels(final int x, final int y, final int w, int h, BufferedImage img, final int flags) {
-		if(img.getType() == BufferedImage.TYPE_CUSTOM || img.getType() == BufferedImage.TYPE_BYTE_BINARY)
+		if (img.getType() == BufferedImage.TYPE_CUSTOM || img.getType() == BufferedImage.TYPE_BYTE_BINARY)
 			img = ImageScaler.copy(img, new BufferedImage(img.getWidth(), img.getHeight(), BufferedImage.TYPE_INT_RGB));
-		final ByteBuffer dst    = pixels;
-		final int       dstll   = dimI * pixelSize;
-		int             dstyoff = dstll * ((dimJ - 1) - y);
+		final ByteBuffer dst = pixels;
+		final int dstll = dimI * pixelSize;
+		int dstyoff = dstll * ((dimJ - 1) - y);
 		switch (img.getType()) {
-		case BufferedImage.TYPE_4BYTE_ABGR: 
-		case BufferedImage.TYPE_4BYTE_ABGR_PRE: 
-		{
-			final byte[] src     = ((DataBufferByte) img.getRaster().getDataBuffer()).getData();
-			final int    srcll   = img.getWidth() * 4;
-			int          srcyoff = srcll * y + x * 4;
-			final int    copylen = w * 4;
-			for(;h > 0; h--) {
+		case BufferedImage.TYPE_4BYTE_ABGR:
+		case BufferedImage.TYPE_4BYTE_ABGR_PRE: {
+			final byte[] src = ((DataBufferByte) img.getRaster().getDataBuffer()).getData();
+			final int srcll = img.getWidth() * 4;
+			int srcyoff = srcll * y + x * 4;
+			final int copylen = w * 4;
+			for (; h > 0; h--) {
 				dst.position(dstyoff + x * pixelSize);
-				for(int i = 0; i < copylen; i += 4) {
+				for (int i = 0; i < copylen; i += 4) {
 					dst.put(src[srcyoff + i + 3]);
 					dst.put(src[srcyoff + i + 2]);
 					dst.put(src[srcyoff + i + 1]);
@@ -258,19 +258,18 @@ public class RGB8Frame extends Frame {
 			}
 			break;
 		}
-		case BufferedImage.TYPE_INT_BGR:
-		{
-			final int[] src     = ((DataBufferInt) img.getRaster().getDataBuffer()).getData();
-			final int   srcll   = img.getWidth();
-			int         srcyoff = srcll * y + x;
-			for(;h > 0; h--) {
+		case BufferedImage.TYPE_INT_BGR: {
+			final int[] src = ((DataBufferInt) img.getRaster().getDataBuffer()).getData();
+			final int srcll = img.getWidth();
+			int srcyoff = srcll * y + x;
+			for (; h > 0; h--) {
 				dst.position(dstyoff + x * pixelSize);
-				for(int i = 0; i < w; i++) {
-					final int rgb = src[srcyoff + i];					
+				for (int i = 0; i < w; i++) {
+					final int rgb = src[srcyoff + i];
 
 					dst.put((byte) rgb);
 					dst.put((byte) (rgb >> 8));
-					dst.put((byte) (rgb >> 16));					
+					dst.put((byte) (rgb >> 16));
 				}
 				srcyoff += srcll;
 				dstyoff -= dstll;
@@ -279,18 +278,17 @@ public class RGB8Frame extends Frame {
 		}
 
 		case BufferedImage.TYPE_INT_RGB:
-		case BufferedImage.TYPE_INT_ARGB: 
-		case BufferedImage.TYPE_INT_ARGB_PRE:
-		{
-			final int[] src     = ((DataBufferInt) img.getRaster().getDataBuffer()).getData();
-			final int   srcll   = img.getWidth();
-			int         srcyoff = srcll * y + x;
-			for(;h > 0; h--) {
+		case BufferedImage.TYPE_INT_ARGB:
+		case BufferedImage.TYPE_INT_ARGB_PRE: {
+			final int[] src = ((DataBufferInt) img.getRaster().getDataBuffer()).getData();
+			final int srcll = img.getWidth();
+			int srcyoff = srcll * y + x;
+			for (; h > 0; h--) {
 				dst.position(dstyoff + x * pixelSize);
-				for(int i = 0; i < w; i++) {
-					final int rgb = src[srcyoff + i];					
+				for (int i = 0; i < w; i++) {
+					final int rgb = src[srcyoff + i];
 
-					dst.put((byte) (rgb >> 16));					
+					dst.put((byte) (rgb >> 16));
 					dst.put((byte) (rgb >> 8));
 					dst.put((byte) rgb);
 				}
@@ -300,13 +298,13 @@ public class RGB8Frame extends Frame {
 			break;
 		}
 		case BufferedImage.TYPE_3BYTE_BGR: {
-			final byte[] src     = ((DataBufferByte) img.getRaster().getDataBuffer()).getData();
-			final int    srcll   = img.getWidth() * 3;
-			int          srcyoff = srcll * y + x * 3;
-			final int    linelen = w * 3;
-			for(;h > 0; h--) {
+			final byte[] src = ((DataBufferByte) img.getRaster().getDataBuffer()).getData();
+			final int srcll = img.getWidth() * 3;
+			int srcyoff = srcll * y + x * 3;
+			final int linelen = w * 3;
+			for (; h > 0; h--) {
 				dst.position(dstyoff + x * pixelSize);
-				for(int i = 0; i < linelen; i += 3) {
+				for (int i = 0; i < linelen; i += 3) {
 					dst.put(src[srcyoff + i + 2]);
 					dst.put(src[srcyoff + i + 1]);
 					dst.put(src[srcyoff + i + 0]);
@@ -317,33 +315,33 @@ public class RGB8Frame extends Frame {
 			break;
 		}
 		case BufferedImage.TYPE_BYTE_GRAY: {
-			final byte[] src  = ((DataBufferByte) img.getRaster().getDataBuffer()).getData();
-			final int srcll   = img.getWidth();
-			int       srcyoff = srcll * y + x;
-			for(;h > 0; h--) {
+			final byte[] src = ((DataBufferByte) img.getRaster().getDataBuffer()).getData();
+			final int srcll = img.getWidth();
+			int srcyoff = srcll * y + x;
+			for (; h > 0; h--) {
 				dst.position(dstyoff + x * pixelSize);
-				for(int i = 0; i < w; i++) {
+				for (int i = 0; i < w; i++) {
 					final byte grey = src[srcyoff + i];
-					dst.put(grey);					
+					dst.put(grey);
 					dst.put(grey);
 					dst.put(grey);
 				}
 				srcyoff += srcll;
 				dstyoff -= dstll;
 			}
-			break;			
+			break;
 		}
 		case BufferedImage.TYPE_BYTE_INDEXED: {
-			final byte[]     src     = ((DataBufferByte) img.getRaster().getDataBuffer()).getData();
-			final ColorModel cModel  = img.getColorModel();
-			final int        srcll   = img.getWidth();
-			int              srcyoff = srcll * y + x;
-			for(;h > 0; h--) {
+			final byte[] src = ((DataBufferByte) img.getRaster().getDataBuffer()).getData();
+			final ColorModel cModel = img.getColorModel();
+			final int srcll = img.getWidth();
+			int srcyoff = srcll * y + x;
+			for (; h > 0; h--) {
 				dst.position(dstyoff + x * pixelSize);
-				for(int i = 0 ; i < w; i++) {
+				for (int i = 0; i < w; i++) {
 					final int rgb = cModel.getRGB(src[srcyoff + i] & 0xFF);
 
-					dst.put((byte) (rgb >> 16));					
+					dst.put((byte) (rgb >> 16));
 					dst.put((byte) (rgb >> 8));
 					dst.put((byte) rgb);
 				}
@@ -353,21 +351,21 @@ public class RGB8Frame extends Frame {
 			break;
 		}
 		case BufferedImage.TYPE_USHORT_GRAY: {
-			final short[] src     = ((DataBufferUShort) img.getRaster().getDataBuffer()).getData();
-			int           srcyoff = w * y + x;
-			for(;h > 0; h--) {
+			final short[] src = ((DataBufferUShort) img.getRaster().getDataBuffer()).getData();
+			int srcyoff = w * y + x;
+			for (; h > 0; h--) {
 				dst.position(dstyoff + x * pixelSize);
-				if(pixelSize == 3)
-					for(int i = 0; i < w; i++) {
-						final byte grey = (byte)(src[srcyoff + i] >> 8);
-						dst.put(grey);					
+				if (pixelSize == 3)
+					for (int i = 0; i < w; i++) {
+						final byte grey = (byte) (src[srcyoff + i] >> 8);
+						dst.put(grey);
 						dst.put(grey);
 						dst.put(grey);
 					}
 				else
-					for(int i = 0; i < w; i++) {
-						final byte grey = (byte)(src[srcyoff + i] >> 8);
-						dst.put(grey);					
+					for (int i = 0; i < w; i++) {
+						final byte grey = (byte) (src[srcyoff + i] >> 8);
+						dst.put(grey);
 						dst.put(grey);
 						dst.put(grey);
 						dst.put(B255);
@@ -379,28 +377,28 @@ public class RGB8Frame extends Frame {
 		}
 		case BufferedImage.TYPE_USHORT_555_RGB:
 		case BufferedImage.TYPE_USHORT_565_RGB: {
-			final short[] src     = ((DataBufferUShort) img.getRaster().getDataBuffer()).getData();
-			int           srcyoff = w * y + x;
-			final int     type    = img.getType();
-			final int     r       = type == BufferedImage.TYPE_USHORT_555_RGB ?  7 : 8;
-			final int     gl      = type == BufferedImage.TYPE_USHORT_555_RGB ?  5 : 6;
-			final int     rm      = type == BufferedImage.TYPE_USHORT_555_RGB ?  0x7C00 : 0xF800;
-			final int     gm      = type == BufferedImage.TYPE_USHORT_555_RGB ?  0x03E0 : 0x07E0;
-			for(;h > 0; h--) {
+			final short[] src = ((DataBufferUShort) img.getRaster().getDataBuffer()).getData();
+			int srcyoff = w * y + x;
+			final int type = img.getType();
+			final int r = type == BufferedImage.TYPE_USHORT_555_RGB ? 7 : 8;
+			final int gl = type == BufferedImage.TYPE_USHORT_555_RGB ? 5 : 6;
+			final int rm = type == BufferedImage.TYPE_USHORT_555_RGB ? 0x7C00 : 0xF800;
+			final int gm = type == BufferedImage.TYPE_USHORT_555_RGB ? 0x03E0 : 0x07E0;
+			for (; h > 0; h--) {
 				dst.position(dstyoff + x * pixelSize);
-				if(pixelSize == 3) {
-					for(int i = 0; i < w; i++) {
-						final short val = src[srcyoff + i]; 
-						dst.put(bits2byte(val, r,  5,  rm));
-						dst.put(bits2byte(val, 3,  gl, gm));
-						dst.put(bits2byte(val, -3, 5,  0x001F));
+				if (pixelSize == 3) {
+					for (int i = 0; i < w; i++) {
+						final short val = src[srcyoff + i];
+						dst.put(bits2byte(val, r, 5, rm));
+						dst.put(bits2byte(val, 3, gl, gm));
+						dst.put(bits2byte(val, -3, 5, 0x001F));
 					}
 				} else {
-					for(int i = 0; i < w; i++) {
-						final short val = src[srcyoff + i]; 
-						dst.put(bits2byte(val, r,  5,  rm));
-						dst.put(bits2byte(val, 3,  gl, gm));
-						dst.put(bits2byte(val, -3, 5,  0x001F));
+					for (int i = 0; i < w; i++) {
+						final short val = src[srcyoff + i];
+						dst.put(bits2byte(val, r, 5, rm));
+						dst.put(bits2byte(val, 3, gl, gm));
+						dst.put(bits2byte(val, -3, 5, 0x001F));
 						dst.put(B255);
 					}
 				}
@@ -445,9 +443,9 @@ public class RGB8Frame extends Frame {
 
 	public final void getRGBFloat(int i, int j, int k, float[] rgb) {
 		pixels.position(((k * dimI * dimJ) + (j * dimI) + i) * pixelSize);
-		rgb[0] = (pixels.get() & 0xFF)/255.0f;
-		rgb[1] = (pixels.get() & 0xFF)/255.0f;
-		rgb[2] = (pixels.get() & 0xFF)/255.0f;
+		rgb[0] = (pixels.get() & 0xFF) / 255.0f;
+		rgb[1] = (pixels.get() & 0xFF) / 255.0f;
+		rgb[2] = (pixels.get() & 0xFF) / 255.0f;
 	}
 
 	@Override
@@ -473,25 +471,37 @@ public class RGB8Frame extends Frame {
 
 	@Override
 	public final void getRGBBilinear(double u, double v, int k, byte[] rgb) {
-		// bilinear interpolation		
-		final int dimI_ = dimI-1;
-		final int dimJ_ = dimJ-1;
+		// bilinear interpolation
+		final int dimI_ = dimI - 1;
+		final int dimJ_ = dimJ - 1;
 
 		int i0 = (int) (u * dimI_);
 		int j0 = (int) (v * dimJ_);
 
-		if(i0 < 0) i0 = 0; else if(i0 > dimI_) i0 = dimI_;
-		if(j0 < 0) j0 = 0; else if(j0 > dimJ_) j0 = dimJ_;
+		if (i0 < 0)
+			i0 = 0;
+		else if (i0 > dimI_)
+			i0 = dimI_;
+		if (j0 < 0)
+			j0 = 0;
+		else if (j0 > dimJ_)
+			j0 = dimJ_;
 
 		int i1 = i0 + 1;
 		int j1 = j0 + 1;
-		
-		if(i1 < 0) i1 = 0; else if(i1 > dimI_) i1 = dimI_;
-		if(j1 < 0) j1 = 0; else if(j1 > dimJ_) j1 = dimJ_;
+
+		if (i1 < 0)
+			i1 = 0;
+		else if (i1 > dimI_)
+			i1 = dimI_;
+		if (j1 < 0)
+			j1 = 0;
+		else if (j1 > dimJ_)
+			j1 = dimJ_;
 
 		// interpolate
 		final double w = (u - i0 / (float) dimI_) * dimI_;
-		final double h = ( v - j0 / (float) dimJ_ ) *dimJ_;
+		final double h = (v - j0 / (float) dimJ_) * dimJ_;
 
 		final byte[] rgb00 = this.rgb00;
 		final byte[] rgb01 = this.rgb01;
@@ -504,25 +514,24 @@ public class RGB8Frame extends Frame {
 		getRGB(i1, j1, k, rgb11);
 
 		for (int i = 0; i < 3; ++i) {
-			
-			double f = h * ((1 - w) * (rgb01[i] & 0xFF) + w * (rgb11[i] & 0xFF)) + 
-				   (1-h) * ((1 - w) * (rgb00[i] & 0xFF) + w * (rgb10[i] & 0xFF)); 
-			
-			
-			rgb[i] = (byte) f; 
-			
+
+			double f = h * ((1 - w) * (rgb01[i] & 0xFF) + w * (rgb11[i] & 0xFF)) + (1 - h) * ((1 - w) * (rgb00[i] & 0xFF) + w * (rgb10[i] & 0xFF));
+
+			rgb[i] = (byte) f;
+
 		}
 	}
 
 	protected byte[] rgb20 = new byte[3];
+
 	@Override
 	public final float getBrightnessBilinear(double u, double v, int k) {
 		final byte[] rgb = rgb20;
 		getRGBBilinear(u, v, k, rgb);
 		float result = rgb[0] & 0xFF;
-		result      += rgb[1] & 0xFF;
-		result      += rgb[2] & 0xFF;
-		result      /= 765f;
+		result += rgb[1] & 0xFF;
+		result += rgb[2] & 0xFF;
+		result /= 765f;
 		return result;
 	}
 
@@ -550,7 +559,7 @@ public class RGB8Frame extends Frame {
 
 	@Override
 	public void setSubframe(int i, int j, int k, Frame src) {
-		if(src.getClass() != getClass())
+		if (src.getClass() != getClass())
 			src = new RGB8Frame(src);
 		setSubframeImpl(i, j, k, src);
 	}

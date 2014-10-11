@@ -185,20 +185,17 @@ public class Camera implements ICamera {
 
 	@Override
 	public Vec3 getPosition() {
-		return new Vec3(cameraMatrix.m[Mat4.M03],
-				cameraMatrix.m[Mat4.M13], cameraMatrix.m[Mat4.M23]);
+		return new Vec3(cameraMatrix.m[Mat4.M03], cameraMatrix.m[Mat4.M13], cameraMatrix.m[Mat4.M23]);
 	}
 
 	@Override
 	public Vec3 getLookVector() {
-		return new Vec3(cameraMatrix.m[Mat4.M01], cameraMatrix.m[Mat4.M11],
-				cameraMatrix.m[Mat4.M21]);
+		return new Vec3(cameraMatrix.m[Mat4.M01], cameraMatrix.m[Mat4.M11], cameraMatrix.m[Mat4.M21]);
 	}
-	
+
 	@Override
 	public Vec3 getUpVector() {
-		return new Vec3(cameraMatrix.m[Mat4.M02], cameraMatrix.m[Mat4.M12],
-				cameraMatrix.m[Mat4.M22]);
+		return new Vec3(cameraMatrix.m[Mat4.M02], cameraMatrix.m[Mat4.M12], cameraMatrix.m[Mat4.M22]);
 	}
 
 	@Override
@@ -234,7 +231,7 @@ public class Camera implements ICamera {
 
 		// rotate camera round global Z-axis
 		turn(amount, Vec3.Z, false);
-		
+
 		// move camera back to orbit position
 		move(0, -orbitRadius, 0, true);
 
@@ -293,14 +290,12 @@ public class Camera implements ICamera {
 	}
 
 	@Override
-	public void ORBITmovePivot(float x, float y, float z,
-			boolean localTransformation) {
+	public void ORBITmovePivot(float x, float y, float z, boolean localTransformation) {
 		float newX = x, newY = y;
 		if (localTransformation) {
 			float azimut_rad = (float) Math.toRadians(-azimut);
 			newX = (float) (Math.cos(azimut_rad) * x + Math.sin(azimut_rad) * y);
-			newY = (float) (-Math.sin(azimut_rad) * x + Math.cos(azimut_rad)
-					* y);
+			newY = (float) (-Math.sin(azimut_rad) * x + Math.cos(azimut_rad) * y);
 		}
 		cameraMatrix.translate(newX, newY, z);
 	}
@@ -308,8 +303,7 @@ public class Camera implements ICamera {
 	@Override
 	public Vec3 ORBITgetPivotPosition() {
 		Vec3 cameraPosition = getPosition();
-		Vec3 pivot_position = cameraPosition.add(getLookVector().scale(
-				orbitRadius));
+		Vec3 pivot_position = cameraPosition.add(getLookVector().scale(orbitRadius));
 		return pivot_position;
 	}
 

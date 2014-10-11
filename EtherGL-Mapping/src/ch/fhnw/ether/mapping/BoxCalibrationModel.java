@@ -35,58 +35,58 @@ import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.util.color.RGBA;
 
 public class BoxCalibrationModel implements ICalibrationModel {
-    private float boxExtentX;
-    private float boxExtentY;
-    private float boxExtentZ;
-    private float planeExtentX;
-    private float planeExtentY;
-    
-    private GenericMesh mesh = new GenericMesh(PrimitiveType.LINE);
+	private float boxExtentX;
+	private float boxExtentY;
+	private float boxExtentZ;
+	private float planeExtentX;
+	private float planeExtentY;
 
-    public BoxCalibrationModel(float boxExtentX, float boxExtentY, float boxExtentZ, float planeExtentX, float planeExtentY) {
-        this.boxExtentX = boxExtentX;
-        this.boxExtentY = boxExtentY;
-        this.boxExtentZ = boxExtentZ;
-        this.planeExtentX = planeExtentX;
-        this.planeExtentY = planeExtentY;
-//        TODO: add also points?
-//        mesh.setPoints(getCalibrationPoints());
-//        mesh.setLines(getCalibrationLines());
-        mesh.setGeometry(getCalibrationLines());
-        mesh.setMaterial(new ColorMaterial(RGBA.YELLOW));
-    }
+	private GenericMesh mesh = new GenericMesh(PrimitiveType.LINE);
 
-    @Override
-    public GenericMesh getCalibrationMesh() {
-    	return mesh;
-    }
-    
-    @Override
+	public BoxCalibrationModel(float boxExtentX, float boxExtentY, float boxExtentZ, float planeExtentX, float planeExtentY) {
+		this.boxExtentX = boxExtentX;
+		this.boxExtentY = boxExtentY;
+		this.boxExtentZ = boxExtentZ;
+		this.planeExtentX = planeExtentX;
+		this.planeExtentY = planeExtentY;
+		// TODO: add also points?
+		// mesh.setPoints(getCalibrationPoints());
+		// mesh.setLines(getCalibrationLines());
+		mesh.setGeometry(getCalibrationLines());
+		mesh.setMaterial(new ColorMaterial(RGBA.YELLOW));
+	}
+
+	@Override
+	public GenericMesh getCalibrationMesh() {
+		return mesh;
+	}
+
+	@Override
 	public float[] getCalibrationPoints() {
-        float bx = boxExtentX / 2;
-        float by = boxExtentY / 2;
-        float bz = boxExtentZ;
-        float px = planeExtentX / 2;
-        float py = planeExtentY / 2;
-        return new float[]{
-                // box bottom
-                bx, by, 0, -bx, by, 0, -bx, -by, 0, bx, -by, 0,
-                // box top
-                bx, by, bz, -bx, by, bz, -bx, -by, bz, bx, -by, bz,
-                // plane
-                px, py, 0, -px, py, 0, -px, -py, 0, px, -py, 0};
-    }
+		float bx = boxExtentX / 2;
+		float by = boxExtentY / 2;
+		float bz = boxExtentZ;
+		float px = planeExtentX / 2;
+		float py = planeExtentY / 2;
+		return new float[] {
+				// box bottom
+				bx, by, 0, -bx, by, 0, -bx, -by, 0, bx, -by, 0,
+				// box top
+				bx, by, bz, -bx, by, bz, -bx, -by, bz, bx, -by, bz,
+				// plane
+				px, py, 0, -px, py, 0, -px, -py, 0, px, -py, 0 };
+	}
 
-    private float[] getCalibrationLines() {
-        float bx = boxExtentX / 2;
-        float by = boxExtentY / 2;
-        float bz = boxExtentZ;
-        return new float[]{
-                // bottom
-                bx, by, 0, -bx, by, 0, -bx, by, 0, -bx, -by, 0, -bx, -by, 0, bx, -by, 0, bx, -by, 0, bx, by, 0,
-                // top
-                bx, by, bz, -bx, by, bz, -bx, by, bz, -bx, -by, bz, -bx, -by, bz, bx, -by, bz, bx, -by, bz, bx, by, bz,
-                // side
-                bx, by, 0, bx, by, bz, -bx, by, 0, -bx, by, bz, -bx, -by, 0, -bx, -by, bz, bx, -by, 0, bx, -by, bz};
-    }
+	private float[] getCalibrationLines() {
+		float bx = boxExtentX / 2;
+		float by = boxExtentY / 2;
+		float bz = boxExtentZ;
+		return new float[] {
+				// bottom
+				bx, by, 0, -bx, by, 0, -bx, by, 0, -bx, -by, 0, -bx, -by, 0, bx, -by, 0, bx, -by, 0, bx, by, 0,
+				// top
+				bx, by, bz, -bx, by, bz, -bx, by, bz, -bx, -by, bz, -bx, -by, bz, bx, -by, bz, bx, -by, bz, bx, by, bz,
+				// side
+				bx, by, 0, bx, by, bz, -bx, by, 0, -bx, by, bz, -bx, -by, 0, -bx, -by, bz, bx, -by, 0, bx, -by, bz };
+	}
 }

@@ -51,8 +51,7 @@ import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.Primitives;
 
 public final class FillTool extends AbstractTool {
-	static final String[] FILL_HELP = { "Fill Tool for Projector Adjustment",
-			"", "[0] Return" };
+	static final String[] FILL_HELP = { "Fill Tool for Projector Adjustment", "", "[0] Return" };
 
 	private final IRenderable quads;
 
@@ -60,10 +59,7 @@ public final class FillTool extends AbstractTool {
 		super(controller);
 		IMaterial m = new ColorMaterial(RGBA.YELLOW);
 		IShader s = new MaterialShader(EnumSet.of(ShaderInput.MATERIAL_COLOR));
-		quads = controller.getRenderer().createRenderable(
-				Pass.DEVICE_SPACE_OVERLAY,
-				s, m,
-				Collections.singletonList(makeQuads().getGeometry()));
+		quads = controller.getRenderer().createRenderable(Pass.DEVICE_SPACE_OVERLAY, s, m, Collections.singletonList(makeQuads().getGeometry()));
 	}
 
 	@Override

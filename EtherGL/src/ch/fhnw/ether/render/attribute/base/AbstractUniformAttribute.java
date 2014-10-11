@@ -38,7 +38,7 @@ import ch.fhnw.ether.render.gl.Program;
 
 abstract class AbstractUniformAttribute<T> extends AbstractAttribute implements IUniformAttribute {
 	private Supplier<T> supplier;
-	
+
 	protected AbstractUniformAttribute(String id, String shaderName) {
 		super(id, shaderName);
 	}
@@ -47,7 +47,7 @@ abstract class AbstractUniformAttribute<T> extends AbstractAttribute implements 
 		this(id, shaderName);
 		this.supplier = supplier;
 	}
-	
+
 	protected T get() {
 		return supplier.get();
 	}
@@ -56,11 +56,11 @@ abstract class AbstractUniformAttribute<T> extends AbstractAttribute implements 
 	public final boolean hasSupplier() {
 		return supplier != null;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public final void setSupplier(Supplier<?> supplier) {
-		this.supplier = (Supplier<T>)supplier;
+		this.supplier = (Supplier<T>) supplier;
 	}
 
 	@Override
@@ -71,7 +71,7 @@ abstract class AbstractUniformAttribute<T> extends AbstractAttribute implements 
 	protected final int resolveShaderIndex(GL3 gl, Program program, String shaderName) {
 		return program.getUniformLocation(gl, shaderName);
 	}
-	
+
 	@Override
 	public String toString() {
 		return super.toString() + "[" + supplier + "]";

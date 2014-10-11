@@ -35,12 +35,13 @@ import java.util.List;
 public class Agent {
 	private final String id;
 	private final List<Activity> activities = new ArrayList<>();
+
 	// other attributes: sex, age, car_available, employed
-	
+
 	public Agent(String id) {
 		this.id = id;
 	}
-	
+
 	public List<Activity> getActivities() {
 		return activities;
 	}
@@ -48,10 +49,10 @@ public class Agent {
 	public void addActivity(Activity activity) {
 		activities.add(activity);
 	}
-	
+
 	// For debugging
 	@Override
 	public String toString() {
-	       return "agent '" + id + "' (" + activities.size() + ")";
+		return "agent '" + id + "' (" + activities.size() + ")";
 	}
 }

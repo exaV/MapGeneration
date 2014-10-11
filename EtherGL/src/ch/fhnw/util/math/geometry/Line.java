@@ -31,7 +31,6 @@ package ch.fhnw.util.math.geometry;
 
 import ch.fhnw.util.math.Vec3;
 
-
 /**
  * Very basic line class. Loosely based on Apache Commons Math3.
  * 

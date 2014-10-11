@@ -294,22 +294,24 @@ public class Scene implements IScene {
 	}
 
 	@Override
-	public void setRenderer(
-			IRenderer renderer) {
-		if(this.renderer == renderer) return;
+	public void setRenderer(IRenderer renderer) {
+		if (this.renderer == renderer)
+			return;
 		this.renderer = renderer;
-		
+
 		renderer.removeRenderables(agent_renderable, net_renderable);
 		createGeometries();
-		
-		List<IGeometry> line_geometries = agentGeometries.stream().map((x) -> { return x.getGeometry(); }).collect(Collectors.toList());
+
+		List<IGeometry> line_geometries = agentGeometries.stream().map((x) -> {
+			return x.getGeometry();
+		}).collect(Collectors.toList());
 		line_geometries.add(networkGeometryLines.getGeometry());
 		agent_renderable = renderer.createRenderable(Pass.DEPTH, new LineShader(true), null, line_geometries);
-		
+
 		List<IGeometry> point_geometries = new ArrayList<>(1);
 		point_geometries.add(networkGeometryPoints.getGeometry());
 		net_renderable = renderer.createRenderable(Pass.DEPTH, new PointShader(false), new ColorMaterial(RGBA.YELLOW), point_geometries);
-		
+
 		renderer.addRenderables(agent_renderable, net_renderable);
 	}
 
@@ -325,7 +327,9 @@ public class Scene implements IScene {
 
 	@Override
 	public void renderUpdate() {
-		if(agent_renderable != null) agent_renderable.requestUpdate();
-		if(net_renderable != null) net_renderable.requestUpdate();
+		if (agent_renderable != null)
+			agent_renderable.requestUpdate();
+		if (net_renderable != null)
+			net_renderable.requestUpdate();
 	}
 }

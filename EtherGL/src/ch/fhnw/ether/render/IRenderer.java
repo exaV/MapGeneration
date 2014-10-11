@@ -64,14 +64,15 @@ public interface IRenderer {
 	enum Flag {
 		INTERACTIVE_VIEW_ONLY
 	}
-	
+
 	public final static EnumSet<Flag> NO_FLAGS = EnumSet.noneOf(Flag.class);
 
 	void render(GL3 gl, ICamera camera, Viewport viewport, boolean interactive);
 
-	IRenderable createRenderable(Pass pass, IShader shader,IUniformAttributeProvider uniforms, List<? extends IArrayAttributeProvider> providers);
+	IRenderable createRenderable(Pass pass, IShader shader, IUniformAttributeProvider uniforms, List<? extends IArrayAttributeProvider> providers);
 
-	IRenderable createRenderable(Pass pass, EnumSet<Flag> flags, IShader shader, IUniformAttributeProvider uniforms, List<? extends IArrayAttributeProvider> providers);
+	IRenderable createRenderable(Pass pass, EnumSet<Flag> flags, IShader shader, IUniformAttributeProvider uniforms,
+			List<? extends IArrayAttributeProvider> providers);
 
 	void addRenderables(IRenderable... renderables);
 

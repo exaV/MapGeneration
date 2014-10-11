@@ -52,7 +52,7 @@ public class FloatArrayAttribute extends AbstractArrayAttribute {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void addSupplier(Supplier<?> supplier) {
-		suppliers.add((Supplier<float[]>)supplier);
+		suppliers.add((Supplier<float[]>) supplier);
 	}
 
 	@Override
@@ -65,12 +65,11 @@ public class FloatArrayAttribute extends AbstractArrayAttribute {
 		buffer.disableAttribute(gl, getShaderIndex(gl, program));
 	}
 
-
 	@Override
 	protected int resolveShaderIndex(GL3 gl, Program program, String shaderName) {
 		return program.getAttributeLocation(gl, shaderName);
 	}
-	
+
 	@Override
 	public String toString() {
 		String s = super.toString() + "[components=" + getNumComponents() + " stride=" + getStride() + " offset=" + getOffset() + " suppliers=[";

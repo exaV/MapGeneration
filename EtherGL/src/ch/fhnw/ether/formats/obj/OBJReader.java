@@ -95,7 +95,7 @@ public class OBJReader extends AbstractModelReader {
 			RGB diffuse = mat.getKd();
 			float[] triv = triVertices.toArray();
 			mesh.setMaterial(new ColorMaterial(new RGBA(diffuse.x, diffuse.y, diffuse.z, 1)));
-			mesh.setGeometry(triv, GeometryUtil.calculateNormals(triv), diffuse.generateColorArray(triv.length/3));
+			mesh.setGeometry(triv, GeometryUtil.calculateNormals(triv), diffuse.generateColorArray(triv.length / 3));
 			meshes.add(mesh);
 		}
 		return meshes;

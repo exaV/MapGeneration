@@ -40,8 +40,8 @@ import com.jogamp.newt.event.KeyListener;
 import com.jogamp.newt.event.MouseListener;
 
 /**
- * A 'view' here is a view with some control functionality, i.e. it handles the
- * rendering of the model and also the user input specific to the view.
+ * A 'view' here is a view with some control functionality, i.e. it handles the rendering of the model and also the user
+ * input specific to the view.
  * 
  * @author radar
  */
@@ -49,7 +49,7 @@ public interface IView extends GLEventListener, MouseListener, KeyListener {
 	enum ViewType {
 		INTERACTIVE_VIEW, MAPPED_VIEW
 	}
-	
+
 	GLAutoDrawable getDrawable();
 
 	/**
@@ -108,8 +108,8 @@ public interface IView extends GLEventListener, MouseListener, KeyListener {
 	void repaint();
 
 	/**
-	 * Request to update view and its dependencies (e.g. tools) and then
-	 * repaint. For instance, this is called when the camera changed.
+	 * Request to update view and its dependencies (e.g. tools) and then repaint. For instance, this is called when the
+	 * camera changed.
 	 */
 	void refresh();
 }

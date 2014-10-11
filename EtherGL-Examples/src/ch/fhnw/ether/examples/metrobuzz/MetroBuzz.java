@@ -41,28 +41,29 @@ import ch.fhnw.ether.examples.metrobuzz.model.Scene;
 import ch.fhnw.ether.view.IView.ViewType;
 
 public class MetroBuzz {
-    public static void main(final String[] args) {
-        // Make sure everything runs on GUI thread...
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new MetroBuzz(args);
-            }
-        });
-    }
+	public static void main(final String[] args) {
+		// Make sure everything runs on GUI thread...
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				new MetroBuzz(args);
+			}
+		});
+	}
 
 	public MetroBuzz(String[] args) {
-		if(args.length < 1) throw new IllegalArgumentException("Pass path to Sioux OSM as command line argument");
-		
+		if (args.length < 1)
+			throw new IllegalArgumentException("Pass path to Sioux OSM as command line argument");
+
 		MetroBuzzController controller = new MetroBuzzController();
 		Camera camera = new Camera();
 		controller.addView(new View(controller, 0, 10, 512, 512, ViewType.INTERACTIVE_VIEW, camera));
 		controller.addView(new View(controller, 512, 10, 512, 512, ViewType.MAPPED_VIEW, camera));
-		
+
 		Scene model = new Scene(camera);
 		System.out.println("Loading Data");
 		try {
-			Loader.load(model, args[0], 100 /*Integer.MAX_VALUE*/);
+			Loader.load(model, args[0], 100 /* Integer.MAX_VALUE */);
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);
@@ -70,9 +71,9 @@ public class MetroBuzz {
 		System.out.println("Done.");
 
 		Scene.printAgent(model.getAgents().get(0));
-		//Model.printAgent(model.getAgents().get(1));
-		//Model.printAgent(model.getAgents().get(2));
-		
+		// Model.printAgent(model.getAgents().get(1));
+		// Model.printAgent(model.getAgents().get(2));
+
 		controller.setScene(model);
 	}
 

@@ -31,7 +31,6 @@ package ch.fhnw.util.math.geometry;
 
 import ch.fhnw.util.math.Vec3;
 
-
 /**
  * Very basic plane class. Loosely based on Apache Commons Math3.
  * 

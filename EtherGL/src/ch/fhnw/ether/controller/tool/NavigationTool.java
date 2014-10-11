@@ -112,7 +112,7 @@ public class NavigationTool extends AbstractTool {
 
 	@Override
 	public void mouseWheelMoved(MouseEvent e, IView view) {
-		if(e.isControlDown()) {
+		if (e.isControlDown()) {
 			view.getCamera().ORBITmovePivot(0, 0, e.getRotation()[1] * 0.1f, false);
 		} else {
 			view.getCamera().ORBITzoom(1 - e.getRotation()[1] * 0.1f);
@@ -123,7 +123,7 @@ public class NavigationTool extends AbstractTool {
 	private static GenericMesh makeGrid() {
 		GenericMesh mesh = new GenericMesh(PrimitiveType.LINE);
 		List<Vec3> lines = new ArrayList<>();
-		
+
 		mesh.setMaterial(new ColorMaterial(RGBA.WHITE));
 
 		int gridNumLines = 12;
@@ -138,11 +138,9 @@ public class NavigationTool extends AbstractTool {
 		int n = gridNumLines / 2;
 		for (int i = 1; i <= n; ++i) {
 			Primitives.addLine(lines, i * gridSpacing, -e, i * gridSpacing, e);
-			Primitives
-					.addLine(lines, -i * gridSpacing, -e, -i * gridSpacing, e);
+			Primitives.addLine(lines, -i * gridSpacing, -e, -i * gridSpacing, e);
 			Primitives.addLine(lines, -e, i * gridSpacing, e, i * gridSpacing);
-			Primitives
-					.addLine(lines, -e, -i * gridSpacing, e, -i * gridSpacing);
+			Primitives.addLine(lines, -e, -i * gridSpacing, e, -i * gridSpacing);
 		}
 
 		mesh.setGeometry(Vec3.toArray(lines));

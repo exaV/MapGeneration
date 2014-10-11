@@ -79,8 +79,7 @@ public final class UI {
 		}
 
 		if (message != null)
-			text.drawString(message, 0,
-					text.getHeight() - TextMesh.FONT.getSize());
+			text.drawString(message, 0, text.getHeight() - TextMesh.FONT.getSize());
 
 		text.getRenderable(controller.getRenderer()).requestUpdate();
 	}

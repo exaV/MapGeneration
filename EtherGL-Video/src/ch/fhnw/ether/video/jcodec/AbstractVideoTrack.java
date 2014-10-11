@@ -51,7 +51,7 @@ abstract class AbstractVideoTrack implements IVideoTrack {
 	private URL url;
 	private SeekableByteChannel channel;
 	protected FrameGrab grab;
-	
+
 	public AbstractVideoTrack(URL url) throws IOException, URISyntaxException, JCodecException {
 		this.url = url;
 		this.channel = NIOUtils.readableFileChannel(new File(url.toURI()));
@@ -68,7 +68,7 @@ abstract class AbstractVideoTrack implements IVideoTrack {
 		this.channel = null;
 		this.grab = null;
 	}
-	
+
 	@Override
 	public URL getURL() {
 		return url;
@@ -117,9 +117,9 @@ abstract class AbstractVideoTrack implements IVideoTrack {
 
 		return dst;
 	}
-	
+
 	@Override
 	public String toString() {
-		return getURL() + " (d=" + getDuration() + " fr=" + getFrameRate() + " fc=" + getFrameCount() + " w=" + getWidth() + " h=" + getHeight() + ")"; 
+		return getURL() + " (d=" + getDuration() + " fr=" + getFrameRate() + " fc=" + getFrameCount() + " w=" + getWidth() + " h=" + getHeight() + ")";
 	}
 }

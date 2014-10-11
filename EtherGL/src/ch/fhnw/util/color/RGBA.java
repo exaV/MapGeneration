@@ -47,7 +47,6 @@ public class RGBA extends Vec4 implements IColor {
 	public static final RGBA LIGHT_GRAY = new RGBA(0.75f, 0.75f, 0.75f, 1);
 	public static final RGBA DARK_GRAY = new RGBA(0.25f, 0.25f, 0.25f, 1);
 
-
 	public RGBA(float[] rgba) {
 		this(rgba[0], rgba[1], rgba[2], rgba[3]);
 	}
@@ -55,9 +54,9 @@ public class RGBA extends Vec4 implements IColor {
 	public RGBA(float r, float g, float b, float a) {
 		super(r, g, b, a);
 	}
-	
+
 	public RGBA(Vec4 c) {
-		super(c.x,c.y,c.z,c.w);
+		super(c.x, c.y, c.z, c.w);
 	}
 
 	@Override
@@ -84,28 +83,28 @@ public class RGBA extends Vec4 implements IColor {
 	public String toString() {
 		return "rgba[" + red() + " " + green() + " " + blue() + " " + alpha() + "]";
 	}
-	
+
 	@Override
 	public float[] generateColorArray(int len) {
-		float[] ret = new float[len*4];
-		for(int i=0; i<ret.length; i+=4) {
-			ret[i+0] = x;
-			ret[i+1] = y;
-			ret[i+2] = z;
-			ret[i+3] = w;
+		float[] ret = new float[len * 4];
+		for (int i = 0; i < ret.length; i += 4) {
+			ret[i + 0] = x;
+			ret[i + 1] = y;
+			ret[i + 2] = z;
+			ret[i + 3] = w;
 		}
 		return ret;
 	}
-	
+
 	public RGBA scaleRGB(float s) {
-		return new RGBA(x*s,y*s,z*s,w);
+		return new RGBA(x * s, y * s, z * s, w);
 	}
-	
+
 	public int toInt() {
-		int r = (int)(x*255);
-		int g = (int)(y*255);
-		int b = (int)(z*255);
-		int a = (int)(w*255);
-		return (a<<24 | b<<16 | g<<8 | r<<0);
+		int r = (int) (x * 255);
+		int g = (int) (y * 255);
+		int b = (int) (z * 255);
+		int a = (int) (w * 255);
+		return (a << 24 | b << 16 | g << 8 | r << 0);
 	}
 }

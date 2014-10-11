@@ -34,7 +34,7 @@ import ch.fhnw.ether.render.AbstractRenderer;
 
 public final class ModelRenderState {
 	protected final Scene scene;
-	
+
 	public ModelRenderState(Scene scene, AbstractRenderer renderer) {
 		this.scene = scene;
 		scene.setRenderer(renderer);

@@ -40,9 +40,9 @@ import ch.fhnw.util.math.Vec3;
  * @author radar
  */
 public interface ICalibrator {
-    double calibrate(List<Vec3> modelVertices, List<Vec3> projectedVertices, float near, float far);
+	double calibrate(List<Vec3> modelVertices, List<Vec3> projectedVertices, float near, float far);
 
-    Mat4 getProjMatrix();
+	Mat4 getProjMatrix();
 
-    Mat4 getViewMatrix();
+	Mat4 getViewMatrix();
 }

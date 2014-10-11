@@ -39,7 +39,7 @@ public class BooleanUniformAttribute extends AbstractUniformAttribute<Boolean> {
 	public BooleanUniformAttribute(String id, String shaderName) {
 		super(id, shaderName);
 	}
-	
+
 	public BooleanUniformAttribute(String id, String shaderName, Supplier<Boolean> supplier) {
 		super(id, shaderName, supplier);
 	}

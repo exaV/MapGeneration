@@ -43,46 +43,48 @@ import ch.fhnw.util.math.geometry.BoundingBox;
 public class VertexGeometry implements IGeometry {
 
 	private Transform transform = new Transform();
-	
-	private float[][] vertexData; //first dimension is attribute, second data
+
+	private float[][] vertexData; // first dimension is attribute, second data
 	private IArrayAttribute[] attributes;
 	private BoundingBox boundings;
 	private PrimitiveType type;
 	private boolean changed = false;
 
 	/**
-	 * Generates geometry from the given data with the given attribute-layout.
-	 * All data is copied. Changes on the passed arrays will not affect this geometry.
+	 * Generates geometry from the given data with the given attribute-layout. All data is copied. Changes on the passed
+	 * arrays will not affect this geometry.
 	 * 
-	 * @param attribData Vertex Data, may contain positions, colors, normals, etc.
-	 * @param attributes Kind of attributes, must be same order as attribData
+	 * @param attribData
+	 *            Vertex Data, may contain positions, colors, normals, etc.
+	 * @param attributes
+	 *            Kind of attributes, must be same order as attribData
 	 * @param type
 	 */
 	public VertexGeometry(float[][] attribData, IArrayAttribute[] attributes, PrimitiveType type) {
 		this.attributes = Arrays.copyOf(attributes, attributes.length);
 		this.vertexData = new float[attribData.length][];
-		for(int i=0; i<attribData.length; ++i) {
+		for (int i = 0; i < attribData.length; ++i) {
 			vertexData[i] = Arrays.copyOf(attribData[i], attribData[i].length);
 		}
 		this.type = type;
-		
+
 		boundings = new BoundingBox();
 		int positionArray = -1;
-		for(int i=0; i<attributes.length; ++i) {
-			if(attributes[i].id() == PositionArray.ID) {
+		for (int i = 0; i < attributes.length; ++i) {
+			if (attributes[i].id() == PositionArray.ID) {
 				boundings.add(vertexData[i]);
 				positionArray = i;
 			}
 		}
-		
-		if(positionArray == -1) {
+
+		if (positionArray == -1) {
 			throw new IllegalArgumentException("Attributes must contain position");
 		}
-		
+
 		changed = true;
 
 	}
-	
+
 	/**
 	 * Copy constructor. Transformation will also be copied.
 	 * 
@@ -95,25 +97,23 @@ public class VertexGeometry implements IGeometry {
 		this.transform.setRotation(geo.getRotation());
 		this.transform.setScale(geo.getScale());
 	}
-	
+
 	public PrimitiveType getPrimitiveType() {
 		return type;
 	}
 
 	@Override
-	public void getAttributeSuppliers(PrimitiveType primitiveType,
-			ISuppliers dst) {
-		if(this.type != primitiveType) {
-			throw new RuntimeException("Primitive type is " + primitiveType.name() + 
-					" but exptected " + type.name());
+	public void getAttributeSuppliers(PrimitiveType primitiveType, ISuppliers dst) {
+		if (this.type != primitiveType) {
+			throw new RuntimeException("Primitive type is " + primitiveType.name() + " but exptected " + type.name());
 		}
-		
-		for(int i=0; i<attributes.length; ++i) {
+
+		for (int i = 0; i < attributes.length; ++i) {
 			final int n = i;
 			dst.add(attributes[i].id(), () -> {
-				if(attributes[n].id() == NormalArray.ID) {
+				if (attributes[n].id() == NormalArray.ID) {
 					return transform.transformNormals(vertexData[n]);
-				} else if(attributes[n].id() == PositionArray.ID) {
+				} else if (attributes[n].id() == PositionArray.ID) {
 					return transform.transformVertices(vertexData[n]);
 				} else {
 					return vertexData[n];
@@ -175,9 +175,10 @@ public class VertexGeometry implements IGeometry {
 	public boolean hasChanged() {
 		return changed;
 	}
-	
+
 	public float[] getVertexData(int i) {
-		if(i >= vertexData.length) return new float[0];
+		if (i >= vertexData.length)
+			return new float[0];
 		return vertexData[i];
 	}
 

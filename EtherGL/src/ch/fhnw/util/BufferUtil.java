@@ -41,7 +41,7 @@ public class BufferUtil {
 	}
 
 	public static void arraycopy(ByteBuffer src, int srcPos, ByteBuffer dst, int dstPos, int length) {
-		if(src == dst) {
+		if (src == dst) {
 			src.clear();
 			byte[] tmp = new byte[length];
 			src.position(srcPos);
@@ -59,7 +59,7 @@ public class BufferUtil {
 
 	public static void fill(ByteBuffer buffer, int off, int len, byte val) {
 		buffer.position(off);
-		while(len-- >= 0)
+		while (len-- >= 0)
 			buffer.put(val);
 	}
 
@@ -68,8 +68,8 @@ public class BufferUtil {
 	}
 
 	public static byte[] toByteArray(ByteBuffer buffer, int off, int len) {
-		if(buffer.hasArray())
-			if(off == 0 && len == buffer.capacity())
+		if (buffer.hasArray())
+			if (off == 0 && len == buffer.capacity())
 				return buffer.array();
 
 		byte[] result = new byte[len];

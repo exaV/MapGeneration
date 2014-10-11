@@ -53,7 +53,7 @@ public final class Vec2 {
 	}
 
 	public Vec2(double x, double y) {
-		this((float)x, (float)y);
+		this((float) x, (float) y);
 	}
 
 	public float length() {

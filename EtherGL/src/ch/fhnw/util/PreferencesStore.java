@@ -32,42 +32,44 @@ package ch.fhnw.util;
 import java.util.prefs.Preferences;
 
 public class PreferencesStore {
-    private static Preferences preferences;
+	private static Preferences preferences;
 
-    public static Preferences get() {
-        if (preferences == null)
-            preferences = Preferences.userRoot().node(PreferencesStore.class.getName());
-        return preferences;
-    }
+	public static Preferences get() {
+		if (preferences == null)
+			preferences = Preferences.userRoot().node(PreferencesStore.class.getName());
+		return preferences;
+	}
 
-    /**
-     * Stores a 4x4 matrix to the preferences store with given key.
-     *
-     * @param key    key for the matrix to store
-     * @param matrix matrix (4x4) to be stored
-     */
-    public void putMatrix4x4(String key, float[] matrix) {
-        assert (matrix.length == 16);
-        get().putBoolean(key + "_matrix", true);
-        for (int i = 0; i < matrix.length; ++i)
-            get().putFloat(key + "_" + i, matrix[i]);
-    }
+	/**
+	 * Stores a 4x4 matrix to the preferences store with given key.
+	 *
+	 * @param key
+	 *            key for the matrix to store
+	 * @param matrix
+	 *            matrix (4x4) to be stored
+	 */
+	public void putMatrix4x4(String key, float[] matrix) {
+		assert (matrix.length == 16);
+		get().putBoolean(key + "_matrix", true);
+		for (int i = 0; i < matrix.length; ++i)
+			get().putFloat(key + "_" + i, matrix[i]);
+	}
 
-    /**
-     * Reads a 4x4 matrix from preferences store with given key.
-     *
-     * @param key key for the matrix to read
-     * @return the stored matrix or null if no matrix exists in store for given
-     * key.
-     */
-    public float[] getMatrix4x4(String key) {
-        if (!get().getBoolean(key + "_matrix", false))
-            return null;
+	/**
+	 * Reads a 4x4 matrix from preferences store with given key.
+	 *
+	 * @param key
+	 *            key for the matrix to read
+	 * @return the stored matrix or null if no matrix exists in store for given key.
+	 */
+	public float[] getMatrix4x4(String key) {
+		if (!get().getBoolean(key + "_matrix", false))
+			return null;
 
-        float[] matrix = new float[16];
-        for (int i = 0; i < matrix.length; ++i) {
-            matrix[i] = get().getFloat(key + "_" + i, 0);
-        }
-        return matrix;
-    }
+		float[] matrix = new float[16];
+		for (int i = 0; i < matrix.length; ++i) {
+			matrix[i] = get().getFloat(key + "_" + i, 0);
+		}
+		return matrix;
+	}
 }

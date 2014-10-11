@@ -36,64 +36,64 @@ import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.MouseEvent;
 
 public abstract class AbstractTool implements ITool {
-    private static final int SNAP_SIZE = 4;
+	private static final int SNAP_SIZE = 4;
 
-    private IController controller;
+	private IController controller;
 
-    protected AbstractTool(IController controller) {
-        this.controller = controller;
-    }
+	protected AbstractTool(IController controller) {
+		this.controller = controller;
+	}
 
-    protected final IController getController() {
-        return controller;
-    }
+	protected final IController getController() {
+		return controller;
+	}
 
-    @Override
-    public void activate() {
-    }
+	@Override
+	public void activate() {
+	}
 
-    @Override
-    public void deactivate() {
-    }
+	@Override
+	public void deactivate() {
+	}
 
-    @Override
-    public void refresh(IView view) {
-    }
+	@Override
+	public void refresh(IView view) {
+	}
 
-    // key listener
+	// key listener
 
-    @Override
-    public void keyPressed(KeyEvent e, IView view) {
-    }
+	@Override
+	public void keyPressed(KeyEvent e, IView view) {
+	}
 
-    // mouse listener
+	// mouse listener
 
-    @Override
-    public void mousePressed(MouseEvent e, IView view) {
-    }
+	@Override
+	public void mousePressed(MouseEvent e, IView view) {
+	}
 
-    @Override
-    public void mouseReleased(MouseEvent e, IView view) {
-    }
+	@Override
+	public void mouseReleased(MouseEvent e, IView view) {
+	}
 
-    // mouse motion listener
+	// mouse motion listener
 
-    @Override
-    public void mouseMoved(MouseEvent e, IView view) {
-    }
+	@Override
+	public void mouseMoved(MouseEvent e, IView view) {
+	}
 
-    @Override
-    public void mouseDragged(MouseEvent e, IView view) {
-    }
+	@Override
+	public void mouseDragged(MouseEvent e, IView view) {
+	}
 
-    // mouse wheel listener
+	// mouse wheel listener
 
-    @Override
-    public void mouseWheelMoved(MouseEvent e, IView view) {
-    }
+	@Override
+	public void mouseWheelMoved(MouseEvent e, IView view) {
+	}
 
-    // TODO: get rid of this or move to PickUtil
-    public static boolean snap2D(int mx, int my, int x, int y) {
-        return (mx >= x - SNAP_SIZE) && (mx <= x + SNAP_SIZE) && (my >= y - SNAP_SIZE) && (my < y + SNAP_SIZE);
-    }
+	// TODO: get rid of this or move to PickUtil
+	public static boolean snap2D(int mx, int my, int x, int y) {
+		return (mx >= x - SNAP_SIZE) && (mx <= x + SNAP_SIZE) && (my >= y - SNAP_SIZE) && (my < y + SNAP_SIZE);
+	}
 }

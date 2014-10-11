@@ -45,7 +45,7 @@ public final class ProjMatrixUniform extends Mat4FloatUniformAttribute {
 	public ProjMatrixUniform(String shaderName) {
 		super(ID, shaderName);
 	}
-	
+
 	public ProjMatrixUniform(Supplier<Mat4> supplier) {
 		super(ID, DEFAULT_SHADER_NAME, supplier);
 	}

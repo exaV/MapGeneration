@@ -34,7 +34,7 @@ import java.net.URL;
 public interface IVideoTrack {
 
 	void dispose();
-	
+
 	URL getURL();
 
 	double getDuration();

@@ -54,7 +54,7 @@ public class Texture {
 			tex = null;
 		}
 	}
-	
+
 	// XXX NOTE: we currently only expose the "setData" call to load data into the texture
 
 	public void setData(int width, int height, Buffer buffer, int format) {
@@ -71,13 +71,13 @@ public class Texture {
 		}
 	}
 
-//	private void load(GL gl, int width, int height, byte[] rgba) {
-//		load(gl, width, height, Buffers.newDirectByteBuffer(rgba), GL.GL_RGBA);
-//	}
-//
-//	private void load(GL gl, int width, int height, Buffer buffer) {
-//		load(gl, width, height, buffer, GL.GL_RGBA);
-//	}
+	// private void load(GL gl, int width, int height, byte[] rgba) {
+	// load(gl, width, height, Buffers.newDirectByteBuffer(rgba), GL.GL_RGBA);
+	// }
+	//
+	// private void load(GL gl, int width, int height, Buffer buffer) {
+	// load(gl, width, height, buffer, GL.GL_RGBA);
+	// }
 
 	private void load(GL gl, int width, int height, Buffer buffer, int format) {
 		if (tex == null) {

@@ -33,7 +33,7 @@ import ch.fhnw.util.math.Mat4;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.I3DObject;
 
-public interface ICamera extends I3DObject{
+public interface ICamera extends I3DObject {
 
 	// projection settings
 
@@ -78,9 +78,9 @@ public interface ICamera extends I3DObject{
 	void setPosition(float x, float y, float z);
 
 	Vec3 getLookVector();
-	
+
 	Vec3 getUpVector();
-	
+
 	// orbit-related changes, camera transformations around pivot point
 
 	void ORBITzoom(float zoomFactor);
@@ -90,6 +90,7 @@ public interface ICamera extends I3DObject{
 	void ORBITturnElevation(float amount);
 
 	void ORBITsetZoom(float zoom);
+
 	float ORBIgetZoom();
 
 	void ORBITsetAzimut(float azimut);
@@ -99,7 +100,5 @@ public interface ICamera extends I3DObject{
 	void ORBITmovePivot(float x, float y, float z, boolean localTransformation);
 
 	Vec3 ORBITgetPivotPosition();
-
-
 
 }

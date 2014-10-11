@@ -40,18 +40,17 @@ import ch.fhnw.util.math.geometry.I3DObject;
 public interface IScene {
 
 	List<? extends I3DObject> getObjects();
-	
+
 	List<? extends IMesh> getMeshes();
-	
+
 	List<ICamera> getCameras();
-	
+
 	List<ILight> getLights();
 
 	void setRenderer(IRenderer renderer);
-	
+
 	/**
-	 * Is called, if the next frame wants to be rendered.
-	 * Scene should update its renderables here
+	 * Is called, if the next frame wants to be rendered. Scene should update its renderables here
 	 */
 	void renderUpdate();
 }

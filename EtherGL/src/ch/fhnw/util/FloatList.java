@@ -31,8 +31,8 @@ import java.util.Arrays;
 
 public class FloatList implements IAddOnlyFloatList {
 	private float[] data = new float[16];
-	private int     size;
-	
+	private int size;
+
 	@Override
 	public void add(float value) {
 		ensureCapacity(size + 1);
@@ -92,10 +92,11 @@ public class FloatList implements IAddOnlyFloatList {
 
 	@Override
 	public void ensureCapacity(int capacity) {
-		if(data.length > capacity) return;
-		
+		if (data.length > capacity)
+			return;
+
 		int newCap = capacity;
-		while(newCap < capacity)
+		while (newCap < capacity)
 			newCap *= 2;
 		float[] tmp = data;
 		data = new float[newCap];

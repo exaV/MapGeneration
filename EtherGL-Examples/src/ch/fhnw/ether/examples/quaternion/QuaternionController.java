@@ -33,13 +33,7 @@ import ch.fhnw.ether.view.IView;
 import com.jogamp.newt.event.KeyEvent;
 
 public class QuaternionController extends AbstractController {
-	private static final String[] HELP  = {
-		"Simple Quaternion Example",
-		"",
-		"[1-6] Side Views",
-		"",
-		"Use Mouse Buttons + Shift or Mouse Wheel to Navigate"
-	};
+	private static final String[] HELP = { "Simple Quaternion Example", "", "[1-6] Side Views", "", "Use Mouse Buttons + Shift or Mouse Wheel to Navigate" };
 
 	public QuaternionController() {
 	}

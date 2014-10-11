@@ -34,13 +34,12 @@ public class Node {
 	private float x;
 	private float y;
 
-
 	public Node(String id, float x, float y) {
 		this.id = id;
 		this.x = x;
 		this.y = y;
 	}
-	
+
 	public String getId() {
 		return id;
 	}
@@ -48,7 +47,7 @@ public class Node {
 	public float getX() {
 		return x;
 	}
-	
+
 	public void setX(float x) {
 		this.x = x;
 	}
@@ -56,7 +55,7 @@ public class Node {
 	public float getY() {
 		return y;
 	}
-	
+
 	public void setY(float y) {
 		this.y = y;
 	}

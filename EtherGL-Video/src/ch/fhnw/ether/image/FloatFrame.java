@@ -38,9 +38,9 @@ import java.nio.FloatBuffer;
 import ch.fhnw.util.BufferUtil;
 
 public final class FloatFrame extends Frame {
-	private static final float[] MIN_MAX_0_1    = {0f,1f};
-	public float[]               originalMinMax = MIN_MAX_0_1;
-	FloatBuffer                  buffer;
+	private static final float[] MIN_MAX_0_1 = { 0f, 1f };
+	public float[] originalMinMax = MIN_MAX_0_1;
+	FloatBuffer buffer;
 
 	protected FloatFrame() {
 		super(4);
@@ -50,7 +50,7 @@ public final class FloatFrame extends Frame {
 	public FloatFrame(Frame frame) {
 		this(frame, MIN_MAX_0_1);
 	}
-	
+
 	public FloatFrame(FloatFrame frame) {
 		this(frame, frame.originalMinMax);
 	}
@@ -62,7 +62,7 @@ public final class FloatFrame extends Frame {
 	public FloatFrame(int dimI, int dimJ, int dimK) {
 		super(4);
 		buffer = pixels.asFloatBuffer();
-		init(dimI, dimJ, dimK);		
+		init(dimI, dimJ, dimK);
 	}
 
 	public FloatFrame(int dimI, int dimJ, int dimK, ByteBuffer frameBuffer) {
@@ -73,29 +73,29 @@ public final class FloatFrame extends Frame {
 
 	public FloatFrame(Frame frame, float[] minMax) {
 		this(frame.dimI, frame.dimJ, frame.dimK);
-		if(pixelSize == frame.pixelSize && frame instanceof FloatFrame)
+		if (pixelSize == frame.pixelSize && frame instanceof FloatFrame)
 			BufferUtil.arraycopy(frame.pixels, 0, pixels, 0, pixels.capacity());
 		else {
-			Grey16Codec encoder = new Grey16Codec( minMax );
-			final ByteBuffer  src    = frame.pixels;
-			int               sps    = frame.pixelSize;
-			if(frame instanceof Grey16Frame) {
-				for(int k = 0; k < dimK; k++) {
+			Grey16Codec encoder = new Grey16Codec(minMax);
+			final ByteBuffer src = frame.pixels;
+			int sps = frame.pixelSize;
+			if (frame instanceof Grey16Frame) {
+				for (int k = 0; k < dimK; k++) {
 					int spos = k * dimJ * dimI * frame.pixelSize;
 					int dpos = k * dimJ * dimI;
-					for(int j = 0; j < dimJ; j++) {
-						for(int i = 0; i < dimI; i++) {
-							buffer.put(dpos++, encoder.decode(src.get(spos+1), src.get(spos)));
+					for (int j = 0; j < dimJ; j++) {
+						for (int i = 0; i < dimI; i++) {
+							buffer.put(dpos++, encoder.decode(src.get(spos + 1), src.get(spos)));
 							spos += sps;
 						}
 					}
 				}
 			} else {
-				for(int k = 0; k < dimK; k++) {
+				for (int k = 0; k < dimK; k++) {
 					int spos = k * dimJ * dimI * frame.pixelSize;
 					int dpos = k * dimJ * dimI;
-					for(int j = 0; j < dimJ; j++) {
-						for(int i = 0; i < dimI; i++) {
+					for (int j = 0; j < dimJ; j++) {
+						for (int i = 0; i < dimI; i++) {
 							int val = src.get(spos) & 0xFF;
 							val += src.get(spos) & 0xFF;
 							val += src.get(spos) & 0xFF;
@@ -110,7 +110,6 @@ public final class FloatFrame extends Frame {
 		originalMinMax = minMax;
 	}
 
-
 	@Override
 	public void init(int dimI, int dimJ, int dimK) {
 		super.init(dimI, dimJ, dimK);
@@ -119,10 +118,10 @@ public final class FloatFrame extends Frame {
 
 	@Override
 	public void setPixels(int x, int y, int w, int h, BufferedImage img, int flags) {
-		final int    dstll   = dimI;
-		int          dstyoff = dstll * ((dimJ - 1) - y);
+		final int dstll = dimI;
+		int dstyoff = dstll * ((dimJ - 1) - y);
 
-		if(img.getType() != BufferedImage.TYPE_USHORT_GRAY) {
+		if (img.getType() != BufferedImage.TYPE_USHORT_GRAY) {
 			BufferedImage tmp = new BufferedImage(img.getWidth(), img.getHeight(), BufferedImage.TYPE_USHORT_GRAY);
 			Graphics g = tmp.getGraphics();
 			g.drawImage(img, x, y, x + w, y + h, x, y, x + w, y + h, ImageScaler.AWT_OBSERVER);
@@ -132,12 +131,12 @@ public final class FloatFrame extends Frame {
 
 		Grey16Codec encoder = new Grey16Codec(new float[] { .0f, 1.0f });
 
-		final short[]     src     = ((DataBufferUShort) img.getRaster().getDataBuffer()).getData();
-		final int         srcll   = img.getWidth();
-		int               srcyoff = srcll * y + x;
-		for(;h > 0; h--) {
+		final short[] src = ((DataBufferUShort) img.getRaster().getDataBuffer()).getData();
+		final int srcll = img.getWidth();
+		int srcyoff = srcll * y + x;
+		for (; h > 0; h--) {
 			buffer.position(dstyoff + x);
-			for(int i = 0; i < w; i++)
+			for (int i = 0; i < w; i++)
 				buffer.put(encoder.decode(src[srcyoff + i]));
 			srcyoff += srcll;
 			dstyoff -= dstll;
@@ -147,18 +146,18 @@ public final class FloatFrame extends Frame {
 	@Override
 	public BufferedImage toBufferedImage() {
 		BufferedImage result = new BufferedImage(dimI, dimJ, BufferedImage.TYPE_USHORT_GRAY);
-		short[]       line   = new short[dimI];
+		short[] line = new short[dimI];
 
 		Grey16Codec encoder = new Grey16Codec(getMinMax());
 
 		int y = 0;
-		for(int j = dimJ; --j >= 0; y++) {
-			for(int i = 0; i < line.length; i++)
+		for (int j = dimJ; --j >= 0; y++) {
+			for (int i = 0; i < line.length; i++)
 				line[i] = encoder.encode(buffer.get(j * dimI + i));
 
 			result.getRaster().setDataElements(0, y, dimI, 1, line);
 		}
-		return result;	
+		return result;
 	}
 
 	@Override
@@ -174,16 +173,16 @@ public final class FloatFrame extends Frame {
 
 	@Override
 	public float getBrightnessBilinear(double u, double v, int k) {
-		return getComponentBilinear(u, v, k, 0);		
+		return getComponentBilinear(u, v, k, 0);
 	}
 
 	@Override
 	public float getFloatComponent(int i, int j, int k, int component) {
 		float out = buffer.get((k * dimI * dimJ) + (j * dimI) + i);
-		
-		if ( component == 3 )
-			return Float.isNaN( out ) ? 0 : 1;
-		
+
+		if (component == 3)
+			return Float.isNaN(out) ? 0 : 1;
+
 		return out;
 	}
 
@@ -192,16 +191,16 @@ public final class FloatFrame extends Frame {
 		buffer.clear();
 		for (int i = buffer.capacity(); --i >= 0;) {
 			float val = buffer.get();
-			
-			if ( Float.isNaN( val ) )
+
+			if (Float.isNaN(val))
 				continue;
-			
+
 			minMax[0] = Math.min(minMax[0], val);
-			minMax[1] = Math.max(minMax[1], val);			
+			minMax[1] = Math.max(minMax[1], val);
 		}
 		return minMax;
 	}
-	
+
 	private static class Grey16Codec {
 		private static int MAX_USHORT = 0xffff;
 
@@ -218,12 +217,12 @@ public final class FloatFrame extends Frame {
 		public short encode(float value) {
 			int ival = Math.round(((value - min) / range) * MAX_USHORT);
 
-			return (short)(ival & 0xffff);
+			return (short) (ival & 0xffff);
 		}
 
 		public float decode(int val) {
-			int ival = val & 0xffff;						
-			return linearInterpolate(min, max, ival / (float)MAX_USHORT);
+			int ival = val & 0xffff;
+			return linearInterpolate(min, max, ival / (float) MAX_USHORT);
 		}
 
 		public float decode(int msb, int lsb) {
@@ -247,13 +246,13 @@ public final class FloatFrame extends Frame {
 
 	@Override
 	public int getARGB(int i, int j, int k) {
-		int rgb = (int)(buffer.get((k * dimI * dimJ) + (j * dimI) + i) * 255f) & 0xFF;
+		int rgb = (int) (buffer.get((k * dimI * dimJ) + (j * dimI) + i) * 255f) & 0xFF;
 		return rgb << 16 | rgb << 8 | rgb | 0xFF000000;
 	}
 
 	@Override
 	public void getRGBBilinear(double u, double v, int k, byte[] rgb) {
-		rgb[0] = rgb[1] = rgb[2] = (byte) (getComponentBilinear(u, v, k, 0) * 255f);			
+		rgb[0] = rgb[1] = rgb[2] = (byte) (getComponentBilinear(u, v, k, 0) * 255f);
 	}
 
 	@Override
@@ -265,8 +264,8 @@ public final class FloatFrame extends Frame {
 
 	@Override
 	public void setSubframe(int i, int j, int k, Frame src) {
-		if(src.getClass() != getClass())
+		if (src.getClass() != getClass())
 			src = new FloatFrame(src);
 		setSubframeImpl(i, j, k, src);
-	}	
+	}
 }

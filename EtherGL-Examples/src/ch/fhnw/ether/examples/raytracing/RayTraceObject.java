@@ -11,16 +11,16 @@ import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.BoundingBox;
 
-public class RayTraceObject implements IMesh{
-	
+public class RayTraceObject implements IMesh {
+
 	private IParametricSurface surface;
 	private Vec3 position = Vec3.ZERO;
 	private RGBA color = RGBA.WHITE;
-	
+
 	public RayTraceObject(IParametricSurface surface) {
 		this.surface = surface;
 	}
-	
+
 	public RayTraceObject(IParametricSurface surface, RGBA color) {
 		this(surface);
 		this.color = color;
@@ -48,13 +48,12 @@ public class RayTraceObject implements IMesh{
 
 	public IntersectResult intersect(Ray ray) {
 		Vec3 point = surface.intersect(new Ray(ray.origin.add(position.negate()), ray.direction));
-		if(point == null) {
+		if (point == null) {
 			return IntersectResult.VOID;
-		}else {
-			return new IntersectResult(surface, point, color, ray.origin.subtract(point).length());
 		}
+		return new IntersectResult(surface, point, color, ray.origin.subtract(point).length());
 	}
-	
+
 	@Override
 	public IMaterial getMaterial() {
 		return new ColorMaterial(color);
@@ -64,7 +63,7 @@ public class RayTraceObject implements IMesh{
 	public boolean hasChanged() {
 		return false;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "object=(" + surface + ", rgba=" + color + ")";

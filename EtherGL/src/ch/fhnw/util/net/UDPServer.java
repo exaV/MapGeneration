@@ -40,66 +40,66 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.SwingUtilities;
 
 public class UDPServer {
-    public interface UDPHandler {
-        void handle(DatagramPacket packet);
-    }
+	public interface UDPHandler {
+		void handle(DatagramPacket packet);
+	}
 
-    private static final int RECEIVE_BUFFER_SIZE = 1024 * 1024;
-    private static final int SEND_BUFFER_SIZE = 1024 * 1024;
+	private static final int RECEIVE_BUFFER_SIZE = 1024 * 1024;
+	private static final int SEND_BUFFER_SIZE = 1024 * 1024;
 
-    private final InetSocketAddress address;
-    private final DatagramSocket socket;
-    private final UDPHandler handler;
+	private final InetSocketAddress address;
+	private final DatagramSocket socket;
+	private final UDPHandler handler;
 
-    private final BlockingQueue<DatagramPacket> receiveQueue = new LinkedBlockingQueue<>();
+	private final BlockingQueue<DatagramPacket> receiveQueue = new LinkedBlockingQueue<>();
 
-    private final AtomicBoolean awtPending = new AtomicBoolean();
+	private final AtomicBoolean awtPending = new AtomicBoolean();
 
-    public UDPServer(int port, UDPHandler handler) throws IOException {
-        address = new InetSocketAddress(AddressUtil.getDefaultInterface(), port);
-        socket = new DatagramSocket(address.getPort());
-        this.handler = handler;
-        int dec = socket.getReceiveBufferSize();
-        for (int size = RECEIVE_BUFFER_SIZE; socket.getReceiveBufferSize() < size; size -= dec) {
-            socket.setReceiveBufferSize(size);
-        }
-        dec = socket.getSendBufferSize();
-        for (int size = SEND_BUFFER_SIZE; socket.getSendBufferSize() < size; size -= dec) {
-            socket.setSendBufferSize(size);
-        }
+	public UDPServer(int port, UDPHandler handler) throws IOException {
+		address = new InetSocketAddress(AddressUtil.getDefaultInterface(), port);
+		socket = new DatagramSocket(address.getPort());
+		this.handler = handler;
+		int dec = socket.getReceiveBufferSize();
+		for (int size = RECEIVE_BUFFER_SIZE; socket.getReceiveBufferSize() < size; size -= dec) {
+			socket.setReceiveBufferSize(size);
+		}
+		dec = socket.getSendBufferSize();
+		for (int size = SEND_BUFFER_SIZE; socket.getSendBufferSize() < size; size -= dec) {
+			socket.setSendBufferSize(size);
+		}
 
-        final Runnable awtHandler = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    while (!receiveQueue.isEmpty()) {
-                        UDPServer.this.handler.handle(receiveQueue.take());
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                awtPending.set(false);
-            }
-        };
+		final Runnable awtHandler = new Runnable() {
+			@Override
+			public void run() {
+				try {
+					while (!receiveQueue.isEmpty()) {
+						UDPServer.this.handler.handle(receiveQueue.take());
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				awtPending.set(false);
+			}
+		};
 
-        final Thread receiveThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                for (; ; ) {
-                    try {
-                        byte[] buffer = new byte[socket.getReceiveBufferSize()];
-                        DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-                        socket.receive(packet);
-                        receiveQueue.add(packet);
-                        if (!awtPending.getAndSet(true))
-                            SwingUtilities.invokeLater(awtHandler);
-                    } catch (Exception ignored) {
-                    }
-                }
-            }
-        });
-        receiveThread.setDaemon(true);
-        receiveThread.setPriority(Thread.MAX_PRIORITY);
-        receiveThread.start();
-    }
+		final Thread receiveThread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				for (;;) {
+					try {
+						byte[] buffer = new byte[socket.getReceiveBufferSize()];
+						DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+						socket.receive(packet);
+						receiveQueue.add(packet);
+						if (!awtPending.getAndSet(true))
+							SwingUtilities.invokeLater(awtHandler);
+					} catch (Exception ignored) {
+					}
+				}
+			}
+		});
+		receiveThread.setDaemon(true);
+		receiveThread.setPriority(Thread.MAX_PRIORITY);
+		receiveThread.start();
+	}
 }

@@ -7,10 +7,10 @@ import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.BoundingBox;
 
 public class PointLight implements ILight {
-	
+
 	private Vec3 position;
 	private RGBA color;
-	
+
 	public PointLight(Vec3 position, RGBA color) {
 		this.position = position;
 		this.color = color;

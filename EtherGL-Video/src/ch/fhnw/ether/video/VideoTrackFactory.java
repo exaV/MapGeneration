@@ -110,9 +110,9 @@ public final class VideoTrackFactory {
 		try {
 			ISequentialVideoTrack track = createSequentialTrack(url);
 			System.out.println("sequential track: " + track);
-			
-			long numFrames = (long)(time * track.getFrameRate());
-			System.out.println("decoding "+ numFrames + " frames");
+
+			long numFrames = (long) (time * track.getFrameRate());
+			System.out.println("decoding " + numFrames + " frames");
 
 			long millis = System.currentTimeMillis();
 			Frame frame = null;

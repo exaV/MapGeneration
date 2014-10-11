@@ -37,66 +37,66 @@ import java.util.Enumeration;
 import java.util.List;
 
 public final class AddressUtil {
-    private static final int[][] PRIVATE_ADDRS = {{10}, {192, 168}, {172, 16}, {172, 17}, {172, 18}, {172, 19}, {172, 20}, {172, 21},
-            {172, 22}, {172, 23}, {172, 24}, {172, 25}, {172, 26}, {172, 27}, {172, 28}, {172, 29}, {172, 30}, {172, 31},};
+	private static final int[][] PRIVATE_ADDRS = { { 10 }, { 192, 168 }, { 172, 16 }, { 172, 17 }, { 172, 18 }, { 172, 19 }, { 172, 20 }, { 172, 21 },
+			{ 172, 22 }, { 172, 23 }, { 172, 24 }, { 172, 25 }, { 172, 26 }, { 172, 27 }, { 172, 28 }, { 172, 29 }, { 172, 30 }, { 172, 31 }, };
 
-    public static InetAddress getDefaultInterface() throws UnknownHostException, SocketException {
-        InetAddress addr = getFirstNonLoopbackAddress(true);
-        if (addr != null)
-            return addr;
-        return getLocalHost(true);
-    }
+	public static InetAddress getDefaultInterface() throws UnknownHostException, SocketException {
+		InetAddress addr = getFirstNonLoopbackAddress(true);
+		if (addr != null)
+			return addr;
+		return getLocalHost(true);
+	}
 
-    private static InetAddress getFirstNonLoopbackAddress(boolean ipv4only) throws SocketException {
-        for (InetAddress addr : AddressUtil.getLocalAddresses(ipv4only)) {
-            if (!addr.isLoopbackAddress()) {
-                if (isPrivate(addr))
-                    return addr;
-            }
-        }
-        return null;
-    }
+	private static InetAddress getFirstNonLoopbackAddress(boolean ipv4only) throws SocketException {
+		for (InetAddress addr : AddressUtil.getLocalAddresses(ipv4only)) {
+			if (!addr.isLoopbackAddress()) {
+				if (isPrivate(addr))
+					return addr;
+			}
+		}
+		return null;
+	}
 
-    private static InetAddress getLocalHost(boolean ipv4only) throws UnknownHostException, SocketException {
-        InetAddress result = InetAddress.getLocalHost();
-        if (ipv4only && !(result instanceof Inet4Address)) {
-            for (InetAddress addr : AddressUtil.getLocalAddresses(true)) {
-                if (isPrivate(addr)) {
-                    result = addr;
-                    break;
-                }
-            }
-        }
-        return result;
-    }
+	private static InetAddress getLocalHost(boolean ipv4only) throws UnknownHostException, SocketException {
+		InetAddress result = InetAddress.getLocalHost();
+		if (ipv4only && !(result instanceof Inet4Address)) {
+			for (InetAddress addr : AddressUtil.getLocalAddresses(true)) {
+				if (isPrivate(addr)) {
+					result = addr;
+					break;
+				}
+			}
+		}
+		return result;
+	}
 
-    private static List<InetAddress> getLocalAddresses(boolean ipv4only) throws SocketException {
-        List<InetAddress> result = new ArrayList<>();
-        for (Enumeration<NetworkInterface> e = NetworkInterface.getNetworkInterfaces(); e.hasMoreElements(); ) {
-            NetworkInterface nif = e.nextElement();
-            for (Enumeration<InetAddress> en = nif.getInetAddresses(); en.hasMoreElements(); ) {
-                InetAddress addr = en.nextElement();
-                if (ipv4only && !(addr instanceof Inet4Address))
-                    continue;
-                result.add(addr);
-            }
-        }
-        return result;
-    }
+	private static List<InetAddress> getLocalAddresses(boolean ipv4only) throws SocketException {
+		List<InetAddress> result = new ArrayList<>();
+		for (Enumeration<NetworkInterface> e = NetworkInterface.getNetworkInterfaces(); e.hasMoreElements();) {
+			NetworkInterface nif = e.nextElement();
+			for (Enumeration<InetAddress> en = nif.getInetAddresses(); en.hasMoreElements();) {
+				InetAddress addr = en.nextElement();
+				if (ipv4only && !(addr instanceof Inet4Address))
+					continue;
+				result.add(addr);
+			}
+		}
+		return result;
+	}
 
-    private static boolean isPrivate(InetAddress addr) {
-        byte[] addrb = addr.getAddress();
-        for (int i = PRIVATE_ADDRS.length; --i >= 0; ) {
-            boolean valid = true;
-            for (int j = 0; j < PRIVATE_ADDRS[i].length; j++)
-                if (PRIVATE_ADDRS[i][j] != (addrb[j] & 0xFF)) {
-                    valid = false;
-                    break;
-                }
-            if (valid) {
-                return true;
-            }
-        }
-        return false;
-    }
+	private static boolean isPrivate(InetAddress addr) {
+		byte[] addrb = addr.getAddress();
+		for (int i = PRIVATE_ADDRS.length; --i >= 0;) {
+			boolean valid = true;
+			for (int j = 0; j < PRIVATE_ADDRS[i].length; j++)
+				if (PRIVATE_ADDRS[i][j] != (addrb[j] & 0xFF)) {
+					valid = false;
+					break;
+				}
+			if (valid) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

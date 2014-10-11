@@ -40,17 +40,10 @@ import com.jogamp.newt.event.KeyEvent;
 
 // XXX light position currently not implemented
 public class MappingController extends AbstractController {
-	private float[] lightPosition = {10.0f, 6.0f, 8.0f};
+	private float[] lightPosition = { 10.0f, 6.0f, 8.0f };
 
-	private static final String[] HELP = {
-			"Simple Mapping Example (Without Content)",
-			"",
-			"[1] Default Tool / View",
-			"[2] Mapping Calibration",
-			"[3] Projector Adjustment",
-			"",
-			"Use Mouse Buttons + Shift or Mouse Wheel to Navigate"
-	};
+	private static final String[] HELP = { "Simple Mapping Example (Without Content)", "", "[1] Default Tool / View", "[2] Mapping Calibration",
+			"[3] Projector Adjustment", "", "Use Mouse Buttons + Shift or Mouse Wheel to Navigate" };
 
 	private final ITool defaultTool = new AbstractTool(this) {
 	};
@@ -58,10 +51,10 @@ public class MappingController extends AbstractController {
 	private final CalibrationTool calibrationTool = new CalibrationTool(this, new BoxCalibrationModel(0.5f, 0.5f, 0.5f, 0.8f, 0.8f));
 	private final FillTool fillTool = new FillTool(this);
 
-    public MappingController() {
-        setLightPosition(lightPosition);
-        //setCurrentTool(defaultTool);
-    }
+	public MappingController() {
+		setLightPosition(lightPosition);
+		// setCurrentTool(defaultTool);
+	}
 
 	public void modelChanged() {
 		repaintViews();

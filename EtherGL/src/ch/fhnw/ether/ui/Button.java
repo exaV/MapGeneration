@@ -38,119 +38,119 @@ import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.MouseEvent;
 
 public class Button extends AbstractWidget {
-    public interface IButtonAction extends IWidgetAction<Button> {
-        @Override
+	public interface IButtonAction extends IWidgetAction<Button> {
+		@Override
 		void execute(Button button, IView view);
-    }
+	}
 
-    private static final int BUTTON_WIDTH = 48;
-    private static final int BUTTON_HEIGHT = 48;
+	private static final int BUTTON_WIDTH = 48;
+	private static final int BUTTON_HEIGHT = 48;
 
-    private static final int BUTTON_GAP = 8;
+	private static final int BUTTON_GAP = 8;
 
-    public enum State {
-        DEFAULT(0.6f, 0, 0, 0.75f), PRESSED(1, 0.2f, 0.2f, 0.75f), DISABLED(0.5f, 0.5f, 0.5f, 0.75f);
+	public enum State {
+		DEFAULT(0.6f, 0, 0, 0.75f), PRESSED(1, 0.2f, 0.2f, 0.75f), DISABLED(0.5f, 0.5f, 0.5f, 0.75f);
 
-        State(float r, float g, float b, float a) {
-            this.color = new Color(r, g, b, a);
-        }
+		State(float r, float g, float b, float a) {
+			this.color = new Color(r, g, b, a);
+		}
 
-        public Color getColor() {
-            return color;
-        }
+		public Color getColor() {
+			return color;
+		}
 
-        private final Color color;
-    }
+		private final Color color;
+	}
 
-    private int key;
-    private State state = State.DEFAULT;
+	private int key;
+	private State state = State.DEFAULT;
 
-    public Button(int x, int y, String label, String help, int key) {
-        this(x, y, label, help, key, null);
-    }
+	public Button(int x, int y, String label, String help, int key) {
+		this(x, y, label, help, key, null);
+	}
 
-    public Button(int x, int y, String label, String help, int key, IButtonAction action) {
-    	super(x, y, label, help, action);
-        this.key = key;
-    }
+	public Button(int x, int y, String label, String help, int key, IButtonAction action) {
+		super(x, y, label, help, action);
+		this.key = key;
+	}
 
-    public Button(int x, int y, String label, String help, int key, State state, IButtonAction action) {
-        this(x, y, label, help, key, action);
-        setState(state);
-    }
+	public Button(int x, int y, String label, String help, int key, State state, IButtonAction action) {
+		this(x, y, label, help, key, action);
+		setState(state);
+	}
 
-    public Button(int x, int y, String label, String help, int key, boolean pressed, IButtonAction action) {
-        this(x, y, label, help, key, action);
-        setState(pressed);
-    }
+	public Button(int x, int y, String label, String help, int key, boolean pressed, IButtonAction action) {
+		this(x, y, label, help, key, action);
+		setState(pressed);
+	}
 
-    public int getKey() {
-        return key;
-    }
+	public int getKey() {
+		return key;
+	}
 
-    public State getState() {
-        return state;
-    }
+	public State getState() {
+		return state;
+	}
 
-    public void setState(State state) {
-        this.state = state;
-        requestUpdate();
-    }
+	public void setState(State state) {
+		this.state = state;
+		requestUpdate();
+	}
 
-    public void setState(boolean pressed) {
-        setState(pressed ? State.PRESSED : State.DEFAULT);
-        requestUpdate();
-    }
+	public void setState(boolean pressed) {
+		setState(pressed ? State.PRESSED : State.DEFAULT);
+		requestUpdate();
+	}
 
-    @Override
+	@Override
 	public boolean hit(int x, int y, IView view) {
-    	UI ui = getUI();
-        float bx = ui.getX() + getX() * (BUTTON_GAP + BUTTON_WIDTH);
-        float by = ui.getY() + getY() * (BUTTON_GAP + BUTTON_HEIGHT);
-        return x >= bx && x <= bx + BUTTON_WIDTH && y >= by && y <= by + BUTTON_HEIGHT;
-    }
-    
-    @Override
-    public void draw(TextMesh surface) {
-        int bw = Button.BUTTON_WIDTH;
-        int bh = Button.BUTTON_HEIGHT;
-        int bg = Button.BUTTON_GAP;
-        int bx = getX() * (bg + bw);
-        int by = getY() * (bg + bh);
-        surface.fillRect(getState().getColor(), bx, by, bw, bh);
-        String label = getLabel();
-        if (label != null)
-            surface.drawString(TEXT_COLOR, label, bx + 2, by + bh - 4);
-    	
-    }
-    
-    @Override
-    public void fire(IView view) {
-        if (state == State.DISABLED)
-            return;
-        
-        if (getAction() == null)
-            throw new UnsupportedOperationException("button '" + getLabel() + "' has no action defined");
-        ((IButtonAction)getAction()).execute(this, view);
-    }
-    
-    @Override
-    public boolean keyPressed(KeyEvent e, IView view) {
-    	if (getKey() == e.getKeyCode()) {
-    		fire(view);
-    		view.getController().repaintViews();
-    		return true;
-    	}
-    	return false;
-    }
-    
-    @Override
-    public boolean mousePressed(MouseEvent e, IView view) {
-        if (hit(e.getX(), e.getY(), view)) {
-            fire(view);
-            view.getController().repaintViews();
-            return true;
-        }
-        return false;
-    }
+		UI ui = getUI();
+		float bx = ui.getX() + getX() * (BUTTON_GAP + BUTTON_WIDTH);
+		float by = ui.getY() + getY() * (BUTTON_GAP + BUTTON_HEIGHT);
+		return x >= bx && x <= bx + BUTTON_WIDTH && y >= by && y <= by + BUTTON_HEIGHT;
+	}
+
+	@Override
+	public void draw(TextMesh surface) {
+		int bw = Button.BUTTON_WIDTH;
+		int bh = Button.BUTTON_HEIGHT;
+		int bg = Button.BUTTON_GAP;
+		int bx = getX() * (bg + bw);
+		int by = getY() * (bg + bh);
+		surface.fillRect(getState().getColor(), bx, by, bw, bh);
+		String label = getLabel();
+		if (label != null)
+			surface.drawString(TEXT_COLOR, label, bx + 2, by + bh - 4);
+
+	}
+
+	@Override
+	public void fire(IView view) {
+		if (state == State.DISABLED)
+			return;
+
+		if (getAction() == null)
+			throw new UnsupportedOperationException("button '" + getLabel() + "' has no action defined");
+		((IButtonAction) getAction()).execute(this, view);
+	}
+
+	@Override
+	public boolean keyPressed(KeyEvent e, IView view) {
+		if (getKey() == e.getKeyCode()) {
+			fire(view);
+			view.getController().repaintViews();
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean mousePressed(MouseEvent e, IView view) {
+		if (hit(e.getX(), e.getY(), view)) {
+			fire(view);
+			view.getController().repaintViews();
+			return true;
+		}
+		return false;
+	}
 }

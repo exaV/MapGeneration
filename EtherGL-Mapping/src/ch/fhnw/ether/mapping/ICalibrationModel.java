@@ -33,6 +33,6 @@ import ch.fhnw.ether.scene.mesh.GenericMesh;
 
 public interface ICalibrationModel {
 	GenericMesh getCalibrationMesh();
-	
+
 	float[] getCalibrationPoints();
 }

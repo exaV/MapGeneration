@@ -79,7 +79,7 @@ abstract class AbstractScheduler implements IScheduler {
 			}
 		}
 	}
-	
+
 	private void runModelThread() {
 		try {
 			while (true) {
@@ -92,6 +92,6 @@ abstract class AbstractScheduler implements IScheduler {
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.exit(1);
-		}		
+		}
 	}
 }

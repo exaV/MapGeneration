@@ -134,7 +134,7 @@ public class AbstractView implements IView {
 		gl.glClearDepth(1.0f);
 
 		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-		
+
 	}
 
 	@Override
@@ -174,7 +174,7 @@ public class AbstractView implements IView {
 			height = 1; // prevent divide by zero
 		gl.glViewport(0, 0, width, height);
 		viewport = new Viewport(0, 0, width, height);
-		camera.setAspect((float)width/height);
+		camera.setAspect((float) width / height);
 	}
 
 	@Override

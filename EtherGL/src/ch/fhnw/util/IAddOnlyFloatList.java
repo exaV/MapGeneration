@@ -29,23 +29,22 @@
 
 package ch.fhnw.util;
 
-
 public interface IAddOnlyFloatList {
-    void add(float value);
+	void add(float value);
 
-    void add(float value0, float value1);
+	void add(float value0, float value1);
 
-    void add(float value0, float value1, float value2);
+	void add(float value0, float value1, float value2);
 
-    void add(float value0, float value1, float value2, float value3);
+	void add(float value0, float value1, float value2, float value3);
 
-    boolean add(float[] values);
+	boolean add(float[] values);
 
-    int size();
-    
-    int capacity();
+	int size();
 
-    boolean isEmpty();
+	int capacity();
 
-    void ensureCapacity(int capacity);
+	boolean isEmpty();
+
+	void ensureCapacity(int capacity);
 }

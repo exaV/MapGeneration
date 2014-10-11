@@ -51,7 +51,7 @@ public class Trip {
 	public TripMode getMode() {
 		return mode;
 	}
-	
+
 	public void setMode(TripMode mode) {
 		this.mode = mode;
 	}
@@ -59,7 +59,7 @@ public class Trip {
 	public float getStartTime() {
 		return startTime;
 	}
-	
+
 	public void setStartTime(float time) {
 		this.startTime = time;
 	}
@@ -67,7 +67,7 @@ public class Trip {
 	public float getEndTime() {
 		return endTime;
 	}
-	
+
 	public void setEndTime(float time) {
 		this.endTime = time;
 	}
@@ -87,7 +87,7 @@ public class Trip {
 	public Node getToNode() {
 		return links.get(links.size() - 1).getToNode();
 	}
-	
+
 	@Override
 	public String toString() {
 		return "trip (" + mode.toString() + ") " + startTime + " " + endTime + " (" + links.size() + ")";

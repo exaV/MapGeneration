@@ -40,26 +40,26 @@ import ch.fhnw.ether.ui.Slider;
 
 public class MetroBuzzController extends AbstractController {
 	private final ITool areaTool = new AreaTool(this);
-    
-    public MetroBuzzController() {
-        addUI();
-    }
 
-    @Override
-    public Scene getScene() {
-        return (Scene) super.getScene();
-    }
-    
-    private void addUI() {
-        getUI().addWidget(new Button(0, 0, "PICK", "Pick Tool (1)", KeyEvent.VK_1, (button, view) -> setCurrentTool(null)));
-        getUI().addWidget(new Button(1, 0, "AREA", "AREA Tool (2)", KeyEvent.VK_2, (button, view) -> setCurrentTool(areaTool)));
+	public MetroBuzzController() {
+		addUI();
+	}
+
+	@Override
+	public Scene getScene() {
+		return (Scene) super.getScene();
+	}
+
+	private void addUI() {
+		getUI().addWidget(new Button(0, 0, "PICK", "Pick Tool (1)", KeyEvent.VK_1, (button, view) -> setCurrentTool(null)));
+		getUI().addWidget(new Button(1, 0, "AREA", "AREA Tool (2)", KeyEvent.VK_2, (button, view) -> setCurrentTool(areaTool)));
 		getUI().addWidget(new Button(0, 1, "F", "Frame Scene (F)", KeyEvent.VK_F, (button, view) -> {
-			//TODO: enable framing
-			//view.getCamera().frame(getScene().getBounds());
-			repaintViews();
-		}));
-        getUI().addWidget(new Button(1, 1, "Quit", "Quit", KeyEvent.VK_ESCAPE, (button, view) -> System.exit(0)));
-        getUI().addWidget(new Slider(2, 0, "Slider", "Slider", 0.3f, (slider, view) -> System.out.println("I slide... " + slider.getValue())));
-    }
-    
+			// TODO: enable framing
+			// view.getCamera().frame(getScene().getBounds());
+				repaintViews();
+			}));
+		getUI().addWidget(new Button(1, 1, "Quit", "Quit", KeyEvent.VK_ESCAPE, (button, view) -> System.exit(0)));
+		getUI().addWidget(new Slider(2, 0, "Slider", "Slider", 0.3f, (slider, view) -> System.out.println("I slide... " + slider.getValue())));
+	}
+
 }

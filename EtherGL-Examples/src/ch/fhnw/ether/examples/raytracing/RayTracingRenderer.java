@@ -39,48 +39,47 @@ import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.Primitives;
 
 public class RayTracingRenderer implements IRenderer {
-	
+
 	private final List<IRenderable> renderables = new ArrayList<>();
 	private final ParametricScene scene;
 	private final Texture screenTexture = new Texture();
-	private final IRenderable plane = createScreenPlane(-1, -1, 2, 2, screenTexture); 
+	private final IRenderable plane = createScreenPlane(-1, -1, 2, 2, screenTexture);
 	private int[] colors;
-	private int w=0,h=0;
-	private long n=0;
+	private int w = 0, h = 0;
+	private long n = 0;
 
 	public RayTracingRenderer(ParametricScene scene) {
 		this.scene = scene;
 	}
 
 	@Override
-	public void render(GL3 gl, ICamera camera, Viewport viewport,
-			boolean interactive) {
+	public void render(GL3 gl, ICamera camera, Viewport viewport, boolean interactive) {
 		long t = System.currentTimeMillis();
-		if(viewport.w != w || viewport.h != h) {
+		if (viewport.w != w || viewport.h != h) {
 			w = viewport.w;
 			h = viewport.h;
-			colors = new int[w*h];
+			colors = new int[w * h];
 		}
 		Vec3 camPos = camera.getPosition();
-		
-		float planeWidth = (float) (2*Math.tan(camera.getFov()/2)*camera.getNear());
-		float planeHeight = planeWidth/camera.getAspect();
-		
-		float deltaX = planeWidth/w;
-		float deltaY = planeHeight/h;
-		
+
+		float planeWidth = (float) (2 * Math.tan(camera.getFov() / 2) * camera.getNear());
+		float planeHeight = planeWidth / camera.getAspect();
+
+		float deltaX = planeWidth / w;
+		float deltaY = planeHeight / h;
+
 		Vec3 lookVector = camera.getLookVector().normalize();
 		Vec3 upVector = camera.getUpVector().normalize();
 		Vec3 sideVector = lookVector.cross(upVector).normalize();
-		
-		for(int j=-h/2; j<h/2; ++j) {
-			for(int i=-w/2; i<w/2; ++i) {
-				Vec3 x = sideVector.scale(i*deltaX);
-				Vec3 y = upVector.scale(j*deltaY);
+
+		for (int j = -h / 2; j < h / 2; ++j) {
+			for (int i = -w / 2; i < w / 2; ++i) {
+				Vec3 x = sideVector.scale(i * deltaX);
+				Vec3 y = upVector.scale(j * deltaY);
 				Vec3 dir = lookVector.add(x).add(y);
 				Ray ray = new Ray(camPos, dir);
 				RGBA color = scene.intersection(ray);
-				colors[(j+h/2) * w + (i+w/2)] = color.toInt();
+				colors[(j + h / 2) * w + (i + w / 2)] = color.toInt();
 			}
 		}
 
@@ -92,15 +91,12 @@ public class RayTracingRenderer implements IRenderer {
 	}
 
 	@Override
-	public IRenderable createRenderable(Pass pass, IShader shader,
-			IUniformAttributeProvider uniforms,
-			List<? extends IArrayAttributeProvider> providers) {
+	public IRenderable createRenderable(Pass pass, IShader shader, IUniformAttributeProvider uniforms, List<? extends IArrayAttributeProvider> providers) {
 		return null;
 	}
 
 	@Override
-	public IRenderable createRenderable(Pass pass, EnumSet<Flag> flags,
-			IShader shader, IUniformAttributeProvider uniforms,
+	public IRenderable createRenderable(Pass pass, EnumSet<Flag> flags, IShader shader, IUniformAttributeProvider uniforms,
 			List<? extends IArrayAttributeProvider> providers) {
 		return null;
 	}
@@ -114,11 +110,11 @@ public class RayTracingRenderer implements IRenderer {
 	public void removeRenderables(IRenderable... renderables) {
 		this.renderables.removeAll(Arrays.asList(renderables));
 	}
-	
+
 	private static IRenderable createScreenPlane(float x, float y, float w, float h, Texture texture) {
-		IArrayAttribute[] attribs = new IArrayAttribute[]{new PositionArray(), new TexCoordArray()};
-		float[] position = new float[]{x, y, 0, x + w, y, 0, x + w, y + h, 0, x, y, 0, x + w, y + h, 0, x, y + h, 0};
-		float[][] data = new float[][]{position, Primitives.DEFAULT_QUAD_TEX_COORDS};
+		IArrayAttribute[] attribs = new IArrayAttribute[] { new PositionArray(), new TexCoordArray() };
+		float[] position = new float[] { x, y, 0, x + w, y, 0, x + w, y + h, 0, x, y, 0, x + w, y + h, 0, x, y + h, 0 };
+		float[][] data = new float[][] { position, Primitives.DEFAULT_QUAD_TEX_COORDS };
 		List<IArrayAttributeProvider> quad = Collections.singletonList(new VertexGeometry(data, attribs, PrimitiveType.TRIANGLE));
 		IMaterial mat = new TextureMaterial(texture);
 		IUniformAttributeProvider uniforms = new IUniformAttributeProvider() {

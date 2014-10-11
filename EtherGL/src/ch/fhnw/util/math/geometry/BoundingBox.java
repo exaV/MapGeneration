@@ -171,7 +171,7 @@ public final class BoundingBox {
 
 	public void add(Collection<Vec3> vertices) {
 		if (vertices != null) {
-            vertices.forEach(this::add);
+			vertices.forEach(this::add);
 		}
 	}
 

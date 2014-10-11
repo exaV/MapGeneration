@@ -41,24 +41,20 @@ public final class MostBasic {
 		new MostBasic();
 	}
 
-	
 	public MostBasic() {
 		Camera camera = new Camera();
 
-		//Let's setup some basic scene with one predefined cube
-		SimpleScene scene = new SimpleScene(camera);	
+		// Let's setup some basic scene with one predefined cube
+		SimpleScene scene = new SimpleScene(camera);
 		scene.addMesh(MeshLibrary.getCube());
-		
-		
+
 		// Create a controller, no need to override anything in this example.
-		AbstractController controller = new AbstractController(){
+		AbstractController controller = new AbstractController() {
 		};
-		
-		
+
 		// Create a view (aka rendering window). The view has to know what camera it uses.
 		AbstractView view = new AbstractView(controller, 100, 100, 500, 500, IView.ViewType.INTERACTIVE_VIEW, "Test", camera);
-		
-		
+
 		// Add the scene (aka "model") and the view to the controller
 		controller.addView(view);
 		controller.setScene(scene);

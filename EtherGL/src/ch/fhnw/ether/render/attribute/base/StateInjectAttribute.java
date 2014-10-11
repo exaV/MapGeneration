@@ -71,7 +71,7 @@ public final class StateInjectAttribute extends AbstractAttribute implements IUn
 		if (disable != null)
 			disable.accept(gl, program);
 	}
-	
+
 	@Override
 	protected int resolveShaderIndex(GL3 gl, Program program, String shaderName) {
 		return -1;

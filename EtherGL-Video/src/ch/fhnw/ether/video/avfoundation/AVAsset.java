@@ -46,11 +46,11 @@ public final class AVAsset implements ISequentialVideoTrack, IRandomAccessVideoT
 			READY = false;
 		}
 	}
-	
+
 	public static boolean isReady() {
 		return READY;
 	}
-	
+
 	private URL url;
 
 	private long nativeHandle;
@@ -77,7 +77,7 @@ public final class AVAsset implements ISequentialVideoTrack, IRandomAccessVideoT
 	public void dispose() {
 		nativeDispose(nativeHandle);
 	}
-	
+
 	@Override
 	public URL getURL() {
 		return url;
@@ -112,7 +112,7 @@ public final class AVAsset implements ISequentialVideoTrack, IRandomAccessVideoT
 	public void rewind() {
 		nativeRewind(nativeHandle);
 	}
-	
+
 	@Override
 	public Frame getFrame(long frame) {
 		return getFrame(frameToTime(frame));
@@ -142,12 +142,12 @@ public final class AVAsset implements ISequentialVideoTrack, IRandomAccessVideoT
 	public int loadFrames(int numFrames, int textureId) {
 		return nativeLoadFrames(nativeHandle, numFrames, textureId);
 	}
-	
+
 	@Override
 	public String toString() {
-		return getURL() + " (d=" + getDuration() + " fr=" + getFrameRate() + " fc=" + getFrameCount() + " w=" + getWidth() + " h=" + getHeight() + ")"; 
-	}	
-	
+		return getURL() + " (d=" + getDuration() + " fr=" + getFrameRate() + " fc=" + getFrameCount() + " w=" + getWidth() + " h=" + getHeight() + ")";
+	}
+
 	private double frameToTime(long frame) {
 		return getDuration() * getFrameRate() / frame;
 	}

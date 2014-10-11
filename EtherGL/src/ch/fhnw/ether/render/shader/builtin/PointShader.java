@@ -54,7 +54,7 @@ public class PointShader extends AbstractShader {
 	private float pointDecay;
 	private List<IUniformAttribute> uniformAttributes = new ArrayList<>(5);
 	private List<IArrayAttribute> arrayAttributes = new ArrayList<>(5);
-	
+
 	public PointShader(boolean useVertexColors) {
 		this(useVertexColors, 1, 0);
 	}
@@ -64,19 +64,20 @@ public class PointShader extends AbstractShader {
 		this.useVertexColors = useVertexColors;
 		this.pointSize = pointSize;
 		this.pointDecay = pointDecay;
-		
-		if(!useVertexColors) {
+
+		if (!useVertexColors) {
 			uniformAttributes.add(new ColorMaterialUniform());
 		} else {
 			arrayAttributes.add(new ColorArray());
 		}
 		if (pointSize == 0)
-			arrayAttributes.add(new PointSizeArray());		
-		
+			arrayAttributes.add(new PointSizeArray());
+
 		arrayAttributes.add(new PositionArray());
 		uniformAttributes.add(new FloatUniformAttribute("shader.point_size", "pointSize", () -> pointSize));
 		uniformAttributes.add(new FloatUniformAttribute("shader.point_decay", "pointDecay", () -> pointDecay));
-		uniformAttributes.add(new StateInjectAttribute("shader.point_size_program", (gl, p) -> gl.glEnable(GL3.GL_PROGRAM_POINT_SIZE), (gl, p) -> gl.glDisable(GL3.GL_PROGRAM_POINT_SIZE)));
+		uniformAttributes.add(new StateInjectAttribute("shader.point_size_program", (gl, p) -> gl.glEnable(GL3.GL_PROGRAM_POINT_SIZE), (gl, p) -> gl
+				.glDisable(GL3.GL_PROGRAM_POINT_SIZE)));
 		uniformAttributes.add(new ProjMatrixUniform());
 		uniformAttributes.add(new ViewMatrixUniform());
 		uniformAttributes.add(new BooleanUniformAttribute("shader.vertex_colors_flag", "useVertexColors", () -> useVertexColors));
@@ -97,7 +98,6 @@ public class PointShader extends AbstractShader {
 
 	@Override
 	public String toString() {
-		return "points[rgba=" + (useVertexColors ? "vertexColors" : "materialColor") + " point_size=" + pointSize
-				+ " point_decay=" + pointDecay + "]";
+		return "points[rgba=" + (useVertexColors ? "vertexColors" : "materialColor") + " point_size=" + pointSize + " point_decay=" + pointDecay + "]";
 	}
 }

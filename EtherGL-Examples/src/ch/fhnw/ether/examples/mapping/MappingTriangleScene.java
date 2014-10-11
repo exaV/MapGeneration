@@ -52,39 +52,39 @@ import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.Primitives;
 
 public class MappingTriangleScene extends AbstractScene {
-	
+
 	private IMaterial material = new ColorMaterial(RGBA.WHITE);
-	
-    public MappingTriangleScene(ICamera camera) {
-    	super(camera);
-        for (int i = 0; i < 10; ++i) {
-            GenericMesh cube = new GenericMesh(PrimitiveType.TRIANGLE, material);
-            cube.setGeometry(Primitives.UNIT_CUBE_TRIANGLES);
-            double s = 0.1 + 0.1 * Math.random();
-            double tx = -1 + 2 * Math.random();
-            double ty = -1 + 2 * Math.random();
-            cube.getGeometry().setScale(new Vec3(s, s, s));
-            cube.getGeometry().setRotation(new Vec3(0, 0, 360 * Math.random()));
-            cube.getGeometry().setTranslation(new Vec3(tx, ty, 0));
-            super.getMeshes().add(cube);
-        }
-    }
+
+	public MappingTriangleScene(ICamera camera) {
+		super(camera);
+		for (int i = 0; i < 10; ++i) {
+			GenericMesh cube = new GenericMesh(PrimitiveType.TRIANGLE, material);
+			cube.setGeometry(Primitives.UNIT_CUBE_TRIANGLES);
+			double s = 0.1 + 0.1 * Math.random();
+			double tx = -1 + 2 * Math.random();
+			double ty = -1 + 2 * Math.random();
+			cube.getGeometry().setScale(new Vec3(s, s, s));
+			cube.getGeometry().setRotation(new Vec3(0, 0, 360 * Math.random()));
+			cube.getGeometry().setTranslation(new Vec3(tx, ty, 0));
+			super.getMeshes().add(cube);
+		}
+	}
 
 	@Override
-	public void setRenderer(
-			IRenderer renderer) {
-		
-		final List<IGeometry> geo = Collections.synchronizedList(super.getMeshes().stream().map((x) -> {return x.getGeometry();}).collect(Collectors.toList()));
+	public void setRenderer(IRenderer renderer) {
+
+		final List<IGeometry> geo = Collections.synchronizedList(super.getMeshes().stream().map((x) -> {
+			return x.getGeometry();
+		}).collect(Collectors.toList()));
 		IShader s = new MaterialShader(EnumSet.of(ShaderInput.MATERIAL_COLOR));
 		IRenderable ret = renderer.createRenderable(Pass.DEPTH, s, material, geo);
-		
+
 		renderer.addRenderables(ret);
 	}
 
 	@Override
 	public void renderUpdate() {
-		//updates not needed
+		// updates not needed
 	}
-
 
 }

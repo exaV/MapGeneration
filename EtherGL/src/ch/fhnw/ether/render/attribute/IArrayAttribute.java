@@ -54,7 +54,7 @@ public interface IArrayAttribute extends IAttribute {
 	NumComponents getNumComponents();
 
 	void addSupplier(Supplier<?> supplier);
-	
+
 	void setup(int stride, int offset);
 
 	void enable(GL3 gl, Program program, FloatArrayBuffer buffer);

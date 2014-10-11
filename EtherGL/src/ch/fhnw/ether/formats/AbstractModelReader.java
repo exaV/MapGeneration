@@ -36,7 +36,6 @@ import java.util.List;
 
 import ch.fhnw.ether.scene.mesh.IMesh;
 
-
 public abstract class AbstractModelReader {
 	private final List<IMesh> mesh;
 

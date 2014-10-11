@@ -29,7 +29,6 @@
 
 package ch.fhnw.ether.examples.metrobuzz.model;
 
-
 public class Link {
 	private final String id;
 	private Node from;
@@ -48,15 +47,15 @@ public class Link {
 	public Node getFromNode() {
 		return from;
 	}
-	
+
 	public void setFromNode(Node node) {
 		this.from = node;
 	}
-	
+
 	public Node getToNode() {
 		return to;
 	}
-	
+
 	public void setToNode(Node node) {
 		this.to = node;
 	}

@@ -31,14 +31,12 @@ package ch.fhnw.util.math.geometry;
 
 import ch.fhnw.util.math.Vec3;
 
-
-
 public interface I3DObject {
 
-	BoundingBox getBoundings();	
-	
+	BoundingBox getBoundings();
+
 	Vec3 getPosition();
-	
+
 	void setPosition(Vec3 position);
-	
+
 }

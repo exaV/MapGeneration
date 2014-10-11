@@ -43,7 +43,7 @@ import com.jogamp.common.nio.Buffers;
  */
 public class FloatArrayBuffer implements IArrayBuffer {
 	private static final int BYTES_PER_FLOAT = Float.SIZE / Byte.SIZE;
-	
+
 	private static final FloatBuffer EMPTY_BUFFER = Buffers.newDirectFloatBuffer(0);
 
 	private int[] vbo;

@@ -39,10 +39,10 @@ import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.util.math.geometry.I3DObject;
 
 public abstract class AbstractScene implements IScene {
-	
+
 	private final List<IMesh> meshes;
 	private final ICamera camera;
-	
+
 	public AbstractScene(List<IMesh> meshes, ICamera camera) {
 		this(camera);
 		meshes.addAll(meshes);
@@ -72,10 +72,10 @@ public abstract class AbstractScene implements IScene {
 	public List<ILight> getLights() {
 		return Collections.emptyList();
 	}
-	
+
 	@Override
 	public void renderUpdate() {
-		//no update
+		// no update
 	}
 
 }

@@ -55,7 +55,7 @@ abstract class AbstractArrayAttribute extends AbstractAttribute implements IArra
 	protected final int getStride() {
 		return stride;
 	}
-	
+
 	protected final int getOffset() {
 		return offset;
 	}

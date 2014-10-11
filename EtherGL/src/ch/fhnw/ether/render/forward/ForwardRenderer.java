@@ -79,11 +79,11 @@ public class ForwardRenderer extends AbstractRenderer {
 	public void render(GL3 gl, ICamera camera, Viewport viewport, boolean interactive) {
 		update(gl);
 		state.setMatrices(camera.getProjectionMatrix(), camera.getViewMatrix());
-//		Mat4 projMatrix = view.getCamera().getProjectionMatrix();
-//		Mat4 viewMatrix = view.getCamera().getViewMatrix();
-//		
-//		state.setMatrices(projMatrix, viewMatrix);
-		
+		// Mat4 projMatrix = view.getCamera().getProjectionMatrix();
+		// Mat4 viewMatrix = view.getCamera().getViewMatrix();
+		//
+		// state.setMatrices(projMatrix, viewMatrix);
+
 		// ---- 1. DEPTH PASS (DEPTH WRITE&TEST ENABLED, BLEND OFF)
 		gl.glEnable(GL.GL_DEPTH_TEST);
 		gl.glEnable(GL.GL_POLYGON_OFFSET_FILL);

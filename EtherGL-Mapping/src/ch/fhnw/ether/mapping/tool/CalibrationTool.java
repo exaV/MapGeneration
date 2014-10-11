@@ -62,8 +62,8 @@ import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.MouseEvent;
 
 public final class CalibrationTool extends AbstractTool {
-	private static final String[] HELP = { "Calibration Tool for 3D Mapping", "", "[0] Return", "", "[C] Clear Calibration",
-			"[L] Load Calibration", "[S] Save Calibration", "[DEL] Clear Current Calibration Point", };
+	private static final String[] HELP = { "Calibration Tool for 3D Mapping", "", "[0] Return", "", "[C] Clear Calibration", "[L] Load Calibration",
+			"[S] Save Calibration", "[DEL] Clear Current Calibration Point", };
 
 	public static final double MAX_CALIBRATION_ERROR = 0.5;
 
@@ -91,10 +91,13 @@ public final class CalibrationTool extends AbstractTool {
 		IMesh mesh = model.getCalibrationMesh();
 
 		renderables.add(renderer.createRenderable(Pass.OVERLAY, new LineShader(false), mesh.getMaterial(), Collections.singletonList(mesh.getGeometry())));
-		renderables.add(renderer.createRenderable(Pass.DEVICE_SPACE_OVERLAY, new LineShader(false), mesh.getMaterial(), Collections.singletonList(calibratedGeometry.getGeometry())));
-//		TODO: add also points?
-//		renderables.add(renderer.createRenderable(Pass.OVERLAY, new Points(MODEL_COLOR, POINT_SIZE, 0), model.getCalibrationMesh().getGeometry()));
-//		renderables.add(renderer.createRenderable(Pass.DEVICE_SPACE_OVERsLAY, new Points(null, POINT_SIZE, 0), calibratedGeometry));
+		renderables.add(renderer.createRenderable(Pass.DEVICE_SPACE_OVERLAY, new LineShader(false), mesh.getMaterial(),
+				Collections.singletonList(calibratedGeometry.getGeometry())));
+		// TODO: add also points?
+		// renderables.add(renderer.createRenderable(Pass.OVERLAY, new Points(MODEL_COLOR, POINT_SIZE, 0),
+		// model.getCalibrationMesh().getGeometry()));
+		// renderables.add(renderer.createRenderable(Pass.DEVICE_SPACE_OVERsLAY, new Points(null, POINT_SIZE, 0),
+		// calibratedGeometry));
 	}
 
 	@Override
@@ -267,11 +270,7 @@ public final class CalibrationTool extends AbstractTool {
 		CalibrationContext context = getContext(view);
 		context.calibrated = false;
 		try {
-			double error = calibrator.calibrate(
-					context.modelVertices, 
-					context.projectedVertices, 
-					camera.getNear(), 
-					camera.getFar());
+			double error = calibrator.calibrate(context.modelVertices, context.projectedVertices, camera.getNear(), camera.getFar());
 			if (error < MAX_CALIBRATION_ERROR)
 				context.calibrated = true;
 			// System.out.println("error: " + error);
@@ -293,8 +292,8 @@ public final class CalibrationTool extends AbstractTool {
 		CalibrationContext context = getContext(view);
 
 		// prepare points
-//		TODO: add points?
-//		calibratedGeometry.setPoints(Vec3.toArray(context.projectedVertices), color, null);
+		// TODO: add points?
+		// calibratedGeometry.setPoints(Vec3.toArray(context.projectedVertices), color, null);
 
 		// prepare lines
 		List<Vec3> v = new ArrayList<>();
@@ -312,7 +311,7 @@ public final class CalibrationTool extends AbstractTool {
 				Primitives.addLine(v, a.x, a.y - CROSSHAIR_SIZE / viewport.h, a.z, a.x, a.y + CROSSHAIR_SIZE / viewport.h, a.z);
 			}
 		}
-//		calibratedGeometry.setLines(Vec3.toArray(v), color);
+		// calibratedGeometry.setLines(Vec3.toArray(v), color);
 		calibratedGeometry.setGeometry(Vec3.toArray(v));
 
 		// request refresh

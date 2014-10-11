@@ -54,11 +54,11 @@ public class Activity {
 	void setType(ActivityType type) {
 		this.type = type;
 	}
-	
+
 	public float getStartTime() {
 		return startTime;
 	}
-	
+
 	public void setStartTime(float startTime) {
 		this.startTime = startTime;
 	}
@@ -82,11 +82,11 @@ public class Activity {
 	public Node getLocation() {
 		return location;
 	}
-	
+
 	public void setLocation(Node location) {
 		this.location = location;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "activity (" + type.toString() + ") " + location.getId() + " " + startTime + " " + endTime;

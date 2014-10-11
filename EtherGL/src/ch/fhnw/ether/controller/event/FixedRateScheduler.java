@@ -35,7 +35,7 @@ import javax.media.opengl.GLAutoDrawable;
 public final class FixedRateScheduler extends AbstractScheduler {
 	public FixedRateScheduler() {
 	}
-	
+
 	@Override
 	protected void runRenderThread() {
 		try {

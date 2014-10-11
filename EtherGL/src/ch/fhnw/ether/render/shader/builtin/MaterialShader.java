@@ -48,35 +48,32 @@ import ch.fhnw.ether.render.attribute.builtin.ViewMatrixUniform;
 import ch.fhnw.ether.render.shader.base.AbstractShader;
 
 public class MaterialShader extends AbstractShader {
-	
+
 	public static enum ShaderInput {
-		MATERIAL_COLOR,
-		VERTEX_COLOR,
-		TEXTURE,
-		NORMALS,
+		MATERIAL_COLOR, VERTEX_COLOR, TEXTURE, NORMALS,
 	}
-	
+
 	private List<IUniformAttribute> uniformAttributes = new ArrayList<>(5);
 	private List<IArrayAttribute> arrayAttributes = new ArrayList<>(5);
-	
+
 	public MaterialShader(EnumSet<ShaderInput> input) {
 		super("unshaded_vct", PrimitiveType.TRIANGLE);
-		if(input.contains(ShaderInput.MATERIAL_COLOR)) {
+		if (input.contains(ShaderInput.MATERIAL_COLOR)) {
 			uniformAttributes.add(new ColorMaterialUniform());
 		} else {
-			uniformAttributes.add(new ColorMaterialUniform(() -> new float[]{1,1,1,1}));
+			uniformAttributes.add(new ColorMaterialUniform(() -> new float[] { 1, 1, 1, 1 }));
 		}
-		if(input.contains(ShaderInput.VERTEX_COLOR)) {
+		if (input.contains(ShaderInput.VERTEX_COLOR)) {
 			arrayAttributes.add(new ColorArray());
 		}
-		if(input.contains(ShaderInput.TEXTURE)) {
+		if (input.contains(ShaderInput.TEXTURE)) {
 			uniformAttributes.add(new TextureUniform());
 			arrayAttributes.add(new TexCoordArray());
 		}
-		if(input.contains(ShaderInput.NORMALS)) {
+		if (input.contains(ShaderInput.NORMALS)) {
 			arrayAttributes.add(new NormalArray());
 		}
-		
+
 		boolean useVertexColors = input.contains(ShaderInput.VERTEX_COLOR);
 		boolean useTexture = input.contains(ShaderInput.TEXTURE);
 		arrayAttributes.add(new PositionArray());

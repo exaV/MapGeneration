@@ -54,10 +54,10 @@ import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.gl.AbstractView;
 
 public final class OwnGeometry {
-	
-	//This is our own scene. Has its own Shader and own mesh.
+
+	// This is our own scene. Has its own Shader and own mesh.
 	private static class CoolScene extends AbstractScene {
-		
+
 		private IShader s = new MaterialShader(EnumSet.of(ShaderInput.VERTEX_COLOR));
 		private IMesh mesh = makeColoredTriangle();
 
@@ -70,44 +70,40 @@ public final class OwnGeometry {
 			IRenderable r = renderer.createRenderable(Pass.DEPTH, s, mesh.getMaterial(), Collections.singletonList(mesh.getGeometry()));
 			renderer.addRenderables(r);
 		}
-		
+
 	}
-	
-	// does anybody know why we need  a "main"-procedure even though we use OOP?
+
+	// does anybody know why we need a "main"-procedure even though we use OOP?
 	public static void main(String[] args) {
 		new OwnGeometry();
 	}
-	
-	
+
 	// Let's generate a colored triangle
 	static IMesh makeColoredTriangle() {
-		float[] position = {0f,0,0, 0,0,0.5f, 0.5f,0,0.5f};
-		float[] color = {1,0,0,1, 0,1,0,1, 0,0,1,1};
-		float[][] data = {position, color};
-		IArrayAttribute[] attribs = {new PositionArray(), new ColorArray()};
-		
+		float[] position = { 0f, 0, 0, 0, 0, 0.5f, 0.5f, 0, 0.5f };
+		float[] color = { 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1 };
+		float[][] data = { position, color };
+		IArrayAttribute[] attribs = { new PositionArray(), new ColorArray() };
+
 		VertexGeometry g = new VertexGeometry(data, attribs, PrimitiveType.TRIANGLE);
-		
+
 		return new GenericMesh(g, null);
 	}
-	
-	
-	//Setup the whole thing
+
+	// Setup the whole thing
 	public OwnGeometry() {
-		
+
 		// As always, make first a controller
-		AbstractController controller = new AbstractController(){};
-		
-		
+		AbstractController controller = new AbstractController() {
+		};
+
 		// And now the default view
 		ICamera camera = new Camera();
 		AbstractView view = new AbstractView(controller, 100, 100, 500, 500, IView.ViewType.INTERACTIVE_VIEW, "Test", camera);
-		
-		
+
 		// Use our own scene
-		IScene scene = new CoolScene(camera);		
-		
-		
+		IScene scene = new CoolScene(camera);
+
 		// Setup MVC
 		controller.addView(view);
 		controller.setScene(scene);

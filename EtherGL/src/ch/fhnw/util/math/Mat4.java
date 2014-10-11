@@ -515,12 +515,9 @@ public final class Mat4 {
 		return result;
 	}
 
-    @Override
-    public String toString() {
-        return String.format("[% .2f,% .2f,% .2f,% .2f\n % .2f,% .2f,% .2f,% .2f\n % .2f,% .2f,% .2f,% .2f\n % .2f,% .2f,% .2f,% .2f ]\n\n", 
-					m[M00], m[M01], m[M02], m[M03],
-					m[M10], m[M11], m[M12], m[M13],
-					m[M20], m[M21], m[M22], m[M23],
-					m[M30], m[M31], m[M32], m[M33]);
-    }
+	@Override
+	public String toString() {
+		return String.format("[% .2f,% .2f,% .2f,% .2f\n % .2f,% .2f,% .2f,% .2f\n % .2f,% .2f,% .2f,% .2f\n % .2f,% .2f,% .2f,% .2f ]\n\n", m[M00], m[M01],
+				m[M02], m[M03], m[M10], m[M11], m[M12], m[M13], m[M20], m[M21], m[M22], m[M23], m[M30], m[M31], m[M32], m[M33]);
+	}
 }

@@ -38,79 +38,79 @@ import ch.fhnw.util.math.MathUtil;
 import com.jogamp.newt.event.MouseEvent;
 
 public class Slider extends AbstractWidget {
-    public interface ISliderAction extends IWidgetAction<Slider> {
-        @Override
+	public interface ISliderAction extends IWidgetAction<Slider> {
+		@Override
 		void execute(Slider slider, IView view);
-    }
+	}
 
-    private static final int SLIDER_WIDTH = 96;
-    private static final int SLIDER_HEIGHT = 24;
+	private static final int SLIDER_WIDTH = 96;
+	private static final int SLIDER_HEIGHT = 24;
 
-    private static final int SLIDER_GAP = 8;
-    
-    private static final Color SLIDER_BG = new Color(1f, 1f, 1f, 0.25f);
-    private static final Color SLIDER_FG = new Color(0.6f, 0, 0, 0.75f);
+	private static final int SLIDER_GAP = 8;
 
-    private boolean sliding;
-    private float value;
+	private static final Color SLIDER_BG = new Color(1f, 1f, 1f, 0.25f);
+	private static final Color SLIDER_FG = new Color(0.6f, 0, 0, 0.75f);
 
-    public Slider(int x, int y, String label, String help) {
-        this(x, y, label, help, 0, null);
-    }
+	private boolean sliding;
+	private float value;
 
-    public Slider(int x, int y, String label, String help, float value) {
-        this(x, y, label, help, value, null);
-    }
+	public Slider(int x, int y, String label, String help) {
+		this(x, y, label, help, 0, null);
+	}
 
-    public Slider(int x, int y, String label, String help, float value, ISliderAction action) {
-    	super(x, y, label, help, action);
-        this.value = value;
-    }
+	public Slider(int x, int y, String label, String help, float value) {
+		this(x, y, label, help, value, null);
+	}
 
-    public float getValue() {
-        return value;
-    }
-    
-    @Override
+	public Slider(int x, int y, String label, String help, float value, ISliderAction action) {
+		super(x, y, label, help, action);
+		this.value = value;
+	}
+
+	public float getValue() {
+		return value;
+	}
+
+	@Override
 	public boolean hit(int x, int y, IView view) {
-    	UI ui = getUI();
-        float bx = ui.getX() + getX() * (SLIDER_GAP + SLIDER_WIDTH);
-        float by = ui.getY() + getY() * (SLIDER_GAP + SLIDER_HEIGHT);
-        return x >= bx && x <= bx + SLIDER_WIDTH && y >= by && y <= by + SLIDER_HEIGHT;
-    }
-    
-    @Override
-    public void draw(TextMesh surface) {
-        int bw = Slider.SLIDER_WIDTH;
-        int bh = Slider.SLIDER_HEIGHT;
-        int bg = Slider.SLIDER_GAP;
-        int bx = getX() * (bg + bw);
-        int by = getY() * (bg + bh);
-        surface.fillRect(SLIDER_BG, bx, by, bw, bh);
-        surface.fillRect(SLIDER_FG, bx, by, (int)(value * bw), bh);
-        String label = getLabel();
-        if (label != null)
-            surface.drawString(TEXT_COLOR, label, bx + 2, by + bh - 4);
-    	
-    }
-    
-    @Override
-    public void fire(IView view) {
-        if (getAction() == null)
-            throw new UnsupportedOperationException("button '" + getLabel() + "' has no action defined");
-        ((ISliderAction)getAction()).execute(this, view);
-    }
-    
-    @Override
-    public boolean mousePressed(MouseEvent e, IView view) {
-        if (hit(e.getX(), e.getY(), view)) {
-        	sliding = true;
-        	updateValue(e, view);
-            return true;
-        }
-        return false;
-    }
-    
+		UI ui = getUI();
+		float bx = ui.getX() + getX() * (SLIDER_GAP + SLIDER_WIDTH);
+		float by = ui.getY() + getY() * (SLIDER_GAP + SLIDER_HEIGHT);
+		return x >= bx && x <= bx + SLIDER_WIDTH && y >= by && y <= by + SLIDER_HEIGHT;
+	}
+
+	@Override
+	public void draw(TextMesh surface) {
+		int bw = Slider.SLIDER_WIDTH;
+		int bh = Slider.SLIDER_HEIGHT;
+		int bg = Slider.SLIDER_GAP;
+		int bx = getX() * (bg + bw);
+		int by = getY() * (bg + bh);
+		surface.fillRect(SLIDER_BG, bx, by, bw, bh);
+		surface.fillRect(SLIDER_FG, bx, by, (int) (value * bw), bh);
+		String label = getLabel();
+		if (label != null)
+			surface.drawString(TEXT_COLOR, label, bx + 2, by + bh - 4);
+
+	}
+
+	@Override
+	public void fire(IView view) {
+		if (getAction() == null)
+			throw new UnsupportedOperationException("button '" + getLabel() + "' has no action defined");
+		((ISliderAction) getAction()).execute(this, view);
+	}
+
+	@Override
+	public boolean mousePressed(MouseEvent e, IView view) {
+		if (hit(e.getX(), e.getY(), view)) {
+			sliding = true;
+			updateValue(e, view);
+			return true;
+		}
+		return false;
+	}
+
 	@Override
 	public boolean mouseReleased(MouseEvent e, IView view) {
 		if (sliding) {
@@ -121,19 +121,19 @@ public class Slider extends AbstractWidget {
 	}
 
 	@Override
-    public boolean mouseDragged(MouseEvent e, IView view) {
-        if (sliding) {
-        	updateValue(e, view);
-            return true;
-        }
-        return false;
-    }
-	
+	public boolean mouseDragged(MouseEvent e, IView view) {
+		if (sliding) {
+			updateValue(e, view);
+			return true;
+		}
+		return false;
+	}
+
 	private void updateValue(MouseEvent e, IView view) {
-    	UI ui = getUI();
-        float bx = ui.getX() + getX() * (SLIDER_GAP + SLIDER_WIDTH);
-        value = MathUtil.clamp((e.getX() - bx) / SLIDER_WIDTH, 0, 1);
-        requestUpdate();
-        fire(view);
+		UI ui = getUI();
+		float bx = ui.getX() + getX() * (SLIDER_GAP + SLIDER_WIDTH);
+		value = MathUtil.clamp((e.getX() - bx) / SLIDER_WIDTH, 0, 1);
+		requestUpdate();
+		fire(view);
 	}
 }

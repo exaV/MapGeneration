@@ -57,9 +57,9 @@ public class Vec3 {
 	}
 
 	public Vec3(double x, double y, double z) {
-		this((float)x, (float)y, (float)z);
+		this((float) x, (float) y, (float) z);
 	}
-	
+
 	public Vec3(float[] vec) {
 		this(vec[0], vec[1], vec[2]);
 	}
