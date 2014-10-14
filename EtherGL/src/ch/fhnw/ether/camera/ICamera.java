@@ -35,19 +35,42 @@ import ch.fhnw.util.math.geometry.I3DObject;
 
 public interface ICamera extends I3DObject {
 
-	// projection settings
+	public interface IOrbitControl {
+		float getAzimut();
 
-	Mat4 getProjectionMatrix();
+		void setAzimut(float azimut);
 
-	void setProjectionMatrix(Mat4 projectionMatrix);
+		void addToAzimut(float amount);
 
-	float getNear();
+		float getElevation();
 
-	void setNear(float near);
+		void setElevation(float elevation);
 
-	float getFar();
+		void addToElevation(float amount);
 
-	void setFar(float far);
+		float getZoom();
+
+		void setZoom(float zoom);
+
+		void addToZoom(float amount);
+
+		Vec3 getPivot();
+
+		void setPivot(float x, float y, float z);
+
+		void movePivot(float x, float y, float z);
+	}
+
+	// view parameters
+
+	@Override
+	Vec3 getPosition();
+
+	Vec3 getForwardDirection();
+
+	Vec3 getUpDirection();
+
+	// projection parameters
 
 	float getFov();
 
@@ -57,15 +80,31 @@ public interface ICamera extends I3DObject {
 
 	void setAspect(float aspect);
 
-	// view matrix
+	float getNear();
+
+	void setNear(float near);
+
+	float getFar();
+
+	void setFar(float far);
+
+	// view / projection matrix access
 
 	Mat4 getViewMatrix();
 
 	void setViewMatrix(Mat4 viewMatrix);
 
+	Mat4 getProjectionMatrix();
+
+	void setProjectionMatrix(Mat4 projectionMatrix);
+
 	Mat4 getViewProjMatrix();
 
 	Mat4 getViewProjInvMatrix();
+
+	// camera control
+
+	IOrbitControl getOrbitControl();
 
 	// camera matrix
 
@@ -76,29 +115,5 @@ public interface ICamera extends I3DObject {
 	void setRotation(float xAxis, float yAxis, float zAxis);
 
 	void setPosition(float x, float y, float z);
-
-	Vec3 getLookVector();
-
-	Vec3 getUpVector();
-
-	// orbit-related changes, camera transformations around pivot point
-
-	void ORBITzoom(float zoomFactor);
-
-	void ORBITturnAzimut(float amount);
-
-	void ORBITturnElevation(float amount);
-
-	void ORBITsetZoom(float zoom);
-
-	float ORBIgetZoom();
-
-	void ORBITsetAzimut(float azimut);
-
-	void ORBITsetElevation(float elevation);
-
-	void ORBITmovePivot(float x, float y, float z, boolean localTransformation);
-
-	Vec3 ORBITgetPivotPosition();
 
 }

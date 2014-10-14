@@ -30,6 +30,7 @@
 package ch.fhnw.ether.camera;
 
 import ch.fhnw.util.math.Mat4;
+import ch.fhnw.util.math.MathUtil;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.BoundingBox;
 
@@ -45,10 +46,6 @@ public class Camera implements ICamera {
 	private Mat4 projectionMatrix = Mat4.identityMatrix();
 	private Mat4 cameraMatrix = Mat4.identityMatrix();
 
-	private float orbitRadius = 3;
-	private float azimut = 0;
-	private float elevation = 0;
-
 	public Camera() {
 		this(45, 1, 0.01f, 100000);
 	}
@@ -58,7 +55,23 @@ public class Camera implements ICamera {
 		this.aspect = aspect;
 		this.near = near;
 		this.far = far;
-		move(0, -orbitRadius, 0, true);
+		// FIXME move(0, -orbitControl.orbitRadius, 0, true);
+		move(0, -3, 0, true);
+	}
+
+	@Override
+	public Vec3 getPosition() {
+		return new Vec3(cameraMatrix.m[Mat4.M03], cameraMatrix.m[Mat4.M13], cameraMatrix.m[Mat4.M23]);
+	}
+
+	@Override
+	public Vec3 getForwardDirection() {
+		return new Vec3(cameraMatrix.m[Mat4.M01], cameraMatrix.m[Mat4.M11], cameraMatrix.m[Mat4.M21]);
+	}
+
+	@Override
+	public Vec3 getUpDirection() {
+		return new Vec3(cameraMatrix.m[Mat4.M02], cameraMatrix.m[Mat4.M12], cameraMatrix.m[Mat4.M22]);
 	}
 
 	@Override
@@ -184,132 +197,130 @@ public class Camera implements ICamera {
 	}
 
 	@Override
-	public Vec3 getPosition() {
-		return new Vec3(cameraMatrix.m[Mat4.M03], cameraMatrix.m[Mat4.M13], cameraMatrix.m[Mat4.M23]);
-	}
-
-	@Override
-	public Vec3 getLookVector() {
-		return new Vec3(cameraMatrix.m[Mat4.M01], cameraMatrix.m[Mat4.M11], cameraMatrix.m[Mat4.M21]);
-	}
-
-	@Override
-	public Vec3 getUpVector() {
-		return new Vec3(cameraMatrix.m[Mat4.M02], cameraMatrix.m[Mat4.M12], cameraMatrix.m[Mat4.M22]);
-	}
-
-	@Override
 	public BoundingBox getBoundings() {
 		BoundingBox b = new BoundingBox();
 		b.add(getPosition());
 		return b;
 	}
 
-	// orbit camera
-	// methods--------------------------------------------------------------
-	// a call of one of this methods will change the camera mode to orbit mode
-
 	@Override
-	public void ORBITzoom(float zoomFactor) {
-		float old_radius = orbitRadius;
-		orbitRadius *= zoomFactor;
-		if (orbitRadius < MIN_ZOOM) {
-			orbitRadius = old_radius;
-			return;
+	public IOrbitControl getOrbitControl() {
+		return orbitControl;
+	}
+
+	private final IOrbitControl orbitControl = new IOrbitControl() {
+		private float radius = 3;
+		private float azimut = 0;
+		private float elevation = 0;
+
+		@Override
+		public float getAzimut() {
+			return azimut;
 		}
-		move(0, old_radius - orbitRadius, 0, true);
-	}
 
-	@Override
-	public void ORBITturnAzimut(float amount) {
-		// move camera pivot to world center
-		Vec3 pivot_position = ORBITgetPivotPosition();
-		cameraMatrix.translate(pivot_position.negate());
-
-		// move camera to pivot center
-		move(0, orbitRadius, 0, true);
-
-		// rotate camera round global Z-axis
-		turn(amount, Vec3.Z, false);
-
-		// move camera back to orbit position
-		move(0, -orbitRadius, 0, true);
-
-		// move pivot back to origin position
-		cameraMatrix.translate(pivot_position);
-		azimut += amount;
-	}
-
-	@Override
-	public void ORBITturnElevation(float amount) {
-		if (KEEP_ROT_X_POSITIVE) {
-			if (elevation - amount < 0)
-				amount = elevation;
-			if (elevation - amount > 90)
-				amount = 90 - elevation;
+		@Override
+		public void setAzimut(float azimut) {
+			float diff = azimut - this.azimut;
+			Vec3 pivot = getPivot();
+			cameraMatrix.translate(pivot.negate());
+			move(0, radius, 0, true);
+			turn(diff, Vec3.Z, false);
+			move(0, -radius, 0, true);
+			cameraMatrix.translate(pivot);
+			this.azimut = azimut;
 		}
-		move(0, orbitRadius, 0, true);
-		turn(amount, Vec3.X, true);
-		move(0, -orbitRadius, 0, true);
-		this.elevation -= amount;
-	}
 
-	@Override
-	public void ORBITsetZoom(float zoom) {
-		if (zoom < MIN_ZOOM)
-			zoom = MIN_ZOOM;
-		move(0, orbitRadius - zoom, 0, true);
-		orbitRadius = zoom;
-	}
+		@Override
+		public void addToAzimut(float amount) {
+			// move camera pivot to world center
+			Vec3 pivot = getPivot();
+			cameraMatrix.translate(pivot.negate());
 
-	@Override
-	public void ORBITsetAzimut(float azimut) {
-		float diff = azimut - this.azimut;
-		Vec3 pivot_position = ORBITgetPivotPosition();
-		cameraMatrix.translate(pivot_position.negate());
-		move(0, orbitRadius, 0, true);
-		turn(diff, Vec3.Z, false);
-		move(0, -orbitRadius, 0, true);
-		cameraMatrix.translate(pivot_position);
-		this.azimut = azimut;
-	}
+			// move camera to pivot center
+			move(0, radius, 0, true);
 
-	@Override
-	public void ORBITsetElevation(float elevation) {
-		if (KEEP_ROT_X_POSITIVE) {
-			if (elevation < 0)
-				elevation = 0;
-			if (elevation > 90)
-				elevation = 90;
+			// rotate camera round global Z-axis
+			turn(amount, Vec3.Z, false);
+
+			// move camera back to orbit position
+			move(0, -radius, 0, true);
+
+			// move pivot back to origin position
+			cameraMatrix.translate(pivot);
+			azimut += amount;
 		}
-		float diff = this.elevation - elevation;
-		move(0, orbitRadius, 0, true);
-		turn(diff, Vec3.X, true);
-		move(0, -orbitRadius, 0, true);
-		this.elevation = elevation;
-	}
 
-	@Override
-	public void ORBITmovePivot(float x, float y, float z, boolean localTransformation) {
-		float newX = x, newY = y;
-		if (localTransformation) {
-			float azimut_rad = (float) Math.toRadians(-azimut);
-			newX = (float) (Math.cos(azimut_rad) * x + Math.sin(azimut_rad) * y);
-			newY = (float) (-Math.sin(azimut_rad) * x + Math.cos(azimut_rad) * y);
+		@Override
+		public float getElevation() {
+			return elevation;
 		}
-		cameraMatrix.translate(newX, newY, z);
-	}
 
-	@Override
-	public Vec3 ORBITgetPivotPosition() {
-		Vec3 cameraPosition = getPosition();
-		Vec3 pivot_position = cameraPosition.add(getLookVector().scale(orbitRadius));
-		return pivot_position;
-	}
+		@Override
+		public void setElevation(float elevation) {
+			if (KEEP_ROT_X_POSITIVE) {
+				elevation = MathUtil.clamp(elevation, 0, 90);
+			}
+			float diff = this.elevation - elevation;
+			move(0, radius, 0, true);
+			turn(diff, Vec3.X, true);
+			move(0, -radius, 0, true);
+			this.elevation = elevation;
+		}
 
-	@Override
-	public float ORBIgetZoom() {
-		return orbitRadius;
-	}
+		@Override
+		public void addToElevation(float amount) {
+			if (KEEP_ROT_X_POSITIVE) {
+				setElevation(MathUtil.clamp(elevation - amount, 0, 90));
+				return;
+			}
+			move(0, radius, 0, true);
+			turn(amount, Vec3.X, true);
+			move(0, -radius, 0, true);
+			elevation -= amount;
+		}
 
+		@Override
+		public float getZoom() {
+			return radius;
+		}
+
+		@Override
+		public void setZoom(float zoom) {
+			if (zoom < MIN_ZOOM)
+				zoom = MIN_ZOOM;
+			move(0, radius - zoom, 0, true);
+			radius = zoom;
+		}
+
+		@Override
+		public void addToZoom(float zoomFactor) {
+			float old_radius = radius;
+			radius *= zoomFactor;
+			if (radius < MIN_ZOOM) {
+				radius = old_radius;
+				return;
+			}
+			move(0, old_radius - radius, 0, true);
+		}
+
+		@Override
+		public Vec3 getPivot() {
+			Vec3 cameraPosition = getPosition();
+			Vec3 pivotPosition = cameraPosition.add(getForwardDirection().scale(radius));
+			return pivotPosition;
+		}
+
+		@Override
+		public void setPivot(float x, float y, float z) {
+			cameraMatrix.translate(x, y, z);
+		}
+
+		@Override
+		public void movePivot(float x, float y, float z) {
+			float azimutRad = (float) Math.toRadians(-azimut);
+			float tx = (float) (Math.cos(azimutRad) * x + Math.sin(azimutRad) * y);
+			float ty = (float) (-Math.sin(azimutRad) * x + Math.cos(azimutRad) * y);
+			cameraMatrix.translate(tx, ty, z);
+		}
+	};
 }

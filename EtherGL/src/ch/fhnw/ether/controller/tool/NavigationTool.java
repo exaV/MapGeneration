@@ -83,27 +83,23 @@ public class NavigationTool extends AbstractTool {
 
 	@Override
 	public void mousePressed(MouseEvent e, IView view) {
-		button = e.getButton();
-		view.repaint();
-	}
-
-	@Override
-	public void mouseMoved(MouseEvent e, IView view) {
 		mouseX = e.getX();
 		mouseY = e.getY();
+		button = e.getButton();
+		view.repaint();
 	}
 
 	@Override
 	public void mouseDragged(MouseEvent e, IView view) {
 		float dx = e.getX() - mouseX;
 		float dy = e.getY() - mouseY;
-		float moveFactor = 0.002f * view.getCamera().ORBIgetZoom();
+		float moveFactor = 0.002f * view.getCamera().getOrbitControl().getZoom();
 		float turnFactor = -0.2f;
 		if (button == MouseEvent.BUTTON1) {
-			view.getCamera().ORBITturnAzimut(turnFactor * dx);
-			view.getCamera().ORBITturnElevation(turnFactor * dy);
+			view.getCamera().getOrbitControl().addToAzimut(turnFactor * dx);
+			view.getCamera().getOrbitControl().addToElevation(turnFactor * dy);
 		} else if (button == MouseEvent.BUTTON2 || button == MouseEvent.BUTTON3) {
-			view.getCamera().ORBITmovePivot(-moveFactor * dx, moveFactor * dy, 0, true);
+			view.getCamera().getOrbitControl().movePivot(-moveFactor * dx, moveFactor * dy, 0);
 		}
 		mouseX = e.getX();
 		mouseY = e.getY();
@@ -113,9 +109,9 @@ public class NavigationTool extends AbstractTool {
 	@Override
 	public void mouseWheelMoved(MouseEvent e, IView view) {
 		if (e.isControlDown()) {
-			view.getCamera().ORBITmovePivot(0, 0, e.getRotation()[1] * 0.1f, false);
+			view.getCamera().getOrbitControl().setPivot(0, 0, e.getRotation()[1] * 0.1f);
 		} else {
-			view.getCamera().ORBITzoom(1 - e.getRotation()[1] * 0.1f);
+			view.getCamera().getOrbitControl().addToZoom(1 - e.getRotation()[1] * 0.1f);
 		}
 		view.repaint();
 	}

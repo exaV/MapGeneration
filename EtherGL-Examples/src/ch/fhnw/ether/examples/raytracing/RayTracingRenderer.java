@@ -97,8 +97,8 @@ public class RayTracingRenderer implements IRenderer {
 		float deltaX = planeWidth / w;
 		float deltaY = planeHeight / h;
 
-		Vec3 lookVector = camera.getLookVector().normalize();
-		Vec3 upVector = camera.getUpVector().normalize();
+		Vec3 lookVector = camera.getForwardDirection().normalize();
+		Vec3 upVector = camera.getUpDirection().normalize();
 		Vec3 sideVector = lookVector.cross(upVector).normalize();
 
 		for (int j = -h / 2; j < h / 2; ++j) {
