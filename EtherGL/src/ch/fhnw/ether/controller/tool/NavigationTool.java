@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import ch.fhnw.ether.camera.DefaultCameraControl;
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.IRenderer.Pass;
@@ -58,7 +59,7 @@ public class NavigationTool extends AbstractTool {
 	private int mouseY;
 
 	private IRenderable renderable;
-
+	
 	// TODO: make grid dynamic/configurable
 
 	public NavigationTool(IController controller) {
@@ -80,7 +81,7 @@ public class NavigationTool extends AbstractTool {
 	public void deactivate() {
 		getController().getRenderer().removeRenderables(renderable);
 	}
-
+	
 	@Override
 	public void mousePressed(MouseEvent e, IView view) {
 		mouseX = e.getX();
@@ -88,32 +89,42 @@ public class NavigationTool extends AbstractTool {
 		button = e.getButton();
 		view.repaint();
 	}
+	
+	@Override
+	public void mouseMoved(MouseEvent e, IView view) {
+		mouseX = e.getX();
+		mouseY = e.getY();
+		button = e.getButton();
+	}
 
 	@Override
 	public void mouseDragged(MouseEvent e, IView view) {
+		DefaultCameraControl control = new DefaultCameraControl(view.getCamera());
 		float dx = e.getX() - mouseX;
 		float dy = e.getY() - mouseY;
-		float moveFactor = 0.002f * view.getCamera().getOrbitControl().getZoom();
+		float moveFactor = -0.001f * control.getDistance();
 		float turnFactor = -0.2f;
 		if (button == MouseEvent.BUTTON1) {
-			view.getCamera().getOrbitControl().addToAzimut(turnFactor * dx);
-			view.getCamera().getOrbitControl().addToElevation(turnFactor * dy);
+			control.addToAzimuth(turnFactor * dx);
+			control.addToElevation(turnFactor * dy);
 		} else if (button == MouseEvent.BUTTON2 || button == MouseEvent.BUTTON3) {
-			view.getCamera().getOrbitControl().movePivot(-moveFactor * dx, moveFactor * dy, 0);
+			control.track(moveFactor * dx, -moveFactor * dy);
 		}
 		mouseX = e.getX();
 		mouseY = e.getY();
-		view.repaint();
+		view.refresh();
 	}
 
 	@Override
 	public void mouseWheelMoved(MouseEvent e, IView view) {
+		DefaultCameraControl control = new DefaultCameraControl(view.getCamera());
+		float zoomFactor = -0.1f;
 		if (e.isControlDown()) {
-			view.getCamera().getOrbitControl().setPivot(0, 0, e.getRotation()[1] * 0.1f);
+			control.dolly(e.getRotation()[1] * zoomFactor);
 		} else {
-			view.getCamera().getOrbitControl().addToZoom(1 - e.getRotation()[1] * 0.1f);
+			control.addToDistance(e.getRotation()[1] * zoomFactor);
 		}
-		view.repaint();
+		view.refresh();
 	}
 
 	private static GenericMesh makeGrid() {

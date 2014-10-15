@@ -46,4 +46,8 @@ public final class Viewport {
 		this.w = w;
 		this.h = h;
 	}
+	
+	public float getAspect() {
+		return (float)w / (float)h;
+	}
 }

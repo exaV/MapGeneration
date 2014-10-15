@@ -260,8 +260,9 @@ public final class CalibrationTool extends AbstractTool {
 
 	private void clearCalibration(IView view) {
 		contexts.put(view, new CalibrationContext());
-		view.getCamera().setProjectionMatrix(null);
-		view.getCamera().setViewMatrix(null);
+		// FIXME camera revision
+//		view.getCamera().setProjectionMatrix(null);
+//		view.getCamera().setViewMatrix(null);
 		calibrate(view);
 	}
 
@@ -277,8 +278,9 @@ public final class CalibrationTool extends AbstractTool {
 		} catch (Throwable ignored) {
 		}
 		if (context.calibrated) {
-			camera.setProjectionMatrix(calibrator.getProjMatrix());
-			camera.setViewMatrix(calibrator.getViewMatrix());
+			// FIXME camera revision
+//			camera.setProjectionMatrix(calibrator.getProjMatrix());
+//			camera.setViewMatrix(calibrator.getViewMatrix());
 		}
 
 		// need to update VBOs

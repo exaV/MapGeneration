@@ -29,56 +29,31 @@
 
 package ch.fhnw.ether.camera;
 
-import ch.fhnw.util.math.Mat4;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.I3DObject;
 
 public interface ICamera extends I3DObject {
-
-	public interface IOrbitControl {
-		float getAzimut();
-
-		void setAzimut(float azimut);
-
-		void addToAzimut(float amount);
-
-		float getElevation();
-
-		void setElevation(float elevation);
-
-		void addToElevation(float amount);
-
-		float getZoom();
-
-		void setZoom(float zoom);
-
-		void addToZoom(float amount);
-
-		Vec3 getPivot();
-
-		void setPivot(float x, float y, float z);
-
-		void movePivot(float x, float y, float z);
-	}
-
 	// view parameters
 
 	@Override
 	Vec3 getPosition();
 
-	Vec3 getForwardDirection();
+	@Override
+	void setPosition(Vec3 position);
 
-	Vec3 getUpDirection();
+	Vec3 getTarget();
+
+	void setTarget(Vec3 target);
+
+	Vec3 getUp();
+
+	void setUp(Vec3 up);
 
 	// projection parameters
 
 	float getFov();
 
 	void setFov(float fov);
-
-	float getAspect();
-
-	void setAspect(float aspect);
 
 	float getNear();
 
@@ -87,33 +62,4 @@ public interface ICamera extends I3DObject {
 	float getFar();
 
 	void setFar(float far);
-
-	// view / projection matrix access
-
-	Mat4 getViewMatrix();
-
-	void setViewMatrix(Mat4 viewMatrix);
-
-	Mat4 getProjectionMatrix();
-
-	void setProjectionMatrix(Mat4 projectionMatrix);
-
-	Mat4 getViewProjMatrix();
-
-	Mat4 getViewProjInvMatrix();
-
-	// camera control
-
-	IOrbitControl getOrbitControl();
-
-	// camera matrix
-
-	void turn(float amount, Vec3 axis, boolean localTransformation);
-
-	void move(float x, float y, float z, boolean localTransformation);
-
-	void setRotation(float xAxis, float yAxis, float zAxis);
-
-	void setPosition(float x, float y, float z);
-
 }

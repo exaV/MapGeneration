@@ -32,12 +32,11 @@ package ch.fhnw.ether.render.forward;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL3;
 
-import ch.fhnw.ether.camera.ICamera;
 import ch.fhnw.ether.render.AbstractRenderer;
 import ch.fhnw.ether.render.attribute.IAttribute.ISuppliers;
 import ch.fhnw.ether.render.attribute.builtin.ProjMatrixUniform;
 import ch.fhnw.ether.render.attribute.builtin.ViewMatrixUniform;
-import ch.fhnw.util.Viewport;
+import ch.fhnw.ether.view.IView;
 import ch.fhnw.util.math.Mat4;
 
 /*
@@ -69,20 +68,20 @@ import ch.fhnw.util.math.Mat4;
  */
 public class ForwardRenderer extends AbstractRenderer {
 	private final RenderState state = new RenderState();
-	private final Mat4 projMatrix2D = Mat4.identityMatrix();
 	private final Mat4 viewMatrix2D = Mat4.identityMatrix();
 
 	public ForwardRenderer() {
 	}
 
 	@Override
-	public void render(GL3 gl, ICamera camera, Viewport viewport, boolean interactive) {
+	public void render(GL3 gl, IView view) {
+		boolean interactive = view.getViewType() == IView.ViewType.INTERACTIVE_VIEW;
+		
 		update(gl);
-		state.setMatrices(camera.getProjectionMatrix(), camera.getViewMatrix());
-		// Mat4 projMatrix = view.getCamera().getProjectionMatrix();
-		// Mat4 viewMatrix = view.getCamera().getViewMatrix();
-		//
-		// state.setMatrices(projMatrix, viewMatrix);
+		Mat4 viewMatrix = view.getCameraMatrices().getViewMatrix();
+		Mat4 projMatrix = view.getCameraMatrices().getProjMatrix();
+
+		state.setMatrices(viewMatrix, projMatrix);
 
 		// ---- 1. DEPTH PASS (DEPTH WRITE&TEST ENABLED, BLEND OFF)
 		gl.glEnable(GL.GL_DEPTH_TEST);
@@ -101,13 +100,11 @@ public class ForwardRenderer extends AbstractRenderer {
 		renderPass(gl, state, Pass.OVERLAY, interactive);
 
 		// ---- 4. DEVICE SPACE OVERLAY (DEPTH WRITE&TEST DISABLED, BLEND ON)
-		state.setMatrices(projMatrix2D, viewMatrix2D);
-
-		projMatrix2D.identity();
+		state.setMatrices(viewMatrix2D, Mat4.identityMatrix());
 		renderPass(gl, state, Pass.DEVICE_SPACE_OVERLAY, interactive);
 
 		// ---- 5. SCREEN SPACE OVERLAY (DEPTH WRITE&TEST DISABLED, BLEND ON)
-		projMatrix2D.ortho(0, viewport.w, viewport.h, 0, -1, 1);
+		state.setMatrices(viewMatrix2D, Mat4.ortho(0, view.getViewport().w, view.getViewport().h, 0, -1, 1));
 		renderPass(gl, state, Pass.SCREEN_SPACE_OVERLAY, interactive);
 
 		// ---- 6. CLEANUP: RETURN TO DEFAULTS

@@ -46,7 +46,7 @@ public final class ProjectionUtil {
 	}
 
 	public static Vec3 projectToDevice(IView view, Vec4 v) {
-		return projectToDevice(view.getCamera().getViewProjMatrix(), v);
+		return projectToDevice(view.getCameraMatrices().getViewProjMatrix(), v);
 	}
 
 	public static Vec3 projectToDevice(Mat4 viewProjMatrix, Vec4 v) {
@@ -64,7 +64,7 @@ public final class ProjectionUtil {
 	}
 
 	public static float[] projectToDevice(IView view, float[] v) {
-		return projectToDevice(view.getCamera().getViewProjMatrix(), v);
+		return projectToDevice(view.getCameraMatrices().getViewProjMatrix(), v);
 	}
 
 	public static float[] projectToDevice(Mat4 viewProjMatrix, float[] v) {
@@ -86,7 +86,7 @@ public final class ProjectionUtil {
 	}
 
 	public static Vec3 projectToScreen(IView view, Vec4 v) {
-		return projectToScreen(view.getCamera().getViewProjMatrix(), view.getViewport(), v);
+		return projectToScreen(view.getCameraMatrices().getViewProjMatrix(), view.getViewport(), v);
 	}
 
 	public static Vec3 projectToScreen(Mat4 viewProjMatrix, Viewport viewport, Vec4 v) {
@@ -107,7 +107,7 @@ public final class ProjectionUtil {
 	}
 
 	public static float[] projectToScreen(IView view, float[] v) {
-		return projectToScreen(view.getCamera().getViewProjMatrix(), view.getViewport(), v);
+		return projectToScreen(view.getCameraMatrices().getViewProjMatrix(), view.getViewport(), v);
 	}
 
 	public static float[] projectToScreen(Mat4 viewProjMatrix, Viewport viewport, float[] v) {
@@ -121,7 +121,7 @@ public final class ProjectionUtil {
 	}
 
 	public static Vec3 unprojectFromScreen(IView view, Vec3 v) {
-		return unprojectFromScreen(view.getCamera().getViewProjInvMatrix(), view.getViewport(), v);
+		return unprojectFromScreen(view.getCameraMatrices().getViewProjInvMatrix(), view.getViewport(), v);
 	}
 
 	public static Vec3 unprojectFromScreen(Mat4 viewProjInvMatrix, Viewport viewport, Vec3 v) {

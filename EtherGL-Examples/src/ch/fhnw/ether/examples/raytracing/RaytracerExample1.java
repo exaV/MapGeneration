@@ -50,28 +50,28 @@ public class RaytracerExample1 {
 	public RaytracerExample1() {
 
 		// create scene objects
-		ICamera cam = new Camera(2.5f, 1, 0.5f, Float.POSITIVE_INFINITY);
-		ILight l = new PointLight(new Vec3(0, 0, 3), RGBA.WHITE);
-		ParametricScene s = new ParametricScene(cam, l);
-		RayTraceObject chugeli = new RayTraceObject(new Sphere(0.5f));
-		RayTraceObject bode = new RayTraceObject(new Plane());
+		ICamera camera = new Camera(new Vec3(0, -2, 1), Vec3.ZERO, Vec3.Z, 2.5f, 0.5f, Float.POSITIVE_INFINITY);
+		ILight light = new PointLight(new Vec3(0, 0, 3), RGBA.WHITE);
+		ParametricScene s = new ParametricScene(camera, light);
+
+		RayTraceObject sphere = new RayTraceObject(new Sphere(0.5f));
+		RayTraceObject plane = new RayTraceObject(new Plane());
 
 		// setup scene
-		s.addMesh(chugeli);
-		s.addMesh(bode);
+		s.addMesh(sphere);
+		s.addMesh(plane);
 
 		// adjust scene
-		chugeli.setPosition(Vec3.Z.scale(0.5f));
-		cam.move(0, 0, 1, false);
+		sphere.setPosition(Vec3.Z.scale(0.5f));
 
 		// use default controller
 		IController c = new DefaultController(new EventDrivenScheduler(), new RayTracingRenderer(s)) {
 			@Override
 			public void updateUI() {
-			} // UI needs forward renderer
+			}
 		};
 
-		IView v = new DefaultView(c, 100, 100, 100, 100, ViewType.INTERACTIVE_VIEW, "Raytracing", cam);
+		IView v = new DefaultView(c, 100, 100, 100, 100, ViewType.INTERACTIVE_VIEW, "Raytracing", camera);
 
 		c.addView(v);
 		c.setScene(s);

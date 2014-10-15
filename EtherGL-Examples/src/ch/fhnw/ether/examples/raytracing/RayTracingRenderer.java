@@ -60,6 +60,7 @@ import ch.fhnw.ether.render.shader.builtin.MaterialShader.ShaderInput;
 import ch.fhnw.ether.scene.mesh.geometry.VertexGeometry;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.ether.scene.mesh.material.TextureMaterial;
+import ch.fhnw.ether.view.IView;
 import ch.fhnw.util.FloatList;
 import ch.fhnw.util.Viewport;
 import ch.fhnw.util.color.RGBA;
@@ -82,23 +83,25 @@ public class RayTracingRenderer implements IRenderer {
 	}
 
 	@Override
-	public void render(GL3 gl, ICamera camera, Viewport viewport, boolean interactive) {
+	public void render(GL3 gl, IView view) {
 		long t = System.currentTimeMillis();
+		Viewport viewport = view.getViewport();
 		if (viewport.w != w || viewport.h != h) {
 			w = viewport.w;
 			h = viewport.h;
 			colors = new int[w * h];
 		}
+		ICamera camera = view.getCamera();
 		Vec3 camPos = camera.getPosition();
 
 		float planeWidth = (float) (2 * Math.tan(camera.getFov() / 2) * camera.getNear());
-		float planeHeight = planeWidth / camera.getAspect();
+		float planeHeight = planeWidth / viewport.getAspect();
 
 		float deltaX = planeWidth / w;
 		float deltaY = planeHeight / h;
 
-		Vec3 lookVector = camera.getForwardDirection().normalize();
-		Vec3 upVector = camera.getUpDirection().normalize();
+		Vec3 lookVector = camera.getTarget().subtract(camera.getPosition()).normalize();
+		Vec3 upVector = camera.getUp().normalize();
 		Vec3 sideVector = lookVector.cross(upVector).normalize();
 
 		for (int j = -h / 2; j < h / 2; ++j) {

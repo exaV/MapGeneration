@@ -29,95 +29,68 @@
 
 package ch.fhnw.ether.camera;
 
+import ch.fhnw.util.math.Mat4;
 import ch.fhnw.util.math.Vec3;
-import ch.fhnw.util.math.geometry.BoundingBox;
 
-public final class Camera implements ICamera {
+public final class CameraMatrices {
+	private final Vec3 position;
+	private final Vec3 target;
+	private final Vec3 up;
 
-	private Vec3 position = new Vec3(0, -10, 0);
-	private Vec3 target = Vec3.ZERO;
-	private Vec3 up = Vec3.Z;
+	private final float fov;
+	private final float near;
+	private final float far;
 
-	private float fov = 45;
-	private float near = 0.01f;
-	private float far = 100000f;
+	private final float aspect;
 
-	public Camera() {
-	}
+	private Mat4 viewMatrix;
+	private Mat4 projMatrix;
+	private Mat4 viewProjMatrix;
+	private Mat4 viewProjInvMatrix;
+	private Mat4 viewProjInvTpMatrix;
 
-	public Camera(Vec3 position, Vec3 target, Vec3 up, float fov, float near, float far) {
+	public CameraMatrices(Vec3 position, Vec3 target, Vec3 up, float fov, float near, float far, float aspect) {
 		this.position = position;
 		this.target = target;
 		this.up = up;
 		this.fov = fov;
 		this.near = near;
 		this.far = far;
+		this.aspect = aspect;
 	}
 
-	@Override
-	public BoundingBox getBoundings() {
-		BoundingBox b = new BoundingBox();
-		b.add(getPosition());
-		return b;
+	public Mat4 getViewMatrix() {
+		if (viewMatrix == null) {
+			viewMatrix = Mat4.lookAt(position, target, up);
+		}
+		return viewMatrix;
 	}
 
-	@Override
-	public Vec3 getPosition() {
-		return position;
+	public Mat4 getProjMatrix() {
+		if (projMatrix == null) {
+			projMatrix = Mat4.perspective(fov, aspect, near, far);
+		}
+		return projMatrix;
 	}
 
-	@Override
-	public void setPosition(Vec3 position) {
-		this.position = position;
+	public Mat4 getViewProjMatrix() {
+		if (viewProjMatrix == null) {
+			viewProjMatrix = Mat4.product(getProjMatrix(), getViewMatrix());
+		}
+		return viewProjMatrix;
 	}
 
-	@Override
-	public Vec3 getTarget() {
-		return target;
+	public Mat4 getViewProjInvMatrix() {
+		if (viewProjInvMatrix == null) {
+			viewProjInvMatrix = getViewProjMatrix().inverse();
+		}
+		return viewProjInvMatrix;
 	}
 
-	@Override
-	public void setTarget(Vec3 target) {
-		this.target = target;
-	}
-
-	@Override
-	public Vec3 getUp() {
-		return up;
-	}
-
-	@Override
-	public void setUp(Vec3 up) {
-		this.up = up;
-	}
-
-	@Override
-	public float getFov() {
-		return fov;
-	}
-
-	@Override
-	public void setFov(float fov) {
-		this.fov = fov;
-	}
-
-	@Override
-	public float getNear() {
-		return near;
-	}
-
-	@Override
-	public void setNear(float near) {
-		this.near = near;
-	}
-
-	@Override
-	public float getFar() {
-		return far;
-	}
-
-	@Override
-	public void setFar(float far) {
-		this.far = far;
+	public Mat4 getViewProjInvTpMatrix() {
+		if (viewProjInvTpMatrix == null) {
+			viewProjInvTpMatrix = getViewProjInvMatrix().transposed();
+		}
+		return viewProjInvTpMatrix;
 	}
 }

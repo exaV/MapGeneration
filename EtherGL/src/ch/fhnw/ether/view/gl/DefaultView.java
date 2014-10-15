@@ -33,6 +33,7 @@ import javax.media.nativewindow.util.Point;
 import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
 
+import ch.fhnw.ether.camera.CameraMatrices;
 import ch.fhnw.ether.camera.ICamera;
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.view.IView;
@@ -43,18 +44,23 @@ import com.jogamp.newt.event.MouseEvent;
 
 /**
  * Default view class that implements some basic functionality. Use as base for more complex implementations.
+ * 
+ * Thread safety: getCameraMatrices & getViewport are thread safe.
  *
  * @author radar
  */
 public class DefaultView implements IView {
+
 	private final NEWTWindow window;
 
 	private final IController controller;
 
 	private final ViewType viewType;
 
-	private final ICamera camera;
+	private ICamera camera;
 
+	private Object lock = new Object();
+	private CameraMatrices cameraMatrices = null;
 	private Viewport viewport = new Viewport(0, 0, 1, 1);
 
 	private boolean enabled = true;
@@ -87,10 +93,30 @@ public class DefaultView implements IView {
 	public final ICamera getCamera() {
 		return camera;
 	}
+	
+	@Override
+	public final void setCamera(ICamera camera) {
+		synchronized (lock) {
+			this.camera = camera;
+			refresh();
+		}
+	}
+
+	@Override
+	public final CameraMatrices getCameraMatrices() {
+		synchronized (lock) {
+			ICamera c = camera;
+			if (cameraMatrices == null)
+				cameraMatrices = new CameraMatrices(c.getPosition(), c.getTarget(), c.getUp(), c.getFov(), c.getNear(), c.getFar(), viewport.getAspect());
+			return cameraMatrices;
+		}
+	}
 
 	@Override
 	public final Viewport getViewport() {
-		return viewport;
+		synchronized (lock) {
+			return viewport;
+		}
 	}
 
 	@Override
@@ -120,6 +146,9 @@ public class DefaultView implements IView {
 
 	@Override
 	public final void refresh() {
+		synchronized (lock) {
+			cameraMatrices = null;
+		}
 		getController().getCurrentTool().refresh(this);
 		repaint();
 	}
@@ -173,8 +202,10 @@ public class DefaultView implements IView {
 		if (height == 0)
 			height = 1; // prevent divide by zero
 		gl.glViewport(0, 0, width, height);
-		viewport = new Viewport(0, 0, width, height);
-		camera.setAspect((float) width / height);
+		synchronized (lock) {
+			viewport = new Viewport(0, 0, width, height);
+			cameraMatrices = null;
+		}
 	}
 
 	@Override
@@ -187,7 +218,6 @@ public class DefaultView implements IView {
 	@Override
 	public void keyPressed(KeyEvent e) {
 		controller.keyPressed(e, this);
-		// TODO: should we set e to "consumed", i.e. e.setConsumed(true)?
 	}
 
 	@Override

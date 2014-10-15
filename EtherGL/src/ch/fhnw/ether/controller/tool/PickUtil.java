@@ -29,18 +29,15 @@
 
 package ch.fhnw.ether.controller.tool;
 
-import ch.fhnw.ether.camera.ICamera;
-import ch.fhnw.ether.scene.IScene;
+import java.util.Map;
+import java.util.TreeMap;
+
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.ProjectionUtil;
-import ch.fhnw.util.Viewport;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.BoundingBox;
 import ch.fhnw.util.math.geometry.GeometryUtil;
 import ch.fhnw.util.math.geometry.I3DObject;
-
-import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * Utilities for 3D object picking
@@ -56,10 +53,10 @@ public final class PickUtil {
 	private static final float PICK_DISTANCE = 5;
 
 	// TODO: this needs to be generalized when spatial indices are available (e.g. RTree based)
-	public static Map<Float, I3DObject> pickFromModel(PickMode mode, int x, int y, int w, int h, IScene scene, ICamera camera, Viewport viewport) {
+	public static Map<Float, I3DObject> pickFromModel(PickMode mode, int x, int y, int w, int h, IView view) {
 		final Map<Float, I3DObject> pickables = new TreeMap<>();
-		for (I3DObject geometry : scene.getObjects()) {
-			float d = pickBoundingBox(mode, x, y, w, h, camera, viewport, geometry.getBoundings());
+		for (I3DObject geometry : view.getController().getScene().getObjects()) {
+			float d = pickBoundingBox(mode, x, y, w, h, view, geometry.getBoundings());
 			if (d < Float.POSITIVE_INFINITY)
 				pickables.put(d, geometry);
 		}
@@ -68,7 +65,7 @@ public final class PickUtil {
 
 	// TODO: pickFromUI (basically same as above, but need to define UI geometry access) (in case we need this)
 
-	public static float pickBoundingBox(PickMode mode, int x, int y, int w, int h, ICamera camera, Viewport viewport, BoundingBox bounds) {
+	public static float pickBoundingBox(PickMode mode, int x, int y, int w, int h, IView view, BoundingBox bounds) {
 		BoundingBox b = new BoundingBox();
 		float xmin = bounds.getMinX();
 		float xmax = bounds.getMaxX();
@@ -79,7 +76,7 @@ public final class PickUtil {
 
 		float[] v = new float[] { xmin, ymin, zmin, xmin, ymin, zmax, xmin, ymax, zmin, xmin, ymax, zmax, xmax, ymin, zmin, xmax, ymin, zmax, xmax, ymax, zmin,
 				xmax, ymax, zmax, };
-		b.add(ProjectionUtil.projectToScreen(camera.getViewProjMatrix(), viewport, v));
+		b.add(ProjectionUtil.projectToScreen(view.getCameraMatrices().getViewProjMatrix(), view.getViewport(), v));
 		b.grow(PICK_DISTANCE, PICK_DISTANCE, 0);
 
 		if (b.getMaxZ() > 0 && x > b.getMinX() && x < b.getMaxX() && y > b.getMinY() && y < b.getMaxY())

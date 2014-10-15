@@ -34,6 +34,7 @@ import ch.fhnw.ether.scene.SimpleScene;
 import ch.fhnw.ether.scene.mesh.MeshLibrary;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.gl.DefaultView;
+import ch.fhnw.util.math.Vec3;
 
 public final class MostBasic {
 	public static void main(String[] args) {
@@ -42,6 +43,9 @@ public final class MostBasic {
 
 	public MostBasic() {
 		Camera camera = new Camera();
+		//camera.setTarget(new Vec3(1, 1, 0));
+		camera.setPosition(new Vec3(0, 5, 0));
+		camera.setUp(new Vec3(0, 0, 1));
 
 		// Let's setup some basic scene with one predefined cube
 		SimpleScene scene = new SimpleScene(camera);

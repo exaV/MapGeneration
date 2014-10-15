@@ -263,71 +263,6 @@ public final class Mat4 {
 	}
 
 	/**
-	 * Set perspective projection. Supports far plane at infinity.
-	 *
-	 * @param fovy
-	 *            field of view (degrees)
-	 * @param aspect
-	 *            aspect ratio
-	 * @param near
-	 *            near plane
-	 * @param far
-	 *            far plane (set to Float.POSITIVE_INFINITY for far plane at infinity)
-	 */
-	public void perspective(float fovy, float aspect, float near, float far) {
-		double radians = fovy / 2 * MathUtil.DEGREES_TO_RADIANS;
-		double sine = Math.sin(radians);
-		float deltaZ = far - near;
-
-		if ((deltaZ == 0) || (sine == 0) || (aspect == 0)) {
-			throw new IllegalArgumentException("illegal arguments (fovy=" + fovy + " aspect=" + aspect + " near=" + near + " far=" + far);
-		}
-
-		double cotangent = (float) (Math.cos(radians) / sine);
-
-		zero();
-		m[M00] = (float) (cotangent / aspect);
-		m[M11] = (float) cotangent;
-		m[M22] = ((far >= Double.POSITIVE_INFINITY) ? -1 : (-(far + near) / deltaZ));
-		m[M32] = -1;
-		m[M23] = ((far >= Double.POSITIVE_INFINITY) ? (-2 * near) : (-2 * near * far / deltaZ));
-	}
-
-	/**
-	 * Returns an orthographic projection matrix.
-	 *
-	 * @param left
-	 *            coordinate for left vertical clipping plane
-	 * @param right
-	 *            coordinate for right vertical clipping plane
-	 * @param top
-	 *            coordinate for top horizontal clipping plane
-	 * @param bottom
-	 *            coordinate for bottom horizontal clipping plane
-	 * @param near
-	 *            near plane
-	 * @param far
-	 *            far plane
-	 */
-	public void ortho(float left, float right, float bottom, float top, float near, float far) {
-		float dx = right - left;
-		float dy = top - bottom;
-		float dz = far - near;
-		float tx = -1.0f * (right + left) / dx;
-		float ty = -1.0f * (top + bottom) / dy;
-		float tz = -1.0f * (far + near) / dz;
-
-		zero();
-		m[M00] = 2.0f / dx;
-		m[M11] = 2.0f / dy;
-		m[M22] = -2.0f / dz;
-		m[M03] = tx;
-		m[M13] = ty;
-		m[M23] = tz;
-		m[M33] = 1;
-	}
-
-	/**
 	 * Transform vector result = m * vec.
 	 *
 	 * @param vec
@@ -433,7 +368,7 @@ public final class Mat4 {
 			System.arraycopy(m, i * 4, temp[i], 0, 4);
 		}
 
-		Mat4 inv = identityMatrix();
+		Mat4 result = identityMatrix();
 
 		for (int i = 0; i < 4; i++) {
 			// look for largest element in column
@@ -451,9 +386,9 @@ public final class Mat4 {
 					temp[i][k] = temp[swap][k];
 					temp[swap][k] = t;
 
-					t = inv.m[i * 4 + k];
-					inv.m[i * 4 + k] = inv.m[swap * 4 + k];
-					inv.m[swap * 4 + k] = t;
+					t = result.m[i * 4 + k];
+					result.m[i * 4 + k] = result.m[swap * 4 + k];
+					result.m[swap * 4 + k] = t;
 				}
 			}
 
@@ -465,19 +400,19 @@ public final class Mat4 {
 			float t = temp[i][i];
 			for (int k = 0; k < 4; k++) {
 				temp[i][k] /= t;
-				inv.m[i * 4 + k] /= t;
+				result.m[i * 4 + k] /= t;
 			}
 			for (int j = 0; j < 4; j++) {
 				if (j != i) {
 					t = temp[j][i];
 					for (int k = 0; k < 4; k++) {
 						temp[j][k] -= temp[i][k] * t;
-						inv.m[j * 4 + k] -= inv.m[i * 4 + k] * t;
+						result.m[j * 4 + k] -= result.m[i * 4 + k] * t;
 					}
 				}
 			}
 		}
-		return inv;
+		return result;
 	}
 
 	/**
@@ -486,9 +421,9 @@ public final class Mat4 {
 	 * @return the new identity matrix
 	 */
 	public static Mat4 identityMatrix() {
-		Mat4 mat = new Mat4();
-		mat.m[M00] = mat.m[M11] = mat.m[M22] = mat.m[M33] = 1;
-		return mat;
+		Mat4 result = new Mat4();
+		result.m[M00] = result.m[M11] = result.m[M22] = result.m[M33] = 1;
+		return result;
 	}
 
 	/**
@@ -512,6 +447,110 @@ public final class Mat4 {
 			result.m[i + 8] = ai0 * b.m[M02] + ai1 * b.m[M12] + ai2 * b.m[M22] + ai3 * b.m[M32];
 			result.m[i + 12] = ai0 * b.m[M03] + ai1 * b.m[M13] + ai2 * b.m[M23] + ai3 * b.m[M33];
 		}
+		return result;
+	}
+
+	/**
+	 * Create view matrix from position (eye point), target (center/reference point) and up vector.
+	 * 
+	 * @param position
+	 *            camera position in world coordinates
+	 * @param target
+	 *            camera target in world coordinates
+	 * @param up
+	 *            camera up vector in world coordinates
+	 * @return view matrix
+	 */
+	public static Mat4 lookAt(Vec3 position, Vec3 target, Vec3 up) {
+		up = up.normalize();
+		Vec3 f = target.subtract(position).normalize();
+		Vec3 s = f.cross(up);
+		Vec3 u = s.normalize().cross(f);
+		Vec3 t = position.negate();
+
+		Mat4 result = new Mat4();
+		result.m[M00] = s.x;
+		result.m[M10] = u.x;
+		result.m[M20] = -f.x;
+		result.m[M01] = s.y;
+		result.m[M11] = u.y;
+		result.m[M21] = -f.y;
+		result.m[M02] = s.z;
+		result.m[M12] = u.z;
+		result.m[M22] = -f.z;
+		result.m[M03] = s.x * t.x + s.y * t.y + s.z * t.z;
+		result.m[M13] = u.x * t.x + u.y * t.y + u.z * t.z;
+		result.m[M23] = -f.x * t.x - f.y * t.y - f.z * t.z;
+		result.m[M33] = 1;
+		return result;
+	}
+
+	/**
+	 * Create perspective projection matrix. Supports far plane at infinity.
+	 *
+	 * @param fov
+	 *            field of view (degrees)
+	 * @param aspect
+	 *            aspect ratio
+	 * @param near
+	 *            near plane
+	 * @param far
+	 *            far plane (set to Float.POSITIVE_INFINITY for far plane at infinity)
+	 * @return perspective projection matrix
+	 */
+	public static Mat4 perspective(float fov, float aspect, float near, float far) {
+		double radians = fov / 2 * MathUtil.DEGREES_TO_RADIANS;
+		double sine = Math.sin(radians);
+		float deltaZ = far - near;
+
+		if ((deltaZ == 0) || (sine == 0) || (aspect == 0)) {
+			throw new IllegalArgumentException("illegal arguments (fovy=" + fov + " aspect=" + aspect + " near=" + near + " far=" + far);
+		}
+
+		double cotangent = (float) (Math.cos(radians) / sine);
+
+		Mat4 result = new Mat4();
+		result.m[M00] = (float) (cotangent / aspect);
+		result.m[M11] = (float) cotangent;
+		result.m[M22] = ((far >= Double.POSITIVE_INFINITY) ? -1 : (-(far + near) / deltaZ));
+		result.m[M32] = -1;
+		result.m[M23] = ((far >= Double.POSITIVE_INFINITY) ? (-2 * near) : (-2 * near * far / deltaZ));
+		return result;
+	}
+
+	/**
+	 * Create an orthographic projection matrix.
+	 *
+	 * @param left
+	 *            coordinate for left vertical clipping plane
+	 * @param right
+	 *            coordinate for right vertical clipping plane
+	 * @param top
+	 *            coordinate for top horizontal clipping plane
+	 * @param bottom
+	 *            coordinate for bottom horizontal clipping plane
+	 * @param near
+	 *            near plane
+	 * @param far
+	 *            far plane
+	 * @return orthographic projection matrix
+	 */
+	public static Mat4 ortho(float left, float right, float bottom, float top, float near, float far) {
+		float dx = right - left;
+		float dy = top - bottom;
+		float dz = far - near;
+		float tx = -1.0f * (right + left) / dx;
+		float ty = -1.0f * (top + bottom) / dy;
+		float tz = -1.0f * (far + near) / dz;
+
+		Mat4 result = new Mat4();
+		result.m[M00] = 2.0f / dx;
+		result.m[M11] = 2.0f / dy;
+		result.m[M22] = -2.0f / dz;
+		result.m[M03] = tx;
+		result.m[M13] = ty;
+		result.m[M23] = tz;
+		result.m[M33] = 1;
 		return result;
 	}
 

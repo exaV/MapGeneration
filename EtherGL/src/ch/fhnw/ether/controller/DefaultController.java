@@ -296,7 +296,7 @@ public class DefaultController implements IController {
 	public void requestRendering(GL3 gl, IView view) {
 		if (scene != null)
 			scene.renderUpdate();
-		renderer.render(gl, view.getCamera(), view.getViewport(), view.getViewType() == IView.ViewType.INTERACTIVE_VIEW);
+		renderer.render(gl, view);
 	}
 
 }

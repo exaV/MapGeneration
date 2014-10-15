@@ -51,11 +51,9 @@ public class RaytracerExample2 {
 	}
 
 	public RaytracerExample2() {
-
-		ICamera cam = new Camera(2.5f, 1, 0.5f, Float.POSITIVE_INFINITY);
-		cam.move(0, 0, 1, false);
-		ILight l = new PointLight(new Vec3(-1, -1, 3), RGBA.WHITE);
-		ParametricScene s = new ParametricScene(cam, l);
+		ICamera camera = new Camera(new Vec3(0, -2, 1), Vec3.ZERO, Vec3.Z, 2.5f, 0.5f, Float.POSITIVE_INFINITY);
+		ILight light = new PointLight(new Vec3(-1, -1, 3), RGBA.WHITE);
+		ParametricScene s = new ParametricScene(camera, light);
 
 		Sphere sphere = new Sphere(0.5f);
 		sphere.setPosition(new Vec3(0, 0, 0.5f));
@@ -80,7 +78,7 @@ public class RaytracerExample2 {
 			} // UI needs forward renderer
 		};
 
-		IView v = new DefaultView(c, 100, 100, 100, 100, ViewType.INTERACTIVE_VIEW, "Raytracing", cam);
+		IView v = new DefaultView(c, 100, 100, 100, 100, ViewType.INTERACTIVE_VIEW, "Raytracing", camera);
 
 		c.addView(v);
 		c.setScene(s);

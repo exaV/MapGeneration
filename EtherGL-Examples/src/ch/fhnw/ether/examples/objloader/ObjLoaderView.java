@@ -29,6 +29,7 @@ package ch.fhnw.ether.examples.objloader;
 
 import ch.fhnw.ether.camera.ICamera;
 import ch.fhnw.ether.view.gl.DefaultView;
+import ch.fhnw.util.math.Vec3;
 
 import com.jogamp.newt.event.KeyEvent;
 
@@ -38,8 +39,16 @@ public class ObjLoaderView extends DefaultView {
 		controller.getUI().setMessage("Use 0-6 on keyboard to set camera");
 	}
 
-	private static final float[][] CAM_PARAMS = { { 5, 0, 0, 0, 0, 90 }, { -5, 0, 0, 0, 0, -90 }, { 0, 5, 0, 0, 0, 180 }, { 0, -5, 0, 0, 0, 0 },
-			{ 0, 0, 5, -90, 0, 0 }, { 0, 0, -5, 90, 0, 0 }, };
+	private static final Vec3[][] CAM_PARAMS = {
+		//@formatter:off
+		{ new Vec3(5, 0, 0), Vec3.Z }, 
+		{ new Vec3(-5, 0, 0), Vec3.Z },
+		{ new Vec3(0, 5, 0), Vec3.Z }, 
+		{ new Vec3(0, -5, 0), Vec3.Z }, 
+		{ new Vec3(0, 0, 5), Vec3.Y }, 
+		{ new Vec3(0, 0, -5), Vec3.Y_NEG }
+		//@formatter:on
+	};
 
 	@Override
 	public void keyPressed(KeyEvent e) {
@@ -50,16 +59,15 @@ public class ObjLoaderView extends DefaultView {
 		case KeyEvent.VK_4:
 		case KeyEvent.VK_5:
 		case KeyEvent.VK_6:
-			float[] params = CAM_PARAMS[e.getKeyCode() - KeyEvent.VK_1];
+			Vec3[] params = CAM_PARAMS[e.getKeyCode() - KeyEvent.VK_1];
 			ICamera cam = getCamera();
-			cam.setPosition(params[0], params[1], params[2]);
-			cam.setRotation(params[3], params[4], params[5]);
-			getController().repaintView(this);
+			cam.setPosition(params[0]);
+			cam.setUp(params[1]);
+			refresh();
 			break;
 		default:
 			super.keyPressed(e);
 			break;
 		}
-
 	}
 }

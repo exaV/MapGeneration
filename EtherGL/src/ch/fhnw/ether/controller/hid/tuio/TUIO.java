@@ -39,6 +39,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import ch.fhnw.ether.camera.DefaultCameraControl;
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.util.math.geometry.BoundingBox;
@@ -231,16 +232,18 @@ public class TUIO {
 	}
 
 	private void handleSwipeOrPinch2(float swipeX, float swipeY, float pinch) {
+		DefaultCameraControl control = new DefaultCameraControl(view.getCamera());
 		// XXX do we really need to discriminate between swipe and pinch, or just let both go at once?
 		if (Math.abs(pinch) > 0.001) {
-			view.getCamera().getOrbitControl().addToZoom(-SCALE_DISTANCE * pinch);
+			control.addToDistance(-SCALE_DISTANCE * pinch);
 		} else {
-			view.getCamera().getOrbitControl().addToAzimut(SCALE_ROTATE * swipeX);
-			view.getCamera().getOrbitControl().addToElevation(SCALE_ROTATE * swipeY);
+			control.addToAzimuth(SCALE_ROTATE * swipeX);
+			control.addToElevation(SCALE_ROTATE * swipeY);
 		}
 	}
 
 	private void handleSwipe3(float swipeX, float swipeY) {
-		view.getCamera().move(SCALE_TRANSLATE * swipeX, -SCALE_TRANSLATE * swipeY, 0, true);
+		DefaultCameraControl control = new DefaultCameraControl(view.getCamera());
+		control.track(SCALE_TRANSLATE * swipeX, -SCALE_TRANSLATE * swipeY);
 	}
 }

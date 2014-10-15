@@ -34,11 +34,10 @@ import java.util.List;
 
 import javax.media.opengl.GL3;
 
-import ch.fhnw.ether.camera.ICamera;
 import ch.fhnw.ether.render.attribute.IArrayAttributeProvider;
 import ch.fhnw.ether.render.attribute.IUniformAttributeProvider;
 import ch.fhnw.ether.render.shader.IShader;
-import ch.fhnw.util.Viewport;
+import ch.fhnw.ether.view.IView;
 import ch.fhnw.util.math.Mat4;
 
 /**
@@ -48,12 +47,12 @@ import ch.fhnw.util.math.Mat4;
  */
 public interface IRenderer {
 	public static class RenderState {
-		public Mat4 projMatrix;
 		public Mat4 viewMatrix;
+		public Mat4 projMatrix;
 
-		public void setMatrices(Mat4 projMatrix, Mat4 viewMatrix) {
-			this.projMatrix = projMatrix;
+		public void setMatrices(Mat4 viewMatrix, Mat4 projMatrix) {
 			this.viewMatrix = viewMatrix;
+			this.projMatrix = projMatrix;
 		}
 	}
 
@@ -67,7 +66,7 @@ public interface IRenderer {
 
 	public final static EnumSet<Flag> NO_FLAGS = EnumSet.noneOf(Flag.class);
 
-	void render(GL3 gl, ICamera camera, Viewport viewport, boolean interactive);
+	void render(GL3 gl, IView view);
 
 	IRenderable createRenderable(Pass pass, IShader shader, IUniformAttributeProvider uniforms, List<? extends IArrayAttributeProvider> providers);
 

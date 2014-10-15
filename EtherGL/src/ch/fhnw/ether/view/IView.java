@@ -30,6 +30,7 @@
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
 
+import ch.fhnw.ether.camera.CameraMatrices;
 import ch.fhnw.ether.camera.ICamera;
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.util.Viewport;
@@ -65,9 +66,24 @@ public interface IView extends GLEventListener, MouseListener, KeyListener {
 	ICamera getCamera();
 
 	/**
+	 * Set associated camera.
+	 * 
+	 * @param camera
+	 *            camera to be set
+	 */
+	void setCamera(ICamera camera);
+
+	/**
+	 * Calculate camera matrices (if camera changed) and return them.
+	 * 
+	 * @return the camera matrices
+	 */
+	CameraMatrices getCameraMatrices();
+	
+	/**
 	 * Get viewport [x, y, w, h].
 	 * 
-	 * @return the viewport.
+	 * @return the viewport
 	 */
 	Viewport getViewport();
 
