@@ -33,7 +33,7 @@ import ch.fhnw.util.math.Vec3;
 
 public interface I3DObject {
 
-	BoundingBox getBoundings();
+	BoundingBox getBounds();
 
 	Vec3 getPosition();
 

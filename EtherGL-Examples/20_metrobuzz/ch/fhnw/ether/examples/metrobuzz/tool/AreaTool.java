@@ -115,7 +115,7 @@ public final class AreaTool extends AbstractTool {
 	public void mousePressed(MouseEvent e, IView view) {
 		int x = e.getX();
 		int y = view.getViewport().h - e.getY();
-		float d = PickUtil.pickBoundingBox(PickMode.POINT, x, y, 0, 0, view, mesh.getBoundings());
+		float d = PickUtil.pickBoundingBox(PickMode.POINT, x, y, 0, 0, view, mesh.getBounds());
 		if (d < Float.POSITIVE_INFINITY)
 			moving = true;
 	}

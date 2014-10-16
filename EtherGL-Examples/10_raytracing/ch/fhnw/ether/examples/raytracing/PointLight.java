@@ -44,7 +44,7 @@ public class PointLight implements ILight {
 	}
 
 	@Override
-	public BoundingBox getBoundings() {
+	public BoundingBox getBounds() {
 		BoundingBox b = new BoundingBox();
 		b.add(position);
 		return b;

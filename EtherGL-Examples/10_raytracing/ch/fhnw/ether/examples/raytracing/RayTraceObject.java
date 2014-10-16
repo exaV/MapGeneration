@@ -54,7 +54,7 @@ public class RayTraceObject implements IMesh {
 	}
 
 	@Override
-	public BoundingBox getBoundings() {
+	public BoundingBox getBounds() {
 		return new BoundingBox();
 	}
 

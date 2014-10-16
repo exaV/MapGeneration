@@ -61,7 +61,7 @@ class ArrayListSpatialIndex implements ISpatialIndex {
 	public List<IGeometry> getIntersectingGeometries(BoundingBox bb) {
 		List<IGeometry> result = new ArrayList<>();
 		for (IGeometry geometry : geometries) {
-			if (bb.intersects(geometry.getBoundings()))
+			if (bb.intersects(geometry.getBounds()))
 				result.add(geometry);
 		}
 		return result;
@@ -71,7 +71,7 @@ class ArrayListSpatialIndex implements ISpatialIndex {
 	public List<IGeometry> getContainingGeometries(BoundingBox bb) {
 		List<IGeometry> result = new ArrayList<>();
 		for (IGeometry geometry : geometries) {
-			if (bb.contains(geometry.getBoundings()))
+			if (bb.contains(geometry.getBounds()))
 				result.add(geometry);
 		}
 		return result;

@@ -55,7 +55,7 @@ public final class Camera implements ICamera {
 	}
 
 	@Override
-	public BoundingBox getBoundings() {
+	public BoundingBox getBounds() {
 		BoundingBox b = new BoundingBox();
 		b.add(getPosition());
 		return b;

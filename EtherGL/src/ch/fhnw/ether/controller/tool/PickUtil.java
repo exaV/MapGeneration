@@ -56,7 +56,7 @@ public final class PickUtil {
 	public static Map<Float, I3DObject> pickFromModel(PickMode mode, int x, int y, int w, int h, IView view) {
 		final Map<Float, I3DObject> pickables = new TreeMap<>();
 		for (I3DObject geometry : view.getController().getScene().getObjects()) {
-			float d = pickBoundingBox(mode, x, y, w, h, view, geometry.getBoundings());
+			float d = pickBoundingBox(mode, x, y, w, h, view, geometry.getBounds());
 			if (d < Float.POSITIVE_INFINITY)
 				pickables.put(d, geometry);
 		}

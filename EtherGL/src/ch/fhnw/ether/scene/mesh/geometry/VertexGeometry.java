@@ -48,7 +48,7 @@ public class VertexGeometry implements IGeometry {
 	private IArrayAttribute[] attributes;
 	private float[][] data; // first dimension is attribute, second data
 
-	private BoundingBox boundings;
+	private BoundingBox bounds;
 
 	private boolean changed = false;
 
@@ -75,11 +75,11 @@ public class VertexGeometry implements IGeometry {
 			this.data[i] = Arrays.copyOf(data[i], data[i].length);
 		}
 
-		boundings = new BoundingBox();
+		bounds = new BoundingBox();
 		int positionArray = -1;
 		for (int i = 0; i < attributes.length; ++i) {
 			if (attributes[i].id() == PositionArray.ID) {
-				boundings.add(this.data[i]);
+				bounds.add(this.data[i]);
 				positionArray = i;
 			}
 		}
@@ -138,9 +138,9 @@ public class VertexGeometry implements IGeometry {
 	// ---- IGeometry implementation
 
 	@Override
-	public BoundingBox getBoundings() {
+	public BoundingBox getBounds() {
 		// FIXME: the boundingbox needs to respect the transformation...
-		return boundings;
+		return bounds;
 	}
 
 	@Override

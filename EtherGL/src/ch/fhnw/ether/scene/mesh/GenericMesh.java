@@ -132,8 +132,8 @@ public class GenericMesh implements IMesh {
 	}
 
 	@Override
-	public BoundingBox getBoundings() {
-		return geometry.getBoundings();
+	public BoundingBox getBounds() {
+		return geometry.getBounds();
 	}
 
 	@Override
