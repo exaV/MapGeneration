@@ -90,9 +90,4 @@ public class MappingController extends DefaultController {
 	public void setLightPosition(float[] position) {
 		lightPosition = position;
 	}
-
-	@Override
-	public MappingTriangleScene getScene() {
-		return (MappingTriangleScene) super.getScene();
-	}
 }

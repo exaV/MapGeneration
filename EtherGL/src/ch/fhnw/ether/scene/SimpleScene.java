@@ -47,11 +47,10 @@ import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.IMesh;
 
 /**
- * @author Samuel Stachelski
- * 
- *         A very simple implementation of IScene.</br> - Only triangle geometry will work</br> - One renderable per
- *         mesh - Only material colors work
+ * A very simple implementation of IScene.</br> - Only triangle geometry will work</br> - One renderable per mesh - Only
+ * material colors work
  *
+ * @author Samuel Stachelski
  */
 public class SimpleScene extends AbstractScene {
 

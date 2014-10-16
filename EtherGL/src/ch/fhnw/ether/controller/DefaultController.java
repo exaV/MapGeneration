@@ -86,7 +86,7 @@ public class DefaultController implements IController {
 	}
 
 	@Override
-	public IScene getScene() {
+	public final IScene getScene() {
 		return scene;
 	}
 

@@ -154,6 +154,8 @@ public class DefaultView implements IView {
 	}
 
 	// GLEventListener implementation
+	
+	// TODO: add try/catch around all handlers
 
 	@Override
 	public final void init(GLAutoDrawable drawable) {
