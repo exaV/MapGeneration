@@ -36,12 +36,12 @@ import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.gl.DefaultView;
 import ch.fhnw.util.math.Vec3;
 
-public final class MostBasic {
+public final class SimpleCubeExample {
 	public static void main(String[] args) {
-		new MostBasic();
+		new SimpleCubeExample();
 	}
 
-	public MostBasic() {
+	public SimpleCubeExample() {
 		Camera camera = new Camera();
 		//camera.setTarget(new Vec3(1, 1, 0));
 		camera.setPosition(new Vec3(0, 5, 0));
@@ -55,7 +55,7 @@ public final class MostBasic {
 		IController controller = new DefaultController();
 
 		// Create a view (aka rendering window). The view has to know what camera it uses.
-		IView view = new DefaultView(controller, 100, 100, 500, 500, IView.ViewType.INTERACTIVE_VIEW, "Test", camera);
+		IView view = new DefaultView(controller, 100, 100, 500, 500, IView.ViewType.INTERACTIVE_VIEW, "Simple Cube", camera);
 
 		// Add the scene (aka "model") and the view to the controller
 		controller.addView(view);

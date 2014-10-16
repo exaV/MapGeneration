@@ -127,6 +127,7 @@ public class TextMesh extends GenericMesh {
 		graphics.setComposite(AlphaComposite.getInstance(AlphaComposite.CLEAR));
 		fillRect(CLEAR_COLOR, x, y, w, h);
 		graphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
+		requestUpdate();
 	}
 
 	public void fillRect(Color color, int x, int y, int w, int h) {
@@ -161,6 +162,7 @@ public class TextMesh extends GenericMesh {
 	}
 
 	private void requestUpdate() {
+		// FIXME this is real bad - requestUpdate should never be immediate
 		texture.setData(w, h, IntBuffer.wrap(((DataBufferInt) image.getRaster().getDataBuffer()).getData()), GL.GL_BGRA);
 		if (renderable != null)
 			renderable.requestUpdate();

@@ -57,7 +57,7 @@ import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.gl.DefaultView;
 import ch.fhnw.util.math.Vec3;
 
-public final class Animation {
+public final class SimpleAnimationExample {
 
 	private static IView view = null;
 
@@ -119,7 +119,7 @@ public final class Animation {
 
 	// does anybody know why we need a "main"-procedure even though we use OOP?
 	public static void main(String[] args) {
-		new Animation();
+		new SimpleAnimationExample();
 	}
 
 	// Let's generate a colored triangle
@@ -135,7 +135,7 @@ public final class Animation {
 	}
 
 	// Setup the whole thing
-	public Animation() {
+	public SimpleAnimationExample() {
 
 		// As always, make first a controller
 		IController controller = new DefaultController();

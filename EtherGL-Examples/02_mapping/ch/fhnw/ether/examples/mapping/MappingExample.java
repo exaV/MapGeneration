@@ -29,8 +29,6 @@
 
 package ch.fhnw.ether.examples.mapping;
 
-import javax.swing.SwingUtilities;
-
 import ch.fhnw.ether.camera.Camera;
 import ch.fhnw.ether.camera.ICamera;
 import ch.fhnw.ether.scene.IScene;
@@ -42,17 +40,8 @@ public final class MappingExample {
 		try {
 			Thread.sleep(Long.MAX_VALUE);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		// Make sure everything runs on GUI thread...
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				new MappingExample();
-			}
-		});
 	}
 
 	/*

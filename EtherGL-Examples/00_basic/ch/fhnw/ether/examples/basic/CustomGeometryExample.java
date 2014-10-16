@@ -54,7 +54,7 @@ import ch.fhnw.ether.scene.mesh.geometry.VertexGeometry;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.gl.DefaultView;
 
-public final class OwnGeometry {
+public final class CustomGeometryExample {
 
 	// This is our own scene. Has its own Shader and own mesh.
 	private static class CoolScene extends AbstractScene {
@@ -76,7 +76,7 @@ public final class OwnGeometry {
 
 	// does anybody know why we need a "main"-procedure even though we use OOP?
 	public static void main(String[] args) {
-		new OwnGeometry();
+		new CustomGeometryExample();
 	}
 
 	// Let's generate a colored triangle
@@ -92,8 +92,8 @@ public final class OwnGeometry {
 	}
 
 	// Setup the whole thing
-	public OwnGeometry() {
-
+	public CustomGeometryExample() {
+		
 		// As always, make first a controller
 		IController controller = new DefaultController();
 

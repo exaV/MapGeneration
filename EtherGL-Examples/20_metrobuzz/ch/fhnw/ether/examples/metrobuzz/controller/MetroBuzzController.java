@@ -46,7 +46,7 @@ public class MetroBuzzController extends DefaultController {
 		getUI().addWidget(new Button(0, 0, "PICK", "Pick Tool (1)", KeyEvent.VK_1, (button, view) -> setCurrentTool(null)));
 		getUI().addWidget(new Button(1, 0, "AREA", "AREA Tool (2)", KeyEvent.VK_2, (button, view) -> setCurrentTool(areaTool)));
 		getUI().addWidget(new Button(0, 1, "F", "Frame Scene (F)", KeyEvent.VK_F, (button, view) -> {
-			// TODO: enable framing
+			// FIXME: enable framing
 			// view.getCamera().frame(getScene().getBounds());
 				repaintViews();
 			}));

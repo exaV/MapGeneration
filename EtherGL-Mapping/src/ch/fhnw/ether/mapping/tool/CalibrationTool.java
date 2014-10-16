@@ -93,7 +93,7 @@ public final class CalibrationTool extends AbstractTool {
 		renderables.add(renderer.createRenderable(Pass.OVERLAY, new LineShader(false), mesh.getMaterial(), Collections.singletonList(mesh.getGeometry())));
 		renderables.add(renderer.createRenderable(Pass.DEVICE_SPACE_OVERLAY, new LineShader(false), mesh.getMaterial(),
 				Collections.singletonList(calibratedGeometry.getGeometry())));
-		// TODO: add also points?
+		// FIXME: add also points?
 		// renderables.add(renderer.createRenderable(Pass.OVERLAY, new Points(MODEL_COLOR, POINT_SIZE, 0),
 		// model.getCalibrationMesh().getGeometry()));
 		// renderables.add(renderer.createRenderable(Pass.DEVICE_SPACE_OVERsLAY, new Points(null, POINT_SIZE, 0),
@@ -294,7 +294,7 @@ public final class CalibrationTool extends AbstractTool {
 		CalibrationContext context = getContext(view);
 
 		// prepare points
-		// TODO: add points?
+		// FIXME: add points?
 		// calibratedGeometry.setPoints(Vec3.toArray(context.projectedVertices), color, null);
 
 		// prepare lines

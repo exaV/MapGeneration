@@ -33,46 +33,68 @@ import java.util.List;
 
 import ch.fhnw.util.math.Vec3;
 
-// TODO: this is really too "primitive"... needs total revision
 public final class Primitives {
 
+	//@formatter:off
 	public static final float[] UNIT_CUBE_TRIANGLES = {
-			// bottom
-			-0.5f, -0.5f, -0.5f, -0.5f, +0.5f, -0.5f, +0.5f, +0.5f, -0.5f, -0.5f, -0.5f, -0.5f, +0.5f, +0.5f, -0.5f, +0.5f, -0.5f, -0.5f,
+		// bottom
+		-0.5f, -0.5f, -0.5f, -0.5f, +0.5f, -0.5f, +0.5f, +0.5f, -0.5f,
+		-0.5f, -0.5f, -0.5f, +0.5f, +0.5f, -0.5f, +0.5f, -0.5f, -0.5f,
 
-			// top
-			+0.5f, -0.5f, +0.5f, +0.5f, +0.5f, +0.5f, -0.5f, +0.5f, +0.5f, +0.5f, -0.5f, +0.5f, -0.5f, +0.5f, +0.5f, -0.5f, -0.5f, +0.5f,
+		// top
+		+0.5f, -0.5f, +0.5f, +0.5f, +0.5f, +0.5f, -0.5f, +0.5f, +0.5f, 
+		+0.5f, -0.5f, +0.5f, -0.5f, +0.5f, +0.5f, -0.5f, -0.5f, +0.5f,
 
-			// front
-			-0.5f, -0.5f, -0.5f, +0.5f, -0.5f, -0.5f, +0.5f, -0.5f, +0.5f, -0.5f, -0.5f, -0.5f, +0.5f, -0.5f, +0.5f, -0.5f, -0.5f, +0.5f,
+		// front
+		-0.5f, -0.5f, -0.5f, +0.5f, -0.5f, -0.5f, +0.5f, -0.5f, +0.5f, 
+		-0.5f, -0.5f, -0.5f, +0.5f, -0.5f, +0.5f, -0.5f, -0.5f, +0.5f,
 
-			// back
-			+0.5f, +0.5f, -0.5f, -0.5f, +0.5f, -0.5f, -0.5f, +0.5f, +0.5f, +0.5f, +0.5f, -0.5f, -0.5f, +0.5f, +0.5f, +0.5f, +0.5f, +0.5f,
+		// back
+		+0.5f, +0.5f, -0.5f, -0.5f, +0.5f, -0.5f, -0.5f, +0.5f, +0.5f, 
+		+0.5f, +0.5f, -0.5f, -0.5f, +0.5f, +0.5f, +0.5f, +0.5f, +0.5f,
 
-			// left
-			-0.5f, +0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, +0.5f, -0.5f, +0.5f, -0.5f, -0.5f, -0.5f, +0.5f, -0.5f, +0.5f, +0.5f,
+		// left
+		-0.5f, +0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, +0.5f, 
+		-0.5f, +0.5f, -0.5f, -0.5f, -0.5f, +0.5f, -0.5f, +0.5f, +0.5f,
 
-			// right
-			+0.5f, -0.5f, -0.5f, +0.5f, +0.5f, -0.5f, +0.5f, +0.5f, +0.5f, +0.5f, -0.5f, -0.5f, +0.5f, +0.5f, +0.5f, +0.5f, -0.5f, +0.5f };
+		// right
+		+0.5f, -0.5f, -0.5f, +0.5f, +0.5f, -0.5f, +0.5f, +0.5f, +0.5f, 
+		+0.5f, -0.5f, -0.5f, +0.5f, +0.5f, +0.5f, +0.5f, -0.5f, +0.5f 
+	};
 
 	public static final float[] UNIT_CUBE_EDGES = {
-			// bottom
-			-0.5f, -0.5f, -0.5f, -0.5f, +0.5f, -0.5f, -0.5f, +0.5f, -0.5f, +0.5f, +0.5f, -0.5f, +0.5f, +0.5f, -0.5f, +0.5f, -0.5f, -0.5f, +0.5f, -0.5f, -0.5f,
-			-0.5f, -0.5f,
-			-0.5f,
+		// bottom
+		-0.5f, -0.5f, -0.5f, -0.5f, +0.5f, -0.5f, 
+		-0.5f, +0.5f, -0.5f, +0.5f, +0.5f, -0.5f,
+		+0.5f, +0.5f, -0.5f, +0.5f, -0.5f, -0.5f, 
+		+0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f,
 
-			// top
-			+0.5f, -0.5f, +0.5f, +0.5f, +0.5f, +0.5f, +0.5f, +0.5f, +0.5f, -0.5f, +0.5f, +0.5f, -0.5f, +0.5f, +0.5f, -0.5f, -0.5f, +0.5f, -0.5f, -0.5f, +0.5f,
-			+0.5f, -0.5f, +0.5f,
+		// top
+		+0.5f, -0.5f, +0.5f, +0.5f, +0.5f, +0.5f, 
+		+0.5f, +0.5f, +0.5f, -0.5f, +0.5f, +0.5f, 
+		-0.5f, +0.5f, +0.5f, -0.5f, -0.5f, +0.5f, 
+		-0.5f, -0.5f, +0.5f, +0.5f, -0.5f, +0.5f,
 
-			// vertical
-			-0.5f, -0.5f, -0.5f, -0.5f, -0.5f, +0.5f, +0.5f, -0.5f, -0.5f, +0.5f, -0.5f, +0.5f, +0.5f, +0.5f, -0.5f, +0.5f, +0.5f, +0.5f, -0.5f, +0.5f, -0.5f,
-			-0.5f, +0.5f, +0.5f };
+		// vertical
+		-0.5f, -0.5f, -0.5f, -0.5f, -0.5f, +0.5f, 
+		+0.5f, -0.5f, -0.5f, +0.5f, -0.5f, +0.5f, 
+		+0.5f, +0.5f, -0.5f, +0.5f, +0.5f, +0.5f, 
+		-0.5f, +0.5f, -0.5f, -0.5f, +0.5f, +0.5f 
+	};
 
-	public static final float[] UNIT_CUBE_POINTS = { -0.5f, -0.5f, -0.5f, -0.5f, +0.5f, -0.5f, +0.5f, +0.5f, -0.5f, +0.5f, -0.5f, -0.5f, +0.5f, -0.5f, +0.5f,
-			+0.5f, +0.5f, +0.5f, -0.5f, +0.5f, +0.5f, -0.5f, -0.5f, +0.5f, };
+	public static final float[] UNIT_CUBE_POINTS = { 
+		-0.5f, -0.5f, -0.5f, -0.5f, +0.5f, -0.5f, 
+		+0.5f, +0.5f, -0.5f, +0.5f, -0.5f, -0.5f,
+		+0.5f, -0.5f, +0.5f, +0.5f, +0.5f, +0.5f, 
+		-0.5f, +0.5f, +0.5f, -0.5f, -0.5f, +0.5f, 
+	};
 
-	public static final float[] DEFAULT_QUAD_TEX_COORDS = { 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1 };
+	public static final float[] DEFAULT_QUAD_TEX_COORDS = { 
+		0, 0, 1, 0, 1, 1,
+		0, 0, 1, 1, 0, 1 
+	};
+	//@formatter:on
+
 
 	public static void addLine(List<Vec3> dst, float x0, float y0, float x1, float y1) {
 		dst.add(new Vec3(x0, y0, 0));
@@ -103,5 +125,4 @@ public final class Primitives {
 			dst.add(new Vec3((UNIT_CUBE_TRIANGLES[i] * sx) + tx, (UNIT_CUBE_TRIANGLES[i + 1] * sy) + ty, (UNIT_CUBE_TRIANGLES[i + 2] * sz) + tz));
 		}
 	}
-
 }

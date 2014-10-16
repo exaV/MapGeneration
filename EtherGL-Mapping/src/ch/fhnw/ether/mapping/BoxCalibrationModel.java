@@ -49,7 +49,7 @@ public class BoxCalibrationModel implements ICalibrationModel {
 		this.boxExtentZ = boxExtentZ;
 		this.planeExtentX = planeExtentX;
 		this.planeExtentY = planeExtentY;
-		// TODO: add also points?
+		// FIXME: add also points?
 		// mesh.setPoints(getCalibrationPoints());
 		// mesh.setLines(getCalibrationLines());
 		mesh.setGeometry(getCalibrationLines());
