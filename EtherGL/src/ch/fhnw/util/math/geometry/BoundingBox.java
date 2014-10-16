@@ -42,10 +42,10 @@ public final class BoundingBox {
 	private boolean valid;
 	private float minX;
 	private float maxX;
-	float minY;
-	float maxY;
-	float minZ;
-	float maxZ;
+	private float minY;
+	private float maxY;
+	private float minZ;
+	private float maxZ;
 
 	public BoundingBox() {
 		reset();

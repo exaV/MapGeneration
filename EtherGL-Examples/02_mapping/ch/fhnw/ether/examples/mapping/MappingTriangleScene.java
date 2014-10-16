@@ -72,7 +72,6 @@ public class MappingTriangleScene extends AbstractScene {
 
 	@Override
 	public void setRenderer(IRenderer renderer) {
-
 		final List<IGeometry> geo = Collections.synchronizedList(super.getMeshes().stream().map((x) -> {
 			return x.getGeometry();
 		}).collect(Collectors.toList()));

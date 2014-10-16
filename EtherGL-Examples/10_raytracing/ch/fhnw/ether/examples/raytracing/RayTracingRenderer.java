@@ -147,7 +147,7 @@ public class RayTracingRenderer implements IRenderer {
 		IArrayAttribute[] attribs = new IArrayAttribute[] { new PositionArray(), new TexCoordArray() };
 		float[] position = new float[] { x, y, 0, x + w, y, 0, x + w, y + h, 0, x, y, 0, x + w, y + h, 0, x, y + h, 0 };
 		float[][] data = new float[][] { position, Primitives.DEFAULT_QUAD_TEX_COORDS };
-		List<IArrayAttributeProvider> quad = Collections.singletonList(new VertexGeometry(data, attribs, PrimitiveType.TRIANGLE));
+		List<IArrayAttributeProvider> quad = Collections.singletonList(new VertexGeometry(PrimitiveType.TRIANGLE, attribs, data));
 		IMaterial mat = new TextureMaterial(texture);
 		IUniformAttributeProvider uniforms = new IUniformAttributeProvider() {
 			@Override

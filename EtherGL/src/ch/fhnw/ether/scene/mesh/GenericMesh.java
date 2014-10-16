@@ -87,7 +87,7 @@ public class GenericMesh implements IMesh {
 		IArrayAttribute[] attributes = new IArrayAttribute[] { new PositionArray(), new ColorArray() };
 		float[][] data = new float[][] { vertices, colors };
 
-		geometry = new VertexGeometry(data, attributes, type);
+		geometry = new VertexGeometry(type, attributes, data);
 		changed = true;
 	}
 
@@ -95,7 +95,7 @@ public class GenericMesh implements IMesh {
 		IArrayAttribute[] attributes = new IArrayAttribute[] { new PositionArray(), new NormalArray(), new ColorArray(), new TexCoordArray() };
 		float[][] data = new float[][] { vertices, normals, colors, texCoords };
 
-		geometry = new VertexGeometry(data, attributes, type);
+		geometry = new VertexGeometry(type, attributes, data);
 		changed = true;
 	}
 
@@ -103,7 +103,7 @@ public class GenericMesh implements IMesh {
 		IArrayAttribute[] attributes = new IArrayAttribute[] { new PositionArray(), new NormalArray(), new ColorArray() };
 		float[][] data = new float[][] { vertices, normals, colors };
 
-		geometry = new VertexGeometry(data, attributes, type);
+		geometry = new VertexGeometry(type, attributes, data);
 		changed = true;
 	}
 
@@ -122,18 +122,13 @@ public class GenericMesh implements IMesh {
 	}
 
 	@Override
-	public String toString() {
-		return name;
-	}
-
-	@Override
 	public IGeometry getGeometry() {
 		return geometry;
 	}
 
 	@Override
 	public IMaterial getMaterial() {
-		return material != null ? material : IMaterial.EmptyMaterial;
+		return material != null ? material : IMaterial.EMPTY_MATERIAL;
 	}
 
 	@Override
@@ -157,4 +152,8 @@ public class GenericMesh implements IMesh {
 		return changed || geometry.hasChanged();
 	}
 
+	@Override
+	public String toString() {
+		return name;
+	}
 }

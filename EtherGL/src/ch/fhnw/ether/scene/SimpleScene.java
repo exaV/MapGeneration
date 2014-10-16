@@ -55,7 +55,7 @@ import ch.fhnw.ether.scene.mesh.IMesh;
 public class SimpleScene extends AbstractScene {
 
 	private final List<ILight> lights = new ArrayList<>(3);
-	private final Map<IMesh, IRenderable> render_cache = new HashMap<>();
+	private final Map<IMesh, IRenderable> renderCache = new HashMap<>();
 	private IRenderer renderer = null;
 	private final IShader shader = new MaterialShader(EnumSet.of(ShaderInput.MATERIAL_COLOR));
 
@@ -71,7 +71,7 @@ public class SimpleScene extends AbstractScene {
 	public boolean addMesh(IMesh mesh) {
 		if (renderer != null) {
 			IRenderable add = renderer.createRenderable(Pass.DEPTH, shader, mesh.getMaterial(), Collections.singletonList(mesh.getGeometry()));
-			render_cache.put(mesh, add);
+			renderCache.put(mesh, add);
 			renderer.addRenderables(add);
 		}
 
@@ -79,10 +79,10 @@ public class SimpleScene extends AbstractScene {
 	}
 
 	public boolean removeMesh(IMesh mesh) {
-		IRenderable remove = render_cache.get(mesh);
+		IRenderable remove = renderCache.get(mesh);
 		if (renderer != null)
 			renderer.removeRenderables(remove);
-		render_cache.remove(mesh);
+		renderCache.remove(mesh);
 		return super.getMeshes().remove(mesh);
 	}
 
@@ -104,7 +104,7 @@ public class SimpleScene extends AbstractScene {
 		if (this.renderer == renderer)
 			return;
 		this.renderer = renderer;
-		render_cache.clear();
+		renderCache.clear();
 
 		List<IMesh> meshes = super.getMeshes();
 
@@ -112,7 +112,7 @@ public class SimpleScene extends AbstractScene {
 		for (int i = 0; i < meshes.size(); ++i) {
 			IMesh m = meshes.get(i);
 			renderables[i] = renderer.createRenderable(Pass.DEPTH, shader, m.getMaterial(), Collections.singletonList(m.getGeometry()));
-			render_cache.put(m, renderables[i]);
+			renderCache.put(m, renderables[i]);
 		}
 
 		renderer.addRenderables(renderables);
@@ -122,7 +122,7 @@ public class SimpleScene extends AbstractScene {
 	public void renderUpdate() {
 		for (IMesh m : super.getMeshes()) {
 			if (m.hasChanged()) {
-				render_cache.get(m).requestUpdate();
+				renderCache.get(m).requestUpdate();
 			}
 		}
 	}

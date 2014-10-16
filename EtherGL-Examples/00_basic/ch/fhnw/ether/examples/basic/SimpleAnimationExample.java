@@ -129,7 +129,7 @@ public final class SimpleAnimationExample {
 		float[][] data = { position, color };
 		IArrayAttribute[] attribs = { new PositionArray(), new ColorArray() };
 
-		VertexGeometry g = new VertexGeometry(data, attribs, PrimitiveType.TRIANGLE);
+		VertexGeometry g = new VertexGeometry(PrimitiveType.TRIANGLE, attribs, data);
 
 		return new GenericMesh(g, null);
 	}

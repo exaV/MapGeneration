@@ -51,6 +51,8 @@ import ch.fhnw.util.math.geometry.Primitives;
 
 import com.jogamp.newt.event.MouseEvent;
 
+// FIXME: do not allow createRenderable anymore, go through scene
+
 public class NavigationTool extends AbstractTool {
 	public static final RGBA GRID_COLOR = RGBA.GRAY;
 

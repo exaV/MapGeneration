@@ -84,7 +84,7 @@ public class TextMesh extends GenericMesh {
 		float[] position = new float[] { x, y, 0, x + w, y, 0, x + w, y + h, 0, x, y, 0, x + w, y + h, 0, x, y + h, 0 };
 		float[] tex_coords = Primitives.DEFAULT_QUAD_TEX_COORDS;
 		IArrayAttribute[] attribs = new IArrayAttribute[] { new PositionArray(), new TexCoordArray() };
-		setGeometry(new VertexGeometry(new float[][] { position, tex_coords }, attribs, PrimitiveType.TRIANGLE));
+		setGeometry(new VertexGeometry(PrimitiveType.TRIANGLE, attribs, new float[][] { position, tex_coords }));
 		setMaterial(new TextureMaterial(texture));
 		interactiveOnlyFlag = interactiveOnly ? EnumSet.of(IRenderer.Flag.INTERACTIVE_VIEW_ONLY) : EnumSet.noneOf(IRenderer.Flag.class);
 	}

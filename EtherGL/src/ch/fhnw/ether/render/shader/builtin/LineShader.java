@@ -48,9 +48,9 @@ public class LineShader extends AbstractShader {
 	private List<IUniformAttribute> uniformAttributes = new ArrayList<>(5);
 	private List<IArrayAttribute> arrayAttributes = new ArrayList<>(5);
 
-	public LineShader(boolean useVertexCOlors) {
+	public LineShader(boolean useVertexColors) {
 		super("unshaded_vct", IAttribute.PrimitiveType.LINE);
-		this.useVertexColors = useVertexCOlors;
+		this.useVertexColors = useVertexColors;
 
 		if (!useVertexColors) {
 			uniformAttributes.add(new ColorMaterialUniform());

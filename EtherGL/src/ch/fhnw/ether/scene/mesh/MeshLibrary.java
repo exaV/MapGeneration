@@ -41,12 +41,12 @@ import ch.fhnw.util.math.geometry.Primitives;
 public class MeshLibrary {
 	private final static float[] TRIANGLE_CUBE_DATA = Primitives.UNIT_CUBE_TRIANGLES;
 	private final static IArrayAttribute[] ONLY_POSITION = new IArrayAttribute[] { new PositionArray() };
-	private final static VertexGeometry CUBE_GEOMETRY = new VertexGeometry(new float[][] { TRIANGLE_CUBE_DATA }, ONLY_POSITION, PrimitiveType.TRIANGLE);
+	private final static VertexGeometry CUBE_GEOMETRY = new VertexGeometry(PrimitiveType.TRIANGLE, ONLY_POSITION, new float[][] { TRIANGLE_CUBE_DATA });
 	private final static IMaterial DEFAULT_MATERIAL = new ColorMaterial(RGBA.WHITE);
 
 	public static IMesh getCube() {
 		// copy vertex data to prevent violation of original vertex data
-		VertexGeometry geo = new VertexGeometry(CUBE_GEOMETRY);
+		VertexGeometry geo = CUBE_GEOMETRY.copy();
 		return new GenericMesh(geo, DEFAULT_MATERIAL);
 	}
 }
