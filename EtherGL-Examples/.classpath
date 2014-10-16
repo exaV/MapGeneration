@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
+	<classpathentry excluding="src/" kind="src" path="00_basic"/>
+	<classpathentry kind="src" path="01_assets"/>
+	<classpathentry kind="src" path="02_mapping"/>
+	<classpathentry kind="src" path="10_raytracing"/>
+	<classpathentry kind="src" path="20_metrobuzz"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/EtherGL"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/EtherGL-Mapping"/>
