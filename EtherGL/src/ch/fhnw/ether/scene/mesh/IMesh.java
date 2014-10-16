@@ -40,7 +40,7 @@ public interface IMesh extends I3DObject {
 	IMaterial getMaterial();
 
 	/**
-	 * @return True if some data of this mesh have changed since the last call of this method. Otherwise false.
+	 * @return true if mesh was modified since last call to this method.
 	 */
-	boolean hasChanged();
+	boolean needsUpdate();
 }

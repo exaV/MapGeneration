@@ -121,7 +121,7 @@ public class SimpleScene extends AbstractScene {
 	@Override
 	public void renderUpdate() {
 		for (IMesh m : super.getMeshes()) {
-			if (m.hasChanged()) {
+			if (m.needsUpdate()) {
 				renderCache.get(m).requestUpdate();
 			}
 		}

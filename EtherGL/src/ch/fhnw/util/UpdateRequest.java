@@ -31,13 +31,34 @@ package ch.fhnw.util;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * Helper class for simple update hand-shaking.
+ * 
+ * @author radar
+ */
 public final class UpdateRequest {
-	private AtomicBoolean update = new AtomicBoolean();
+	private final AtomicBoolean update = new AtomicBoolean();
 
+	public UpdateRequest() {
+	}
+	
+	public UpdateRequest(boolean requestInitialUpdate) {
+		if (requestInitialUpdate)
+			requestUpdate();
+	}
+	
+	/**
+	 * Called to request an update.
+	 */
 	public void requestUpdate() {
 		update.set(true);
 	}
 
+	/**
+	 * Called to check for an update and clear a pending request.
+	 * 
+	 * @return true if update is required, false otherwise.
+	 */
 	public boolean needsUpdate() {
 		return update.getAndSet(false);
 	}

@@ -165,6 +165,10 @@ public final class Mat4 {
 			m[i + 3] = mi0 * mat.m[M30] + mi1 * mat.m[M31] + mi2 * mat.m[M32] + mi3 * mat.m[M33];
 		}
 	}
+	
+	// FIXME: i'm not happy with the api here, we should be able to write:
+	// Mat4 m = Mat4.translate(...).rotate(...).scale(...).rotate(...)...
+	// which would make everything easier to read from a math perspective...
 
 	/**
 	 * Pre-multiplies matrix m with translation matrix t (m = t * m)

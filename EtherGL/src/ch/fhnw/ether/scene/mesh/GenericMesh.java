@@ -38,6 +38,7 @@ import ch.fhnw.ether.render.attribute.builtin.TexCoordArray;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.VertexGeometry;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
+import ch.fhnw.util.UpdateRequest;
 import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.BoundingBox;
@@ -51,11 +52,11 @@ public class GenericMesh implements IMesh {
 	private IMaterial material = null;
 	private IGeometry geometry = null;
 	private PrimitiveType type;
-	private boolean changed = false;
+	
+	private final UpdateRequest updater = new UpdateRequest();
 
 	public GenericMesh(PrimitiveType type) {
 		this.type = type;
-		changed = true;
 	}
 
 	public GenericMesh(PrimitiveType type, IMaterial material) {
@@ -66,6 +67,7 @@ public class GenericMesh implements IMesh {
 	public GenericMesh(VertexGeometry geometry, IMaterial material) {
 		this(geometry.getPrimitiveType(), material);
 		this.geometry = geometry;
+		requestUpdate();
 	}
 
 	public GenericMesh(VertexGeometry geometry) {
@@ -76,9 +78,10 @@ public class GenericMesh implements IMesh {
 	public void setGeometry(VertexGeometry geometry) {
 		this.type = geometry.getPrimitiveType();
 		this.geometry = geometry;
-		changed = true;
+		requestUpdate();
 	}
 
+	// FIXME: move these as static methods to helper classes...
 	public void setGeometry(float[] vertices) {
 		setGeometry(vertices, RGBA.WHITE.generateColorArray(vertices.length / 3));
 	}
@@ -88,7 +91,7 @@ public class GenericMesh implements IMesh {
 		float[][] data = new float[][] { vertices, colors };
 
 		geometry = new VertexGeometry(type, attributes, data);
-		changed = true;
+		requestUpdate();
 	}
 
 	public void setGeometry(float[] vertices, float[] normals, float[] colors, float[] texCoords) {
@@ -96,7 +99,7 @@ public class GenericMesh implements IMesh {
 		float[][] data = new float[][] { vertices, normals, colors, texCoords };
 
 		geometry = new VertexGeometry(type, attributes, data);
-		changed = true;
+		requestUpdate();
 	}
 
 	public void setGeometry(float[] vertices, float[] normals, float[] colors) {
@@ -104,12 +107,12 @@ public class GenericMesh implements IMesh {
 		float[][] data = new float[][] { vertices, normals, colors };
 
 		geometry = new VertexGeometry(type, attributes, data);
-		changed = true;
+		requestUpdate();
 	}
 
 	public void setMaterial(IMaterial material) {
 		this.material = material;
-		changed = true;
+		requestUpdate();
 	}
 
 	public String getName() {
@@ -118,7 +121,7 @@ public class GenericMesh implements IMesh {
 
 	public void setName(String name) {
 		this.name = name;
-		changed = true;
+		requestUpdate();
 	}
 
 	@Override
@@ -144,16 +147,20 @@ public class GenericMesh implements IMesh {
 	@Override
 	public void setPosition(Vec3 position) {
 		geometry.setTranslation(position);
-		changed = true;
+		requestUpdate();
 	}
 
 	@Override
-	public boolean hasChanged() {
-		return changed || geometry.hasChanged();
+	public boolean needsUpdate() {
+		return updater.needsUpdate() || geometry.needsUpdate();
 	}
 
 	@Override
 	public String toString() {
 		return name;
 	}
+	
+	private void requestUpdate() {
+		updater.requestUpdate();
+	}	
 }

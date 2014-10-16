@@ -35,8 +35,14 @@ import ch.fhnw.util.math.geometry.BoundingBox;
 
 public interface IGeometry extends IArrayAttributeProvider, ITransformable {
 
+	/**
+	 * @return axis-aligned bounding box of this geometry
+	 */
 	BoundingBox getBounds();
 
-	boolean hasChanged();
+	/**
+	 * @return true if mesh was modified since last call to this method.
+	 */
+	boolean needsUpdate();
 
 }

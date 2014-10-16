@@ -36,6 +36,7 @@ import ch.fhnw.ether.render.attribute.IAttribute.ISuppliers;
 import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
 import ch.fhnw.ether.render.attribute.builtin.NormalArray;
 import ch.fhnw.ether.render.attribute.builtin.PositionArray;
+import ch.fhnw.util.UpdateRequest;
 import ch.fhnw.util.math.Transform;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.BoundingBox;
@@ -50,7 +51,7 @@ public class VertexGeometry implements IGeometry {
 
 	private BoundingBox bounds;
 
-	private boolean changed = false;
+	private final UpdateRequest updater = new UpdateRequest(true);
 
 	private Transform transform = new Transform();
 
@@ -88,7 +89,7 @@ public class VertexGeometry implements IGeometry {
 			throw new IllegalArgumentException("Attributes must contain position");
 		}
 
-		changed = true;
+		requestUpdate();
 	}
 
 	/**
@@ -144,8 +145,8 @@ public class VertexGeometry implements IGeometry {
 	}
 
 	@Override
-	public boolean hasChanged() {
-		return changed;
+	public boolean needsUpdate() {
+		return updater.needsUpdate();
 	}
 
 	// ---- ITransformable implementation
@@ -158,7 +159,7 @@ public class VertexGeometry implements IGeometry {
 	@Override
 	public void setOrigin(Vec3 origin) {
 		transform.setOrigin(origin);
-		changed = true;
+		requestUpdate();
 	}
 
 	@Override
@@ -169,7 +170,7 @@ public class VertexGeometry implements IGeometry {
 	@Override
 	public void setTranslation(Vec3 translation) {
 		transform.setTranslation(translation);
-		changed = true;
+		requestUpdate();
 	}
 
 	@Override
@@ -180,7 +181,7 @@ public class VertexGeometry implements IGeometry {
 	@Override
 	public void setRotation(Vec3 rotation) {
 		transform.setRotation(rotation);
-		changed = true;
+		requestUpdate();
 	}
 
 	@Override
@@ -191,6 +192,11 @@ public class VertexGeometry implements IGeometry {
 	@Override
 	public void setScale(Vec3 scale) {
 		transform.setScale(scale);
-		changed = true;
+		requestUpdate();
+	}
+	
+	
+	private void requestUpdate() {
+		updater.requestUpdate();
 	}
 }

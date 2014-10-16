@@ -87,7 +87,7 @@ public class RayTraceObject implements IMesh {
 	}
 
 	@Override
-	public boolean hasChanged() {
+	public boolean needsUpdate() {
 		return false;
 	}
 
