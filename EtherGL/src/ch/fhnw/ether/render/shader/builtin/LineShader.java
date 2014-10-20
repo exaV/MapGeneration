@@ -29,55 +29,30 @@
 
 package ch.fhnw.ether.render.shader.builtin;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import ch.fhnw.ether.render.attribute.IArrayAttribute;
-import ch.fhnw.ether.render.attribute.IUniformAttribute;
+import ch.fhnw.ether.render.attribute.IAttribute;
 import ch.fhnw.ether.render.attribute.base.BooleanUniformAttribute;
 import ch.fhnw.ether.render.attribute.builtin.ColorArray;
 import ch.fhnw.ether.render.attribute.builtin.ColorMaterialUniform;
 import ch.fhnw.ether.render.attribute.builtin.PositionArray;
 import ch.fhnw.ether.render.attribute.builtin.ProjMatrixUniform;
 import ch.fhnw.ether.render.attribute.builtin.ViewMatrixUniform;
-import ch.fhnw.ether.render.attribute.*;
+import ch.fhnw.ether.render.shader.IShader;
 import ch.fhnw.ether.render.shader.base.AbstractShader;
 
 public class LineShader extends AbstractShader {
-	private boolean useVertexColors;
-	private List<IUniformAttribute> uniformAttributes = new ArrayList<>(5);
-	private List<IArrayAttribute> arrayAttributes = new ArrayList<>(5);
-
 	public LineShader(boolean useVertexColors) {
-		super("unshaded_vct", IAttribute.PrimitiveType.LINE);
-		this.useVertexColors = useVertexColors;
+		super(IShader.class, "builtin.lines", "unshaded_vct", IAttribute.PrimitiveType.LINE);
 
 		if (!useVertexColors) {
-			uniformAttributes.add(new ColorMaterialUniform());
+			addUniform(new ColorMaterialUniform());
 		} else {
-			arrayAttributes.add(new ColorArray());
+			addArray(new ColorArray());
 		}
 
-		arrayAttributes.add(new PositionArray());
-		uniformAttributes.add(new ProjMatrixUniform());
-		uniformAttributes.add(new ViewMatrixUniform());
-		uniformAttributes.add(new BooleanUniformAttribute("shader.vertex_colors_flag", "useVertexColors", () -> useVertexColors));
-		uniformAttributes.add(new BooleanUniformAttribute("shader.texture_flag", "useTexture", () -> false));
-	}
-
-	@Override
-	public void getUniformAttributes(List<IUniformAttribute> dst) {
-		dst.addAll(uniformAttributes);
-	}
-
-	@Override
-	public void getArrayAttributes(List<IArrayAttribute> dst) {
-		dst.addAll(arrayAttributes);
-
-	}
-
-	@Override
-	public String toString() {
-		return "lines[" + (useVertexColors ? "vertexColors" : "materialColor") + "]";
+		addArray(new PositionArray());
+		addUniform(new ProjMatrixUniform());
+		addUniform(new ViewMatrixUniform());
+		addUniform(new BooleanUniformAttribute("shader.vertex_colors_flag", "useVertexColors", () -> useVertexColors));
+		addUniform(new BooleanUniformAttribute("shader.texture_flag", "useTexture", () -> false));
 	}
 }

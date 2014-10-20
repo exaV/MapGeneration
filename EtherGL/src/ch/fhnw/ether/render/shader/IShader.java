@@ -54,8 +54,5 @@ public interface IShader {
 
 	PrimitiveType getPrimitiveType();
 
-	void getUniformAttributes(List<IUniformAttribute> dst);
-
-	void getArrayAttributes(List<IArrayAttribute> dst);
-
+	void getAttributes(List<IUniformAttribute> uniforms, List<IArrayAttribute> arrays);
 }

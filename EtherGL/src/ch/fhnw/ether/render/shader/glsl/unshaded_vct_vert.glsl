@@ -19,7 +19,7 @@ out vec2 vsTexCoord;
 
 void main() {
 	vsColor = materialColor;
-	if(useVertexColors)
+	if (useVertexColors)
 		vsColor *= vertexColor;
 		
 	if (useTexture)

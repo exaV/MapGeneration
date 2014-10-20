@@ -183,7 +183,7 @@ public class DefaultController implements IController {
 		setCurrentView(view);
 
 		// ui has precedence over everything else
-		if (ui.keyPressed(e, view))
+		if (ui != null && ui.keyPressed(e, view))
 			return;
 
 		// always handle ESC (if not handled by button)
@@ -202,12 +202,14 @@ public class DefaultController implements IController {
 
 	@Override
 	public void mouseEntered(MouseEvent e, IView view) {
-		ui.mouseEntered(e, view);
+		if (ui != null)
+			ui.mouseEntered(e, view);
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e, IView view) {
-		ui.mouseExited(e, view);
+		if (ui != null)
+			ui.mouseExited(e, view);
 	}
 
 	@Override
@@ -215,7 +217,7 @@ public class DefaultController implements IController {
 		setCurrentView(view);
 
 		// ui has precedence over everything else
-		if (ui.mousePressed(e, view))
+		if (ui != null && ui.mousePressed(e, view))
 			return;
 
 		// handle tools (with active navigation when modifier is pressed)
@@ -227,7 +229,7 @@ public class DefaultController implements IController {
 
 	@Override
 	public void mouseReleased(MouseEvent e, IView view) {
-		if (ui.mouseReleased(e, view))
+		if (ui != null && ui.mouseReleased(e, view))
 			return;
 
 		if (!isModifierDown(e))
@@ -244,7 +246,8 @@ public class DefaultController implements IController {
 
 	@Override
 	public void mouseMoved(MouseEvent e, IView view) {
-		ui.mouseMoved(e, view);
+		if (ui != null)
+			ui.mouseMoved(e, view);
 		activeTool.mouseMoved(e, view);
 		navigationTool.mouseMoved(e, view);
 	}
@@ -252,7 +255,7 @@ public class DefaultController implements IController {
 	@Override
 	public void mouseDragged(MouseEvent e, IView view) {
 		// ui has precedence over everything else
-		if (ui.mouseDragged(e, view))
+		if (ui != null && ui.mouseDragged(e, view))
 			return;
 
 		if (!isModifierDown(e))
@@ -289,7 +292,8 @@ public class DefaultController implements IController {
 
 	@Override
 	public void updateUI() {
-		ui.update();
+		if (ui != null)
+			ui.update();
 	}
 
 	@Override

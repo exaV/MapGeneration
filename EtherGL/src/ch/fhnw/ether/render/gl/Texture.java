@@ -33,6 +33,7 @@ import java.nio.Buffer;
 
 import javax.media.opengl.GL;
 
+// TODO: jogl provides similar stuff, should we use textureio or wrap around as with glsl?
 /**
  * Very simple texture wrapper.
  *
@@ -56,7 +57,8 @@ public class Texture {
 	}
 
 	// XXX NOTE: we currently only expose the "setData" call to load data into the texture
-
+	// FIXME: don't use int format here, use an enum
+	
 	public void setData(int width, int height, Buffer buffer, int format) {
 		this.width = width;
 		this.height = height;

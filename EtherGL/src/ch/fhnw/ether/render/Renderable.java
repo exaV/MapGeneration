@@ -230,11 +230,13 @@ public final class Renderable implements IRenderable {
 
 		Suppliers suppliers = new Suppliers();
 
+		uniformAttributes.clear();
+		arrayAttributes.clear();
+		shader.getAttributes(uniformAttributes, arrayAttributes);
+		
 		// 1. handle uniform attributes
 
 		if (uniformAttributeProvider != null) {
-			uniformAttributes.clear();
-			shader.getUniformAttributes(uniformAttributes);
 			uniformAttributeProvider.getAttributeSuppliers(suppliers);
 			for (IUniformAttribute attr : uniformAttributes) {
 				if (!attr.hasSupplier()) {
@@ -246,10 +248,8 @@ public final class Renderable implements IRenderable {
 		// 2. handle array attributes
 
 		if (arrayAttributeProviders != null) {
-			arrayAttributes.clear();
 
 			// 2.1 initialize stride, sizes, offsets
-			shader.getArrayAttributes(arrayAttributes);
 			stride = 0;
 			sizes = new int[arrayAttributes.size()];
 			int i = 0;
