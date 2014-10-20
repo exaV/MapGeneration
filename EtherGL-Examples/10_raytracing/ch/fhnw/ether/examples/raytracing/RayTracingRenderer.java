@@ -31,8 +31,6 @@ package ch.fhnw.ether.examples.raytracing;
 
 import java.nio.IntBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -40,46 +38,41 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.camera.ICamera;
+import ch.fhnw.ether.examples.raytracing.util.IntersectResult;
 import ch.fhnw.ether.examples.raytracing.util.Ray;
-import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.IRenderer;
-import ch.fhnw.ether.render.Renderable;
-import ch.fhnw.ether.render.attribute.IArrayAttribute;
-import ch.fhnw.ether.render.attribute.IArrayAttributeProvider;
-import ch.fhnw.ether.render.attribute.IAttribute.ISuppliers;
-import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
-import ch.fhnw.ether.render.attribute.IUniformAttributeProvider;
-import ch.fhnw.ether.render.attribute.builtin.PositionArray;
-import ch.fhnw.ether.render.attribute.builtin.ProjMatrixUniform;
-import ch.fhnw.ether.render.attribute.builtin.TexCoordArray;
-import ch.fhnw.ether.render.attribute.builtin.ViewMatrixUniform;
+import ch.fhnw.ether.render.forward.ForwardRenderer;
 import ch.fhnw.ether.render.gl.Texture;
-import ch.fhnw.ether.render.shader.IShader;
-import ch.fhnw.ether.render.shader.builtin.MaterialShader;
-import ch.fhnw.ether.render.shader.builtin.MaterialShader.ShaderInput;
-import ch.fhnw.ether.scene.mesh.geometry.VertexGeometry;
+import ch.fhnw.ether.scene.light.ILight;
+import ch.fhnw.ether.scene.mesh.DefaultMesh;
+import ch.fhnw.ether.scene.mesh.IAttribute;
+import ch.fhnw.ether.scene.mesh.IMesh;
+import ch.fhnw.ether.scene.mesh.IMesh.Flags;
+import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry.PrimitiveType;
+import ch.fhnw.ether.scene.mesh.material.ColorMapMaterial;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
-import ch.fhnw.ether.scene.mesh.material.TextureMaterial;
 import ch.fhnw.ether.view.IView;
-import ch.fhnw.util.FloatList;
 import ch.fhnw.util.Viewport;
 import ch.fhnw.util.color.RGBA;
-import ch.fhnw.util.math.Mat4;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.Primitives;
 
 public class RayTracingRenderer implements IRenderer {
+	private static final RGBA BACKGROUND_COLOR = RGBA.WHITE;
 
-	private final List<IRenderable> renderables = new ArrayList<>();
-	private final ParametricScene scene;
+	private final List<RayTraceMesh> meshes = new ArrayList<>();
+
+	private final ForwardRenderer renderer = new ForwardRenderer();
 	private final Texture screenTexture = new Texture();
-	private final IRenderable plane = createScreenPlane(-1, -1, 2, 2, screenTexture);
+	private final IMesh plane = createScreenPlane(-1, -1, 2, 2, screenTexture);
 	private int[] colors;
 	private int w = 0, h = 0;
 	private long n = 0;
 
-	public RayTracingRenderer(ParametricScene scene) {
-		this.scene = scene;
+	public RayTracingRenderer() {
+		renderer.addMesh(Pass.DEVICE_SPACE_OVERLAY, plane);
 	}
 
 	@Override
@@ -92,6 +85,7 @@ public class RayTracingRenderer implements IRenderer {
 			colors = new int[w * h];
 		}
 		ICamera camera = view.getCamera();
+		ILight light = view.getController().getScene().getLights().get(0);
 		Vec3 camPos = camera.getPosition();
 
 		float planeWidth = (float) (2 * Math.tan(camera.getFov() / 2) * camera.getNear());
@@ -110,54 +104,72 @@ public class RayTracingRenderer implements IRenderer {
 				Vec3 y = upVector.scale(j * deltaY);
 				Vec3 dir = lookVector.add(x).add(y);
 				Ray ray = new Ray(camPos, dir);
-				RGBA color = scene.intersection(ray);
+				RGBA color = intersection(ray, light);
 				colors[(j + h / 2) * w + (i + w / 2)] = color.toInt();
 			}
 		}
 
 		screenTexture.setData(viewport.w, viewport.h, IntBuffer.wrap(colors), GL.GL_RGBA);
-		plane.requestUpdate();
-		plane.update(gl, new FloatList());
-		plane.render(gl, null);
+		
+		renderer.render(gl, view);
 		System.out.println((System.currentTimeMillis() - t) + "ms for " + ++n + "th frame");
 	}
 
 	@Override
-	public IRenderable createRenderable(Pass pass, IShader shader, IUniformAttributeProvider uniforms, List<? extends IArrayAttributeProvider> providers) {
-		return null;
+	public void addMesh(Pass pass, IMesh mesh) {
+		if (mesh instanceof RayTraceMesh)
+			meshes.add((RayTraceMesh) mesh);
 	}
 
 	@Override
-	public IRenderable createRenderable(Pass pass, EnumSet<Flag> flags, IShader shader, IUniformAttributeProvider uniforms,
-			List<? extends IArrayAttributeProvider> providers) {
-		return null;
+	public void removeMesh(IMesh mesh) {
+		meshes.remove(mesh);
 	}
 
-	@Override
-	public void addRenderables(IRenderable... renderables) {
-		this.renderables.addAll(Arrays.asList(renderables));
-	}
+	private RGBA intersection(Ray ray, ILight light) {
 
-	@Override
-	public void removeRenderables(IRenderable... renderables) {
-		this.renderables.removeAll(Arrays.asList(renderables));
-	}
-
-	private static IRenderable createScreenPlane(float x, float y, float w, float h, Texture texture) {
-		IArrayAttribute[] attribs = new IArrayAttribute[] { new PositionArray(), new TexCoordArray() };
-		float[] position = new float[] { x, y, 0, x + w, y, 0, x + w, y + h, 0, x, y, 0, x + w, y + h, 0, x, y + h, 0 };
-		float[][] data = new float[][] { position, Primitives.DEFAULT_QUAD_TEX_COORDS };
-		List<IArrayAttributeProvider> quad = Collections.singletonList(new VertexGeometry(PrimitiveType.TRIANGLE, attribs, data));
-		IMaterial mat = new TextureMaterial(texture);
-		IUniformAttributeProvider uniforms = new IUniformAttributeProvider() {
-			@Override
-			public void getAttributeSuppliers(ISuppliers dst) {
-				dst.add(ProjMatrixUniform.ID, () -> Mat4.identityMatrix());
-				dst.add(ViewMatrixUniform.ID, () -> Mat4.identityMatrix());
-				mat.getAttributeSuppliers(dst);
+		// find nearest intersection point in scene
+		IntersectResult nearest = new IntersectResult(null, null, BACKGROUND_COLOR, Float.POSITIVE_INFINITY);
+		for (RayTraceMesh r : meshes) {
+			IntersectResult intersect = r.intersect(ray);
+			if (intersect.isValid() && intersect.dist < nearest.dist) {
+				nearest = intersect;
 			}
-		};
-		return new Renderable(null, null, new MaterialShader(EnumSet.of(ShaderInput.TEXTURE)), uniforms, quad);
+		}
+
+		// no object found
+		if (!nearest.isValid())
+			return BACKGROUND_COLOR;
+
+		// create vector which is sure over surface
+		Vec3 position_ontop_surface = nearest.position.subtract(ray.direction.scale(0.01f));
+		position_ontop_surface = position_ontop_surface.add(nearest.surface.getNormalAt(nearest.position).scale(0.0001f));
+
+		float dist_to_light = light.getPosition().subtract(nearest.position).length();
+
+		// check if path to light is clear
+		Ray light_ray = new Ray(position_ontop_surface, light.getPosition().subtract(position_ontop_surface));
+		for (RayTraceMesh r : meshes) {
+			IntersectResult intersect = r.intersect(light_ray);
+			if (intersect.isValid() && intersect.dist < dist_to_light) {
+				return RGBA.BLACK;
+			}
+		}
+
+		// diffuse color
+		float f = Math.max(0, light_ray.direction.dot(nearest.surface.getNormalAt(nearest.position)));
+		RGBA c = nearest.color;
+		RGBA lc = light.getColor();
+
+		return new RGBA(f * c.x * lc.x, f * c.y * lc.y, f * c.z * lc.z, c.w);
 	}
 
+	private static IMesh createScreenPlane(float x, float y, float w, float h, Texture texture) {
+		IAttribute[] attribs = { IMaterial.POSITION_ARRAY, IMaterial.COLOR_MAP_ARRAY };
+		float[] position = { x, y, 0, x + w, y, 0, x + w, y + h, 0, x, y, 0, x + w, y + h, 0, x, y + h, 0 };
+		float[][] data = { position, Primitives.DEFAULT_QUAD_TEX_COORDS };
+		IGeometry geometry = new DefaultGeometry(PrimitiveType.TRIANGLES, attribs, data);
+		
+		return new DefaultMesh(new ColorMapMaterial(texture), geometry, EnumSet.of(Flags.SCREEN_SPACE));
+	}
 }

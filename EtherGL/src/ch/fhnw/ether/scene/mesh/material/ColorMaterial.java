@@ -29,35 +29,30 @@
 
 package ch.fhnw.ether.scene.mesh.material;
 
-import java.util.Arrays;
-
-import ch.fhnw.ether.render.attribute.IAttribute.ISuppliers;
-import ch.fhnw.ether.render.attribute.builtin.ColorMaterialUniform;
+import ch.fhnw.ether.scene.mesh.IAttribute.ISuppliers;
 import ch.fhnw.util.color.RGBA;
 
-public class ColorMaterial implements IMaterial {
-
-	private final static ColorMaterialUniform COLOR_ATTRIBUTE = new ColorMaterialUniform();
-
+public class ColorMaterial extends AbstractMaterial {
 	private float[] color;
+	private boolean perVertexColor;
 
 	public ColorMaterial(RGBA color) {
+		this(color, false);
+	}
+
+	public ColorMaterial(RGBA color, boolean perVertexColor) {
 		this.color = color.toArray();
+		this.perVertexColor = perVertexColor;
 	}
-
-	public ColorMaterial(float r, float g, float b, float a) {
-		this.color = new float[] { r, g, b, a };
-	}
-
-	public ColorMaterial(float[] rgba) {
-		this.color = Arrays.copyOf(rgba, 4);
+	
+	public void setColor(RGBA color) {
+		this.color = color.toArray();
 	}
 
 	@Override
 	public void getAttributeSuppliers(ISuppliers dst) {
-		dst.add(COLOR_ATTRIBUTE.id(), () -> {
-			return color;
-		});
+		dst.provide(IMaterial.COLOR, () -> color);
+		if (perVertexColor)
+			dst.require(IMaterial.COLOR_ARRAY);
 	}
-
 }

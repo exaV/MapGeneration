@@ -30,16 +30,16 @@
 package ch.fhnw.ether.render.attribute.builtin;
 
 import ch.fhnw.ether.render.attribute.base.FloatArrayAttribute;
+import ch.fhnw.ether.scene.mesh.material.IMaterial;
 
 public final class PositionArray extends FloatArrayAttribute {
-	public static final String ID = "builtin.position_array";
 	private static final String DEFAULT_SHADER_NAME = "vertexPosition";
 
 	public PositionArray() {
-		super(ID, DEFAULT_SHADER_NAME, NumComponents.THREE);
+		super(IMaterial.POSITION_ARRAY, DEFAULT_SHADER_NAME, NumComponents.THREE);
 	}
 
 	public PositionArray(String shaderName) {
-		super(ID, shaderName, NumComponents.THREE);
+		super(IMaterial.POSITION_ARRAY, shaderName, NumComponents.THREE);
 	}
 }

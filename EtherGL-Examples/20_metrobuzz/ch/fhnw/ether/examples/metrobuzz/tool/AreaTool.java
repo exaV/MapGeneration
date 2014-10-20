@@ -29,22 +29,16 @@
 
 package ch.fhnw.ether.examples.metrobuzz.tool;
 
-import java.util.Collections;
-import java.util.EnumSet;
-
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.controller.tool.AbstractTool;
 import ch.fhnw.ether.controller.tool.PickUtil;
 import ch.fhnw.ether.controller.tool.PickUtil.PickMode;
-import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.IRenderer.Pass;
-import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
-import ch.fhnw.ether.render.shader.IShader;
-import ch.fhnw.ether.render.shader.builtin.MaterialShader;
-import ch.fhnw.ether.render.shader.builtin.MaterialShader.ShaderInput;
-import ch.fhnw.ether.scene.mesh.GenericMesh;
+import ch.fhnw.ether.scene.mesh.DefaultMesh;
+import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry.PrimitiveType;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
-import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.ProjectionUtil;
 import ch.fhnw.util.color.RGBA;
@@ -61,32 +55,28 @@ public final class AreaTool extends AbstractTool {
 
 	private static final float KEY_INCREMENT = 0.01f;
 
-	private GenericMesh mesh = new GenericMesh(PrimitiveType.TRIANGLE);
+	private final DefaultMesh mesh;
 
 	private boolean moving = false;
 
 	private float xOffset = 0;
 	private float yOffset = 0;
 
-	private final IRenderable area;
-
 	public AreaTool(IController controller) {
 		super(controller);
-		mesh.setGeometry(Primitives.UNIT_CUBE_TRIANGLES);
-		mesh.getGeometry().setScale(new Vec3(0.1, 0.1, 0.001));
-		IMaterial m = new ColorMaterial(TOOL_COLOR);
-		IShader s = new MaterialShader(EnumSet.of(ShaderInput.MATERIAL_COLOR));
-		area = controller.getRenderer().createRenderable(Pass.DEPTH, s, m, Collections.singletonList(mesh.getGeometry()));
+		IGeometry geometry = DefaultGeometry.create(PrimitiveType.TRIANGLES, Primitives.UNIT_CUBE_TRIANGLES);
+		geometry.setScale(new Vec3(0.1, 0.1, 0.001));
+		mesh = new DefaultMesh(new ColorMaterial(TOOL_COLOR), geometry);
 	}
 
 	@Override
 	public void activate() {
-		getController().getRenderer().addRenderables(area);
+		getController().getRenderer().addMesh(Pass.DEPTH, mesh);
 	}
 
 	@Override
 	public void deactivate() {
-		getController().getRenderer().removeRenderables(area);
+		getController().getRenderer().removeMesh(mesh);
 	}
 
 	@Override
@@ -107,7 +97,6 @@ public final class AreaTool extends AbstractTool {
 		}
 
 		mesh.getGeometry().setTranslation(new Vec3(xOffset, yOffset, 0));
-		area.requestUpdate();
 		view.getController().repaintViews();
 	}
 
@@ -130,7 +119,6 @@ public final class AreaTool extends AbstractTool {
 				xOffset = p.x;
 				yOffset = p.y;
 				mesh.getGeometry().setTranslation(new Vec3(xOffset, yOffset, 0));
-				area.requestUpdate();
 				view.getController().repaintViews();
 			}
 		}

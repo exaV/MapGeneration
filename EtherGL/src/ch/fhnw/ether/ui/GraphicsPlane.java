@@ -27,7 +27,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.scene.mesh;
+package ch.fhnw.ether.ui;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
@@ -36,43 +36,43 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.nio.IntBuffer;
-import java.util.Collections;
 import java.util.EnumSet;
 
 import javax.media.opengl.GL;
 
-import ch.fhnw.ether.render.IRenderable;
-import ch.fhnw.ether.render.IRenderer;
-import ch.fhnw.ether.render.IRenderer.Pass;
-import ch.fhnw.ether.render.attribute.IArrayAttribute;
-import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
-import ch.fhnw.ether.render.attribute.builtin.PositionArray;
-import ch.fhnw.ether.render.attribute.builtin.TexCoordArray;
 import ch.fhnw.ether.render.gl.Texture;
-import ch.fhnw.ether.render.shader.IShader;
-import ch.fhnw.ether.render.shader.builtin.MaterialShader;
-import ch.fhnw.ether.render.shader.builtin.MaterialShader.ShaderInput;
-import ch.fhnw.ether.scene.mesh.geometry.VertexGeometry;
-import ch.fhnw.ether.scene.mesh.material.TextureMaterial;
+import ch.fhnw.ether.scene.mesh.DefaultMesh;
+import ch.fhnw.ether.scene.mesh.IAttribute;
+import ch.fhnw.ether.scene.mesh.IMesh;
+import ch.fhnw.ether.scene.mesh.IMesh.Flags;
+import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry.PrimitiveType;
+import ch.fhnw.ether.scene.mesh.material.ColorMapMaterial;
+import ch.fhnw.ether.scene.mesh.material.IMaterial;
+import ch.fhnw.util.UpdateRequest;
 import ch.fhnw.util.math.geometry.Primitives;
 
-public class TextMesh extends GenericMesh {
+class GraphicsPlane {
 	public static final Font FONT = new Font("SansSerif", Font.BOLD, 12);
 
 	private static final Color CLEAR_COLOR = new Color(0, 0, 0, 0);
 
+	private final UpdateRequest updater = new UpdateRequest();
+
+	private final DefaultMesh mesh;
+
 	private final BufferedImage image;
 	private final Graphics2D graphics;
 	private final Texture texture = new Texture();
+
 	private int x;
 	private int y;
 	private int w;
 	private int h;
-	private IRenderable renderable = null;
-	private final EnumSet<IRenderer.Flag> interactiveOnlyFlag;
+	
 
-	public TextMesh(int x, int y, int w, int h, boolean interactiveOnly) {
-		super(PrimitiveType.TRIANGLE);
+	public GraphicsPlane(int x, int y, int w, int h) {
 		image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
 		graphics = image.createGraphics();
 		graphics.setFont(FONT);
@@ -81,12 +81,13 @@ public class TextMesh extends GenericMesh {
 		this.w = w;
 		this.h = h;
 
-		float[] position = new float[] { x, y, 0, x + w, y, 0, x + w, y + h, 0, x, y, 0, x + w, y + h, 0, x, y + h, 0 };
-		float[] tex_coords = Primitives.DEFAULT_QUAD_TEX_COORDS;
-		IArrayAttribute[] attribs = new IArrayAttribute[] { new PositionArray(), new TexCoordArray() };
-		setGeometry(new VertexGeometry(PrimitiveType.TRIANGLE, attribs, new float[][] { position, tex_coords }));
-		setMaterial(new TextureMaterial(texture));
-		interactiveOnlyFlag = interactiveOnly ? EnumSet.of(IRenderer.Flag.INTERACTIVE_VIEW_ONLY) : EnumSet.noneOf(IRenderer.Flag.class);
+		IAttribute[] attribs = { IMaterial.POSITION_ARRAY, IMaterial.COLOR_MAP_ARRAY };
+		float[] position = { x, y, 0, x + w, y, 0, x + w, y + h, 0, x, y, 0, x + w, y + h, 0, x, y + h, 0 };
+		float[] texCoords = Primitives.DEFAULT_QUAD_TEX_COORDS;
+		IGeometry geometry = new DefaultGeometry(PrimitiveType.TRIANGLES, attribs, new float[][] { position, texCoords });
+		IMaterial material = new ColorMapMaterial(texture);
+
+		mesh = new DefaultMesh(material, geometry, EnumSet.of(Flags.INTERACTIVE_VIEWS_ONLY));
 	}
 
 	public final Texture getTexture() {
@@ -107,14 +108,6 @@ public class TextMesh extends GenericMesh {
 
 	public final int getHeight() {
 		return h;
-	}
-
-	public IRenderable getRenderable(IRenderer renderer) {
-		if (renderable == null) {
-			IShader s = new MaterialShader(EnumSet.of(ShaderInput.TEXTURE));
-			renderable = renderer.createRenderable(Pass.SCREEN_SPACE_OVERLAY, interactiveOnlyFlag, s, getMaterial(), Collections.singletonList(getGeometry()));
-		}
-		return renderable;
 	}
 
 	public final void setPosition(int x, int y) {
@@ -161,10 +154,16 @@ public class TextMesh extends GenericMesh {
 		requestUpdate();
 	}
 
+	public IMesh getMesh() {
+		return mesh;
+	}
+	
+	public void update() {
+		if (updater.needsUpdate())
+			texture.setData(w, h, IntBuffer.wrap(((DataBufferInt) image.getRaster().getDataBuffer()).getData()), GL.GL_BGRA);			
+	}
+
 	private void requestUpdate() {
-		// FIXME this is real bad - requestUpdate should never be immediate
-		texture.setData(w, h, IntBuffer.wrap(((DataBufferInt) image.getRaster().getDataBuffer()).getData()), GL.GL_BGRA);
-		if (renderable != null)
-			renderable.requestUpdate();
+		updater.requestUpdate();
 	}
 }

@@ -29,20 +29,38 @@
 
 package ch.fhnw.ether.scene.mesh.geometry;
 
-import ch.fhnw.ether.render.attribute.IArrayAttributeProvider;
+import javax.media.opengl.GL;
+
+import ch.fhnw.ether.render.attribute.IAttributeProvider;
+import ch.fhnw.util.IUpdateRequester;
 import ch.fhnw.util.math.ITransformable;
 import ch.fhnw.util.math.geometry.BoundingBox;
 
-public interface IGeometry extends IArrayAttributeProvider, ITransformable {
+public interface IGeometry extends IAttributeProvider, ITransformable, IUpdateRequester {
+	// FIXME: remove GL dependencies
+	enum PrimitiveType {
+		POINTS(GL.GL_POINTS), LINES(GL.GL_LINES), TRIANGLES(GL.GL_TRIANGLES);
+
+		private int mode;
+
+		private PrimitiveType(int mode) {
+			this.mode = mode;
+		}
+
+		public int getMode() {
+			return mode;
+		}
+	}
+
+	/**
+	 * @return primitive type of this geometry
+	 */
+	PrimitiveType getPrimitiveType();
 
 	/**
 	 * @return axis-aligned bounding box of this geometry
 	 */
 	BoundingBox getBounds();
-
-	/**
-	 * @return true if mesh was modified since last call to this method.
-	 */
-	boolean needsUpdate();
-
+	
+	
 }

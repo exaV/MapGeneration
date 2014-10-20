@@ -27,8 +27,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */package ch.fhnw.ether.examples.raytracing;
 
-import ch.fhnw.ether.render.attribute.IAttribute.ISuppliers;
 import ch.fhnw.ether.scene.light.ILight;
+import ch.fhnw.ether.scene.mesh.IAttribute.ISuppliers;
 import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.BoundingBox;

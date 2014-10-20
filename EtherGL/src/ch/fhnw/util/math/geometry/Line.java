@@ -37,6 +37,7 @@ import ch.fhnw.util.math.Vec3;
  * @author radar
  *
  */
+// FIXME: revise - use constructor(origin, direction) & static method(p1, p2)
 public class Line {
 	private Vec3 origin;
 	private Vec3 direction;

@@ -29,16 +29,54 @@
 
 package ch.fhnw.ether.scene.mesh.material;
 
-import ch.fhnw.ether.render.attribute.IUniformAttributeProvider;
-import ch.fhnw.ether.render.attribute.IAttribute.ISuppliers;
+import ch.fhnw.ether.render.attribute.IAttributeProvider;
+import ch.fhnw.ether.scene.mesh.IAttribute;
+import ch.fhnw.util.IUpdateRequester;
 
-public interface IMaterial extends IUniformAttributeProvider {
-	/**
-	 * Some empty material, does just provide zero attributes
-	 */
-	public static final IMaterial EMPTY_MATERIAL = new IMaterial() {
-		@Override
-		public void getAttributeSuppliers(ISuppliers dst) {
+public interface IMaterial extends IAttributeProvider, IUpdateRequester {
+	public static final class MaterialAttribute implements IAttribute {
+		private final String id;
+
+		public MaterialAttribute(String id) {
+			this.id = id;
 		}
-	};
+
+		@Override
+		public String id() {
+			return id;
+		}
+		
+		@Override
+		public String toString() {
+			return id;
+		}
+	}
+
+	// position array (note that this attribute is mandatory)
+	public static MaterialAttribute POSITION_ARRAY = new MaterialAttribute("builtin.position_array");
+
+	// non-shaded objects
+	public static MaterialAttribute COLOR_ARRAY = new MaterialAttribute("builtin.color_array");
+	public static MaterialAttribute COLOR = new MaterialAttribute("builtin.color");
+
+	// texture
+	public static MaterialAttribute COLOR_MAP_ARRAY = new MaterialAttribute("builtin.color_map_array");
+	public static MaterialAttribute COLOR_MAP = new MaterialAttribute("builtin.color_map");
+
+	// triangles only: normals & shading
+	public static MaterialAttribute NORMAL_ARRAY = new MaterialAttribute("builtin.normal_array");
+	public static MaterialAttribute EMISSION = new MaterialAttribute("builtin.shading.emission");
+	public static MaterialAttribute AMBIENT = new MaterialAttribute("builtin.shading.ambient");
+	public static MaterialAttribute DIFFUSE = new MaterialAttribute("builtin.shading.diffuse");
+	public static MaterialAttribute SPECULAR = new MaterialAttribute("builtin.shading.specular");
+	public static MaterialAttribute SHININESS = new MaterialAttribute("builtin.shading.shininess");
+
+	// lines only: line width
+	public static MaterialAttribute LINE_WIDTH_ARRAY = new MaterialAttribute("builtin.line_width_array");
+	public static MaterialAttribute LINE_WIDTH = new MaterialAttribute("builtin.line_width");
+
+	// points only: point size & decay
+	public static MaterialAttribute POINT_SIZE_ARRAY = new MaterialAttribute("builtin.point_size_array");
+	public static MaterialAttribute POINT_SIZE = new MaterialAttribute("builtin.point_size");
+	public static MaterialAttribute POINT_DECAY = new MaterialAttribute("builtin.point_decay");
 }

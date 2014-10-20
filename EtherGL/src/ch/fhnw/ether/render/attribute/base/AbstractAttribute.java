@@ -31,13 +31,18 @@ package ch.fhnw.ether.render.attribute.base;
 
 import javax.media.opengl.GL3;
 
-import ch.fhnw.ether.render.attribute.IAttribute;
 import ch.fhnw.ether.render.gl.Program;
+import ch.fhnw.ether.scene.mesh.IAttribute;
 
 abstract class AbstractAttribute implements IAttribute {
 	private final String id;
 	private final String shaderName;
 	private int shaderIndex = -1;
+
+	protected AbstractAttribute(IAttribute attribute, String shaderName) {
+		this.id = attribute.id();
+		this.shaderName = shaderName;
+	}
 
 	protected AbstractAttribute(String id, String shaderName) {
 		this.id = id;

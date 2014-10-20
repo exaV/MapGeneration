@@ -35,10 +35,19 @@ import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.render.gl.Program;
 import ch.fhnw.ether.render.gl.Texture;
+import ch.fhnw.ether.scene.mesh.IAttribute;
 
 public class SamplerUniformAttribute extends AbstractUniformAttribute<Texture> {
+	public SamplerUniformAttribute(IAttribute attribute, String shaderName) {
+		super(attribute, shaderName);
+	}
+
 	public SamplerUniformAttribute(String id, String shaderName) {
 		super(id, shaderName);
+	}
+
+	public SamplerUniformAttribute(IAttribute attribute, String shaderName, Supplier<Texture> supplier) {
+		super(attribute, shaderName, supplier);
 	}
 
 	public SamplerUniformAttribute(String id, String shaderName, Supplier<Texture> supplier) {

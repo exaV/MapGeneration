@@ -32,12 +32,12 @@ package ch.fhnw.ether.controller.tool;
 import java.util.Map;
 import java.util.TreeMap;
 
+import ch.fhnw.ether.scene.I3DObject;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.ProjectionUtil;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.BoundingBox;
 import ch.fhnw.util.math.geometry.GeometryUtil;
-import ch.fhnw.util.math.geometry.I3DObject;
 
 /**
  * Utilities for 3D object picking
@@ -55,7 +55,7 @@ public final class PickUtil {
 	// TODO: this needs to be generalized when spatial indices are available (e.g. RTree based)
 	public static Map<Float, I3DObject> pickFromModel(PickMode mode, int x, int y, int w, int h, IView view) {
 		final Map<Float, I3DObject> pickables = new TreeMap<>();
-		for (I3DObject geometry : view.getController().getScene().getObjects()) {
+		for (I3DObject geometry : view.getController().getScene().get3DObjects()) {
 			float d = pickBoundingBox(mode, x, y, w, h, view, geometry.getBounds());
 			if (d < Float.POSITIVE_INFINITY)
 				pickables.put(d, geometry);

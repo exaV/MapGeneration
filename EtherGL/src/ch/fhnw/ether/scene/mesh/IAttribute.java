@@ -27,16 +27,18 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.examples.metrobuzz.controller;
+package ch.fhnw.ether.scene.mesh;
 
-import ch.fhnw.ether.examples.metrobuzz.model.Scene;
-import ch.fhnw.ether.render.AbstractRenderer;
+import java.util.function.Supplier;
 
-public final class ModelRenderState {
-	protected final Scene scene;
-
-	public ModelRenderState(Scene scene, AbstractRenderer renderer) {
-		this.scene = scene;
-		scene.setRenderer(renderer);
+public interface IAttribute {
+	interface ISuppliers {
+		void provide(IAttribute attribute, Supplier<?> supplier);
+		void provide(String id, Supplier<?> supplier);
+		
+		void require(IAttribute attribute);
+		void require(String id);
 	}
+
+	String id();
 }

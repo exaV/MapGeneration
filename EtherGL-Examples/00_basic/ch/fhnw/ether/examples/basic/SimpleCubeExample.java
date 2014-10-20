@@ -27,11 +27,15 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */package ch.fhnw.ether.examples.basic;
 
+import java.awt.event.KeyEvent;
+
 import ch.fhnw.ether.camera.Camera;
 import ch.fhnw.ether.controller.DefaultController;
 import ch.fhnw.ether.controller.IController;
-import ch.fhnw.ether.scene.SimpleScene;
+import ch.fhnw.ether.scene.DefaultScene;
+import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.scene.mesh.MeshLibrary;
+import ch.fhnw.ether.ui.Button;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.gl.DefaultView;
 import ch.fhnw.util.math.Vec3;
@@ -42,23 +46,24 @@ public final class SimpleCubeExample {
 	}
 
 	public SimpleCubeExample() {
-		Camera camera = new Camera();
-		//camera.setTarget(new Vec3(1, 1, 0));
-		camera.setPosition(new Vec3(0, 5, 0));
-		camera.setUp(new Vec3(0, 0, 1));
-
-		// Let's setup some basic scene with one predefined cube
-		SimpleScene scene = new SimpleScene(camera);
-		scene.addMesh(MeshLibrary.getCube());
-
-		// Create a controller, no need to override anything in this example.
+		// Create controller
 		IController controller = new DefaultController();
 
-		// Create a view (aka rendering window). The view has to know what camera it uses.
+		// Create view
+		Camera camera = new Camera();
+		camera.setPosition(new Vec3(0, 5, 0));
+		camera.setUp(new Vec3(0, 0, 1));
 		IView view = new DefaultView(controller, 100, 100, 500, 500, IView.ViewType.INTERACTIVE_VIEW, "Simple Cube", camera);
 
-		// Add the scene (aka "model") and the view to the controller
+		// Create scene and add a cube
+		IScene scene = new DefaultScene(controller.getRenderer(), camera);
+		scene.add3DObject(MeshLibrary.getCube());
+
+		// Setup MVC
 		controller.addView(view);
 		controller.setScene(scene);
+		
+		// Add an exit button
+		controller.getUI().addWidget(new Button(0, 0, "Quit", "Quit", KeyEvent.VK_ESCAPE, (button, v) -> System.exit(0)));
 	}
 }

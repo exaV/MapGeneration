@@ -27,33 +27,19 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.render;
+package ch.fhnw.ether.render.attribute.builtin;
 
-import java.util.List;
+import ch.fhnw.ether.render.attribute.base.FloatArrayAttribute;
+import ch.fhnw.ether.scene.mesh.material.IMaterial;
 
-import javax.media.opengl.GL3;
+public final class ColorMapArray extends FloatArrayAttribute {
+	private static final String DEFAULT_SHADER_NAME = "vertexTexCoord";
 
-import ch.fhnw.ether.render.attribute.IArrayAttributeProvider;
-import ch.fhnw.util.FloatList;
+	public ColorMapArray() {
+		super(IMaterial.COLOR_MAP_ARRAY, DEFAULT_SHADER_NAME, NumComponents.TWO);
+	}
 
-public interface IRenderable {
-	void dispose(GL3 gl);
-
-	void update(GL3 gl, FloatList data);
-
-	void render(GL3 gl, IRenderer.RenderState state);
-
-	void requestRefresh();
-
-	void requestUpdate();
-
-	List<? extends IArrayAttributeProvider> getArrayAttributeProviders();
-
-	IRenderer.Pass getPass();
-
-	boolean containsFlag(IRenderer.Flag flags);
-
-	// TODO:
-	// add reset() method which enforces recreation of all attributes (e.g. after renderer change)
-	// add add/remove attribute provider methods
+	public ColorMapArray(String shaderName) {
+		super(IMaterial.COLOR_MAP_ARRAY, shaderName, NumComponents.TWO);
+	}
 }

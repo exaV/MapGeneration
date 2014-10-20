@@ -29,10 +29,8 @@
 
 package ch.fhnw.ether.mapping;
 
-import ch.fhnw.ether.scene.mesh.GenericMesh;
 
 public interface ICalibrationModel {
-	GenericMesh getCalibrationMesh();
-
+	float[] getCalibrationLines();
 	float[] getCalibrationPoints();
 }

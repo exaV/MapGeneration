@@ -29,14 +29,9 @@
 
 package ch.fhnw.ether.render;
 
-import java.util.EnumSet;
-import java.util.List;
-
 import javax.media.opengl.GL3;
 
-import ch.fhnw.ether.render.attribute.IArrayAttributeProvider;
-import ch.fhnw.ether.render.attribute.IUniformAttributeProvider;
-import ch.fhnw.ether.render.shader.IShader;
+import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.util.math.Mat4;
 
@@ -60,22 +55,9 @@ public interface IRenderer {
 		DEPTH, TRANSPARENCY, OVERLAY, DEVICE_SPACE_OVERLAY, SCREEN_SPACE_OVERLAY
 	}
 
-	enum Flag {
-		INTERACTIVE_VIEW_ONLY
-	}
-
-	public final static EnumSet<Flag> NO_FLAGS = EnumSet.noneOf(Flag.class);
-
 	void render(GL3 gl, IView view);
 
-	// FIXME: change 
-	IRenderable createRenderable(Pass pass, IShader shader, IUniformAttributeProvider uniforms, List<? extends IArrayAttributeProvider> providers);
+	void addMesh(Pass pass, IMesh mesh);
 
-	IRenderable createRenderable(Pass pass, EnumSet<Flag> flags, IShader shader, IUniformAttributeProvider uniforms,
-			List<? extends IArrayAttributeProvider> providers);
-
-	void addRenderables(IRenderable... renderables);
-
-	void removeRenderables(IRenderable... renderables);
-
+	void removeMesh(IMesh mesh);
 }

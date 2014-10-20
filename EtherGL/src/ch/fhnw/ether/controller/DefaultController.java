@@ -93,7 +93,6 @@ public class DefaultController implements IController {
 	@Override
 	public final void setScene(IScene scene) {
 		this.scene = scene;
-		scene.setRenderer(renderer);
 	}
 
 	@Override
@@ -291,15 +290,13 @@ public class DefaultController implements IController {
 	}
 
 	@Override
-	public void updateUI() {
+	public void render(GL3 gl, IView view) {
+		// we're on the render thread here
+		
+		// repaint UI surface to texture if necessary (FIXME: should this be done on model or render thread?)
 		if (ui != null)
 			ui.update();
-	}
-
-	@Override
-	public void requestRendering(GL3 gl, IView view) {
-		if (scene != null)
-			scene.renderUpdate();
+		
 		renderer.render(gl, view);
 	}
 

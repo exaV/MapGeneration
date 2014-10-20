@@ -36,10 +36,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.fhnw.ether.formats.AbstractModelReader;
-import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
-import ch.fhnw.ether.scene.mesh.GenericMesh;
+import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
+import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry.PrimitiveType;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
+import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.util.FloatList;
 import ch.fhnw.util.IntList;
 import ch.fhnw.util.color.RGB;
@@ -89,13 +92,14 @@ public class OBJReader extends AbstractModelReader {
 				}
 			}
 
-			GenericMesh mesh = new GenericMesh(PrimitiveType.TRIANGLE);
-			mesh.setName(path + '/' + g.getName());
 			Material mat = g.getMaterial();
 			RGB diffuse = mat.getKd();
 			float[] triv = triVertices.toArray();
-			mesh.setMaterial(new ColorMaterial(new RGBA(diffuse.x, diffuse.y, diffuse.z, 1)));
-			mesh.setGeometry(triv, GeometryUtil.calculateNormals(triv), diffuse.generateColorArray(triv.length / 3));
+			IMaterial material = new ColorMaterial(new RGBA(diffuse.x, diffuse.y, diffuse.z, 1));
+			// FIXME: it shouldnt be necessary to expand diffuse into a color array here (one color would do, since the renderer will expand this - in addition, we don't need a color array anyway)
+			IGeometry geometry = DefaultGeometry.create(PrimitiveType.TRIANGLES, triv, GeometryUtil.calculateNormals(triv), diffuse.generateColorArray(triv.length / 3));
+			DefaultMesh mesh = new DefaultMesh(material, geometry);
+			mesh.setName(path + '/' + g.getName());
 			meshes.add(mesh);
 		}
 		return meshes;

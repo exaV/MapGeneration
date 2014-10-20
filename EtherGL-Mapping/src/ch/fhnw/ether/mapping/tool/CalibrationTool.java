@@ -43,13 +43,12 @@ import ch.fhnw.ether.controller.tool.AbstractTool;
 import ch.fhnw.ether.mapping.BimberRaskarCalibrator;
 import ch.fhnw.ether.mapping.ICalibrationModel;
 import ch.fhnw.ether.mapping.ICalibrator;
-import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.IRenderer;
 import ch.fhnw.ether.render.IRenderer.Pass;
-import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
-import ch.fhnw.ether.render.shader.builtin.LineShader;
-import ch.fhnw.ether.scene.mesh.GenericMesh;
-import ch.fhnw.ether.scene.mesh.IMesh;
+import ch.fhnw.ether.scene.mesh.DefaultMesh;
+import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry.PrimitiveType;
+import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.ProjectionUtil;
 import ch.fhnw.util.PreferencesStore;
@@ -78,37 +77,37 @@ public final class CalibrationTool extends AbstractTool {
 
 	private Map<IView, CalibrationContext> contexts = new HashMap<>();
 
-	private GenericMesh calibratedGeometry = new GenericMesh(PrimitiveType.LINE);
-
-	private List<IRenderable> renderables = new ArrayList<>();
+	private DefaultMesh lines;
+	private DefaultMesh points;
+	private DefaultMesh calibratedLines;
+	private DefaultMesh calibratedPoints;
 
 	public CalibrationTool(IController controller, ICalibrationModel model) {
 		super(controller);
 		this.model = model;
-		calibratedGeometry.setGeometry(new float[0]);
-
-		IRenderer renderer = controller.getRenderer();
-		IMesh mesh = model.getCalibrationMesh();
-
-		renderables.add(renderer.createRenderable(Pass.OVERLAY, new LineShader(false), mesh.getMaterial(), Collections.singletonList(mesh.getGeometry())));
-		renderables.add(renderer.createRenderable(Pass.DEVICE_SPACE_OVERLAY, new LineShader(false), mesh.getMaterial(),
-				Collections.singletonList(calibratedGeometry.getGeometry())));
-		// FIXME: add also points?
-		// renderables.add(renderer.createRenderable(Pass.OVERLAY, new Points(MODEL_COLOR, POINT_SIZE, 0),
-		// model.getCalibrationMesh().getGeometry()));
-		// renderables.add(renderer.createRenderable(Pass.DEVICE_SPACE_OVERsLAY, new Points(null, POINT_SIZE, 0),
-		// calibratedGeometry));
+		lines = new DefaultMesh(new ColorMaterial(RGBA.WHITE), DefaultGeometry.create(PrimitiveType.LINES, model.getCalibrationLines()));
+		points = new DefaultMesh(new ColorMaterial(RGBA.WHITE), DefaultGeometry.create(PrimitiveType.POINTS, model.getCalibrationPoints()));
+		// FIXME: initialize calibratedLines and points, updateCalibratedGeometry should not recreate meshes...
 	}
 
 	@Override
 	public void activate() {
-		getController().getRenderer().addRenderables(renderables.toArray(new IRenderable[0]));
+		getController().enableViews(Collections.singleton(getController().getCurrentView()));
+		IRenderer render = getController().getRenderer();
+		render.addMesh(Pass.DEPTH, lines);
+		render.addMesh(Pass.DEPTH, points);
+		render.addMesh(Pass.DEVICE_SPACE_OVERLAY, calibratedLines);
+		render.addMesh(Pass.DEVICE_SPACE_OVERLAY, calibratedPoints);
 	}
 
 	@Override
 	public void deactivate() {
-		getController().getRenderer().removeRenderables(renderables.toArray(new IRenderable[0]));
 		getController().enableViews(null);
+		IRenderer render = getController().getRenderer();
+		render.removeMesh(lines);
+		render.removeMesh(points);
+		render.removeMesh(calibratedLines);
+		render.removeMesh(calibratedPoints);
 	}
 
 	@Override
@@ -261,8 +260,8 @@ public final class CalibrationTool extends AbstractTool {
 	private void clearCalibration(IView view) {
 		contexts.put(view, new CalibrationContext());
 		// FIXME camera revision
-//		view.getCamera().setProjectionMatrix(null);
-//		view.getCamera().setViewMatrix(null);
+		// view.getCamera().setProjectionMatrix(null);
+		// view.getCamera().setViewMatrix(null);
 		calibrate(view);
 	}
 
@@ -279,8 +278,8 @@ public final class CalibrationTool extends AbstractTool {
 		}
 		if (context.calibrated) {
 			// FIXME camera revision
-//			camera.setProjectionMatrix(calibrator.getProjMatrix());
-//			camera.setViewMatrix(calibrator.getViewMatrix());
+			// camera.setProjectionMatrix(calibrator.getProjMatrix());
+			// camera.setViewMatrix(calibrator.getViewMatrix());
 		}
 
 		// need to update VBOs
@@ -294,8 +293,7 @@ public final class CalibrationTool extends AbstractTool {
 		CalibrationContext context = getContext(view);
 
 		// prepare points
-		// FIXME: add points?
-		// calibratedGeometry.setPoints(Vec3.toArray(context.projectedVertices), color, null);
+		calibratedPoints = new DefaultMesh(new ColorMaterial(RGBA.YELLOW), DefaultGeometry.create(PrimitiveType.POINTS, Vec3.toArray(context.projectedVertices)));
 
 		// prepare lines
 		List<Vec3> v = new ArrayList<>();
@@ -313,12 +311,7 @@ public final class CalibrationTool extends AbstractTool {
 				Primitives.addLine(v, a.x, a.y - CROSSHAIR_SIZE / viewport.h, a.z, a.x, a.y + CROSSHAIR_SIZE / viewport.h, a.z);
 			}
 		}
-		// calibratedGeometry.setLines(Vec3.toArray(v), color);
-		calibratedGeometry.setGeometry(Vec3.toArray(v));
-
-		// request refresh
-		for (IRenderable renderable : renderables)
-			renderable.requestUpdate();
+		calibratedPoints = new DefaultMesh(new ColorMaterial(RGBA.YELLOW), DefaultGeometry.create(PrimitiveType.POINTS, Vec3.toArray(v)));
 	}
 
 }

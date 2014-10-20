@@ -32,8 +32,11 @@ import java.io.IOException;
 import javax.swing.SwingUtilities;
 
 import ch.fhnw.ether.camera.Camera;
+import ch.fhnw.ether.camera.ICamera;
+import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.formats.obj.OBJReader;
-import ch.fhnw.ether.scene.SimpleScene;
+import ch.fhnw.ether.scene.DefaultScene;
+import ch.fhnw.ether.scene.IScene;
 
 public class ObjLoaderExample {
 	public static void main(String[] args) {
@@ -51,15 +54,15 @@ public class ObjLoaderExample {
 	}
 
 	public ObjLoaderExample() throws IOException {
-		final ObjLoaderController controller = new ObjLoaderController();
-		Camera camera = new Camera();
+		IController controller = new ObjLoaderController();
+		ICamera camera = new Camera();
 
-		SimpleScene s = new SimpleScene(camera);
+		IScene scene = new DefaultScene(controller.getRenderer(), camera);
 		new OBJReader(getClass().getResource("fhnw.obj")).getMeshes().forEach((x) -> {
-			s.addMesh(x);
+			scene.add3DObject(x);
 		});
-		controller.setScene(s);
+		controller.setScene(scene);
 
-		controller.addView(new ObjLoaderView(controller, 0, 10, 512, 512, "Quaternion View", camera));
+		controller.addView(new ObjLoaderView(controller, 0, 10, 512, 512, "Obj View", camera));
 	}
 }

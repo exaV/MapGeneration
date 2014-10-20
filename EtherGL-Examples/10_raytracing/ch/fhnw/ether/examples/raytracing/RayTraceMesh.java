@@ -25,37 +25,88 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ */package ch.fhnw.ether.examples.raytracing;
 
-package ch.fhnw.ether.examples.mapping;
+import java.util.EnumSet;
 
-import ch.fhnw.ether.camera.ICamera;
-import ch.fhnw.ether.render.IRenderer;
-import ch.fhnw.ether.scene.DefaultScene;
-import ch.fhnw.ether.scene.mesh.DefaultMesh;
-import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
+import ch.fhnw.ether.examples.raytracing.surface.IParametricSurface;
+import ch.fhnw.ether.examples.raytracing.util.IntersectResult;
+import ch.fhnw.ether.examples.raytracing.util.Ray;
+import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
-import ch.fhnw.ether.scene.mesh.geometry.IGeometry.PrimitiveType;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Vec3;
-import ch.fhnw.util.math.geometry.Primitives;
+import ch.fhnw.util.math.geometry.BoundingBox;
 
-public class MappingTriangleScene extends DefaultScene {
+public class RayTraceMesh implements IMesh {
+	private final IParametricSurface surface;
+	private Vec3 position = Vec3.ZERO;
+	private RGBA color = RGBA.WHITE;
 
-	public MappingTriangleScene(IRenderer renderer, ICamera camera) {
-		super(renderer, camera);
-		IMaterial material = new ColorMaterial(RGBA.WHITE);
-		for (int i = 0; i < 10; ++i) {
-			IGeometry geometry = DefaultGeometry.create(PrimitiveType.TRIANGLES, Primitives.UNIT_CUBE_TRIANGLES);
-			double s = 0.1 + 0.1 * Math.random();
-			double tx = -1 + 2 * Math.random();
-			double ty = -1 + 2 * Math.random();
-			geometry.setScale(new Vec3(s, s, s));
-			geometry.setRotation(new Vec3(0, 0, 360 * Math.random()));
-			geometry.setTranslation(new Vec3(tx, ty, 0));
-			add3DObject(new DefaultMesh(material, geometry));
+	public RayTraceMesh(IParametricSurface surface) {
+		this.surface = surface;
+	}
+
+	public RayTraceMesh(IParametricSurface surface, RGBA color) {
+		this(surface);
+		this.color = color;
+	}
+
+	public IntersectResult intersect(Ray ray) {
+		Vec3 point = surface.intersect(new Ray(ray.origin.add(position.negate()), ray.direction));
+		if (point == null) {
+			return IntersectResult.VOID;
 		}
+		return new IntersectResult(surface, point, color, ray.origin.subtract(point).length());
+	}
+
+	// I3DObject implementation
+
+	@Override
+	public BoundingBox getBounds() {
+		return new BoundingBox();
+	}
+
+	@Override
+	public Vec3 getPosition() {
+		return surface.getPosition();
+	}
+
+	@Override
+	public void setPosition(Vec3 position) {
+		surface.setPosition(position);
+	}
+
+	// IMesh implementation
+
+	@Override
+	public EnumSet<Flags> getFlags() {
+		return NO_FLAGS;
+	}
+
+	@Override
+	public IMaterial getMaterial() {
+		return new ColorMaterial(color);
+	}
+
+	@Override
+	public IGeometry getGeometry() {
+		return null;
+	}
+
+	@Override
+	public boolean needsUpdate() {
+		return false;
+	}
+
+	@Override
+	public void requestUpdate(Object source) {
+	}
+
+	@Override
+	public String toString() {
+		return "mesh=(" + surface + ", rgba=" + color + ")";
 	}
 }

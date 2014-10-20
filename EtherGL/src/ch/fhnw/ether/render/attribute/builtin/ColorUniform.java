@@ -31,26 +31,17 @@ package ch.fhnw.ether.render.attribute.builtin;
 
 import java.util.function.Supplier;
 
-import ch.fhnw.ether.render.attribute.base.SamplerUniformAttribute;
-import ch.fhnw.ether.render.gl.Texture;
+import ch.fhnw.ether.render.attribute.base.Vec4FloatUniformAttribute;
+import ch.fhnw.ether.scene.mesh.material.IMaterial;
 
-public final class TextureUniform extends SamplerUniformAttribute {
-	public static final String ID = "builtin.texture";
-	private static final String DEFAULT_SHADER_NAME = "tex";
+public class ColorUniform extends Vec4FloatUniformAttribute {
+	private static final String DEFAULT_SHADER_NAME = "materialColor";
 
-	public TextureUniform() {
-		super(ID, DEFAULT_SHADER_NAME);
+	public ColorUniform() {
+		super(IMaterial.COLOR, DEFAULT_SHADER_NAME);
 	}
 
-	public TextureUniform(String shaderName) {
-		super(ID, shaderName);
-	}
-
-	public TextureUniform(Supplier<Texture> supplier) {
-		super(ID, DEFAULT_SHADER_NAME, supplier);
-	}
-
-	public TextureUniform(String shaderName, Supplier<Texture> supplier) {
-		super(ID, shaderName, supplier);
+	public ColorUniform(Supplier<float[]> supplier) {
+		super(IMaterial.COLOR, DEFAULT_SHADER_NAME, supplier);
 	}
 }

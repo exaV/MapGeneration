@@ -27,37 +27,30 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.scene.mesh.material;
+package ch.fhnw.ether.render.attribute.builtin;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.function.Supplier;
 
-import ch.fhnw.ether.render.attribute.IAttribute.ISuppliers;
+import ch.fhnw.ether.render.attribute.base.SamplerUniformAttribute;
+import ch.fhnw.ether.render.gl.Texture;
+import ch.fhnw.ether.scene.mesh.material.IMaterial;
 
-public class CombinedMaterial implements IMaterial {
+public final class ColorMapUniform extends SamplerUniformAttribute {
+	private static final String DEFAULT_SHADER_NAME = "tex";
 
-	List<IMaterial> materials = new ArrayList<>(5);
-
-	public CombinedMaterial(IMaterial material) {
-		materials.add(material);
+	public ColorMapUniform() {
+		super(IMaterial.COLOR_MAP, DEFAULT_SHADER_NAME);
 	}
 
-	public CombinedMaterial(IMaterial material0, IMaterial material1) {
-		materials.add(material0);
-		materials.add(material1);
+	public ColorMapUniform(String shaderName) {
+		super(IMaterial.COLOR_MAP, shaderName);
 	}
 
-	public CombinedMaterial(IMaterial material0, IMaterial material1, IMaterial material2) {
-		materials.add(material0);
-		materials.add(material1);
-		materials.add(material2);
+	public ColorMapUniform(Supplier<Texture> supplier) {
+		super(IMaterial.COLOR_MAP, DEFAULT_SHADER_NAME, supplier);
 	}
 
-	@Override
-	public void getAttributeSuppliers(ISuppliers dst) {
-		for (IMaterial m : materials) {
-			m.getAttributeSuppliers(dst);
-		}
+	public ColorMapUniform(String shaderName, Supplier<Texture> supplier) {
+		super(IMaterial.COLOR_MAP, shaderName, supplier);
 	}
-
 }

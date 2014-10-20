@@ -30,19 +30,15 @@
 package ch.fhnw.ether.controller.tool;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import ch.fhnw.ether.camera.DefaultCameraControl;
 import ch.fhnw.ether.controller.IController;
-import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.IRenderer.Pass;
-import ch.fhnw.ether.render.attribute.IArrayAttributeProvider;
-import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
-import ch.fhnw.ether.render.shader.IShader;
-import ch.fhnw.ether.render.shader.builtin.LineShader;
-import ch.fhnw.ether.scene.mesh.GenericMesh;
+import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
+import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry.PrimitiveType;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.util.color.RGBA;
@@ -51,8 +47,6 @@ import ch.fhnw.util.math.geometry.Primitives;
 
 import com.jogamp.newt.event.MouseEvent;
 
-// FIXME: do not allow createRenderable anymore, go through scene
-
 public class NavigationTool extends AbstractTool {
 	public static final RGBA GRID_COLOR = RGBA.GRAY;
 
@@ -60,28 +54,25 @@ public class NavigationTool extends AbstractTool {
 	private int mouseX;
 	private int mouseY;
 
-	private IRenderable renderable;
+	private IMesh grid;
 	
 	// TODO: make grid dynamic/configurable
 
 	public NavigationTool(IController controller) {
 		super(controller);
 		// XXX hack: currently grid is always enabled
-		IMesh gridMesh = makeGrid();
-		List<IArrayAttributeProvider> l = Collections.singletonList(gridMesh.getGeometry());
-		IShader s = new LineShader(false);
-		renderable = controller.getRenderer().createRenderable(Pass.DEPTH, s, gridMesh.getMaterial(), l);
+		grid = makeGrid();
 		activate();
 	}
 
 	@Override
 	public void activate() {
-		getController().getRenderer().addRenderables(renderable);
+		getController().getRenderer().addMesh(Pass.DEPTH, grid);
 	}
 
 	@Override
 	public void deactivate() {
-		getController().getRenderer().removeRenderables(renderable);
+		getController().getRenderer().removeMesh(grid);
 	}
 	
 	@Override
@@ -129,11 +120,8 @@ public class NavigationTool extends AbstractTool {
 		view.refresh();
 	}
 
-	private static GenericMesh makeGrid() {
-		GenericMesh mesh = new GenericMesh(PrimitiveType.LINE);
+	private static DefaultMesh makeGrid() {
 		List<Vec3> lines = new ArrayList<>();
-
-		mesh.setMaterial(new ColorMaterial(RGBA.WHITE));
 
 		int gridNumLines = 12;
 		float gridSpacing = 0.1f;
@@ -152,7 +140,6 @@ public class NavigationTool extends AbstractTool {
 			Primitives.addLine(lines, -e, -i * gridSpacing, e, -i * gridSpacing);
 		}
 
-		mesh.setGeometry(Vec3.toArray(lines));
-		return mesh;
+		return new DefaultMesh(new ColorMaterial(RGBA.WHITE), DefaultGeometry.create(PrimitiveType.LINES, Vec3.toArray(lines)));
 	}
 }

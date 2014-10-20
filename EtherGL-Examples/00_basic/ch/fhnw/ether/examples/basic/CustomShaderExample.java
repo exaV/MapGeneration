@@ -29,28 +29,24 @@
 
 package ch.fhnw.ether.examples.basic;
 
-import java.util.Collections;
-
 import ch.fhnw.ether.camera.Camera;
 import ch.fhnw.ether.camera.ICamera;
 import ch.fhnw.ether.controller.DefaultController;
 import ch.fhnw.ether.controller.IController;
-import ch.fhnw.ether.render.IRenderable;
-import ch.fhnw.ether.render.IRenderer;
-import ch.fhnw.ether.render.IRenderer.Pass;
-import ch.fhnw.ether.render.attribute.IArrayAttribute;
-import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
 import ch.fhnw.ether.render.attribute.builtin.ColorArray;
 import ch.fhnw.ether.render.attribute.builtin.PositionArray;
 import ch.fhnw.ether.render.attribute.builtin.ProjMatrixUniform;
 import ch.fhnw.ether.render.attribute.builtin.ViewMatrixUniform;
-import ch.fhnw.ether.render.shader.IShader;
 import ch.fhnw.ether.render.shader.base.AbstractShader;
-import ch.fhnw.ether.scene.AbstractScene;
+import ch.fhnw.ether.scene.DefaultScene;
 import ch.fhnw.ether.scene.IScene;
-import ch.fhnw.ether.scene.mesh.GenericMesh;
+import ch.fhnw.ether.scene.mesh.DefaultMesh;
+import ch.fhnw.ether.scene.mesh.IAttribute;
 import ch.fhnw.ether.scene.mesh.IMesh;
-import ch.fhnw.ether.scene.mesh.geometry.VertexGeometry;
+import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry.PrimitiveType;
+import ch.fhnw.ether.scene.mesh.material.CustomMaterial;
+import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.gl.DefaultView;
 
@@ -58,7 +54,7 @@ public final class CustomShaderExample {
 
 	public static class CustomShader extends AbstractShader {
 		public CustomShader() {
-			super(CustomShaderExample.class, "custom_shader_example.custom_shader", "custom_shader", PrimitiveType.TRIANGLE);
+			super(CustomShaderExample.class, "custom_shader_example.custom_shader", "custom_shader", PrimitiveType.TRIANGLES);
 			addArray(new PositionArray());
 			addArray(new ColorArray());
 
@@ -66,54 +62,37 @@ public final class CustomShaderExample {
 			addUniform(new ViewMatrixUniform());
 		}
 	}
-	
-	// This is our own scene. Has its own Shader and own mesh.
-	private static class CoolScene extends AbstractScene {
 
-		private IShader s = new CustomShader();
-		private IMesh mesh = makeColoredTriangle();
-
-		public CoolScene(ICamera camera) {
-			super(camera);
-		}
-
-		@Override
-		public void setRenderer(IRenderer renderer) {
-			IRenderable r = renderer.createRenderable(Pass.DEPTH, s, mesh.getMaterial(), Collections.singletonList(mesh.getGeometry()));
-			renderer.addRenderables(r);
-		}
-
-	}
-
-	// does anybody know why we need a "main"-procedure even though we use OOP?
 	public static void main(String[] args) {
 		new CustomShaderExample();
 	}
 
 	// Let's generate a colored triangle
 	static IMesh makeColoredTriangle() {
+		IAttribute[] attribs = { IMaterial.POSITION_ARRAY, IMaterial.COLOR_ARRAY };
 		float[] position = { 0f, 0, 0, 0, 0, 0.5f, 0.5f, 0, 0.5f };
 		float[] color = { 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1 };
 		float[][] data = { position, color };
-		IArrayAttribute[] attribs = { new PositionArray(), new ColorArray() };
 
-		VertexGeometry g = new VertexGeometry(PrimitiveType.TRIANGLE, attribs, data);
+		DefaultGeometry g = new DefaultGeometry(PrimitiveType.TRIANGLES, attribs, data);
 
-		return new GenericMesh(g, null);
+		return new DefaultMesh(new CustomMaterial(new CustomShader()), g);
 	}
 
 	// Setup the whole thing
 	public CustomShaderExample() {
-		
-		// As always, make first a controller
+
+		// Create controller
 		IController controller = new DefaultController();
 
-		// And now the default view
+		// Create view
 		ICamera camera = new Camera();
 		IView view = new DefaultView(controller, 100, 100, 500, 500, IView.ViewType.INTERACTIVE_VIEW, "Test", camera);
 
-		// Use our own scene
-		IScene scene = new CoolScene(camera);
+		// Create scene and add triangle
+		IScene scene = new DefaultScene(controller.getRenderer(), camera);
+		IMesh mesh = makeColoredTriangle();
+		scene.add3DObject(mesh);
 
 		// Setup MVC
 		controller.addView(view);

@@ -27,32 +27,40 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.render.attribute;
+package ch.fhnw.ether.scene.mesh.material;
 
 import java.util.function.Supplier;
 
-import javax.media.opengl.GL;
+import ch.fhnw.ether.render.gl.Texture;
+import ch.fhnw.ether.scene.mesh.IAttribute.ISuppliers;
+import ch.fhnw.util.color.RGBA;
 
-public interface IAttribute {
-	interface ISuppliers {
-		void add(String id, Supplier<?> supplier);
-
-		Supplier<?> get(String id);
+public class ColorMapMaterial extends ColorMaterial {
+	private Texture texture;
+	
+	public ColorMapMaterial(Texture texture) {
+		this(texture, RGBA.WHITE);
 	}
 
-	enum PrimitiveType {
-		POINT(GL.GL_POINTS), LINE(GL.GL_LINES), TRIANGLE(GL.GL_TRIANGLES);
-
-		private int mode;
-
-		private PrimitiveType(int mode) {
-			this.mode = mode;
-		}
-
-		public int getMode() {
-			return mode;
-		}
+	public ColorMapMaterial(Texture texture, RGBA color) {
+		this(texture, RGBA.WHITE, false);
 	}
 
-	String id();
+	public ColorMapMaterial(Texture texture, RGBA color, boolean perVertexColor) {
+		super(color, perVertexColor);
+		this.texture = texture;
+	}
+
+	@Override
+	public void getAttributeSuppliers(ISuppliers dst) {
+		//dst.provide(IMaterial.COLOR_MAP, () -> texture);
+		dst.provide(IMaterial.COLOR_MAP, new Supplier<Texture>() {
+			@Override
+			public Texture get() {
+				return texture;
+			}
+		});
+		dst.require(IMaterial.COLOR_MAP_ARRAY);
+		super.getAttributeSuppliers(dst);
+	}
 }

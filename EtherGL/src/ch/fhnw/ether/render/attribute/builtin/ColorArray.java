@@ -30,16 +30,16 @@
 package ch.fhnw.ether.render.attribute.builtin;
 
 import ch.fhnw.ether.render.attribute.base.FloatArrayAttribute;
+import ch.fhnw.ether.scene.mesh.material.IMaterial;
 
 public final class ColorArray extends FloatArrayAttribute {
-	private static final String ID = "builtin.color_array";
 	private static final String DEFAULT_SHADER_NAME = "vertexColor";
 
 	public ColorArray() {
-		super(ID, DEFAULT_SHADER_NAME, NumComponents.FOUR);
+		super(IMaterial.COLOR_ARRAY, DEFAULT_SHADER_NAME, NumComponents.FOUR);
 	}
 
 	public ColorArray(String shaderName) {
-		super(ID, shaderName, NumComponents.FOUR);
+		super(IMaterial.COLOR_ARRAY, shaderName, NumComponents.FOUR);
 	}
 }

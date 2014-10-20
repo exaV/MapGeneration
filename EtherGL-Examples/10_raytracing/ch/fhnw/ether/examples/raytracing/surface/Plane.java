@@ -45,8 +45,8 @@ public class Plane implements IParametricSurface {
 	public Plane() {
 	}
 
-	@Override
 	// From http://www.trenki.net/files/Raytracing1.pdf
+	@Override
 	public Vec3 intersect(Ray ray) {
 		float t = -(normal.dot(ray.origin) + distance) / normal.dot(ray.direction);
 		return t < 0 ? null : ray.origin.add(ray.direction.scale(t));

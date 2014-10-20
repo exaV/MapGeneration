@@ -34,6 +34,8 @@ import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.controller.event.EventDrivenScheduler;
 import ch.fhnw.ether.examples.raytracing.surface.Plane;
 import ch.fhnw.ether.examples.raytracing.surface.Sphere;
+import ch.fhnw.ether.scene.DefaultScene;
+import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.IView.ViewType;
@@ -48,33 +50,26 @@ public class RaytracerExample1 {
 	}
 
 	public RaytracerExample1() {
+		// create controller, camera, scene and view
+		IController controller = new DefaultController(new EventDrivenScheduler(), new RayTracingRenderer());
 
-		// create scene objects
 		ICamera camera = new Camera(new Vec3(0, -2, 1), Vec3.ZERO, Vec3.Z, 2.5f, 0.5f, Float.POSITIVE_INFINITY);
-		ILight light = new PointLight(new Vec3(0, 0, 3), RGBA.WHITE);
-		ParametricScene s = new ParametricScene(camera, light);
+		IScene scene = new DefaultScene(controller.getRenderer(), camera);
+		controller.setScene(scene);
 
-		RayTraceObject sphere = new RayTraceObject(new Sphere(0.5f));
-		RayTraceObject plane = new RayTraceObject(new Plane());
-
+		IView view = new DefaultView(controller, 100, 100, 100, 100, ViewType.INTERACTIVE_VIEW, "Raytracing", camera);
+		controller.addView(view);
+		
 		// setup scene
-		s.addMesh(sphere);
-		s.addMesh(plane);
+		ILight light = new PointLight(new Vec3(0, 0, 3), RGBA.WHITE);
+		scene.add3DObject(light);
+		
+		RayTraceMesh sphere = new RayTraceMesh(new Sphere(0.5f));
+		RayTraceMesh plane = new RayTraceMesh(new Plane());
+		scene.add3DObject(sphere);
+		scene.add3DObject(plane);
 
 		// adjust scene
 		sphere.setPosition(Vec3.Z.scale(0.5f));
-
-		// use default controller
-		IController c = new DefaultController(new EventDrivenScheduler(), new RayTracingRenderer(s)) {
-			@Override
-			public void updateUI() {
-			}
-		};
-
-		IView v = new DefaultView(c, 100, 100, 100, 100, ViewType.INTERACTIVE_VIEW, "Raytracing", camera);
-
-		c.addView(v);
-		c.setScene(s);
 	}
-
 }

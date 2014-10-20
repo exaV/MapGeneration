@@ -29,51 +29,45 @@
 
 package ch.fhnw.ether.render.shader.builtin;
 
-import java.util.EnumSet;
-
-import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
 import ch.fhnw.ether.render.attribute.base.BooleanUniformAttribute;
 import ch.fhnw.ether.render.attribute.builtin.ColorArray;
-import ch.fhnw.ether.render.attribute.builtin.ColorMaterialUniform;
-import ch.fhnw.ether.render.attribute.builtin.NormalArray;
+import ch.fhnw.ether.render.attribute.builtin.ColorMapArray;
+import ch.fhnw.ether.render.attribute.builtin.ColorMapUniform;
+import ch.fhnw.ether.render.attribute.builtin.ColorUniform;
 import ch.fhnw.ether.render.attribute.builtin.PositionArray;
 import ch.fhnw.ether.render.attribute.builtin.ProjMatrixUniform;
-import ch.fhnw.ether.render.attribute.builtin.TexCoordArray;
-import ch.fhnw.ether.render.attribute.builtin.TextureUniform;
 import ch.fhnw.ether.render.attribute.builtin.ViewMatrixUniform;
 import ch.fhnw.ether.render.shader.IShader;
 import ch.fhnw.ether.render.shader.base.AbstractShader;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry.PrimitiveType;
+import ch.fhnw.ether.scene.mesh.material.IMaterial;
+import ch.fhnw.util.color.RGBA;
 
 public class MaterialShader extends AbstractShader {
+	
+	public MaterialShader(Attributes attributes) {
+		super(IShader.class, "material", "unshaded_vct", PrimitiveType.TRIANGLES);
 
-	public static enum ShaderInput {
-		MATERIAL_COLOR, VERTEX_COLOR, TEXTURE, NORMALS,
-	}
+		boolean useVertexColors = attributes.contains(IMaterial.COLOR_ARRAY);
+		boolean useTexture = attributes.contains(IMaterial.COLOR_MAP_ARRAY);
 
-	public MaterialShader(EnumSet<ShaderInput> input) {
-		super(IShader.class, "material", "unshaded_vct", PrimitiveType.TRIANGLE);
-		if (input.contains(ShaderInput.MATERIAL_COLOR)) {
-			addUniform(new ColorMaterialUniform());
-		} else {
-			addUniform(new ColorMaterialUniform(() -> new float[] { 1, 1, 1, 1 }));
-		}
-		if (input.contains(ShaderInput.VERTEX_COLOR)) {
-			addArray(new ColorArray());
-		}
-		if (input.contains(ShaderInput.TEXTURE)) {
-			addUniform(new TextureUniform());
-			addArray(new TexCoordArray());
-		}
-		if (input.contains(ShaderInput.NORMALS)) {
-			addArray(new NormalArray());
-		}
-
-		boolean useVertexColors = input.contains(ShaderInput.VERTEX_COLOR);
-		boolean useTexture = input.contains(ShaderInput.TEXTURE);
 		addArray(new PositionArray());
-		addUniform(new ProjMatrixUniform());
-		addUniform(new ViewMatrixUniform());
+
+		if (useVertexColors)
+			addArray(new ColorArray());
+
+		if (useTexture)
+			addArray(new ColorMapArray());
+
 		addUniform(new BooleanUniformAttribute("shader.vertex_colors_flag", "useVertexColors", () -> useVertexColors));
 		addUniform(new BooleanUniformAttribute("shader.texture_flag", "useTexture", () -> useTexture));
+
+		addUniform(new ColorUniform(attributes.contains(IMaterial.COLOR) ? null : () -> RGBA.WHITE.toArray()));
+
+		if (useTexture)
+			addUniform(new ColorMapUniform());
+
+		addUniform(new ProjMatrixUniform());
+		addUniform(new ViewMatrixUniform());
 	}
 }

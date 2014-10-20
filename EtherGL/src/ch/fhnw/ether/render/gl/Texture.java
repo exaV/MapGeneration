@@ -53,6 +53,7 @@ public class Texture {
 		if (tex != null) {
 			gl.glDeleteTextures(1, tex, 0);
 			tex = null;
+			buffer = null;
 		}
 	}
 

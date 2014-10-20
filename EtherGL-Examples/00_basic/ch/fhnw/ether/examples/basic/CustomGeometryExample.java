@@ -29,80 +29,51 @@
 
 package ch.fhnw.ether.examples.basic;
 
-import java.util.Collections;
-import java.util.EnumSet;
-
 import ch.fhnw.ether.camera.Camera;
 import ch.fhnw.ether.camera.ICamera;
 import ch.fhnw.ether.controller.DefaultController;
 import ch.fhnw.ether.controller.IController;
-import ch.fhnw.ether.render.IRenderable;
-import ch.fhnw.ether.render.IRenderer;
-import ch.fhnw.ether.render.IRenderer.Pass;
-import ch.fhnw.ether.render.attribute.IArrayAttribute;
-import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
-import ch.fhnw.ether.render.attribute.builtin.ColorArray;
-import ch.fhnw.ether.render.attribute.builtin.PositionArray;
-import ch.fhnw.ether.render.shader.IShader;
-import ch.fhnw.ether.render.shader.builtin.MaterialShader;
-import ch.fhnw.ether.render.shader.builtin.MaterialShader.ShaderInput;
-import ch.fhnw.ether.scene.AbstractScene;
+import ch.fhnw.ether.scene.DefaultScene;
 import ch.fhnw.ether.scene.IScene;
-import ch.fhnw.ether.scene.mesh.GenericMesh;
+import ch.fhnw.ether.scene.mesh.DefaultMesh;
+import ch.fhnw.ether.scene.mesh.IAttribute;
 import ch.fhnw.ether.scene.mesh.IMesh;
-import ch.fhnw.ether.scene.mesh.geometry.VertexGeometry;
+import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry.PrimitiveType;
+import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
+import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.gl.DefaultView;
+import ch.fhnw.util.color.RGBA;
 
 public final class CustomGeometryExample {
-
-	// This is our own scene. Has its own Shader and own mesh.
-	private static class CoolScene extends AbstractScene {
-
-		private IShader s = new MaterialShader(EnumSet.of(ShaderInput.VERTEX_COLOR));
-		private IMesh mesh = makeColoredTriangle();
-
-		public CoolScene(ICamera camera) {
-			super(camera);
-		}
-
-		@Override
-		public void setRenderer(IRenderer renderer) {
-			IRenderable r = renderer.createRenderable(Pass.DEPTH, s, mesh.getMaterial(), Collections.singletonList(mesh.getGeometry()));
-			renderer.addRenderables(r);
-		}
-
-	}
-
-	// does anybody know why we need a "main"-procedure even though we use OOP?
 	public static void main(String[] args) {
 		new CustomGeometryExample();
 	}
 
 	// Let's generate a colored triangle
-	static IMesh makeColoredTriangle() {
+	private static IMesh makeColorTriangle() {
+		IAttribute[] attribs = { IMaterial.POSITION_ARRAY, IMaterial.COLOR_ARRAY };
 		float[] position = { 0f, 0, 0, 0, 0, 0.5f, 0.5f, 0, 0.5f };
 		float[] color = { 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1 };
 		float[][] data = { position, color };
-		IArrayAttribute[] attribs = { new PositionArray(), new ColorArray() };
 
-		VertexGeometry g = new VertexGeometry(PrimitiveType.TRIANGLE, attribs, data);
-
-		return new GenericMesh(g, null);
+		return new DefaultMesh(new ColorMaterial(RGBA.WHITE), new DefaultGeometry(PrimitiveType.TRIANGLES, attribs, data));
 	}
 
 	// Setup the whole thing
 	public CustomGeometryExample() {
-		
-		// As always, make first a controller
+
+		// Create controller
 		IController controller = new DefaultController();
 
-		// And now the default view
+		// Create view
 		ICamera camera = new Camera();
 		IView view = new DefaultView(controller, 100, 100, 500, 500, IView.ViewType.INTERACTIVE_VIEW, "Test", camera);
 
-		// Use our own scene
-		IScene scene = new CoolScene(camera);
+		// Create scene and add triangle
+		IScene scene = new DefaultScene(controller.getRenderer(), camera);
+		scene.add3DObject(makeColorTriangle());
 
 		// Setup MVC
 		controller.addView(view);

@@ -30,60 +30,50 @@
 package ch.fhnw.ether.render;
 
 import java.util.ArrayList;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.media.opengl.GL3;
 
+import ch.fhnw.ether.render.IRenderer.Pass;
+import ch.fhnw.ether.render.attribute.IAttributeProvider;
+import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.util.FloatList;
 import ch.fhnw.util.UpdateRequest;
 
 final class Renderables {
 	private final UpdateRequest updater = new UpdateRequest();
 
-	private final List<IRenderable> renderables = new ArrayList<>();
+	private final Map<IMesh, Renderable> renderables = new IdentityHashMap<>();
 
-	private final List<IRenderable> disposed = new ArrayList<>();
+	private final List<Renderable> disposed = new ArrayList<>();
 
 	private final FloatList data = new FloatList();
 
 	public Renderables() {
 	}
 
-	public void add(IRenderable renderable) {
-		if (!renderables.contains(renderable)) {
-			renderables.add(renderable);
-			renderable.requestUpdate();
+	public void addMesh(Pass pass, IMesh mesh, IAttributeProvider attributes) {
+		if (!renderables.containsKey(mesh)) {
+			Renderable renderable = new Renderable(pass, mesh, attributes);
+			renderables.put(mesh, renderable);
 			updater.requestUpdate();
 		}
 	}
-
-	public void add(List<IRenderable> renderables) {
-		renderables.forEach(this::add);
-	}
-
-	public void remove(IRenderable renderable) {
-		if (renderables.remove(renderable)) {
+	
+	public void removeMesh(IMesh mesh) {
+		Renderable renderable = renderables.remove(mesh);
+		if (renderable != null) {
+			disposed.add(renderable);
 			updater.requestUpdate();
 		}
-	}
-
-	public void remove(List<IRenderable> renderables) {
-		renderables.forEach(this::remove);
-	}
-
-	public void dispose(IRenderable renderable) {
-		remove(renderable);
-		disposed.add(renderable);
-	}
-
-	public void dispose(List<IRenderable> renderables) {
-		renderables.forEach(this::dispose);
 	}
 
 	void update(GL3 gl) {
 		if (updater.needsUpdate()) {
 			// update added / removed groups
-			for (IRenderable renderable : disposed) {
+			for (Renderable renderable : disposed) {
 				renderable.dispose(gl);
 			}
 			disposed.clear();
@@ -91,9 +81,8 @@ final class Renderables {
 	}
 
 	void render(GL3 gl, IRenderer.RenderState state, IRenderer.Pass pass, boolean interactive) {
-		for (int i = 0; i < renderables.size(); ++i) {
-			IRenderable renderable = renderables.get(i);
-			if (renderable.containsFlag(IRenderer.Flag.INTERACTIVE_VIEW_ONLY) && !interactive)
+		for (Renderable renderable : renderables.values()) {
+			if (renderable.containsFlag(IMesh.Flags.INTERACTIVE_VIEWS_ONLY) && !interactive)
 				continue;
 			if (renderable.getPass() == pass) {
 				renderable.update(gl, data);
@@ -101,4 +90,5 @@ final class Renderables {
 			}
 		}
 	}
+
 }

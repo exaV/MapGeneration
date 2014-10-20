@@ -29,8 +29,8 @@
 
 package ch.fhnw.ether.camera;
 
+import ch.fhnw.ether.scene.I3DObject;
 import ch.fhnw.util.math.Vec3;
-import ch.fhnw.util.math.geometry.I3DObject;
 
 public interface ICamera extends I3DObject {
 	// view parameters

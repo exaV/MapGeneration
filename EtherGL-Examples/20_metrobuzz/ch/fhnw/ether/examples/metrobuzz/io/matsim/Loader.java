@@ -58,6 +58,7 @@ public class Loader {
 	public static void load(Scene model, String basePath, int maxAgents) throws IOException {
 		new Loader(model, basePath, maxAgents);
 		model.normalize();
+		model.createGeometries();
 	}
 
 	private Loader(Scene model, String basePath, int maxAgents) throws IOException {

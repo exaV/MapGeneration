@@ -34,48 +34,81 @@ import java.util.Collections;
 import java.util.List;
 
 import ch.fhnw.ether.camera.ICamera;
+import ch.fhnw.ether.render.IRenderer;
+import ch.fhnw.ether.render.IRenderer.Pass;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.IMesh;
-import ch.fhnw.util.math.geometry.I3DObject;
 
-public abstract class AbstractScene implements IScene {
+public class DefaultScene implements IScene {
 
-	private final List<IMesh> meshes;
-	private final ICamera camera;
+	private final IRenderer renderer;
 
-	public AbstractScene(List<IMesh> meshes, ICamera camera) {
-		this(camera);
+	private final List<IMesh> meshes = new ArrayList<>();
+	private final List<ICamera> cameras = new ArrayList<>();
+	private final List<ILight> lights = new ArrayList<>();
+	private final List<I3DObject> objects = new ArrayList<>();
+
+	
+	public DefaultScene(IRenderer renderer, ICamera camera) {
+		this.renderer = renderer;
+		cameras.add(camera);
+		objects.add(camera);
+	}
+	
+	public DefaultScene(IRenderer renderer, ICamera camera, List<IMesh> meshes) {
+		this(renderer, camera);
 		meshes.addAll(meshes);
+		objects.addAll(meshes);
 	}
-
-	public AbstractScene(ICamera camera) {
-		this.camera = camera;
-		meshes = new ArrayList<>(1);
+	
+	@Override
+	public final void add3DObject(I3DObject object) {
+		// FIXME: we need to deal with Pass properly here
+		if (object instanceof IMesh) {
+			meshes.add((IMesh)object);
+			renderer.addMesh(Pass.DEPTH, (IMesh)object);
+		}
+		if (object instanceof ICamera)
+			cameras.add((ICamera)object);
+		if (object instanceof ILight)
+			lights.add((ILight)object);		
+		objects.add(object);
+	}
+	
+	@Override
+	public final void remove3DObject(I3DObject object) {
+		if (object instanceof IMesh) {
+			meshes.remove(object);
+			renderer.removeMesh((IMesh)object);
+		}
+		if (object instanceof ICamera)
+			cameras.remove(object);
+		if (object instanceof ILight)
+			lights.remove(object);		
+		objects.remove(object);
 	}
 
 	@Override
-	public List<? extends I3DObject> getObjects() {
-		return meshes;
+	public final List<? extends I3DObject> get3DObjects() {
+		return Collections.unmodifiableList(objects);
 	}
 
 	@Override
-	public List<IMesh> getMeshes() {
-		return meshes;
+	public final List<? extends IMesh> getMeshes() {
+		return Collections.unmodifiableList(meshes);
 	}
 
 	@Override
-	public List<ICamera> getCameras() {
-		return Collections.singletonList(camera);
+	public final List<? extends ICamera> getCameras() {
+		return Collections.unmodifiableList(cameras);
 	}
 
 	@Override
-	public List<ILight> getLights() {
-		return Collections.emptyList();
+	public final List<ILight> getLights() {
+		return Collections.unmodifiableList(lights);
 	}
 
-	@Override
-	public void renderUpdate() {
-		// no update
+	protected final IRenderer getRenderer() {
+		return renderer;
 	}
-
 }

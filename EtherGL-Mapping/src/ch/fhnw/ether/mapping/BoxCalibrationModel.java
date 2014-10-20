@@ -29,10 +29,6 @@
 
 package ch.fhnw.ether.mapping;
 
-import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
-import ch.fhnw.ether.scene.mesh.GenericMesh;
-import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
-import ch.fhnw.util.color.RGBA;
 
 public class BoxCalibrationModel implements ICalibrationModel {
 	private float boxExtentX;
@@ -41,7 +37,8 @@ public class BoxCalibrationModel implements ICalibrationModel {
 	private float planeExtentX;
 	private float planeExtentY;
 
-	private GenericMesh mesh = new GenericMesh(PrimitiveType.LINE);
+	private float[] lines = getLines();
+	private float[] points = getPoints();
 
 	public BoxCalibrationModel(float boxExtentX, float boxExtentY, float boxExtentZ, float planeExtentX, float planeExtentY) {
 		this.boxExtentX = boxExtentX;
@@ -49,20 +46,19 @@ public class BoxCalibrationModel implements ICalibrationModel {
 		this.boxExtentZ = boxExtentZ;
 		this.planeExtentX = planeExtentX;
 		this.planeExtentY = planeExtentY;
-		// FIXME: add also points?
-		// mesh.setPoints(getCalibrationPoints());
-		// mesh.setLines(getCalibrationLines());
-		mesh.setGeometry(getCalibrationLines());
-		mesh.setMaterial(new ColorMaterial(RGBA.YELLOW));
 	}
 
 	@Override
-	public GenericMesh getCalibrationMesh() {
-		return mesh;
+	public float[] getCalibrationLines() {
+		return lines;
 	}
 
 	@Override
 	public float[] getCalibrationPoints() {
+		return points;
+	}
+
+	private float[] getPoints() {
 		float bx = boxExtentX / 2;
 		float by = boxExtentY / 2;
 		float bz = boxExtentZ;
@@ -77,7 +73,7 @@ public class BoxCalibrationModel implements ICalibrationModel {
 				px, py, 0, -px, py, 0, -px, -py, 0, px, -py, 0 };
 	}
 
-	private float[] getCalibrationLines() {
+	private float[] getLines() {
 		float bx = boxExtentX / 2;
 		float by = boxExtentY / 2;
 		float bz = boxExtentZ;

@@ -35,12 +35,22 @@ import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.render.attribute.IUniformAttribute;
 import ch.fhnw.ether.render.gl.Program;
+import ch.fhnw.ether.scene.mesh.IAttribute;
 
 abstract class AbstractUniformAttribute<T> extends AbstractAttribute implements IUniformAttribute {
 	private Supplier<T> supplier;
 
+	protected AbstractUniformAttribute(IAttribute attribute, String shaderName) {
+		super(attribute, shaderName);
+	}
+
 	protected AbstractUniformAttribute(String id, String shaderName) {
 		super(id, shaderName);
+	}
+
+	protected AbstractUniformAttribute(IAttribute attribute, String shaderName, Supplier<T> supplier) {
+		this(attribute, shaderName);
+		this.supplier = supplier;
 	}
 
 	protected AbstractUniformAttribute(String id, String shaderName, Supplier<T> supplier) {

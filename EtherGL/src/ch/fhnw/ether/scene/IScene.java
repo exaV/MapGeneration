@@ -30,25 +30,19 @@
 import java.util.List;
 
 import ch.fhnw.ether.camera.ICamera;
-import ch.fhnw.ether.render.IRenderer;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.IMesh;
-import ch.fhnw.util.math.geometry.I3DObject;
 
 public interface IScene {
+	void add3DObject(I3DObject object);
+	
+	void remove3DObject(I3DObject object);
 
-	List<? extends I3DObject> getObjects();
+	List<? extends I3DObject> get3DObjects();
 
 	List<? extends IMesh> getMeshes();
 
-	List<ICamera> getCameras();
+	List<? extends ICamera> getCameras();
 
-	List<ILight> getLights();
-
-	void setRenderer(IRenderer renderer);
-
-	/**
-	 * Is called, if the next frame wants to be rendered. Scene should update its renderables here
-	 */
-	void renderUpdate();
+	List<? extends ILight> getLights();
 }

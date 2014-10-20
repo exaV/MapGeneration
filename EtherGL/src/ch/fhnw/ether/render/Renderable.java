@@ -31,62 +31,60 @@ package ch.fhnw.ether.render;
 
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
-import java.util.EnumSet;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.function.Supplier;
 
 import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.render.attribute.IArrayAttribute;
-import ch.fhnw.ether.render.attribute.IArrayAttributeProvider;
-import ch.fhnw.ether.render.attribute.IAttribute;
+import ch.fhnw.ether.render.attribute.IAttributeProvider;
 import ch.fhnw.ether.render.attribute.IUniformAttribute;
-import ch.fhnw.ether.render.attribute.IUniformAttributeProvider;
 import ch.fhnw.ether.render.attribute.base.FloatArrayAttribute;
 import ch.fhnw.ether.render.gl.FloatArrayBuffer;
 import ch.fhnw.ether.render.gl.Program;
 import ch.fhnw.ether.render.shader.IShader;
+import ch.fhnw.ether.render.shader.IShader.Attributes;
+import ch.fhnw.ether.render.shader.builtin.LineShader;
+import ch.fhnw.ether.render.shader.builtin.MaterialShader;
+import ch.fhnw.ether.render.shader.builtin.PointShader;
+import ch.fhnw.ether.scene.mesh.IAttribute;
+import ch.fhnw.ether.scene.mesh.IMesh;
+import ch.fhnw.ether.scene.mesh.material.CustomMaterial;
 import ch.fhnw.util.FloatList;
-import ch.fhnw.util.UpdateRequest;
 
 // TODO: we currently support float arrays only
-public final class Renderable implements IRenderable {
+public final class Renderable {
 	private IRenderer.Pass pass;
-	private EnumSet<IRenderer.Flag> flags;
+	private IMesh mesh;
 	private IShader shader;
 
-	private List<? extends IArrayAttributeProvider> arrayAttributeProviders;
-
 	private List<IUniformAttribute> uniformAttributes = new ArrayList<>();
-
 	private List<IArrayAttribute> arrayAttributes = new ArrayList<>();
+
 	private FloatArrayBuffer buffer = new FloatArrayBuffer();
 
 	private int[] sizes;
 	private int stride;
 
-	private UpdateRequest updater = new UpdateRequest();
-
-	public Renderable(IRenderer.Pass pass, EnumSet<IRenderer.Flag> flags, IShader shader, IUniformAttributeProvider uniformAttributeProvider,
-			List<? extends IArrayAttributeProvider> arrayAttributeProviders) {
+	public Renderable(IRenderer.Pass pass, IMesh mesh, IAttributeProvider attributes) {
 		this.pass = pass;
-		this.flags = flags;
-		this.shader = shader;
-		this.arrayAttributeProviders = arrayAttributeProviders;
+		this.mesh = mesh;
 
-		createAttributes(uniformAttributeProvider, arrayAttributeProviders);
+		createAttributes(attributes);
 	}
 
-	@Override
 	public void dispose(GL3 gl) {
 		shader.dispose(gl);
 		buffer.dispose(gl);
 
 		pass = null;
-		flags = null;
+		mesh = null;
 		shader = null;
 
 		uniformAttributes = null;
@@ -94,25 +92,17 @@ public final class Renderable implements IRenderable {
 		arrayAttributes = null;
 		buffer = null;
 		stride = 0;
-
-		updater = null;
 	}
 
-	@Override
 	public void update(GL3 gl, FloatList dst) {
-		if (updater.needsUpdate()) {
+		if (mesh.needsUpdate()) {
 			dst.clear();
 			shader.update(gl);
 			loadBuffer(gl, dst);
 		}
 	}
 
-	@Override
 	public void render(GL3 gl, IRenderer.RenderState state) {
-		// TODO: generally, sorting of any kind is not implemented yet...
-		// e.g. sort by program, shader params, instance params, ... (we should come up with some flexible mechanism for
-		// implementing sorting strategies)
-
 		// 1. enable program
 		shader.enable(gl);
 		Program program = shader.getProgram();
@@ -123,9 +113,9 @@ public final class Renderable implements IRenderable {
 			attr.enable(gl, program);
 		}
 
-		// //// TODO: repeat for multiple sequential buffers (limited vbo size)
+		// FIXME: deal with max vbo size & multiple vbos
 
-		// 3. for each parallel buffer (TODO: currently only one float buffer used)
+		// 3. for each parallel buffer
 		// 3.1. bind buffer
 		// 3.2. for each array attribute associated to the buffer
 		// 3.2.1 enable vertex attrib array (shader index)
@@ -148,8 +138,6 @@ public final class Renderable implements IRenderable {
 			attr.disable(gl, program, buffer);
 		}
 
-		// //// TODO: repeat for multiple sequential buffers (limited vbo size)
-
 		// 6. for each uniform attribute
 		// 6.1. disable textures, restore gl state
 		for (IUniformAttribute attr : uniformAttributes) {
@@ -162,66 +150,60 @@ public final class Renderable implements IRenderable {
 		FloatArrayBuffer.unbind(gl);
 	}
 
-	@Override
-	public void requestRefresh() {
-		// NOTE: requestRefresh() is immediate. call it after you modify the array attribute provider list (e.g. add /
-		// remove)
-		createAttributes(null, arrayAttributeProviders);
-	}
-
-	@Override
-	public void requestUpdate() {
-		// NOTE: requestUpdate() is deferred, i.e. update will be called during render/update cycle
-		updater.requestUpdate();
-	}
-
-	@Override
 	public IRenderer.Pass getPass() {
 		return pass;
 	}
 
-	@Override
-	public List<? extends IArrayAttributeProvider> getArrayAttributeProviders() {
-		return arrayAttributeProviders;
-	}
-
-	@Override
-	public boolean containsFlag(IRenderer.Flag flag) {
-		return flags.contains(flag);
+	public boolean containsFlag(IMesh.Flags flag) {
+		return mesh.getFlags().contains(flag);
 	}
 
 	@Override
 	public String toString() {
-		// TODO: incomplete...
 		return "renderable[pass=" + pass + " shader=" + shader + " stride=" + stride + "]";
 	}
 
-	private void createAttributes(IUniformAttributeProvider uniformAttributeProvider, List<? extends IArrayAttributeProvider> arrayAttributeProviders) {
+	private void createAttributes(IAttributeProvider uniformAttributeProvider) {
 		class Suppliers implements IAttribute.ISuppliers {
-			private final Map<String, Supplier<?>> map = new HashMap<>();
+			private final Map<String, Supplier<?>> providedAttributes = new HashMap<>();
+			private final Set<String> requiredAttibutes = new HashSet<>();
 
 			@Override
-			public void add(String id, Supplier<?> supplier) {
-				if (map.put(id, supplier) != null)
+			public void provide(IAttribute attribute, Supplier<?> supplier) {
+				provide(attribute.id(), supplier);
+			}
+
+			@Override
+			public void provide(String id, Supplier<?> supplier) {
+				if (providedAttributes.put(id, supplier) != null)
 					throw new IllegalArgumentException("duplicate attribute: " + id);
 			}
 
 			@Override
-			public Supplier<?> get(String id) {
-				Supplier<?> supplier = map.get(id);
+			public void require(IAttribute attribute) {
+				require(attribute.id());
+			}
+
+			@Override
+			public void require(String id) {
+				requiredAttibutes.add(id);
+			}
+
+			Supplier<?> get(String id) {
+				Supplier<?> supplier = providedAttributes.get(id);
 				if (supplier == null)
 					throw new IllegalArgumentException("attribute not provided: " + id);
 				return supplier;
 			}
 
 			void clear() {
-				map.clear();
+				providedAttributes.clear();
 			}
 
 			@Override
 			public String toString() {
 				String s = "";
-				for (Entry<String, Supplier<?>> e : map.entrySet()) {
+				for (Entry<String, Supplier<?>> e : providedAttributes.entrySet()) {
 					s += "[" + e.getKey() + ", " + e.getValue() + "] ";
 				}
 				return s;
@@ -229,15 +211,28 @@ public final class Renderable implements IRenderable {
 		}
 
 		Suppliers suppliers = new Suppliers();
+		
+		// 0. get all attributes, so we can create shader
+		mesh.getMaterial().getAttributeSuppliers(suppliers);
+		mesh.getGeometry().getAttributeSuppliers(suppliers);
+		if (uniformAttributeProvider != null)
+			uniformAttributeProvider.getAttributeSuppliers(suppliers);
+		
+		for (String id : suppliers.requiredAttibutes) {
+			if (!suppliers.providedAttributes.containsKey(id))
+				throw new IllegalStateException("geometry does not provide required attribute " + id);
+		}
+		
+		createShader(new Attributes(suppliers.providedAttributes.keySet()));
+		
 
 		uniformAttributes.clear();
 		arrayAttributes.clear();
 		shader.getAttributes(uniformAttributes, arrayAttributes);
-		
+
 		// 1. handle uniform attributes
 
 		if (uniformAttributeProvider != null) {
-			uniformAttributeProvider.getAttributeSuppliers(suppliers);
 			for (IUniformAttribute attr : uniformAttributes) {
 				if (!attr.hasSupplier()) {
 					attr.setSupplier(suppliers.get(attr.id()));
@@ -247,6 +242,8 @@ public final class Renderable implements IRenderable {
 
 		// 2. handle array attributes
 
+		// FIXME: currently mesh only contains one geometry
+		List<? extends IAttributeProvider> arrayAttributeProviders = Collections.singletonList(mesh.getGeometry());
 		if (arrayAttributeProviders != null) {
 
 			// 2.1 initialize stride, sizes, offsets
@@ -264,9 +261,9 @@ public final class Renderable implements IRenderable {
 			}
 
 			// 2.2 setup suppliers for each provider
-			for (IArrayAttributeProvider provider : arrayAttributeProviders) {
+			for (IAttributeProvider provider : arrayAttributeProviders) {
 				suppliers.clear();
-				provider.getAttributeSuppliers(shader.getPrimitiveType(), suppliers);
+				provider.getAttributeSuppliers(suppliers);
 				for (IArrayAttribute attr : arrayAttributes) {
 					attr.addSupplier(suppliers.get(attr.id()));
 				}
@@ -308,4 +305,24 @@ public final class Renderable implements IRenderable {
 		}
 		return index;
 	}
+
+	private void createShader(Attributes attributes) {
+		if (mesh.getMaterial() instanceof CustomMaterial) {
+			shader = ((CustomMaterial)mesh.getMaterial()).getShader();
+			return;
+		}
+		
+		switch (mesh.getGeometry().getPrimitiveType()) {
+		case POINTS:
+			shader = new PointShader(attributes);
+			break;
+		case LINES:
+			shader = new LineShader(attributes);
+			break;
+		case TRIANGLES:
+			shader = new MaterialShader(attributes);
+			break;
+		}
+	}
+
 }

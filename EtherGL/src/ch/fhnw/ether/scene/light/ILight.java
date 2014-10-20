@@ -29,11 +29,11 @@
 
 package ch.fhnw.ether.scene.light;
 
-import ch.fhnw.ether.render.attribute.IUniformAttributeProvider;
+import ch.fhnw.ether.render.attribute.IAttributeProvider;
+import ch.fhnw.ether.scene.I3DObject;
 import ch.fhnw.util.color.RGBA;
-import ch.fhnw.util.math.geometry.I3DObject;
 
-public interface ILight extends I3DObject, IUniformAttributeProvider {
+public interface ILight extends I3DObject, IAttributeProvider {
 
 	RGBA getColor();
 

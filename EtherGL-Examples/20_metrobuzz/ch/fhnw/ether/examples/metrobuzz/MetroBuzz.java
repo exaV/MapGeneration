@@ -60,7 +60,7 @@ public class MetroBuzz {
 		controller.addView(new View(controller, 0, 10, 512, 512, ViewType.INTERACTIVE_VIEW, camera));
 		controller.addView(new View(controller, 512, 10, 512, 512, ViewType.MAPPED_VIEW, camera));
 
-		Scene model = new Scene(camera);
+		Scene model = new Scene(controller.getRenderer(), camera);
 		System.out.println("Loading Data");
 		try {
 			Loader.load(model, args[0], 100 /* Integer.MAX_VALUE */);

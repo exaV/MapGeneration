@@ -34,10 +34,19 @@ import java.util.function.Supplier;
 import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.render.gl.Program;
+import ch.fhnw.ether.scene.mesh.IAttribute;
 
 public class Vec4FloatUniformAttribute extends AbstractUniformAttribute<float[]> {
+	public Vec4FloatUniformAttribute(IAttribute attribute, String shaderName) {
+		super(attribute, shaderName);
+	}
+
 	public Vec4FloatUniformAttribute(String id, String shaderName) {
 		super(id, shaderName);
+	}
+
+	public Vec4FloatUniformAttribute(IAttribute attribute, String shaderName, Supplier<float[]> supplier) {
+		super(attribute, shaderName, supplier);
 	}
 
 	public Vec4FloatUniformAttribute(String id, String shaderName, Supplier<float[]> supplier) {

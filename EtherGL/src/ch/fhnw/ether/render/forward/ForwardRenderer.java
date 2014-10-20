@@ -33,9 +33,9 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.render.AbstractRenderer;
-import ch.fhnw.ether.render.attribute.IAttribute.ISuppliers;
 import ch.fhnw.ether.render.attribute.builtin.ProjMatrixUniform;
 import ch.fhnw.ether.render.attribute.builtin.ViewMatrixUniform;
+import ch.fhnw.ether.scene.mesh.IAttribute.ISuppliers;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.util.math.Mat4;
 
@@ -114,7 +114,7 @@ public class ForwardRenderer extends AbstractRenderer {
 
 	@Override
 	public void getAttributeSuppliers(ISuppliers dst) {
-		dst.add(ProjMatrixUniform.ID, () -> state.projMatrix);
-		dst.add(ViewMatrixUniform.ID, () -> state.viewMatrix);
+		dst.provide(ProjMatrixUniform.ID, () -> state.projMatrix);
+		dst.provide(ViewMatrixUniform.ID, () -> state.viewMatrix);
 	}
 }

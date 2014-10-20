@@ -37,6 +37,8 @@ import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.controller.event.EventDrivenScheduler;
 import ch.fhnw.ether.examples.raytracing.surface.Plane;
 import ch.fhnw.ether.examples.raytracing.surface.Sphere;
+import ch.fhnw.ether.scene.DefaultScene;
+import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.IView.ViewType;
@@ -51,38 +53,38 @@ public class RaytracerExample2 {
 	}
 
 	public RaytracerExample2() {
+		// create controller, camera, scene and view
+		IController c = new DefaultController(new EventDrivenScheduler(), new RayTracingRenderer());
+
 		ICamera camera = new Camera(new Vec3(0, -2, 1), Vec3.ZERO, Vec3.Z, 2.5f, 0.5f, Float.POSITIVE_INFINITY);
+		IScene s = new DefaultScene(c.getRenderer(), camera);
+		c.setScene(s);
+
+		IView v = new DefaultView(c, 100, 100, 100, 100, ViewType.INTERACTIVE_VIEW, "Raytracing", camera);
+		c.addView(v);
+		
+	
+		// setup scene;
 		ILight light = new PointLight(new Vec3(-1, -1, 3), RGBA.WHITE);
-		ParametricScene s = new ParametricScene(camera, light);
+		s.add3DObject(light);
 
 		Sphere sphere = new Sphere(0.5f);
 		sphere.setPosition(new Vec3(0, 0, 0.5f));
-		RayTraceObject chugeli = new RayTraceObject(sphere);
-		RayTraceObject bode = new RayTraceObject(new Plane());
-		RayTraceObject waendli = new RayTraceObject(new Plane(Vec3.X_NEG, 4), RGBA.YELLOW);
-		RayTraceObject anders_waendli = new RayTraceObject(new Plane(Vec3.X, 4), RGBA.RED);
-		RayTraceObject wand = new RayTraceObject(new Plane(Vec3.Y_NEG, 4), RGBA.GREEN);
-		RayTraceObject henderi_wand = new RayTraceObject(new Plane(Vec3.Y, 4), RGBA.CYAN);
-		RayTraceObject dach = new RayTraceObject(new Plane(Vec3.Z_NEG, 4), RGBA.BLUE);
-		s.addMesh(chugeli);
-		s.addMesh(bode);
-		s.addMesh(waendli);
-		s.addMesh(anders_waendli);
-		s.addMesh(dach);
-		s.addMesh(wand);
-		s.addMesh(henderi_wand);
-
-		IController c = new DefaultController(new EventDrivenScheduler(), new RayTracingRenderer(s)) {
-			@Override
-			public void updateUI() {
-			} // UI needs forward renderer
-		};
-
-		IView v = new DefaultView(c, 100, 100, 100, 100, ViewType.INTERACTIVE_VIEW, "Raytracing", camera);
-
-		c.addView(v);
-		c.setScene(s);
-
+		RayTraceMesh chugeli = new RayTraceMesh(sphere);
+		RayTraceMesh bode = new RayTraceMesh(new Plane());
+		RayTraceMesh waendli = new RayTraceMesh(new Plane(Vec3.X_NEG, 4), RGBA.YELLOW);
+		RayTraceMesh anders_waendli = new RayTraceMesh(new Plane(Vec3.X, 4), RGBA.RED);
+		RayTraceMesh wand = new RayTraceMesh(new Plane(Vec3.Y_NEG, 4), RGBA.GREEN);
+		RayTraceMesh henderi_wand = new RayTraceMesh(new Plane(Vec3.Y, 4), RGBA.CYAN);
+		RayTraceMesh dach = new RayTraceMesh(new Plane(Vec3.Z_NEG, 4), RGBA.BLUE);
+		s.add3DObject(chugeli);
+		s.add3DObject(bode);
+		s.add3DObject(waendli);
+		s.add3DObject(anders_waendli);
+		s.add3DObject(dach);
+		s.add3DObject(wand);
+		s.add3DObject(henderi_wand);		
+		
 		Timer t = new Timer();
 		t.scheduleAtFixedRate(new TimerTask() {
 			private float n = 0;
@@ -97,5 +99,4 @@ public class RaytracerExample2 {
 			}
 		}, 1000, 50);
 	}
-
 }

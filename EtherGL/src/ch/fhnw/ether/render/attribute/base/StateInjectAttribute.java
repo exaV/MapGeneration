@@ -41,12 +41,12 @@ public final class StateInjectAttribute extends AbstractAttribute implements IUn
 	private final BiConsumer<GL3, Program> enable;
 	private final BiConsumer<GL3, Program> disable;
 
-	public StateInjectAttribute(String type, BiConsumer<GL3, Program> enable) {
-		this(type, enable, null);
+	public StateInjectAttribute(String id, BiConsumer<GL3, Program> enable) {
+		this(id, enable, null);
 	}
 
-	public StateInjectAttribute(String type, BiConsumer<GL3, Program> enable, BiConsumer<GL3, Program> disable) {
-		super(type, null);
+	public StateInjectAttribute(String id, BiConsumer<GL3, Program> enable, BiConsumer<GL3, Program> disable) {
+		super(id, null);
 		this.enable = enable;
 		this.disable = disable;
 	}

@@ -35,10 +35,10 @@ import java.util.List;
 import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.render.attribute.IArrayAttribute;
-import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
 import ch.fhnw.ether.render.attribute.IUniformAttribute;
 import ch.fhnw.ether.render.gl.Program;
 import ch.fhnw.ether.render.shader.IShader;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry.PrimitiveType;
 
 public abstract class AbstractShader implements IShader {
 	private Class<?> root;

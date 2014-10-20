@@ -27,22 +27,10 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.render.attribute.builtin;
+package ch.fhnw.ether.render.attribute;
 
-import java.util.function.Supplier;
+import ch.fhnw.ether.scene.mesh.IAttribute.ISuppliers;
 
-import ch.fhnw.ether.render.attribute.base.Vec4FloatUniformAttribute;
-
-public class ColorMaterialUniform extends Vec4FloatUniformAttribute {
-
-	private final static String ID = "material.color";
-	private static final String DEFAULT_SHADER_NAME = "materialColor";
-
-	public ColorMaterialUniform() {
-		super(ID, DEFAULT_SHADER_NAME);
-	}
-
-	public ColorMaterialUniform(Supplier<float[]> supplier) {
-		super(ID, DEFAULT_SHADER_NAME, supplier);
-	}
+public interface IAttributeProvider {
+	void getAttributeSuppliers(ISuppliers dst);
 }

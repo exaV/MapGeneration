@@ -35,8 +35,7 @@ import java.util.Collections;
 import java.util.List;
 
 import ch.fhnw.ether.controller.IController;
-import ch.fhnw.ether.render.IRenderer;
-import ch.fhnw.ether.scene.mesh.TextMesh;
+import ch.fhnw.ether.render.IRenderer.Pass;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.util.UpdateRequest;
 
@@ -45,7 +44,7 @@ import com.jogamp.newt.event.MouseEvent;
 
 public final class UI {
 	private final IController controller;
-	private final TextMesh text = new TextMesh(0, 0, 512, 512, true);
+	private final GraphicsPlane text = new GraphicsPlane(0, 0, 512, 512);
 	private final UpdateRequest updater = new UpdateRequest();
 
 	private final List<IWidget> widgets = new ArrayList<>();
@@ -58,14 +57,12 @@ public final class UI {
 	}
 
 	public void enable() {
-		IRenderer r = controller.getRenderer();
-		r.addRenderables(text.getRenderable(r));
+		controller.getRenderer().addMesh(Pass.SCREEN_SPACE_OVERLAY, text.getMesh());
 		requestUpdate();
 	}
 
 	public void disable() {
-		IRenderer r = controller.getRenderer();
-		r.removeRenderables(text.getRenderable(r));
+		controller.getRenderer().removeMesh(text.getMesh());
 	}
 
 	public void update() {
@@ -79,9 +76,9 @@ public final class UI {
 		}
 
 		if (message != null)
-			text.drawString(message, 0, text.getHeight() - TextMesh.FONT.getSize());
-
-		text.getRenderable(controller.getRenderer()).requestUpdate();
+			text.drawString(message, 0, text.getHeight() - GraphicsPlane.FONT.getSize());
+		
+		text.update();
 	}
 
 	public List<IWidget> getWidgets() {

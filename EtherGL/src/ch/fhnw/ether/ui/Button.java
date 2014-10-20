@@ -31,7 +31,6 @@ package ch.fhnw.ether.ui;
 
 import java.awt.Color;
 
-import ch.fhnw.ether.scene.mesh.TextMesh;
 import ch.fhnw.ether.view.IView;
 
 import com.jogamp.newt.event.KeyEvent;
@@ -111,7 +110,7 @@ public class Button extends AbstractWidget {
 	}
 
 	@Override
-	public void draw(TextMesh surface) {
+	public void draw(GraphicsPlane surface) {
 		int bw = Button.BUTTON_WIDTH;
 		int bh = Button.BUTTON_HEIGHT;
 		int bg = Button.BUTTON_GAP;

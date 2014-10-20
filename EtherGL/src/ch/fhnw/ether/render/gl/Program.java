@@ -63,7 +63,7 @@ public final class Program {
 			return glType;
 		}
 
-		private int glType;
+		private final int glType;
 	}
 
 	public static final class Shader {

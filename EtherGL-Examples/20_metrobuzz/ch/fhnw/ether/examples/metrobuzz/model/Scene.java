@@ -30,30 +30,21 @@
 package ch.fhnw.ether.examples.metrobuzz.model;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import ch.fhnw.ether.camera.ICamera;
-import ch.fhnw.ether.render.IRenderable;
 import ch.fhnw.ether.render.IRenderer;
-import ch.fhnw.ether.render.IRenderer.Pass;
-import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
-import ch.fhnw.ether.render.shader.builtin.LineShader;
-import ch.fhnw.ether.render.shader.builtin.PointShader;
-import ch.fhnw.ether.scene.IScene;
-import ch.fhnw.ether.scene.light.ILight;
-import ch.fhnw.ether.scene.mesh.GenericMesh;
-import ch.fhnw.ether.scene.mesh.IMesh;
-import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
+import ch.fhnw.ether.scene.DefaultScene;
+import ch.fhnw.ether.scene.mesh.DefaultMesh;
+import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry.PrimitiveType;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.geometry.BoundingBox;
-import ch.fhnw.util.math.geometry.I3DObject;
 
-public class Scene implements IScene {
+public class Scene extends DefaultScene {
 	private static final float[] ACTIVITY_COLOR = { 1f, 0f, 0f, 0.2f };
 	private static final float[] TRIP_COLOR = { 0f, 1f, 0f, 0.2f };
 
@@ -65,16 +56,8 @@ public class Scene implements IScene {
 
 	private final List<Agent> agents = new ArrayList<>();
 
-	private List<GenericMesh> agentGeometries;
-	private GenericMesh networkGeometryPoints;
-	private GenericMesh networkGeometryLines;
-	private ICamera camera;
-	private IRenderer renderer;
-	private IRenderable agent_renderable;
-	private IRenderable net_renderable;
-
-	public Scene(ICamera camera) {
-		this.camera = camera;
+	public Scene(IRenderer renderer, ICamera camera) {
+		super(renderer, camera);
 	}
 
 	public List<Node> getNodes() {
@@ -144,9 +127,7 @@ public class Scene implements IScene {
 		System.out.println();
 	}
 
-	private void createGeometries() {
-		agentGeometries = new ArrayList<>();
-
+	public void createGeometries() {
 		// add network
 		int i = 0;
 		int j = 0;
@@ -169,10 +150,10 @@ public class Scene implements IScene {
 			networkEdges[i++] = 0;
 		}
 
-		networkGeometryPoints = new GenericMesh(PrimitiveType.POINT);
-		networkGeometryLines = new GenericMesh(PrimitiveType.LINE);
-		networkGeometryPoints.setGeometry(networkNodes);
-		networkGeometryLines.setGeometry(networkEdges);
+		DefaultMesh networkGeometryPoints = new DefaultMesh(new ColorMaterial(RGBA.YELLOW), DefaultGeometry.create(PrimitiveType.POINTS, networkNodes));
+		DefaultMesh networkGeometryLines = new DefaultMesh(new ColorMaterial(RGBA.YELLOW), DefaultGeometry.create(PrimitiveType.LINES, networkEdges));
+		add3DObject(networkGeometryPoints);
+		add3DObject(networkGeometryLines);
 
 		// add agents (count number of paths first, then add);
 
@@ -216,7 +197,7 @@ public class Scene implements IScene {
 				if (trip == null)
 					continue;
 
-				// XXX: note there's some weirdness with the links, we're currently just using fromNode from each link
+				// note there's some weirdness with the links, we're currently just using fromNode from each link
 				switch (trip.getMode()) {
 				case WALK:
 				case TRANSIT_WALK: {
@@ -269,67 +250,12 @@ public class Scene implements IScene {
 				}
 				}
 			}
-			GenericMesh geometry = new GenericMesh(PrimitiveType.LINE);
-			geometry.setGeometry(agentEdges, agentColors);
-			agentGeometries.add(geometry);
+			DefaultMesh geometry = new DefaultMesh(new ColorMaterial(RGBA.WHITE), DefaultGeometry.create(PrimitiveType.LINES, agentEdges, agentColors));
+			add3DObject(geometry);
 		}
 	}
 
 	private static float normTime(float time) {
 		return time / (24 * 60 * 60);
-	}
-
-	@Override
-	public List<? extends I3DObject> getObjects() {
-		return getMeshes();
-	}
-
-	@Override
-	public List<IMesh> getMeshes() {
-		createGeometries();
-		List<IMesh> l = new ArrayList<>(agentGeometries);
-		l.add(networkGeometryPoints);
-		l.add(networkGeometryLines);
-		return l;
-	}
-
-	@Override
-	public void setRenderer(IRenderer renderer) {
-		if (this.renderer == renderer)
-			return;
-		this.renderer = renderer;
-
-		renderer.removeRenderables(agent_renderable, net_renderable);
-		createGeometries();
-
-		List<IGeometry> line_geometries = agentGeometries.stream().map((x) -> {
-			return x.getGeometry();
-		}).collect(Collectors.toList());
-		line_geometries.add(networkGeometryLines.getGeometry());
-		agent_renderable = renderer.createRenderable(Pass.DEPTH, new LineShader(true), null, line_geometries);
-
-		List<IGeometry> point_geometries = new ArrayList<>(1);
-		point_geometries.add(networkGeometryPoints.getGeometry());
-		net_renderable = renderer.createRenderable(Pass.DEPTH, new PointShader(false), new ColorMaterial(RGBA.YELLOW), point_geometries);
-
-		renderer.addRenderables(agent_renderable, net_renderable);
-	}
-
-	@Override
-	public List<ICamera> getCameras() {
-		return Collections.singletonList(camera);
-	}
-
-	@Override
-	public List<ILight> getLights() {
-		return Collections.emptyList();
-	}
-
-	@Override
-	public void renderUpdate() {
-		if (agent_renderable != null)
-			agent_renderable.requestUpdate();
-		if (net_renderable != null)
-			net_renderable.requestUpdate();
 	}
 }

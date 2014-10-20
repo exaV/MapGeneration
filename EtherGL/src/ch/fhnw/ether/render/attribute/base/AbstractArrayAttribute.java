@@ -30,11 +30,17 @@
 package ch.fhnw.ether.render.attribute.base;
 
 import ch.fhnw.ether.render.attribute.IArrayAttribute;
+import ch.fhnw.ether.scene.mesh.IAttribute;
 
 abstract class AbstractArrayAttribute extends AbstractAttribute implements IArrayAttribute {
 	private final NumComponents numComponents;
 	private int stride;
 	private int offset;
+
+	protected AbstractArrayAttribute(IAttribute attribute, String shaderName, NumComponents numComponents) {
+		super(attribute, shaderName);
+		this.numComponents = numComponents;
+	}
 
 	protected AbstractArrayAttribute(String id, String shaderName, NumComponents numComponents) {
 		super(id, shaderName);

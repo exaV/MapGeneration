@@ -37,7 +37,7 @@ import java.util.List;
 import ch.fhnw.ether.scene.mesh.IMesh;
 
 public abstract class AbstractModelReader {
-	private final List<IMesh> mesh;
+	private final List<IMesh> meshes;
 
 	public AbstractModelReader(URL resource) throws IOException {
 		this(resource.getFile(), resource.openStream());
@@ -48,13 +48,13 @@ public abstract class AbstractModelReader {
 	}
 
 	public AbstractModelReader(String path, InputStream in) throws IOException {
-		mesh = decode(path, in);
+		meshes = decode(path, in);
 		in.close();
 	}
 
 	protected abstract List<IMesh> decode(String path, InputStream in) throws IOException;
 
 	public List<IMesh> getMeshes() {
-		return mesh;
+		return meshes;
 	}
 }

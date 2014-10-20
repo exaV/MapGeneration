@@ -37,9 +37,14 @@ import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.render.gl.FloatArrayBuffer;
 import ch.fhnw.ether.render.gl.Program;
+import ch.fhnw.ether.scene.mesh.IAttribute;
 
 public class FloatArrayAttribute extends AbstractArrayAttribute {
 	private final List<Supplier<float[]>> suppliers = new ArrayList<>();
+
+	public FloatArrayAttribute(IAttribute attribute, String shaderName, NumComponents numComponents) {
+		super(attribute, shaderName, numComponents);
+	}
 
 	public FloatArrayAttribute(String id, String shaderName, NumComponents numComponents) {
 		super(id, shaderName, numComponents);

@@ -25,75 +25,101 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */package ch.fhnw.ether.examples.raytracing;
+ */
 
-import ch.fhnw.ether.examples.raytracing.surface.IParametricSurface;
-import ch.fhnw.ether.examples.raytracing.util.IntersectResult;
-import ch.fhnw.ether.examples.raytracing.util.Ray;
-import ch.fhnw.ether.scene.mesh.IMesh;
+package ch.fhnw.ether.scene.mesh;
+
+import java.util.EnumSet;
+
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
-import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
-import ch.fhnw.util.color.RGBA;
+import ch.fhnw.util.UpdateRequest;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.BoundingBox;
 
-public class RayTraceObject implements IMesh {
+public final class DefaultMesh implements IMesh {
+	private final IMaterial material;
+	private final IGeometry geometry;
+	private final EnumSet<Flags> flags;
 
-	private IParametricSurface surface;
-	private Vec3 position = Vec3.ZERO;
-	private RGBA color = RGBA.WHITE;
+	private String name = "unnamed_mesh";
 
-	public RayTraceObject(IParametricSurface surface) {
-		this.surface = surface;
+	private final UpdateRequest updater = new UpdateRequest(true);
+	
+	public DefaultMesh(IMaterial material, IGeometry geometry) {
+		this(material, geometry, NO_FLAGS);
+	}
+	
+	public DefaultMesh(IMaterial material, IGeometry geometry, EnumSet<Flags> flags) {
+		this.material = material;
+		this.material.addUpdateListener(this);
+		this.geometry = geometry;
+		this.geometry.addUpdateListener(this);
+		this.flags = flags;
+	}
+	
+	// FIXME: this should probably be part of i3dobject
+
+	public String getName() {
+		return name;
 	}
 
-	public RayTraceObject(IParametricSurface surface, RGBA color) {
-		this(surface);
-		this.color = color;
+	public void setName(String name) {
+		this.name = name;
+		requestUpdate();
 	}
+
+	// I3DObject implementation
 
 	@Override
 	public BoundingBox getBounds() {
-		return new BoundingBox();
+		return geometry.getBounds();
 	}
 
 	@Override
 	public Vec3 getPosition() {
-		return surface.getPosition();
+		return geometry.getTranslation();
 	}
 
 	@Override
 	public void setPosition(Vec3 position) {
-		surface.setPosition(position);
+		geometry.setTranslation(position);
+		requestUpdate();
 	}
+
+	// IMesh implementation
 
 	@Override
-	public IGeometry getGeometry() {
-		return null;
-	}
-
-	public IntersectResult intersect(Ray ray) {
-		Vec3 point = surface.intersect(new Ray(ray.origin.add(position.negate()), ray.direction));
-		if (point == null) {
-			return IntersectResult.VOID;
-		}
-		return new IntersectResult(surface, point, color, ray.origin.subtract(point).length());
+	public EnumSet<Flags> getFlags() {
+		return flags;
 	}
 
 	@Override
 	public IMaterial getMaterial() {
-		return new ColorMaterial(color);
+		return material;
+	}
+
+	@Override
+	public IGeometry getGeometry() {
+		return geometry;
 	}
 
 	@Override
 	public boolean needsUpdate() {
-		return false;
+		return updater.needsUpdate();
+	}
+	
+	@Override
+	public void requestUpdate(Object source) {
+		requestUpdate();
 	}
 
 	@Override
 	public String toString() {
-		return "object=(" + surface + ", rgba=" + color + ")";
+		return name;
 	}
 
+	private void requestUpdate() {
+		updater.requestUpdate();
+	}
 }

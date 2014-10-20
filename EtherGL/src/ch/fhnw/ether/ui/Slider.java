@@ -31,7 +31,6 @@ package ch.fhnw.ether.ui;
 
 import java.awt.Color;
 
-import ch.fhnw.ether.scene.mesh.TextMesh;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.util.math.MathUtil;
 
@@ -80,7 +79,7 @@ public class Slider extends AbstractWidget {
 	}
 
 	@Override
-	public void draw(TextMesh surface) {
+	public void draw(GraphicsPlane surface) {
 		int bw = Slider.SLIDER_WIDTH;
 		int bh = Slider.SLIDER_HEIGHT;
 		int bg = Slider.SLIDER_GAP;

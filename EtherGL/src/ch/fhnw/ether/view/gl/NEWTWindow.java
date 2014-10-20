@@ -47,6 +47,7 @@ import com.jogamp.newt.opengl.GLWindow;
  *
  * @author radar
  */
+// TODO: for shared contexts, we should probably use JOGLs GLSharedContextSetter stuff
 public final class NEWTWindow {
 	private static ArrayList<NEWTWindow> frames = new ArrayList<>();
 

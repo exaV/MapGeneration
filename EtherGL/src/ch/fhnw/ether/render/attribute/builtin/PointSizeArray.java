@@ -30,16 +30,16 @@
 package ch.fhnw.ether.render.attribute.builtin;
 
 import ch.fhnw.ether.render.attribute.base.FloatArrayAttribute;
+import ch.fhnw.ether.scene.mesh.material.IMaterial;
 
 public final class PointSizeArray extends FloatArrayAttribute {
-	private static final String ID = "builtin.point_size_array";
 	private static final String DEFAULT_SHADER_NAME = "vertexPointSize";
 
 	public PointSizeArray() {
-		super(ID, DEFAULT_SHADER_NAME, NumComponents.ONE);
+		super(IMaterial.POINT_SIZE_ARRAY, DEFAULT_SHADER_NAME, NumComponents.ONE);
 	}
 
 	public PointSizeArray(String shaderName) {
-		super(ID, shaderName, NumComponents.ONE);
+		super(IMaterial.POINT_SIZE_ARRAY, shaderName, NumComponents.ONE);
 	}
 }

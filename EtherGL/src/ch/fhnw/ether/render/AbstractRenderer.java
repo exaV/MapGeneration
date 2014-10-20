@@ -29,53 +29,27 @@
 
 package ch.fhnw.ether.render;
 
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.List;
-
 import javax.media.opengl.GL3;
 
-import ch.fhnw.ether.render.attribute.IArrayAttributeProvider;
-import ch.fhnw.ether.render.attribute.IUniformAttributeProvider;
-import ch.fhnw.ether.render.attribute.IAttribute.ISuppliers;
-import ch.fhnw.ether.render.shader.IShader;
+import ch.fhnw.ether.render.attribute.IAttributeProvider;
+import ch.fhnw.ether.scene.mesh.IMesh;
 
-public abstract class AbstractRenderer implements IRenderer, IUniformAttributeProvider {
+public abstract class AbstractRenderer implements IRenderer, IAttributeProvider {
 
 	private final Renderables renderables = new Renderables();
 
 	@Override
-	public IRenderable createRenderable(Pass pass, IShader shader, IUniformAttributeProvider uniforms, List<? extends IArrayAttributeProvider> providers) {
-		return createRenderable(pass, EnumSet.noneOf(Flag.class), shader, uniforms, providers);
+	public void addMesh(Pass pass, IMesh mesh) {
+		renderables.addMesh(pass, mesh, this);
 	}
 
 	@Override
-	public IRenderable createRenderable(Pass pass, EnumSet<Flag> flags, IShader shader, IUniformAttributeProvider uniforms,
-			List<? extends IArrayAttributeProvider> providers) {
-		IUniformAttributeProvider composed = new IUniformAttributeProvider() {
-			@Override
-			public void getAttributeSuppliers(ISuppliers dst) {
-				if (uniforms != null)
-					uniforms.getAttributeSuppliers(dst);
-				AbstractRenderer.this.getAttributeSuppliers(dst);
-			}
-		};
-		return new Renderable(pass, flags, shader, composed, providers);
-	}
-
-	@Override
-	public void addRenderables(IRenderable... renderables) {
-		this.renderables.add(Arrays.asList(renderables));
-	}
-
-	@Override
-	public void removeRenderables(IRenderable... renderables) {
-		this.renderables.remove(Arrays.asList(renderables));
+	public void removeMesh(IMesh mesh) {
+		renderables.removeMesh(mesh);
 	}
 
 	protected void update(GL3 gl) {
 		this.renderables.update(gl);
-
 	}
 
 	protected void renderPass(GL3 gl, RenderState state, Pass pass, boolean interactive) {

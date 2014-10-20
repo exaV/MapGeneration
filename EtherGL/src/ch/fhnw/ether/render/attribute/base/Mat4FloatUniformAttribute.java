@@ -34,11 +34,20 @@ import java.util.function.Supplier;
 import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.render.gl.Program;
+import ch.fhnw.ether.scene.mesh.IAttribute;
 import ch.fhnw.util.math.Mat4;
 
 public class Mat4FloatUniformAttribute extends AbstractUniformAttribute<Mat4> {
+	public Mat4FloatUniformAttribute(IAttribute attribute, String shaderName) {
+		super(attribute, shaderName);
+	}
+
 	public Mat4FloatUniformAttribute(String id, String shaderName) {
 		super(id, shaderName);
+	}
+
+	public Mat4FloatUniformAttribute(IAttribute attribute, String shaderName, Supplier<Mat4> supplier) {
+		super(attribute, shaderName, supplier);
 	}
 
 	public Mat4FloatUniformAttribute(String id, String shaderName, Supplier<Mat4> supplier) {

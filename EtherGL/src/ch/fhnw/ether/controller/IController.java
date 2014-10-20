@@ -135,7 +135,7 @@ public interface IController {
 	 */
 	IRenderer getRenderer();
 
-	void requestRendering(GL3 gl, IView view);
+	void render(GL3 gl, IView view);
 
 	/**
 	 * Get UI.
@@ -144,7 +144,6 @@ public interface IController {
 	 */
 	UI getUI();
 
-	void updateUI();
 
 	// key listener
 

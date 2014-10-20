@@ -30,6 +30,7 @@
 package ch.fhnw.ether.examples.mapping;
 
 import ch.fhnw.ether.camera.ICamera;
+import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.view.gl.DefaultView;
 
 public class MappingView extends DefaultView {
@@ -53,7 +54,7 @@ public class MappingView extends DefaultView {
 	 * @param initialCamRotateZ
 	 *            initial z angle of view
 	 */
-	public MappingView(MappingController controller, int x, int y, int w, int h, ViewType viewType, String title, ICamera camera) {
+	public MappingView(IController controller, int x, int y, int w, int h, ViewType viewType, String title, ICamera camera) {
 		super(controller, x, y, w, h, viewType, viewType == ViewType.MAPPED_VIEW ? null : title, camera);
 	}
 }

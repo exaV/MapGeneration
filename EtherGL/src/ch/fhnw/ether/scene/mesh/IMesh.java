@@ -29,15 +29,26 @@
 
 package ch.fhnw.ether.scene.mesh;
 
+import java.util.EnumSet;
+
+import ch.fhnw.ether.scene.I3DObject;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
-import ch.fhnw.util.math.geometry.I3DObject;
+import ch.fhnw.util.IUpdateListener;
 
-public interface IMesh extends I3DObject {
+public interface IMesh extends I3DObject, IUpdateListener {
 
-	IGeometry getGeometry();
+	public static final EnumSet<Flags> NO_FLAGS = EnumSet.noneOf(Flags.class);
+	
+	public enum Flags {
+		TRANSPARENT, SCREEN_SPACE, INTERACTIVE_VIEWS_ONLY
+	}
+	
+	EnumSet<Flags> getFlags();
 
 	IMaterial getMaterial();
+
+	IGeometry getGeometry();
 
 	/**
 	 * @return true if mesh was modified since last call to this method.

@@ -33,8 +33,8 @@ import java.util.Map;
 
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.controller.tool.PickUtil.PickMode;
+import ch.fhnw.ether.scene.I3DObject;
 import ch.fhnw.ether.view.IView;
-import ch.fhnw.util.math.geometry.I3DObject;
 
 import com.jogamp.newt.event.MouseEvent;
 

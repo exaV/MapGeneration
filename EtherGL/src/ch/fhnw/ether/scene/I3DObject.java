@@ -27,11 +27,17 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.render.attribute;
+package ch.fhnw.ether.scene;
 
-import ch.fhnw.ether.render.attribute.IAttribute.ISuppliers;
-import ch.fhnw.ether.render.attribute.IAttribute.PrimitiveType;
+import ch.fhnw.util.math.Vec3;
+import ch.fhnw.util.math.geometry.BoundingBox;
 
-public interface IArrayAttributeProvider {
-	void getAttributeSuppliers(PrimitiveType primitiveType, ISuppliers dst);
+public interface I3DObject {
+
+	BoundingBox getBounds();
+
+	Vec3 getPosition();
+
+	void setPosition(Vec3 position);
+
 }

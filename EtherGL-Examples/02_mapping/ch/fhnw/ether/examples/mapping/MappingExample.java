@@ -31,6 +31,7 @@ package ch.fhnw.ether.examples.mapping;
 
 import ch.fhnw.ether.camera.Camera;
 import ch.fhnw.ether.camera.ICamera;
+import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.view.IView.ViewType;
 
@@ -50,10 +51,10 @@ public final class MappingExample {
 	 * square 4 points at 0.8 units.
 	 */
 	public MappingExample() {
-		final MappingController controller = new MappingController();
+		IController controller = new MappingController();
 
 		ICamera camera = new Camera();
-		IScene model = new MappingTriangleScene(camera);
+		IScene model = new MappingTriangleScene(controller.getRenderer(), camera);
 
 		controller.setScene(model);
 

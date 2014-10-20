@@ -155,7 +155,7 @@ public class DefaultView implements IView {
 
 	// GLEventListener implementation
 	
-	// TODO: add try/catch around all handlers
+	// FIXME: add try/catch around all handlers
 
 	@Override
 	public final void init(GLAutoDrawable drawable) {
@@ -181,16 +181,9 @@ public class DefaultView implements IView {
 		gl.glGetIntegerv(GL.GL_VIEWPORT, vp, 0);
 		viewport = new Viewport(vp[0], vp[1], vp[2], vp[3]);
 
-		// FIXME testing
-		// getCamera().addToRotateZ(1);
-		// System.out.println("display" + this);
-
-		// repaint UI surface if necessary
-		getController().updateUI();
-
 		// render everything
 		try {
-			getController().requestRendering(gl.getGL3(), this);
+			getController().render(gl.getGL3(), this);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
