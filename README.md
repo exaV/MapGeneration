@@ -25,6 +25,9 @@ Credits
 -------
 
 Stefan Müller Arisona
+
 Simon Schubiger
+
+Samuel von Stachelski
 
 Contributions by: Eva Friedrich
