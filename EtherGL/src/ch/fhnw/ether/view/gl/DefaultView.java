@@ -93,7 +93,7 @@ public class DefaultView implements IView {
 	public final ICamera getCamera() {
 		return camera;
 	}
-	
+
 	@Override
 	public final void setCamera(ICamera camera) {
 		synchronized (lock) {
@@ -154,36 +154,44 @@ public class DefaultView implements IView {
 	}
 
 	// GLEventListener implementation
-	
+
 	// FIXME: add try/catch around all handlers
 
 	@Override
 	public final void init(GLAutoDrawable drawable) {
-		GL gl = drawable.getGL();
+		try {
+			GL gl = drawable.getGL();
 
-		gl.glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
-		gl.glClearDepth(1.0f);
+			gl.glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
+			gl.glClearDepth(1.0f);
 
-		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+			gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public final void display(GLAutoDrawable drawable) {
-		GL gl = drawable.getGL();
-
-		gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT | GL.GL_STENCIL_BUFFER_BIT);
-
-		if (!isEnabled())
-			return;
-
-		// fetch viewport
-		int[] vp = new int[4];
-		gl.glGetIntegerv(GL.GL_VIEWPORT, vp, 0);
-		viewport = new Viewport(vp[0], vp[1], vp[2], vp[3]);
-
-		// render everything
 		try {
-			getController().render(gl.getGL3(), this);
+			GL gl = drawable.getGL();
+
+			gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT | GL.GL_STENCIL_BUFFER_BIT);
+
+			if (!isEnabled())
+				return;
+
+			// fetch viewport
+			int[] vp = new int[4];
+			gl.glGetIntegerv(GL.GL_VIEWPORT, vp, 0);
+			viewport = new Viewport(vp[0], vp[1], vp[2], vp[3]);
+
+			// render everything
+			try {
+				getController().render(gl.getGL3(), this);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -191,14 +199,18 @@ public class DefaultView implements IView {
 
 	@Override
 	public final void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
-		GL gl = drawable.getGL();
+		try {
+			GL gl = drawable.getGL();
 
-		if (height == 0)
-			height = 1; // prevent divide by zero
-		gl.glViewport(0, 0, width, height);
-		synchronized (lock) {
-			viewport = new Viewport(0, 0, width, height);
-			cameraMatrices = null;
+			if (height == 0)
+				height = 1; // prevent divide by zero
+			gl.glViewport(0, 0, width, height);
+			synchronized (lock) {
+				viewport = new Viewport(0, 0, width, height);
+				cameraMatrices = null;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -211,58 +223,98 @@ public class DefaultView implements IView {
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		controller.keyPressed(e, this);
+		try {
+			controller.keyPressed(e, this);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		controller.keyReleased(e, this);
+		try {
+			controller.keyReleased(e, this);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	// mouse listener
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
-		controller.mouseEntered(e, this);
+		try {
+			controller.mouseEntered(e, this);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
-		controller.mouseExited(e, this);
+		try {
+			controller.mouseExited(e, this);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		window.requestFocus();
-		controller.mousePressed(e, this);
+		try {
+			window.requestFocus();
+			controller.mousePressed(e, this);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		controller.mouseReleased(e, this);
+		try {
+			controller.mouseReleased(e, this);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		controller.mouseClicked(e, this);
+		try {
+			controller.mouseClicked(e, this);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	// mouse motion listener
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		controller.mouseMoved(e, this);
+		try {
+			controller.mouseMoved(e, this);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		controller.mouseDragged(e, this);
+		try {
+			controller.mouseDragged(e, this);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	// mouse wheel listener
 
 	@Override
 	public void mouseWheelMoved(MouseEvent e) {
-		controller.mouseWheelMoved(e, this);
+		try {
+			controller.mouseWheelMoved(e, this);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 }
