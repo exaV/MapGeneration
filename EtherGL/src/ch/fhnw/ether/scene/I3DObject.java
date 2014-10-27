@@ -40,4 +40,7 @@ public interface I3DObject {
 
 	void setPosition(Vec3 position);
 
+	String getName();
+	
+	void setName(String name);
 }

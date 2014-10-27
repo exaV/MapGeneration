@@ -41,6 +41,8 @@ public final class Camera implements ICamera {
 	private float fov = 45;
 	private float near = 0.01f;
 	private float far = 100000f;
+	
+	private String name = "camera";
 
 	public Camera() {
 	}
@@ -119,5 +121,15 @@ public final class Camera implements ICamera {
 	@Override
 	public void setFar(float far) {
 		this.far = far;
+	}
+	
+	@Override
+	public String getName() {
+		return name;
+	}
+	
+	@Override
+	public void setName(String name) {
+		this.name = name;
 	}
 }

@@ -36,7 +36,6 @@ import java.util.Map;
 
 import javax.media.opengl.GL3;
 
-import ch.fhnw.ether.render.IRenderer.Pass;
 import ch.fhnw.ether.render.attribute.IAttributeProvider;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.util.FloatList;
@@ -54,9 +53,9 @@ final class Renderables {
 	public Renderables() {
 	}
 
-	public void addMesh(Pass pass, IMesh mesh, IAttributeProvider attributes) {
+	public void addMesh(IMesh mesh, IAttributeProvider attributes) {
 		if (!renderables.containsKey(mesh)) {
-			Renderable renderable = new Renderable(pass, mesh, attributes);
+			Renderable renderable = new Renderable(mesh, attributes);
 			renderables.put(mesh, renderable);
 			updater.requestUpdate();
 		}
@@ -80,7 +79,7 @@ final class Renderables {
 		}
 	}
 
-	void render(GL3 gl, IRenderer.RenderState state, IRenderer.Pass pass, boolean interactive) {
+	void render(GL3 gl, IRenderer.RenderState state, IMesh.Pass pass, boolean interactive) {
 		for (Renderable renderable : renderables.values()) {
 			if (renderable.containsFlag(IMesh.Flags.INTERACTIVE_VIEWS_ONLY) && !interactive)
 				continue;

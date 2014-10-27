@@ -60,7 +60,6 @@ import ch.fhnw.util.FloatList;
 
 // TODO: we currently support float arrays only
 public final class Renderable {
-	private IRenderer.Pass pass;
 	private IMesh mesh;
 	private IShader shader;
 
@@ -72,8 +71,7 @@ public final class Renderable {
 	private int[] sizes;
 	private int stride;
 
-	public Renderable(IRenderer.Pass pass, IMesh mesh, IAttributeProvider attributes) {
-		this.pass = pass;
+	public Renderable(IMesh mesh, IAttributeProvider attributes) {
 		this.mesh = mesh;
 
 		createAttributes(attributes);
@@ -83,7 +81,6 @@ public final class Renderable {
 		shader.dispose(gl);
 		buffer.dispose(gl);
 
-		pass = null;
 		mesh = null;
 		shader = null;
 
@@ -150,8 +147,8 @@ public final class Renderable {
 		FloatArrayBuffer.unbind(gl);
 	}
 
-	public IRenderer.Pass getPass() {
-		return pass;
+	public IMesh.Pass getPass() {
+		return mesh.getPass();
 	}
 
 	public boolean containsFlag(IMesh.Flags flag) {
@@ -160,7 +157,7 @@ public final class Renderable {
 
 	@Override
 	public String toString() {
-		return "renderable[pass=" + pass + " shader=" + shader + " stride=" + stride + "]";
+		return "renderable[pass=" + mesh.getPass() + " shader=" + shader + " stride=" + stride + "]";
 	}
 
 	private void createAttributes(IAttributeProvider uniformAttributeProvider) {

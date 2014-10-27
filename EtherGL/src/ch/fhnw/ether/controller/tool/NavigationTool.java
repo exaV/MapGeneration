@@ -34,7 +34,6 @@ import java.util.List;
 
 import ch.fhnw.ether.camera.DefaultCameraControl;
 import ch.fhnw.ether.controller.IController;
-import ch.fhnw.ether.render.IRenderer.Pass;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
@@ -67,7 +66,7 @@ public class NavigationTool extends AbstractTool {
 
 	@Override
 	public void activate() {
-		getController().getRenderer().addMesh(Pass.DEPTH, grid);
+		getController().getRenderer().addMesh(grid);
 	}
 
 	@Override

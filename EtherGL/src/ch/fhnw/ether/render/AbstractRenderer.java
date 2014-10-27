@@ -33,14 +33,15 @@ import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.render.attribute.IAttributeProvider;
 import ch.fhnw.ether.scene.mesh.IMesh;
+import ch.fhnw.ether.scene.mesh.IMesh.Pass;
 
 public abstract class AbstractRenderer implements IRenderer, IAttributeProvider {
 
 	private final Renderables renderables = new Renderables();
 
 	@Override
-	public void addMesh(Pass pass, IMesh mesh) {
-		renderables.addMesh(pass, mesh, this);
+	public void addMesh(IMesh mesh) {
+		renderables.addMesh(mesh, this);
 	}
 
 	@Override

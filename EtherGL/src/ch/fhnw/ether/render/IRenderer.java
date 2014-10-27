@@ -51,13 +51,9 @@ public interface IRenderer {
 		}
 	}
 
-	public enum Pass {
-		DEPTH, TRANSPARENCY, OVERLAY, DEVICE_SPACE_OVERLAY, SCREEN_SPACE_OVERLAY
-	}
-
 	void render(GL3 gl, IView view);
 
-	void addMesh(Pass pass, IMesh mesh);
+	void addMesh(IMesh mesh);
 
 	void removeMesh(IMesh mesh);
 }

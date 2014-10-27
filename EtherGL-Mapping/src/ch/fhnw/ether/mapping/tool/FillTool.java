@@ -35,9 +35,9 @@ import java.util.List;
 
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.controller.tool.AbstractTool;
-import ch.fhnw.ether.render.IRenderer.Pass;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
+import ch.fhnw.ether.scene.mesh.IMesh.Pass;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.PrimitiveType;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
@@ -57,7 +57,7 @@ public final class FillTool extends AbstractTool {
 
 	@Override
 	public void activate() {
-		getController().getRenderer().addMesh(Pass.DEVICE_SPACE_OVERLAY, quads);
+		getController().getRenderer().addMesh(quads);
 	}
 
 	@Override
@@ -77,6 +77,6 @@ public final class FillTool extends AbstractTool {
 		Primitives.addRectangle(dst, 0.1f, -1.0f, 1.0f, -0.1f);
 		Primitives.addRectangle(dst, 0.1f, 0.1f, 1.0f, 1.0f);
 		Primitives.addRectangle(dst, -1.0f, 0.1f, -0.1f, 1.0f);
-		return new DefaultMesh(new ColorMaterial(RGBA.WHITE), DefaultGeometry.createV(PrimitiveType.TRIANGLES, Vec3.toArray(dst)));
+		return new DefaultMesh(new ColorMaterial(RGBA.WHITE), DefaultGeometry.createV(PrimitiveType.TRIANGLES, Vec3.toArray(dst)), Pass.DEVICE_SPACE_OVERLAY);
 	}
 }

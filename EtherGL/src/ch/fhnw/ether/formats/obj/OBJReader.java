@@ -82,7 +82,7 @@ public class OBJReader extends AbstractModelReader {
 				edgVertices.add(vs[vs.length - 1].x, vs[vs.length - 1].y, vs[vs.length - 1].z);
 				edgVertices.add(vs[0].x, vs[0].y, vs[0].z);
 
-				IntList triangulation = GeometryUtil.triangualte(polyVertices.toArray());
+				IntList triangulation = GeometryUtil.triangulate(polyVertices.toArray());
 
 				for (int i = 0; i < triangulation.size(); i++) {
 					int idx = triangulation.get(i);

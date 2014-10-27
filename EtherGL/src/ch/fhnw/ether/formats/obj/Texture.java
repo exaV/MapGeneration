@@ -31,7 +31,6 @@ package ch.fhnw.ether.formats.obj;
 
 //import java.nio.IntBuffer;
 
-// FIXME: rename or make protected (collides with texture for rendering)
 /**
  * $Id$
  * <p>

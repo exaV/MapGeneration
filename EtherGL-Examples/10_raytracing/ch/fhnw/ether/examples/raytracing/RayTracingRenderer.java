@@ -31,7 +31,6 @@ package ch.fhnw.ether.examples.raytracing;
 
 import java.nio.IntBuffer;
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 
 import javax.media.opengl.GL;
@@ -47,7 +46,7 @@ import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IAttribute;
 import ch.fhnw.ether.scene.mesh.IMesh;
-import ch.fhnw.ether.scene.mesh.IMesh.Flags;
+import ch.fhnw.ether.scene.mesh.IMesh.Pass;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.PrimitiveType;
@@ -72,7 +71,7 @@ public class RayTracingRenderer implements IRenderer {
 	private long n = 0;
 
 	public RayTracingRenderer() {
-		renderer.addMesh(Pass.DEVICE_SPACE_OVERLAY, plane);
+		renderer.addMesh(plane);
 	}
 
 	@Override
@@ -116,7 +115,7 @@ public class RayTracingRenderer implements IRenderer {
 	}
 
 	@Override
-	public void addMesh(Pass pass, IMesh mesh) {
+	public void addMesh(IMesh mesh) {
 		if (mesh instanceof RayTraceMesh)
 			meshes.add((RayTraceMesh) mesh);
 	}
@@ -170,6 +169,6 @@ public class RayTracingRenderer implements IRenderer {
 		float[][] data = { position, Primitives.DEFAULT_QUAD_TEX_COORDS };
 		IGeometry geometry = new DefaultGeometry(PrimitiveType.TRIANGLES, attribs, data);
 		
-		return new DefaultMesh(new ColorMapMaterial(texture), geometry, EnumSet.of(Flags.SCREEN_SPACE));
+		return new DefaultMesh(new ColorMapMaterial(texture), geometry, Pass.DEVICE_SPACE_OVERLAY);
 	}
 }

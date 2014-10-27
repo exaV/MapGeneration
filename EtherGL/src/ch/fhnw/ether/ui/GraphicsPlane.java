@@ -45,6 +45,7 @@ import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IAttribute;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.IMesh.Flags;
+import ch.fhnw.ether.scene.mesh.IMesh.Pass;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.PrimitiveType;
@@ -87,7 +88,7 @@ class GraphicsPlane {
 		IGeometry geometry = new DefaultGeometry(PrimitiveType.TRIANGLES, attribs, new float[][] { position, texCoords });
 		IMaterial material = new ColorMapMaterial(texture);
 
-		mesh = new DefaultMesh(material, geometry, EnumSet.of(Flags.INTERACTIVE_VIEWS_ONLY));
+		mesh = new DefaultMesh(material, geometry, Pass.SCREEN_SPACE_OVERLAY, EnumSet.of(Flags.INTERACTIVE_VIEWS_ONLY));
 	}
 
 	public final Texture getTexture() {

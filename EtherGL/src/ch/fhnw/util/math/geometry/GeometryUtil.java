@@ -42,7 +42,7 @@ import ch.fhnw.util.math.Vec3;
 public class GeometryUtil {
 	private static final IntList TRIANGLE = new IntList(new int[] { 0, 1, 2 });
 
-	public static IntList triangualte(float[] polygon) {
+	public static IntList triangulate(float[] polygon) {
 		if (polygon.length == 9)
 			return TRIANGLE;
 

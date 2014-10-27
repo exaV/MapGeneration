@@ -44,6 +44,8 @@ public class RayTraceMesh implements IMesh {
 	private final IParametricSurface surface;
 	private Vec3 position = Vec3.ZERO;
 	private RGBA color = RGBA.WHITE;
+	
+	private String name = "ray_trace_mesh";
 
 	public RayTraceMesh(IParametricSurface surface) {
 		this.surface = surface;
@@ -82,6 +84,11 @@ public class RayTraceMesh implements IMesh {
 	// IMesh implementation
 
 	@Override
+	public Pass getPass() {
+		return Pass.DEPTH;
+	}
+	
+	@Override
 	public EnumSet<Flags> getFlags() {
 		return NO_FLAGS;
 	}
@@ -103,6 +110,16 @@ public class RayTraceMesh implements IMesh {
 
 	@Override
 	public void requestUpdate(Object source) {
+	}
+	
+	@Override
+	public String getName() {
+		return name;
+	}
+	
+	@Override
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	@Override

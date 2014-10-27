@@ -33,7 +33,6 @@ import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.controller.tool.AbstractTool;
 import ch.fhnw.ether.controller.tool.PickUtil;
 import ch.fhnw.ether.controller.tool.PickUtil.PickMode;
-import ch.fhnw.ether.render.IRenderer.Pass;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
@@ -71,7 +70,7 @@ public final class AreaTool extends AbstractTool {
 
 	@Override
 	public void activate() {
-		getController().getRenderer().addMesh(Pass.DEPTH, mesh);
+		getController().getRenderer().addMesh(mesh);
 	}
 
 	@Override

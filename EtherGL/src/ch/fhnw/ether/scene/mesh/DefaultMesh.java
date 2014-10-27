@@ -40,6 +40,7 @@ import ch.fhnw.util.math.geometry.BoundingBox;
 public final class DefaultMesh implements IMesh {
 	private final IMaterial material;
 	private final IGeometry geometry;
+	private final Pass pass;
 	private final EnumSet<Flags> flags;
 
 	private String name = "unnamed_mesh";
@@ -47,28 +48,26 @@ public final class DefaultMesh implements IMesh {
 	private final UpdateRequest updater = new UpdateRequest(true);
 	
 	public DefaultMesh(IMaterial material, IGeometry geometry) {
-		this(material, geometry, NO_FLAGS);
+		this(material, geometry, Pass.DEPTH);
 	}
 	
+	public DefaultMesh(IMaterial material, IGeometry geometry, Pass pass) {
+		this(material, geometry, pass, NO_FLAGS);
+	}
+
 	public DefaultMesh(IMaterial material, IGeometry geometry, EnumSet<Flags> flags) {
+		this(material, geometry, Pass.DEPTH, flags);
+	}
+
+	public DefaultMesh(IMaterial material, IGeometry geometry, Pass pass, EnumSet<Flags> flags) {
 		this.material = material;
 		this.material.addUpdateListener(this);
 		this.geometry = geometry;
 		this.geometry.addUpdateListener(this);
+		this.pass = pass;
 		this.flags = flags;
 	}
 	
-	// FIXME: this should probably be part of i3dobject
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-		requestUpdate();
-	}
-
 	// I3DObject implementation
 
 	@Override
@@ -87,8 +86,24 @@ public final class DefaultMesh implements IMesh {
 		requestUpdate();
 	}
 
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	@Override
+	public void setName(String name) {
+		this.name = name;
+		requestUpdate();
+	}
+
 	// IMesh implementation
 
+	@Override
+	public Pass getPass() {
+		return pass;
+	}
+	
 	@Override
 	public EnumSet<Flags> getFlags() {
 		return flags;

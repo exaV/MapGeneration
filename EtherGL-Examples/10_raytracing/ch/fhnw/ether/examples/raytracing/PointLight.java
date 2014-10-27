@@ -34,9 +34,10 @@ import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.BoundingBox;
 
 public class PointLight implements ILight {
-
 	private Vec3 position;
 	private RGBA color;
+
+	private String name = "point_light";
 
 	public PointLight(Vec3 position, RGBA color) {
 		this.position = position;
@@ -74,4 +75,13 @@ public class PointLight implements ILight {
 		this.color = color;
 	}
 
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	@Override
+	public void setName(String name) {
+		this.name = name;
+	}
 }

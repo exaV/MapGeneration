@@ -35,7 +35,6 @@ import java.util.List;
 
 import ch.fhnw.ether.camera.ICamera;
 import ch.fhnw.ether.render.IRenderer;
-import ch.fhnw.ether.render.IRenderer.Pass;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.IMesh;
 
@@ -63,10 +62,9 @@ public class DefaultScene implements IScene {
 	
 	@Override
 	public final void add3DObject(I3DObject object) {
-		// FIXME: we need to deal with Pass properly here (use mesh flags, etc)
 		if (object instanceof IMesh) {
 			meshes.add((IMesh)object);
-			renderer.addMesh(Pass.DEPTH, (IMesh)object);
+			renderer.addMesh((IMesh)object);
 		}
 		if (object instanceof ICamera)
 			cameras.add((ICamera)object);

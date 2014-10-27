@@ -214,8 +214,6 @@ public class DefaultGeometry extends AbstractGeometry {
 
 	// ---- static helpers for simple geometry creation from arrays
 	
-	// FIXME: revise geometry creation - this is not very type safe here...
-
 	public static DefaultGeometry createV(PrimitiveType type, float[] vertices) {
 		IAttribute[] attributes = { IMaterial.POSITION_ARRAY };
 		float[][] data = { vertices };

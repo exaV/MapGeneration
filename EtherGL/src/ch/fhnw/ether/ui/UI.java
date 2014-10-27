@@ -35,7 +35,6 @@ import java.util.Collections;
 import java.util.List;
 
 import ch.fhnw.ether.controller.IController;
-import ch.fhnw.ether.render.IRenderer.Pass;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.util.UpdateRequest;
 
@@ -57,7 +56,7 @@ public final class UI {
 	}
 
 	public void enable() {
-		controller.getRenderer().addMesh(Pass.SCREEN_SPACE_OVERLAY, text.getMesh());
+		controller.getRenderer().addMesh(text.getMesh());
 		requestUpdate();
 	}
 

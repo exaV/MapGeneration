@@ -44,8 +44,8 @@ import ch.fhnw.ether.mapping.BimberRaskarCalibrator;
 import ch.fhnw.ether.mapping.ICalibrationModel;
 import ch.fhnw.ether.mapping.ICalibrator;
 import ch.fhnw.ether.render.IRenderer;
-import ch.fhnw.ether.render.IRenderer.Pass;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
+import ch.fhnw.ether.scene.mesh.IMesh.Pass;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.PrimitiveType;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
@@ -88,16 +88,17 @@ public final class CalibrationTool extends AbstractTool {
 		lines = new DefaultMesh(new ColorMaterial(RGBA.WHITE), DefaultGeometry.createV(PrimitiveType.LINES, model.getCalibrationLines()));
 		points = new DefaultMesh(new ColorMaterial(RGBA.WHITE), DefaultGeometry.createV(PrimitiveType.POINTS, model.getCalibrationPoints()));
 		// FIXME: initialize calibratedLines and points, updateCalibratedGeometry should not recreate meshes...
+		// initialize with pass.device_space_overlay
 	}
 
 	@Override
 	public void activate() {
 		getController().enableViews(Collections.singleton(getController().getCurrentView()));
 		IRenderer render = getController().getRenderer();
-		render.addMesh(Pass.DEPTH, lines);
-		render.addMesh(Pass.DEPTH, points);
-		render.addMesh(Pass.DEVICE_SPACE_OVERLAY, calibratedLines);
-		render.addMesh(Pass.DEVICE_SPACE_OVERLAY, calibratedPoints);
+		render.addMesh(lines);
+		render.addMesh(points);
+		render.addMesh(calibratedLines);
+		render.addMesh(calibratedPoints);
 	}
 
 	@Override
@@ -293,7 +294,7 @@ public final class CalibrationTool extends AbstractTool {
 		CalibrationContext context = getContext(view);
 
 		// prepare points
-		calibratedPoints = new DefaultMesh(new ColorMaterial(RGBA.YELLOW), DefaultGeometry.createV(PrimitiveType.POINTS, Vec3.toArray(context.projectedVertices)));
+		calibratedPoints = new DefaultMesh(new ColorMaterial(RGBA.YELLOW), DefaultGeometry.createV(PrimitiveType.POINTS, Vec3.toArray(context.projectedVertices)), Pass.DEVICE_SPACE_OVERLAY);
 
 		// prepare lines
 		List<Vec3> v = new ArrayList<>();
@@ -311,7 +312,7 @@ public final class CalibrationTool extends AbstractTool {
 				Primitives.addLine(v, a.x, a.y - CROSSHAIR_SIZE / viewport.h, a.z, a.x, a.y + CROSSHAIR_SIZE / viewport.h, a.z);
 			}
 		}
-		calibratedPoints = new DefaultMesh(new ColorMaterial(RGBA.YELLOW), DefaultGeometry.createV(PrimitiveType.POINTS, Vec3.toArray(v)));
+		calibratedPoints = new DefaultMesh(new ColorMaterial(RGBA.YELLOW), DefaultGeometry.createV(PrimitiveType.POINTS, Vec3.toArray(v)), Pass.DEVICE_SPACE_OVERLAY);
 	}
 
 }
