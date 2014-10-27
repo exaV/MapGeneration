@@ -269,6 +269,7 @@ public final class Renderable {
 	}
 
 	private void loadBuffer(GL3 gl, FloatList dst) {
+		// FIXME: fix memory management/allocation throughout (+ thread safe)
 		int size = 0;
 		FloatArrayAttribute attr = (FloatArrayAttribute) arrayAttributes.get(0);
 		for (Supplier<float[]> supplier : attr.getSuppliers()) {

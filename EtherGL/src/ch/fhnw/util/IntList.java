@@ -32,7 +32,7 @@ package ch.fhnw.util;
 import java.util.Arrays;
 
 public final class IntList {
-	private int[] data;;
+	private int[] data;
 	private int size;
 
 	public IntList() {
@@ -43,14 +43,45 @@ public final class IntList {
 		this.data = new int[size];
 	}
 
-	public IntList(int... ints) {
-		this.data = Arrays.copyOf(ints, ints.length);
-		this.size = ints.length;
+	public IntList(int... values) {
+		this.data = Arrays.copyOf(values, values.length);
+		this.size = values.length;
+	}
+
+	public int get(int i) {
+		return data[i];
 	}
 
 	public void add(int value) {
 		ensureCapacity(size + 1);
 		data[size++] = value;
+	}
+
+	public boolean add(int... values) {
+		if ((values != null) && (values.length > 0)) {
+			ensureCapacity(size + values.length);
+			System.arraycopy(values, 0, data, size, values.length);
+			size += values.length;
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public void clear() {
+		size = 0;
+	}
+
+	public int size() {
+		return size;
+	}
+
+	public boolean isEmpty() {
+		return size == 0;
+	}
+
+	public int capacity() {
+		return data.length;
 	}
 
 	private void ensureCapacity(int capacity) {
@@ -63,21 +94,5 @@ public final class IntList {
 		int[] tmp = data;
 		data = new int[newCap];
 		System.arraycopy(tmp, 0, data, 0, size);
-	}
-
-	public int size() {
-		return size;
-	}
-
-	public void clear() {
-		size = 0;
-	}
-
-	public int get(int i) {
-		return data[i];
-	}
-
-	public boolean isEmpty() {
-		return size == 0;
 	}
 }

@@ -30,9 +30,21 @@ package ch.fhnw.util;
 import java.util.Arrays;
 
 public class FloatList implements IAddOnlyFloatList {
-	private float[] data = new float[16];
+	private float[] data;
 	private int size;
 
+	public FloatList() {
+		this(16);
+	}
+	
+	public FloatList(int size) {
+		data = new float[size];
+	}
+	
+	public float get(int i) {
+		return data[i];
+	}
+	
 	@Override
 	public void add(float value) {
 		ensureCapacity(size + 1);
@@ -64,7 +76,7 @@ public class FloatList implements IAddOnlyFloatList {
 	}
 
 	@Override
-	public boolean add(float[] values) {
+	public boolean add(float... values) {
 		if ((values != null) && (values.length > 0)) {
 			ensureCapacity(size + values.length);
 			System.arraycopy(values, 0, data, size, values.length);
@@ -75,19 +87,23 @@ public class FloatList implements IAddOnlyFloatList {
 		}
 	}
 
+	public void clear() {
+		size = 0;
+	}
+
 	@Override
 	public int size() {
 		return size;
 	}
 
 	@Override
-	public int capacity() {
-		return data.length;
+	public boolean isEmpty() {
+		return size == 0;
 	}
 
 	@Override
-	public boolean isEmpty() {
-		return size == 0;
+	public int capacity() {
+		return data.length;
 	}
 
 	@Override
@@ -103,11 +119,8 @@ public class FloatList implements IAddOnlyFloatList {
 		System.arraycopy(tmp, 0, data, 0, size);
 	}
 
+	// FIXME: do we really need a copy here?
 	public float[] toArray() {
 		return Arrays.copyOf(data, size);
-	}
-
-	public void clear() {
-		size = 0;
 	}
 }

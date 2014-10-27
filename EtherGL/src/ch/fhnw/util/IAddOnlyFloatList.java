@@ -38,7 +38,7 @@ public interface IAddOnlyFloatList {
 
 	void add(float value0, float value1, float value2, float value3);
 
-	boolean add(float[] values);
+	boolean add(float... values);
 
 	int size();
 
