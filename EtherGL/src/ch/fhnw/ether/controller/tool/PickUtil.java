@@ -43,6 +43,8 @@ import ch.fhnw.util.math.geometry.GeometryUtil;
  * Utilities for 3D object picking
  */
 public final class PickUtil {
+	
+	// FIXME: currently only does boundingbox picking. need to implement visitor pattern or similar for I3DObject
 
 	public enum PickMode {
 		POINT,

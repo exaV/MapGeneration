@@ -51,7 +51,7 @@ import ch.fhnw.ether.render.gl.Program;
 import ch.fhnw.ether.render.shader.IShader;
 import ch.fhnw.ether.render.shader.IShader.Attributes;
 import ch.fhnw.ether.render.shader.builtin.LineShader;
-import ch.fhnw.ether.render.shader.builtin.MaterialShader;
+import ch.fhnw.ether.render.shader.builtin.UnshadedTriangleShader;
 import ch.fhnw.ether.render.shader.builtin.PointShader;
 import ch.fhnw.ether.scene.mesh.IAttribute;
 import ch.fhnw.ether.scene.mesh.IMesh;
@@ -303,6 +303,7 @@ public final class Renderable {
 		return index;
 	}
 
+	// FIXME: make more flexible/dynamic (as soon as we have more builtin shaders): derive shader from attributes
 	private void createShader(Attributes attributes) {
 		if (mesh.getMaterial() instanceof CustomMaterial) {
 			shader = ((CustomMaterial)mesh.getMaterial()).getShader();
@@ -317,7 +318,7 @@ public final class Renderable {
 			shader = new LineShader(attributes);
 			break;
 		case TRIANGLES:
-			shader = new MaterialShader(attributes);
+			shader = new UnshadedTriangleShader(attributes);
 			break;
 		}
 	}

@@ -29,10 +29,8 @@
 
 package ch.fhnw.ether.mapping.tool;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.prefs.Preferences;
 
@@ -52,14 +50,13 @@ import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.ProjectionUtil;
 import ch.fhnw.util.PreferencesStore;
-import ch.fhnw.util.Viewport;
 import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Vec3;
-import ch.fhnw.util.math.geometry.Primitives;
 
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.MouseEvent;
 
+// FIXME: this tool is currently defunct
 public final class CalibrationTool extends AbstractTool {
 	private static final String[] HELP = { "Calibration Tool for 3D Mapping", "", "[0] Return", "", "[C] Clear Calibration", "[L] Load Calibration",
 			"[S] Save Calibration", "[DEL] Clear Current Calibration Point", };
@@ -87,8 +84,8 @@ public final class CalibrationTool extends AbstractTool {
 		this.model = model;
 		lines = new DefaultMesh(new ColorMaterial(RGBA.WHITE), DefaultGeometry.createV(PrimitiveType.LINES, model.getCalibrationLines()));
 		points = new DefaultMesh(new ColorMaterial(RGBA.WHITE), DefaultGeometry.createV(PrimitiveType.POINTS, model.getCalibrationPoints()));
-		// FIXME: initialize calibratedLines and points, updateCalibratedGeometry should not recreate meshes...
-		// initialize with pass.device_space_overlay
+		calibratedPoints = new DefaultMesh(new ColorMaterial(RGBA.YELLOW), DefaultGeometry.createV(PrimitiveType.POINTS, new float[0]), Pass.DEVICE_SPACE_OVERLAY);
+		calibratedLines = new DefaultMesh(new ColorMaterial(RGBA.YELLOW), DefaultGeometry.createV(PrimitiveType.LINES, new float[0]), Pass.DEVICE_SPACE_OVERLAY);
 	}
 
 	@Override
@@ -291,28 +288,28 @@ public final class CalibrationTool extends AbstractTool {
 	}
 
 	private void updateCalibratedGeometry(IView view) {
-		CalibrationContext context = getContext(view);
-
-		// prepare points
-		calibratedPoints = new DefaultMesh(new ColorMaterial(RGBA.YELLOW), DefaultGeometry.createV(PrimitiveType.POINTS, Vec3.toArray(context.projectedVertices)), Pass.DEVICE_SPACE_OVERLAY);
-
-		// prepare lines
-		List<Vec3> v = new ArrayList<>();
-		for (int i = 0; i < context.projectedVertices.size(); ++i) {
-			Vec3 a = context.modelVertices.get(i);
-			Vec3 aa = ProjectionUtil.projectToDevice(view, a);
-			if (aa == null)
-				continue;
-			a = context.projectedVertices.get(i);
-			Primitives.addLine(v, a.x, a.y, a.z, aa.x, aa.y, aa.z);
-
-			if (i == context.currentSelection) {
-				Viewport viewport = view.getViewport();
-				Primitives.addLine(v, a.x - CROSSHAIR_SIZE / viewport.w, a.y, a.z, a.x + CROSSHAIR_SIZE / viewport.w, a.y, a.z);
-				Primitives.addLine(v, a.x, a.y - CROSSHAIR_SIZE / viewport.h, a.z, a.x, a.y + CROSSHAIR_SIZE / viewport.h, a.z);
-			}
-		}
-		calibratedPoints = new DefaultMesh(new ColorMaterial(RGBA.YELLOW), DefaultGeometry.createV(PrimitiveType.POINTS, Vec3.toArray(v)), Pass.DEVICE_SPACE_OVERLAY);
+//		CalibrationContext context = getContext(view);
+//
+//		// prepare points
+//		calibratedPoints = new DefaultMesh(new ColorMaterial(RGBA.YELLOW), DefaultGeometry.createV(PrimitiveType.POINTS, Vec3.toArray(context.projectedVertices)), Pass.DEVICE_SPACE_OVERLAY);
+//
+//		// prepare lines
+//		List<Vec3> v = new ArrayList<>();
+//		for (int i = 0; i < context.projectedVertices.size(); ++i) {
+//			Vec3 a = context.modelVertices.get(i);
+//			Vec3 aa = ProjectionUtil.projectToDevice(view, a);
+//			if (aa == null)
+//				continue;
+//			a = context.projectedVertices.get(i);
+//			Primitives.addLine(v, a.x, a.y, a.z, aa.x, aa.y, aa.z);
+//
+//			if (i == context.currentSelection) {
+//				Viewport viewport = view.getViewport();
+//				Primitives.addLine(v, a.x - CROSSHAIR_SIZE / viewport.w, a.y, a.z, a.x + CROSSHAIR_SIZE / viewport.w, a.y, a.z);
+//				Primitives.addLine(v, a.x, a.y - CROSSHAIR_SIZE / viewport.h, a.z, a.x, a.y + CROSSHAIR_SIZE / viewport.h, a.z);
+//			}
+//		}
+//		calibratedPoints = new DefaultMesh(new ColorMaterial(RGBA.YELLOW), DefaultGeometry.createV(PrimitiveType.POINTS, Vec3.toArray(v)), Pass.DEVICE_SPACE_OVERLAY);
 	}
 
 }

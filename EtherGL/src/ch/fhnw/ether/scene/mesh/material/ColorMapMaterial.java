@@ -35,6 +35,7 @@ import ch.fhnw.ether.render.gl.Texture;
 import ch.fhnw.ether.scene.mesh.IAttribute.ISuppliers;
 import ch.fhnw.util.color.RGBA;
 
+// FIXME: we should switch to a texture class which is independent of GL
 public class ColorMapMaterial extends ColorMaterial {
 	private Texture texture;
 	
