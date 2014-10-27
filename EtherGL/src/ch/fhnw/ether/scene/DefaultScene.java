@@ -63,7 +63,7 @@ public class DefaultScene implements IScene {
 	
 	@Override
 	public final void add3DObject(I3DObject object) {
-		// FIXME: we need to deal with Pass properly here
+		// FIXME: we need to deal with Pass properly here (use mesh flags, etc)
 		if (object instanceof IMesh) {
 			meshes.add((IMesh)object);
 			renderer.addMesh(Pass.DEPTH, (IMesh)object);

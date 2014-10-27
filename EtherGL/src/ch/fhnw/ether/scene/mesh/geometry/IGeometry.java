@@ -29,27 +29,14 @@
 
 package ch.fhnw.ether.scene.mesh.geometry;
 
-import javax.media.opengl.GL;
-
 import ch.fhnw.ether.render.attribute.IAttributeProvider;
 import ch.fhnw.util.IUpdateRequester;
 import ch.fhnw.util.math.ITransformable;
 import ch.fhnw.util.math.geometry.BoundingBox;
 
 public interface IGeometry extends IAttributeProvider, ITransformable, IUpdateRequester {
-	// FIXME: remove GL dependencies
 	enum PrimitiveType {
-		POINTS(GL.GL_POINTS), LINES(GL.GL_LINES), TRIANGLES(GL.GL_TRIANGLES);
-
-		private int mode;
-
-		private PrimitiveType(int mode) {
-			this.mode = mode;
-		}
-
-		public int getMode() {
-			return mode;
-		}
+		POINTS, LINES, TRIANGLES;
 	}
 
 	/**
@@ -61,6 +48,4 @@ public interface IGeometry extends IAttributeProvider, ITransformable, IUpdateRe
 	 * @return axis-aligned bounding box of this geometry
 	 */
 	BoundingBox getBounds();
-	
-	
 }

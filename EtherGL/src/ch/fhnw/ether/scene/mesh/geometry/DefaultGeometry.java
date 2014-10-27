@@ -213,6 +213,8 @@ public class DefaultGeometry extends AbstractGeometry {
 	}
 
 	// ---- static helpers for simple geometry creation from arrays
+	
+	// FIXME: revise geometry creation - this is not very type safe here...
 
 	public static DefaultGeometry create(PrimitiveType type, float[] vertices) {
 		IAttribute[] attributes = { IMaterial.POSITION_ARRAY };
@@ -220,6 +222,7 @@ public class DefaultGeometry extends AbstractGeometry {
 		return new DefaultGeometry(type, attributes, data);
 	}
 
+	// FIXME: this should be vertices + normals
 	public static DefaultGeometry create(PrimitiveType type, float[] vertices, float[] colors) {
 		IAttribute[] attributes = { IMaterial.POSITION_ARRAY, IMaterial.COLOR_ARRAY };
 		float[][] data = { vertices, colors };

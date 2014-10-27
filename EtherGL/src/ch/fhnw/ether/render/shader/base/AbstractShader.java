@@ -32,6 +32,7 @@ package ch.fhnw.ether.render.shader.base;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.media.opengl.GL;
 import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.render.attribute.IArrayAttribute;
@@ -41,6 +42,9 @@ import ch.fhnw.ether.render.shader.IShader;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.PrimitiveType;
 
 public abstract class AbstractShader implements IShader {
+	// important: keep this in sync with PrimitiveType enum
+	public static final int[] MODE = { GL.GL_POINTS, GL.GL_LINES, GL.GL_TRIANGLES };
+
 	private Class<?> root;
 	private String name;
 	private String source;
@@ -63,7 +67,7 @@ public abstract class AbstractShader implements IShader {
 		source = null;
 		type = null;
 		program = null;
-		
+
 		uniforms = null;
 		arrays = null;
 	}
@@ -81,7 +85,8 @@ public abstract class AbstractShader implements IShader {
 
 	@Override
 	public void render(GL3 gl, int count) {
-		gl.glDrawArrays(type.getMode(), 0, count);
+		int mode = MODE[type.ordinal()];
+		gl.glDrawArrays(mode, 0, count);
 	}
 
 	@Override
@@ -108,7 +113,7 @@ public abstract class AbstractShader implements IShader {
 	protected final void addUniform(IUniformAttribute uniform) {
 		uniforms.add(uniform);
 	}
-	
+
 	protected final void addArray(IArrayAttribute array) {
 		arrays.add(array);
 	}
