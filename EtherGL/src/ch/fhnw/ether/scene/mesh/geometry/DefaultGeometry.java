@@ -216,27 +216,33 @@ public class DefaultGeometry extends AbstractGeometry {
 	
 	// FIXME: revise geometry creation - this is not very type safe here...
 
-	public static DefaultGeometry create(PrimitiveType type, float[] vertices) {
+	public static DefaultGeometry createV(PrimitiveType type, float[] vertices) {
 		IAttribute[] attributes = { IMaterial.POSITION_ARRAY };
 		float[][] data = { vertices };
 		return new DefaultGeometry(type, attributes, data);
 	}
 
-	// FIXME: this should be vertices + normals
-	public static DefaultGeometry create(PrimitiveType type, float[] vertices, float[] colors) {
+	public static DefaultGeometry createVN(PrimitiveType type, float[] vertices, float[] normals) {
+		IAttribute[] attributes = { IMaterial.POSITION_ARRAY, IMaterial.NORMAL_ARRAY };
+		float[][] data = { vertices, normals };
+		return new DefaultGeometry(type, attributes, data);
+	}
+
+	public static DefaultGeometry createVC(PrimitiveType type, float[] vertices, float[] colors) {
 		IAttribute[] attributes = { IMaterial.POSITION_ARRAY, IMaterial.COLOR_ARRAY };
 		float[][] data = { vertices, colors };
 		return new DefaultGeometry(type, attributes, data);
 	}
 
-	public static DefaultGeometry create(PrimitiveType type, float[] vertices, float[] normals, float[] colors) {
+
+	public static DefaultGeometry createVNC(PrimitiveType type, float[] vertices, float[] normals, float[] colors) {
 		IAttribute[] attributes = { IMaterial.POSITION_ARRAY, IMaterial.NORMAL_ARRAY, IMaterial.COLOR_ARRAY };
 		float[][] data = { vertices, normals, colors };
 		System.out.println(vertices.length + " " + normals.length + " " + colors.length);
 		return new DefaultGeometry(type, attributes, data);
 	}
 
-	public static DefaultGeometry create(PrimitiveType type, float[] vertices, float[] normals, float[] colors, float[] texCoords) {
+	public static DefaultGeometry createVNCM(PrimitiveType type, float[] vertices, float[] normals, float[] colors, float[] texCoords) {
 		IAttribute[] attributes = { IMaterial.POSITION_ARRAY, IMaterial.NORMAL_ARRAY, IMaterial.COLOR_ARRAY, IMaterial.COLOR_MAP_ARRAY };
 		float[][] data = { vertices, normals, colors, texCoords };
 		return new DefaultGeometry(type, attributes, data);

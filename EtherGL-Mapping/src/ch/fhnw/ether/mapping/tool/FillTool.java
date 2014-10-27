@@ -77,6 +77,6 @@ public final class FillTool extends AbstractTool {
 		Primitives.addRectangle(dst, 0.1f, -1.0f, 1.0f, -0.1f);
 		Primitives.addRectangle(dst, 0.1f, 0.1f, 1.0f, 1.0f);
 		Primitives.addRectangle(dst, -1.0f, 0.1f, -0.1f, 1.0f);
-		return new DefaultMesh(new ColorMaterial(RGBA.WHITE), DefaultGeometry.create(PrimitiveType.TRIANGLES, Vec3.toArray(dst)));
+		return new DefaultMesh(new ColorMaterial(RGBA.WHITE), DefaultGeometry.createV(PrimitiveType.TRIANGLES, Vec3.toArray(dst)));
 	}
 }

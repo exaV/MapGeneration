@@ -96,8 +96,7 @@ public class OBJReader extends AbstractModelReader {
 			RGB diffuse = mat.getKd();
 			float[] triv = triVertices.toArray();
 			IMaterial material = new ColorMaterial(new RGBA(diffuse.x, diffuse.y, diffuse.z, 1));
-			// FIXME: it shouldnt be necessary to expand diffuse into a color array here (one color would do, since the renderer will expand this - in addition, we don't need a color array anyway)
-			IGeometry geometry = DefaultGeometry.create(PrimitiveType.TRIANGLES, triv, GeometryUtil.calculateNormals(triv), diffuse.generateColorArray(triv.length / 3));
+			IGeometry geometry = DefaultGeometry.createVN(PrimitiveType.TRIANGLES, triv, GeometryUtil.calculateNormals(triv));
 			DefaultMesh mesh = new DefaultMesh(material, geometry);
 			mesh.setName(path + '/' + g.getName());
 			meshes.add(mesh);

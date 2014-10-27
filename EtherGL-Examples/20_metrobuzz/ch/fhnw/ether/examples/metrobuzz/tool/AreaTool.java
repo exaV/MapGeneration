@@ -64,7 +64,7 @@ public final class AreaTool extends AbstractTool {
 
 	public AreaTool(IController controller) {
 		super(controller);
-		IGeometry geometry = DefaultGeometry.create(PrimitiveType.TRIANGLES, Primitives.UNIT_CUBE_TRIANGLES);
+		IGeometry geometry = DefaultGeometry.createV(PrimitiveType.TRIANGLES, Primitives.UNIT_CUBE_TRIANGLES);
 		geometry.setScale(new Vec3(0.1, 0.1, 0.001));
 		mesh = new DefaultMesh(new ColorMaterial(TOOL_COLOR), geometry);
 	}

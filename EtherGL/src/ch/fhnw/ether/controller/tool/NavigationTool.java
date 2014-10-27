@@ -140,6 +140,6 @@ public class NavigationTool extends AbstractTool {
 			Primitives.addLine(lines, -e, -i * gridSpacing, e, -i * gridSpacing);
 		}
 
-		return new DefaultMesh(new ColorMaterial(RGBA.WHITE), DefaultGeometry.create(PrimitiveType.LINES, Vec3.toArray(lines)));
+		return new DefaultMesh(new ColorMaterial(RGBA.WHITE), DefaultGeometry.createV(PrimitiveType.LINES, Vec3.toArray(lines)));
 	}
 }

@@ -48,7 +48,7 @@ public class MappingTriangleScene extends DefaultScene {
 		super(renderer, camera);
 		IMaterial material = new ColorMaterial(RGBA.WHITE);
 		for (int i = 0; i < 10; ++i) {
-			IGeometry geometry = DefaultGeometry.create(PrimitiveType.TRIANGLES, Primitives.UNIT_CUBE_TRIANGLES);
+			IGeometry geometry = DefaultGeometry.createV(PrimitiveType.TRIANGLES, Primitives.UNIT_CUBE_TRIANGLES);
 			double s = 0.1 + 0.1 * Math.random();
 			double tx = -1 + 2 * Math.random();
 			double ty = -1 + 2 * Math.random();

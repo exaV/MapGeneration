@@ -85,8 +85,8 @@ public final class CalibrationTool extends AbstractTool {
 	public CalibrationTool(IController controller, ICalibrationModel model) {
 		super(controller);
 		this.model = model;
-		lines = new DefaultMesh(new ColorMaterial(RGBA.WHITE), DefaultGeometry.create(PrimitiveType.LINES, model.getCalibrationLines()));
-		points = new DefaultMesh(new ColorMaterial(RGBA.WHITE), DefaultGeometry.create(PrimitiveType.POINTS, model.getCalibrationPoints()));
+		lines = new DefaultMesh(new ColorMaterial(RGBA.WHITE), DefaultGeometry.createV(PrimitiveType.LINES, model.getCalibrationLines()));
+		points = new DefaultMesh(new ColorMaterial(RGBA.WHITE), DefaultGeometry.createV(PrimitiveType.POINTS, model.getCalibrationPoints()));
 		// FIXME: initialize calibratedLines and points, updateCalibratedGeometry should not recreate meshes...
 	}
 
@@ -293,7 +293,7 @@ public final class CalibrationTool extends AbstractTool {
 		CalibrationContext context = getContext(view);
 
 		// prepare points
-		calibratedPoints = new DefaultMesh(new ColorMaterial(RGBA.YELLOW), DefaultGeometry.create(PrimitiveType.POINTS, Vec3.toArray(context.projectedVertices)));
+		calibratedPoints = new DefaultMesh(new ColorMaterial(RGBA.YELLOW), DefaultGeometry.createV(PrimitiveType.POINTS, Vec3.toArray(context.projectedVertices)));
 
 		// prepare lines
 		List<Vec3> v = new ArrayList<>();
@@ -311,7 +311,7 @@ public final class CalibrationTool extends AbstractTool {
 				Primitives.addLine(v, a.x, a.y - CROSSHAIR_SIZE / viewport.h, a.z, a.x, a.y + CROSSHAIR_SIZE / viewport.h, a.z);
 			}
 		}
-		calibratedPoints = new DefaultMesh(new ColorMaterial(RGBA.YELLOW), DefaultGeometry.create(PrimitiveType.POINTS, Vec3.toArray(v)));
+		calibratedPoints = new DefaultMesh(new ColorMaterial(RGBA.YELLOW), DefaultGeometry.createV(PrimitiveType.POINTS, Vec3.toArray(v)));
 	}
 
 }

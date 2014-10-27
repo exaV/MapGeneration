@@ -150,8 +150,8 @@ public class Scene extends DefaultScene {
 			networkEdges[i++] = 0;
 		}
 
-		DefaultMesh networkGeometryPoints = new DefaultMesh(new ColorMaterial(RGBA.YELLOW), DefaultGeometry.create(PrimitiveType.POINTS, networkNodes));
-		DefaultMesh networkGeometryLines = new DefaultMesh(new ColorMaterial(RGBA.YELLOW), DefaultGeometry.create(PrimitiveType.LINES, networkEdges));
+		DefaultMesh networkGeometryPoints = new DefaultMesh(new ColorMaterial(RGBA.YELLOW), DefaultGeometry.createV(PrimitiveType.POINTS, networkNodes));
+		DefaultMesh networkGeometryLines = new DefaultMesh(new ColorMaterial(RGBA.YELLOW), DefaultGeometry.createV(PrimitiveType.LINES, networkEdges));
 		add3DObject(networkGeometryPoints);
 		add3DObject(networkGeometryLines);
 
@@ -250,7 +250,7 @@ public class Scene extends DefaultScene {
 				}
 				}
 			}
-			DefaultMesh geometry = new DefaultMesh(new ColorMaterial(RGBA.WHITE), DefaultGeometry.create(PrimitiveType.LINES, agentEdges, agentColors));
+			DefaultMesh geometry = new DefaultMesh(new ColorMaterial(RGBA.WHITE), DefaultGeometry.createVC(PrimitiveType.LINES, agentEdges, agentColors));
 			add3DObject(geometry);
 		}
 	}
