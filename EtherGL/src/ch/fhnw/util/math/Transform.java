@@ -100,25 +100,14 @@ public class Transform implements ITransformable {
 
 	private void validateVertexTransform(Vec3 origin) {
 		if (vertexTransform == null) {
-			vertexTransform = Mat4.identityMatrix();
-			vertexTransform.translate(-origin.x, -origin.y, -origin.z);
-			vertexTransform.scale(scale);
-			vertexTransform.rotate(rotation.z, Vec3.Z);
-			vertexTransform.rotate(rotation.y, Vec3.Y);
-			vertexTransform.rotate(rotation.x, Vec3.X);
-			vertexTransform.translate(translation);
+			vertexTransform = Mat4.identityMatrix().translate(-origin.x, -origin.y, -origin.z).scale(scale).rotate(rotation.z, Vec3.Z).rotate(rotation.y, Vec3.Y).rotate(rotation.x, Vec3.X).translate(translation);
 		}
 	}
 
 	private void validateNormalTransform() {
 		if (normalTransform == null) {
-			normalTransform = Mat4.identityMatrix();
-			normalTransform.scale(scale);
-			normalTransform.rotate(rotation.z, Vec3.Z);
-			normalTransform.rotate(rotation.y, Vec3.Y);
-			normalTransform.rotate(rotation.x, Vec3.X);
-			normalTransform = normalTransform.inverse();
-			normalTransform = normalTransform.transposed();
+			normalTransform = Mat4.identityMatrix().scale(scale).rotate(rotation.z, Vec3.Z).rotate(rotation.y, Vec3.Y).rotate(rotation.x, Vec3.X);
+			normalTransform = normalTransform.inverse().transposed();
 		}
 	}
 

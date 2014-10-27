@@ -134,7 +134,7 @@ public final class Mat4 {
 	 * @param mat
 	 *            the second factor of the matrix product
 	 */
-	public void postMultiply(final Mat4 mat) {
+	public Mat4 postMultiply(final Mat4 mat) {
 		for (int i = 0; i < 4; i++) {
 			float mi0 = m[i];
 			float mi4 = m[i + 4];
@@ -145,6 +145,7 @@ public final class Mat4 {
 			m[i + 8] = mi0 * mat.m[M02] + mi4 * mat.m[M12] + mi8 * mat.m[M22] + mi12 * mat.m[M32];
 			m[i + 12] = mi0 * mat.m[M03] + mi4 * mat.m[M13] + mi8 * mat.m[M23] + mi12 * mat.m[M33];
 		}
+		return this;
 	}
 
 	/**
@@ -153,7 +154,7 @@ public final class Mat4 {
 	 * @param mat
 	 *            the first factor of the matrix product
 	 */
-	public void preMultiply(final Mat4 mat) {
+	public Mat4 preMultiply(final Mat4 mat) {
 		for (int i = 0; i < 16; i += 4) {
 			float mi0 = m[i];
 			float mi1 = m[i + 1];
@@ -164,11 +165,8 @@ public final class Mat4 {
 			m[i + 2] = mi0 * mat.m[M20] + mi1 * mat.m[M21] + mi2 * mat.m[M22] + mi3 * mat.m[M23];
 			m[i + 3] = mi0 * mat.m[M30] + mi1 * mat.m[M31] + mi2 * mat.m[M32] + mi3 * mat.m[M33];
 		}
+		return this;
 	}
-	
-	// FIXME: i'm not happy with the api here, we should be able to write:
-	// Mat4 m = Mat4.translate(...).rotate(...).scale(...).rotate(...)...
-	// which would make everything easier to read from a math perspective...
 
 	/**
 	 * Pre-multiplies matrix m with translation matrix t (m = t * m)
@@ -180,16 +178,16 @@ public final class Mat4 {
 	 * @param tz
 	 *            z translation
 	 */
-	public void translate(float tx, float ty, float tz) {
+	public Mat4 translate(float tx, float ty, float tz) {
 		final Mat4 t = identityMatrix();
 		t.m[M03] = tx;
 		t.m[M13] = ty;
 		t.m[M23] = tz;
-		preMultiply(t);
+		return preMultiply(t);
 	}
 
-	public void translate(Vec3 t) {
-		translate(t.x, t.y, t.z);
+	public Mat4 translate(Vec3 t) {
+		return translate(t.x, t.y, t.z);
 	}
 
 	/**
@@ -204,7 +202,7 @@ public final class Mat4 {
 	 * @param z
 	 *            rotation axis z
 	 */
-	public void rotate(float angle, float x, float y, float z) {
+	public Mat4 rotate(float angle, float x, float y, float z) {
 		float l = (float) Math.sqrt(x * x + y * y + z * z);
 		if (l != 0 && l != 1) {
 			l = 1.0f / l;
@@ -236,11 +234,11 @@ public final class Mat4 {
 		r.m[M12] = yz * ic - xs;
 		r.m[M22] = z * z * ic + c;
 
-		preMultiply(r);
+		return preMultiply(r);
 	}
 
-	public void rotate(float angle, Vec3 axis) {
-		rotate(angle, axis.x, axis.y, axis.z);
+	public Mat4 rotate(float angle, Vec3 axis) {
+		return rotate(angle, axis.x, axis.y, axis.z);
 	}
 
 	/**
@@ -253,17 +251,18 @@ public final class Mat4 {
 	 * @param sz
 	 *            scale z factor
 	 */
-	public void scale(float sx, float sy, float sz) {
+	public Mat4 scale(float sx, float sy, float sz) {
 		m[M00] *= sx;
 		m[M11] *= sy;
 		m[M22] *= sz;
 		m[M03] *= sx;
 		m[M13] *= sy;
 		m[M23] *= sz;
+		return this;
 	}
 
-	public void scale(Vec3 s) {
-		scale(s.x, s.y, s.z);
+	public Mat4 scale(Vec3 s) {
+		return scale(s.x, s.y, s.z);
 	}
 
 	/**
