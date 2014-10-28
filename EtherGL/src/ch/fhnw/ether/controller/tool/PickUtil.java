@@ -46,9 +46,6 @@ import ch.fhnw.util.math.geometry.GeometryUtil;
  * Utilities for 3D object picking
  */
 public final class PickUtil {
-	
-	// FIXME: currently only does boundingbox picking. need to implement visitor pattern or similar for I3DObject
-
 	public enum PickMode {
 		POINT,
 		// INSIDE, // TODO UNSUPPORTED YET - TO BE IMPLEMENTED
@@ -63,13 +60,13 @@ public final class PickUtil {
 			float d = pickBoundingBox(mode, x, y, w, h, view, object.getBounds());
 			if (d == Float.POSITIVE_INFINITY)
 				continue;
-			
+
 			if (!(object instanceof IMesh)) {
 				pickables.put(d, object);
 				continue;
 			}
-			
-			IGeometry geometry = ((IMesh)object).getGeometry();
+
+			IGeometry geometry = ((IMesh) object).getGeometry();
 			geometry.accept(0, (PrimitiveType type, String attribute, float[] data) -> {
 				float dd = Float.POSITIVE_INFINITY;
 				switch (type) {
