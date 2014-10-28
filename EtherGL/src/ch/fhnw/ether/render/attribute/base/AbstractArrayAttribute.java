@@ -29,6 +29,8 @@
 
 package ch.fhnw.ether.render.attribute.base;
 
+import javax.media.opengl.GL3;
+
 import ch.fhnw.ether.render.attribute.IArrayAttribute;
 import ch.fhnw.ether.scene.mesh.IAttribute;
 
@@ -56,6 +58,10 @@ abstract class AbstractArrayAttribute extends AbstractAttribute implements IArra
 	public final void setup(int stride, int offset) {
 		this.stride = stride;
 		this.offset = offset;
+	}
+	
+	@Override
+	public void dispose(GL3 gl) {
 	}
 
 	protected final int getStride() {

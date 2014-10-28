@@ -74,6 +74,10 @@ abstract class AbstractUniformAttribute<T> extends AbstractAttribute implements 
 	}
 
 	@Override
+	public void dispose(GL3 gl) {
+	}
+
+	@Override
 	public void disable(GL3 gl, Program program) {
 	}
 

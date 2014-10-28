@@ -51,8 +51,8 @@ import ch.fhnw.ether.render.gl.Program;
 import ch.fhnw.ether.render.shader.IShader;
 import ch.fhnw.ether.render.shader.IShader.Attributes;
 import ch.fhnw.ether.render.shader.builtin.LineShader;
-import ch.fhnw.ether.render.shader.builtin.UnshadedTriangleShader;
 import ch.fhnw.ether.render.shader.builtin.PointShader;
+import ch.fhnw.ether.render.shader.builtin.UnshadedTriangleShader;
 import ch.fhnw.ether.scene.mesh.IAttribute;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.material.CustomMaterial;
@@ -65,7 +65,6 @@ public final class Renderable {
 
 	private List<IUniformAttribute> uniformAttributes = new ArrayList<>();
 	private List<IArrayAttribute> arrayAttributes = new ArrayList<>();
-
 	private FloatArrayBuffer buffer = new FloatArrayBuffer();
 
 	private int[] sizes;
@@ -78,8 +77,9 @@ public final class Renderable {
 	}
 
 	public void dispose(GL3 gl) {
-		// FIXME: 
 		shader.dispose(gl);
+		uniformAttributes.forEach((t) -> t.dispose(gl));
+		arrayAttributes.forEach((t) -> t.dispose(gl));
 		buffer.dispose(gl);
 
 		mesh = null;

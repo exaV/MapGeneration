@@ -53,6 +53,13 @@ public class SamplerUniformAttribute extends AbstractUniformAttribute<Texture> {
 	public SamplerUniformAttribute(String id, String shaderName, Supplier<Texture> supplier) {
 		super(id, shaderName, supplier);
 	}
+	
+	@Override
+	public void dispose(GL3 gl) {
+		Texture texture = get();
+		if (texture != null)
+			texture.dispose(gl);
+	}
 
 	@Override
 	public void enable(GL3 gl, Program program) {

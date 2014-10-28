@@ -61,6 +61,10 @@ public final class StateInjectAttribute extends AbstractAttribute implements IUn
 	}
 
 	@Override
+	public void dispose(GL3 gl) {
+	}
+
+	@Override
 	public void enable(GL3 gl, Program program) {
 		if (enable != null)
 			enable.accept(gl, program);

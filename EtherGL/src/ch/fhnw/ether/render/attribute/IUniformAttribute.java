@@ -40,6 +40,8 @@ public interface IUniformAttribute extends IAttribute {
 	boolean hasSupplier();
 
 	void setSupplier(Supplier<?> supplier);
+	
+	void dispose(GL3 gl);
 
 	void enable(GL3 gl, Program program);
 

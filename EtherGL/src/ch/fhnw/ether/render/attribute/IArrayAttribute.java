@@ -58,6 +58,8 @@ public interface IArrayAttribute extends IAttribute {
 
 	void setup(int stride, int offset);
 
+	void dispose(GL3 gl);
+
 	void enable(GL3 gl, Program program, FloatArrayBuffer buffer);
 
 	void disable(GL3 gl, Program program, FloatArrayBuffer buffer);
