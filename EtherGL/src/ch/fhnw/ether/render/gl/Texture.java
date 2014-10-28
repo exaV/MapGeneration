@@ -29,11 +29,21 @@
 
 package ch.fhnw.ether.render.gl;
 
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
+import java.net.URL;
 import java.nio.Buffer;
+import java.nio.ByteBuffer;
 
+import javax.imageio.ImageIO;
 import javax.media.opengl.GL;
 
-// TODO: jogl provides similar stuff, should we use textureio or wrap around as with glsl?
+//FIXME: we should switch to a texture class which is independent of GL
+// - should support different texture types (2d, 3d, array, cube map, etc) in an abstract way
+// - gl renderer would wrap around these types, in combination with texture unit provided by material
+
 /**
  * Very simple texture wrapper.
  *
@@ -45,15 +55,35 @@ public class Texture {
 	private int height;
 	private Buffer buffer;
 	private int format;
-
+	
 	public Texture() {
 	}
+	
+	public Texture(URL url) {
+		setData(url);
+	}
 
+	// FIXME: textures don't seem to be disposed!
 	public void dispose(GL gl) {
 		if (tex != null) {
 			gl.glDeleteTextures(1, tex, 0);
 			tex = null;
 			buffer = null;
+		}
+	}
+
+	public void setData(URL url) {
+		BufferedImage image = null;
+		try {
+			image = ImageIO.read(url);
+			// flip the image vertically (alternatively, we could adjust tex coords, but for clarity, we flip the image)
+			AffineTransform tx = AffineTransform.getScaleInstance(1, -1);
+			tx.translate(0, -image.getHeight(null));
+			AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+			image = op.filter(image, null);
+			setData(image.getWidth(), image.getHeight(), ByteBuffer.wrap(((DataBufferByte) image.getRaster().getDataBuffer()).getData()), GL.GL_RGB);
+		} catch (Exception e) {
+			throw new IllegalArgumentException("can't load image " + url);
 		}
 	}
 
@@ -70,14 +100,6 @@ public class Texture {
 			buffer = null;
 		}
 	}
-
-	// private void load(GL gl, int width, int height, byte[] rgba) {
-	// load(gl, width, height, Buffers.newDirectByteBuffer(rgba), GL.GL_RGBA);
-	// }
-	//
-	// private void load(GL gl, int width, int height, Buffer buffer) {
-	// load(gl, width, height, buffer, GL.GL_RGBA);
-	// }
 
 	private void load(GL gl, int width, int height, Buffer buffer, int format) {
 		if (tex == null) {

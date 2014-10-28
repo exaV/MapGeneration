@@ -78,6 +78,7 @@ public final class Renderable {
 	}
 
 	public void dispose(GL3 gl) {
+		// FIXME: 
 		shader.dispose(gl);
 		buffer.dispose(gl);
 

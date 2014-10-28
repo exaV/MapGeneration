@@ -29,13 +29,11 @@
 
 package ch.fhnw.ether.scene.mesh.material;
 
-import java.util.function.Supplier;
-
 import ch.fhnw.ether.render.gl.Texture;
 import ch.fhnw.ether.scene.mesh.IAttribute.ISuppliers;
 import ch.fhnw.util.color.RGBA;
 
-// FIXME: we should switch to a texture class which is independent of GL
+// FIXME: add support for texture units (forward compatible if possible, if we get dsa one day)
 public class ColorMapMaterial extends ColorMaterial {
 	private Texture texture;
 	
@@ -54,13 +52,7 @@ public class ColorMapMaterial extends ColorMaterial {
 
 	@Override
 	public void getAttributeSuppliers(ISuppliers dst) {
-		//dst.provide(IMaterial.COLOR_MAP, () -> texture);
-		dst.provide(IMaterial.COLOR_MAP, new Supplier<Texture>() {
-			@Override
-			public Texture get() {
-				return texture;
-			}
-		});
+		dst.provide(IMaterial.COLOR_MAP, () -> texture);
 		dst.require(IMaterial.COLOR_MAP_ARRAY);
 		super.getAttributeSuppliers(dst);
 	}

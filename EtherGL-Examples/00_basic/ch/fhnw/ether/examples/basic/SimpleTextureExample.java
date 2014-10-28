@@ -29,17 +29,8 @@ package ch.fhnw.ether.examples.basic;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
-import java.net.URL;
-import java.nio.ByteBuffer;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import javax.imageio.ImageIO;
-import javax.media.opengl.GL;
 
 import ch.fhnw.ether.camera.Camera;
 import ch.fhnw.ether.camera.ICamera;
@@ -52,9 +43,10 @@ import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IAttribute;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.PrimitiveType;
-import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.ether.scene.mesh.material.ColorMapMaterial;
+import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.gl.DefaultView;
 import ch.fhnw.util.math.Vec3;
@@ -73,28 +65,15 @@ public final class SimpleTextureExample {
 		float[] texCoord = { 0, 0, 0, 1, 1, 1 };
 		float[][] data = { position, color, texCoord };
 
-		DefaultGeometry g = new DefaultGeometry(PrimitiveType.TRIANGLES, attribs, data);
-
-		BufferedImage image = null;
 		try {
-			URL resource = SimpleTextureExample.class.getResource("assets/fhnw_logo.jpg");
-			System.out.println(resource);
-			image = ImageIO.read(resource);
-
-			// flip the image vertically (alternatively, we could adjust tex coords, but for clarity, we flip the image)
-			AffineTransform tx = AffineTransform.getScaleInstance(1, -1);
-			tx.translate(0, -image.getHeight(null));
-			AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
-			image = op.filter(image, null);
+			IMaterial m = new ColorMapMaterial(new Texture(SimpleTextureExample.class.getResource("assets/fhnw_logo.jpg")));
+			IGeometry g = new DefaultGeometry(PrimitiveType.TRIANGLES, attribs, data);
+			return new DefaultMesh(m, g);
 		} catch (Exception e) {
 			System.err.println("cant load image");
 			System.exit(1);
 		}
-
-		Texture texture = new Texture();
-		texture.setData(image.getWidth(), image.getHeight(), ByteBuffer.wrap(((DataBufferByte) image.getRaster().getDataBuffer()).getData()), GL.GL_RGB);
-
-		return new DefaultMesh(new ColorMapMaterial(texture), g);
+		return null;
 	}
 
 	// Setup the whole thing
