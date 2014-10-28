@@ -57,6 +57,8 @@ import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.MouseEvent;
 
 // FIXME: this tool is currently defunct
+// - need possibility to disable current 3d scene
+// - need possibility to lock camera matrices
 public final class CalibrationTool extends AbstractTool {
 	private static final String[] HELP = { "Calibration Tool for 3D Mapping", "", "[0] Return", "", "[C] Clear Calibration", "[L] Load Calibration",
 			"[S] Save Calibration", "[DEL] Clear Current Calibration Point", };
