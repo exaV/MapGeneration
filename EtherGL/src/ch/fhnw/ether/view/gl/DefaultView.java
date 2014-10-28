@@ -39,6 +39,7 @@ import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.ui.UI;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.util.Viewport;
+import ch.fhnw.util.math.Mat4;
 
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.MouseEvent;
@@ -62,6 +63,7 @@ public class DefaultView implements IView {
 
 	private Object lock = new Object();
 	private CameraMatrices cameraMatrices = null;
+	private boolean cameraLocked = false;
 	private Viewport viewport = new Viewport(0, 0, 1, 1);
 
 	private boolean enabled = true;
@@ -112,6 +114,19 @@ public class DefaultView implements IView {
 			return cameraMatrices;
 		}
 	}
+	
+	@Override
+	public void setCameraMatrices(Mat4 viewMatrix, Mat4 projMatrix) {
+		synchronized (lock) {
+			if (viewMatrix == null && projMatrix == null) {
+				cameraMatrices = null;
+				cameraLocked = false;
+			} else {
+				cameraMatrices = new CameraMatrices(viewMatrix, projMatrix);
+				cameraLocked = true;
+			}
+		}
+	}
 
 	@Override
 	public final Viewport getViewport() {
@@ -148,7 +163,8 @@ public class DefaultView implements IView {
 	@Override
 	public final void refresh() {
 		synchronized (lock) {
-			cameraMatrices = null;
+			if (!cameraLocked)
+				cameraMatrices = null;
 		}
 		getController().getCurrentTool().refresh(this);
 		repaint();
@@ -210,7 +226,8 @@ public class DefaultView implements IView {
 			gl.glViewport(0, 0, width, height);
 			synchronized (lock) {
 				viewport = new Viewport(0, 0, width, height);
-				cameraMatrices = null;
+				if (!cameraLocked)
+					cameraMatrices = null;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

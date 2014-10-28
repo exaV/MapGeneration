@@ -34,6 +34,7 @@ import ch.fhnw.ether.camera.CameraMatrices;
 import ch.fhnw.ether.camera.ICamera;
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.util.Viewport;
+import ch.fhnw.util.math.Mat4;
 
 import com.jogamp.newt.event.KeyListener;
 import com.jogamp.newt.event.MouseListener;
@@ -79,7 +80,18 @@ public interface IView extends GLEventListener, MouseListener, KeyListener {
 	 * @return the camera matrices
 	 */
 	CameraMatrices getCameraMatrices();
-	
+
+	/**
+	 * Set camera matrices to given fixed view and projection matrix. Will lock matrices and disable camera control. Use
+	 * setCameraMatrices(null, null) to unlock and re-enable camera control.
+	 * 
+	 * @param viewMatrix
+	 *            the view matrix to be set
+	 * @param projMatrix
+	 *            the projection matrix to be set
+	 */
+	void setCameraMatrices(Mat4 viewMatrix, Mat4 projMatrix);
+
 	/**
 	 * Get viewport [x, y, w, h].
 	 * 

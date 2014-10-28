@@ -58,6 +58,13 @@ public final class CameraMatrices {
 		this.far = far;
 		this.aspect = aspect;
 	}
+	
+	public CameraMatrices(Mat4 viewMatrix, Mat4 projMatrix) {
+		position = target = up = null;
+		fov = near = far = aspect = 0;
+		this.viewMatrix = viewMatrix;
+		this.projMatrix = projMatrix;
+	}
 
 	public Mat4 getViewMatrix() {
 		if (viewMatrix == null) {
