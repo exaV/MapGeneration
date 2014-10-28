@@ -36,6 +36,7 @@ import javax.media.opengl.GLAutoDrawable;
 import ch.fhnw.ether.camera.CameraMatrices;
 import ch.fhnw.ether.camera.ICamera;
 import ch.fhnw.ether.controller.IController;
+import ch.fhnw.ether.ui.UI;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.util.Viewport;
 
@@ -187,11 +188,13 @@ public class DefaultView implements IView {
 			viewport = new Viewport(vp[0], vp[1], vp[2], vp[3]);
 
 			// render everything
-			try {
-				getController().render(gl.getGL3(), this);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+
+			// repaint UI surface to texture if necessary (FIXME: should this be done on model or render thread?)
+			UI ui = getController().getUI();
+			if (ui != null)
+				ui.update();
+
+			getController().getRenderer().render(gl.getGL3(), this);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

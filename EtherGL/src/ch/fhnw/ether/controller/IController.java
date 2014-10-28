@@ -30,8 +30,6 @@
 import java.util.Collection;
 import java.util.List;
 
-import javax.media.opengl.GL3;
-
 import ch.fhnw.ether.controller.tool.ITool;
 import ch.fhnw.ether.controller.tool.NavigationTool;
 import ch.fhnw.ether.render.IRenderer;
@@ -134,8 +132,6 @@ public interface IController {
 	 * @return the renderer
 	 */
 	IRenderer getRenderer();
-
-	void render(GL3 gl, IView view);
 
 	/**
 	 * Get UI.

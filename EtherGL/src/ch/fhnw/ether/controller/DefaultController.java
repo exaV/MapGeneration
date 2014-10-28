@@ -34,8 +34,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import javax.media.opengl.GL3;
-
 import ch.fhnw.ether.controller.event.EventDrivenScheduler;
 import ch.fhnw.ether.controller.event.IScheduler;
 import ch.fhnw.ether.controller.tool.ITool;
@@ -288,16 +286,4 @@ public class DefaultController implements IController {
 		for (String s : help)
 			System.out.println(s);
 	}
-
-	@Override
-	public void render(GL3 gl, IView view) {
-		// we're on the render thread here
-		
-		// repaint UI surface to texture if necessary (FIXME: should this be done on model or render thread?)
-		if (ui != null)
-			ui.update();
-		
-		renderer.render(gl, view);
-	}
-
 }
