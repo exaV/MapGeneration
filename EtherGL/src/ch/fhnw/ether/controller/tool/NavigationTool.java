@@ -36,13 +36,13 @@ import ch.fhnw.ether.camera.DefaultCameraControl;
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
+import ch.fhnw.ether.scene.mesh.MeshLibrary;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.PrimitiveType;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Vec3;
-import ch.fhnw.util.math.geometry.Primitives;
 
 import com.jogamp.newt.event.MouseEvent;
 
@@ -127,16 +127,16 @@ public class NavigationTool extends AbstractTool {
 
 		// add axis lines
 		float e = 0.5f * gridSpacing * (gridNumLines + 1);
-		Primitives.addLine(lines, -e, 0, e, 0);
-		Primitives.addLine(lines, 0, -e, 0, e);
+		MeshLibrary.addLine(lines, -e, 0, e, 0);
+		MeshLibrary.addLine(lines, 0, -e, 0, e);
 
 		// add grid lines
 		int n = gridNumLines / 2;
 		for (int i = 1; i <= n; ++i) {
-			Primitives.addLine(lines, i * gridSpacing, -e, i * gridSpacing, e);
-			Primitives.addLine(lines, -i * gridSpacing, -e, -i * gridSpacing, e);
-			Primitives.addLine(lines, -e, i * gridSpacing, e, i * gridSpacing);
-			Primitives.addLine(lines, -e, -i * gridSpacing, e, -i * gridSpacing);
+			MeshLibrary.addLine(lines, i * gridSpacing, -e, i * gridSpacing, e);
+			MeshLibrary.addLine(lines, -i * gridSpacing, -e, -i * gridSpacing, e);
+			MeshLibrary.addLine(lines, -e, i * gridSpacing, e, i * gridSpacing);
+			MeshLibrary.addLine(lines, -e, -i * gridSpacing, e, -i * gridSpacing);
 		}
 
 		return new DefaultMesh(new ColorMaterial(RGBA.WHITE), DefaultGeometry.createV(PrimitiveType.LINES, Vec3.toArray(lines)));

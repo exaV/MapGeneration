@@ -29,20 +29,116 @@
 
 package ch.fhnw.ether.scene.mesh;
 
-import ch.fhnw.ether.scene.mesh.geometry.IGeometry.PrimitiveType;
+import java.util.List;
+
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry.PrimitiveType;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.util.color.RGBA;
-import ch.fhnw.util.math.geometry.Primitives;
+import ch.fhnw.util.math.Vec3;
 
 public class MeshLibrary {
-	// FIXME
+
+	//@formatter:off
+	public static final float[] UNIT_CUBE_TRIANGLES = {
+		// bottom
+		-0.5f, -0.5f, -0.5f, -0.5f, +0.5f, -0.5f, +0.5f, +0.5f, -0.5f,
+		-0.5f, -0.5f, -0.5f, +0.5f, +0.5f, -0.5f, +0.5f, -0.5f, -0.5f,
+
+		// top
+		+0.5f, -0.5f, +0.5f, +0.5f, +0.5f, +0.5f, -0.5f, +0.5f, +0.5f, 
+		+0.5f, -0.5f, +0.5f, -0.5f, +0.5f, +0.5f, -0.5f, -0.5f, +0.5f,
+
+		// front
+		-0.5f, -0.5f, -0.5f, +0.5f, -0.5f, -0.5f, +0.5f, -0.5f, +0.5f, 
+		-0.5f, -0.5f, -0.5f, +0.5f, -0.5f, +0.5f, -0.5f, -0.5f, +0.5f,
+
+		// back
+		+0.5f, +0.5f, -0.5f, -0.5f, +0.5f, -0.5f, -0.5f, +0.5f, +0.5f, 
+		+0.5f, +0.5f, -0.5f, -0.5f, +0.5f, +0.5f, +0.5f, +0.5f, +0.5f,
+
+		// left
+		-0.5f, +0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, +0.5f, 
+		-0.5f, +0.5f, -0.5f, -0.5f, -0.5f, +0.5f, -0.5f, +0.5f, +0.5f,
+
+		// right
+		+0.5f, -0.5f, -0.5f, +0.5f, +0.5f, -0.5f, +0.5f, +0.5f, +0.5f, 
+		+0.5f, -0.5f, -0.5f, +0.5f, +0.5f, +0.5f, +0.5f, -0.5f, +0.5f 
+	};
+
+	public static final float[] UNIT_CUBE_EDGES = {
+		// bottom
+		-0.5f, -0.5f, -0.5f, -0.5f, +0.5f, -0.5f, 
+		-0.5f, +0.5f, -0.5f, +0.5f, +0.5f, -0.5f,
+		+0.5f, +0.5f, -0.5f, +0.5f, -0.5f, -0.5f, 
+		+0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f,
+
+		// top
+		+0.5f, -0.5f, +0.5f, +0.5f, +0.5f, +0.5f, 
+		+0.5f, +0.5f, +0.5f, -0.5f, +0.5f, +0.5f, 
+		-0.5f, +0.5f, +0.5f, -0.5f, -0.5f, +0.5f, 
+		-0.5f, -0.5f, +0.5f, +0.5f, -0.5f, +0.5f,
+
+		// vertical
+		-0.5f, -0.5f, -0.5f, -0.5f, -0.5f, +0.5f, 
+		+0.5f, -0.5f, -0.5f, +0.5f, -0.5f, +0.5f, 
+		+0.5f, +0.5f, -0.5f, +0.5f, +0.5f, +0.5f, 
+		-0.5f, +0.5f, -0.5f, -0.5f, +0.5f, +0.5f 
+	};
+
+	public static final float[] UNIT_CUBE_POINTS = { 
+		-0.5f, -0.5f, -0.5f, -0.5f, +0.5f, -0.5f, 
+		+0.5f, +0.5f, -0.5f, +0.5f, -0.5f, -0.5f,
+		+0.5f, -0.5f, +0.5f, +0.5f, +0.5f, +0.5f, 
+		-0.5f, +0.5f, +0.5f, -0.5f, -0.5f, +0.5f, 
+	};
+
+	public static final float[] DEFAULT_QUAD_TEX_COORDS = { 
+		0, 0, 1, 0, 1, 1,
+		0, 0, 1, 1, 0, 1 
+	};
+	//@formatter:on
+
 	private final static IAttribute[] ATTRIBUTES = { IMaterial.POSITION_ARRAY };
-	private final static float[][] DATA = { Primitives.UNIT_CUBE_TRIANGLES };
+	private final static float[][] DATA = { UNIT_CUBE_TRIANGLES };
 	private final static DefaultGeometry CUBE_GEOMETRY = new DefaultGeometry(PrimitiveType.TRIANGLES, ATTRIBUTES, DATA);
 
-	public static IMesh getCube() {
+	public static IMesh createCube() {
 		return new DefaultMesh(new ColorMaterial(RGBA.WHITE), CUBE_GEOMETRY.copy());
 	}
+	
+
+	// TODO: this needs some revision / organization
+	
+	public static void addLine(List<Vec3> dst, float x0, float y0, float x1, float y1) {
+		dst.add(new Vec3(x0, y0, 0));
+		dst.add(new Vec3(x1, y1, 0));
+	}
+
+	public static void addLine(List<Vec3> dst, float x0, float y0, float z0, float x1, float y1, float z1) {
+		dst.add(new Vec3(x0, y0, z0));
+		dst.add(new Vec3(x1, y1, z1));
+	}
+
+	public static void addRectangle(List<Vec3> dst, float x0, float y0, float x1, float y1) {
+		addRectangle(dst, x0, y0, x1, y1, 0);
+	}
+
+	public static void addRectangle(List<Vec3> dst, float x0, float y0, float x1, float y1, float z) {
+		dst.add(new Vec3(x0, y0, z));
+		dst.add(new Vec3(x1, y0, z));
+		dst.add(new Vec3(x1, y1, z));
+
+		dst.add(new Vec3(x0, y0, z));
+		dst.add(new Vec3(x1, y1, z));
+		dst.add(new Vec3(x0, y1, z));
+	}
+
+	public static void addCube(List<Vec3> dst, float tx, float ty, float tz, float sx, float sy, float sz) {
+		for (int i = 0; i < UNIT_CUBE_TRIANGLES.length; i += 3) {
+			dst.add(new Vec3((UNIT_CUBE_TRIANGLES[i] * sx) + tx, (UNIT_CUBE_TRIANGLES[i + 1] * sy) + ty, (UNIT_CUBE_TRIANGLES[i + 2] * sz) + tz));
+		}
+	}
+	
 }

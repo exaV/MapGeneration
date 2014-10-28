@@ -47,6 +47,7 @@ import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IAttribute;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.IMesh.Pass;
+import ch.fhnw.ether.scene.mesh.MeshLibrary;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.PrimitiveType;
@@ -56,7 +57,6 @@ import ch.fhnw.ether.view.IView;
 import ch.fhnw.util.Viewport;
 import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Vec3;
-import ch.fhnw.util.math.geometry.Primitives;
 
 public class RayTracingRenderer implements IRenderer {
 	private static final RGBA BACKGROUND_COLOR = RGBA.WHITE;
@@ -166,7 +166,7 @@ public class RayTracingRenderer implements IRenderer {
 	private static IMesh createScreenPlane(float x, float y, float w, float h, Texture texture) {
 		IAttribute[] attribs = { IMaterial.POSITION_ARRAY, IMaterial.COLOR_MAP_ARRAY };
 		float[] position = { x, y, 0, x + w, y, 0, x + w, y + h, 0, x, y, 0, x + w, y + h, 0, x, y + h, 0 };
-		float[][] data = { position, Primitives.DEFAULT_QUAD_TEX_COORDS };
+		float[][] data = { position, MeshLibrary.DEFAULT_QUAD_TEX_COORDS };
 		IGeometry geometry = new DefaultGeometry(PrimitiveType.TRIANGLES, attribs, data);
 		
 		return new DefaultMesh(new ColorMapMaterial(texture), geometry, Pass.DEVICE_SPACE_OVERLAY);

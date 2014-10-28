@@ -34,6 +34,7 @@ import ch.fhnw.ether.controller.tool.AbstractTool;
 import ch.fhnw.ether.controller.tool.PickUtil;
 import ch.fhnw.ether.controller.tool.PickUtil.PickMode;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
+import ch.fhnw.ether.scene.mesh.MeshLibrary;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.PrimitiveType;
@@ -44,7 +45,6 @@ import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.Line;
 import ch.fhnw.util.math.geometry.Plane;
-import ch.fhnw.util.math.geometry.Primitives;
 
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.MouseEvent;
@@ -63,7 +63,7 @@ public final class AreaTool extends AbstractTool {
 
 	public AreaTool(IController controller) {
 		super(controller);
-		IGeometry geometry = DefaultGeometry.createV(PrimitiveType.TRIANGLES, Primitives.UNIT_CUBE_TRIANGLES);
+		IGeometry geometry = DefaultGeometry.createV(PrimitiveType.TRIANGLES, MeshLibrary.UNIT_CUBE_TRIANGLES);
 		geometry.setScale(new Vec3(0.1, 0.1, 0.001));
 		mesh = new DefaultMesh(new ColorMaterial(TOOL_COLOR), geometry);
 	}

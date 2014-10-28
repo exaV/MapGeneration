@@ -57,7 +57,7 @@ public final class SimpleCubeExample {
 
 		// Create scene and add a cube
 		IScene scene = new DefaultScene(controller.getRenderer(), camera);
-		scene.add3DObject(MeshLibrary.getCube());
+		scene.add3DObject(MeshLibrary.createCube());
 
 		// Setup MVC
 		controller.addView(view);

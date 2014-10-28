@@ -46,13 +46,13 @@ import ch.fhnw.ether.scene.mesh.IAttribute;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.IMesh.Flags;
 import ch.fhnw.ether.scene.mesh.IMesh.Pass;
+import ch.fhnw.ether.scene.mesh.MeshLibrary;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.PrimitiveType;
 import ch.fhnw.ether.scene.mesh.material.ColorMapMaterial;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.util.UpdateRequest;
-import ch.fhnw.util.math.geometry.Primitives;
 
 class GraphicsPlane {
 	public static final Font FONT = new Font("SansSerif", Font.BOLD, 12);
@@ -84,7 +84,7 @@ class GraphicsPlane {
 
 		IAttribute[] attribs = { IMaterial.POSITION_ARRAY, IMaterial.COLOR_MAP_ARRAY };
 		float[] position = { x, y, 0, x + w, y, 0, x + w, y + h, 0, x, y, 0, x + w, y + h, 0, x, y + h, 0 };
-		float[] texCoords = Primitives.DEFAULT_QUAD_TEX_COORDS;
+		float[] texCoords = MeshLibrary.DEFAULT_QUAD_TEX_COORDS;
 		IGeometry geometry = new DefaultGeometry(PrimitiveType.TRIANGLES, attribs, new float[][] { position, texCoords });
 		IMaterial material = new ColorMapMaterial(texture);
 
