@@ -59,11 +59,13 @@ public class DefaultView implements IView {
 
 	private final ViewType viewType;
 
+	private final Object lock = new Object();
+
 	private ICamera camera;
 
-	private Object lock = new Object();
 	private CameraMatrices cameraMatrices = null;
 	private boolean cameraLocked = false;
+
 	private Viewport viewport = new Viewport(0, 0, 1, 1);
 
 	private boolean enabled = true;
@@ -172,8 +174,6 @@ public class DefaultView implements IView {
 
 	// GLEventListener implementation
 
-	// FIXME: add try/catch around all handlers
-
 	@Override
 	public final void init(GLAutoDrawable drawable) {
 		try {
@@ -236,7 +236,11 @@ public class DefaultView implements IView {
 
 	@Override
 	public final void dispose(GLAutoDrawable drawable) {
-		// FIXME implement
+		try {
+			window.dispose();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	// key listener

@@ -29,11 +29,10 @@
 
 package ch.fhnw.ether.view.gl;
 
-import java.util.ArrayList;
-
 import javax.media.nativewindow.util.Point;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCapabilities;
+import javax.media.opengl.GLDrawableFactory;
 import javax.media.opengl.GLProfile;
 
 import ch.fhnw.ether.view.IView;
@@ -47,9 +46,9 @@ import com.jogamp.newt.opengl.GLWindow;
  *
  * @author radar
  */
-// TODO: for shared contexts, we should probably use JOGLs GLSharedContextSetter stuff
 public final class NEWTWindow {
-	private static ArrayList<NEWTWindow> frames = new ArrayList<>();
+	private static GLAutoDrawable sharedDrawable = null;
+	private static int numWindows = 0;
 
 	private GLWindow window;
 
@@ -78,17 +77,21 @@ public final class NEWTWindow {
 	 *            the frame's title, nor null for an undecorated frame
 	 */
 	public NEWTWindow(int width, int height, String title) {
+		GLCapabilities capabilities = getCapabilities();
+		if (sharedDrawable == null) {
+	        sharedDrawable = GLDrawableFactory.getFactory(capabilities.getGLProfile()).createDummyAutoDrawable(null, true, capabilities, null);
+	        sharedDrawable.display();			
+		}
+		numWindows++;
 		window = GLWindow.create(getCapabilities());
-		if (frames.size() > 0)
-			window.setSharedContext(frames.get(0).window.getContext());
-		frames.add(this);
+		window.setSharedAutoDrawable(sharedDrawable);
 		window.setSize(width, height);
 
 		window.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowDestroyed(WindowEvent e) {
-				frames.remove(NEWTWindow.this);
-				if (frames.isEmpty())
+				numWindows--;
+				if (numWindows == 0)
 					System.exit(0);
 			}
 		});
@@ -97,6 +100,11 @@ public final class NEWTWindow {
 		else
 			window.setUndecorated(true);
 		window.setVisible(true);
+	}
+	
+	public void dispose() {
+		setView(null);
+		window.destroy();
 	}
 
 	/**
@@ -122,7 +130,7 @@ public final class NEWTWindow {
 	}
 
 	private static GLCapabilities getCapabilities() {
-		// TODO: make this configurable
+		// FIXME: make this configurable
 		GLProfile profile = GLProfile.get(GLProfile.GL3);
 		GLCapabilities caps = new GLCapabilities(profile);
 		caps.setAlphaBits(8);
