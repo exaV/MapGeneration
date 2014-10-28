@@ -30,7 +30,6 @@
 package ch.fhnw.ether.scene.mesh.geometry;
 
 import java.util.Arrays;
-import java.util.function.BiConsumer;
 
 import ch.fhnw.ether.scene.mesh.IAttribute;
 import ch.fhnw.ether.scene.mesh.IAttribute.ISuppliers;
@@ -43,14 +42,14 @@ import ch.fhnw.util.math.geometry.BoundingBox;
 public class DefaultGeometry extends AbstractGeometry {
 	private class TransformCache {
 		TransformCache() {
-			data = new float[attributes.length][];
-			for (int i = 0; i < attributes.length; ++i) {
-				if (attributes[i].equals(IMaterial.POSITION_ARRAY.id())) {
-					data[i] = transform.transformVertices(DefaultGeometry.this.data[i]);
-				} else if (attributes[i].equals(IMaterial.NORMAL_ARRAY.id())) {
-					data[i] = transform.transformNormals(DefaultGeometry.this.data[i]);
+			data = new float[attributeTypes.length][];
+			for (int i = 0; i < attributeTypes.length; ++i) {
+				if (attributeTypes[i].equals(IMaterial.POSITION_ARRAY.id())) {
+					data[i] = transform.transformVertices(DefaultGeometry.this.attributeData[i]);
+				} else if (attributeTypes[i].equals(IMaterial.NORMAL_ARRAY.id())) {
+					data[i] = transform.transformNormals(DefaultGeometry.this.attributeData[i]);
 				} else {
-					data[i] = DefaultGeometry.this.data[i];
+					data[i] = DefaultGeometry.this.attributeData[i];
 				}
 			}
 			bounds = new BoundingBox();
@@ -61,8 +60,8 @@ public class DefaultGeometry extends AbstractGeometry {
 		final BoundingBox bounds;
 	}
 
-	private final String[] attributes;
-	private final float[][] data; // first dimension is attribute, second data
+	private final String[] attributeTypes;
+	private final float[][] attributeData; // first dimension is attribute, second data
 	private final Transform transform = new Transform();
 
 	private TransformCache cache;
@@ -88,11 +87,11 @@ public class DefaultGeometry extends AbstractGeometry {
 		if (attributes.length != data.length)
 			throw new IllegalArgumentException("# attribute type != # attribute data");
 
-		this.attributes = Arrays.copyOf(attributes, attributes.length);
+		this.attributeTypes = Arrays.copyOf(attributes, attributes.length);
 
-		this.data = new float[data.length][];
+		this.attributeData = new float[data.length][];
 		for (int i = 0; i < data.length; ++i) {
-			this.data[i] = Arrays.copyOf(data[i], data[i].length);
+			this.attributeData[i] = Arrays.copyOf(data[i], data[i].length);
 		}
 	}
 
@@ -113,7 +112,7 @@ public class DefaultGeometry extends AbstractGeometry {
 	 * @return the copy
 	 */
 	public DefaultGeometry copy() {
-		DefaultGeometry geometry = new DefaultGeometry(getPrimitiveType(), attributes, data);
+		DefaultGeometry geometry = new DefaultGeometry(getPrimitiveType(), attributeTypes, attributeData);
 		geometry.transform.setOrigin(getOrigin());
 		geometry.transform.setTranslation(getTranslation());
 		geometry.transform.setRotation(getRotation());
@@ -121,26 +120,29 @@ public class DefaultGeometry extends AbstractGeometry {
 		return geometry;
 	}
 
-	public void modify(BiConsumer<String[], float[][]> consumer) {
-		consumer.accept(attributes, data);
-		invalidateCache();
+	@Override
+	public void accept(int index, IAttributeVisitor visitor) {
+		if (visitor.visit(getPrimitiveType(), attributeTypes[index], attributeData[index])) {
+			if (attributeTypes[index].equals(IMaterial.POSITION_ARRAY.id()) || attributeTypes[index].equals(IMaterial.NORMAL_ARRAY.id()))
+				invalidateCache();
+			else
+				requestUpdate();
+		}
 	}
 
-	public void modify(int index, BiConsumer<String, float[]> consumer) {
-		consumer.accept(attributes[index], data[index]);
-		if (attributes[index].equals(IMaterial.POSITION_ARRAY.id()) || attributes[index].equals(IMaterial.NORMAL_ARRAY.id()))
+	@Override
+	public void accept(IAttributesVisitor visitor) {
+		if (visitor.visit(getPrimitiveType(), attributeTypes, attributeData))
 			invalidateCache();
-		else
-			requestUpdate();
 	}
 
 	// ---- IArrayAttributeProvider implementation
 
 	@Override
 	public void getAttributeSuppliers(ISuppliers dst) {
-		for (int i = 0; i < attributes.length; ++i) {
+		for (int i = 0; i < attributeTypes.length; ++i) {
 			final int a = i;
-			dst.provide(attributes[a], () -> {
+			dst.provide(attributeTypes[a], () -> {
 				validateCache();
 				return cache.data[a];
 			});
@@ -213,7 +215,7 @@ public class DefaultGeometry extends AbstractGeometry {
 	}
 
 	// ---- static helpers for simple geometry creation from arrays
-	
+
 	public static DefaultGeometry createV(PrimitiveType type, float[] vertices) {
 		IAttribute[] attributes = { IMaterial.POSITION_ARRAY };
 		float[][] data = { vertices };
@@ -231,7 +233,6 @@ public class DefaultGeometry extends AbstractGeometry {
 		float[][] data = { vertices, colors };
 		return new DefaultGeometry(type, attributes, data);
 	}
-
 
 	public static DefaultGeometry createVNC(PrimitiveType type, float[] vertices, float[] normals, float[] colors) {
 		IAttribute[] attributes = { IMaterial.POSITION_ARRAY, IMaterial.NORMAL_ARRAY, IMaterial.COLOR_ARRAY };

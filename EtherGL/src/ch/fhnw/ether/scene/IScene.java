@@ -33,6 +33,8 @@ import ch.fhnw.ether.camera.ICamera;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.IMesh;
 
+// FIXME: needs extensions (hierarchy, visitors, picking, etc)
+// FIXME: add support for 
 public interface IScene {
 	void add3DObject(I3DObject object);
 	

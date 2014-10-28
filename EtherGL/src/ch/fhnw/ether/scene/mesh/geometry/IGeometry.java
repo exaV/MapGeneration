@@ -38,7 +38,18 @@ public interface IGeometry extends IAttributeProvider, ITransformable, IUpdateRe
 	enum PrimitiveType {
 		POINTS, LINES, TRIANGLES;
 	}
+	
+	@FunctionalInterface
+	public interface IAttributeVisitor {
+		boolean visit(PrimitiveType type, String attribute, float[] data);
+	}
 
+	@FunctionalInterface
+	public interface IAttributesVisitor {
+		boolean visit(PrimitiveType type, String[] attributes, float[][] data);
+	}
+	
+	
 	/**
 	 * @return primitive type of this geometry
 	 */
@@ -48,4 +59,14 @@ public interface IGeometry extends IAttributeProvider, ITransformable, IUpdateRe
 	 * @return axis-aligned bounding box of this geometry
 	 */
 	BoundingBox getBounds();
+	
+	/**
+	 * Inspect specific attribute of this geometry through visitor
+	 */
+	void accept(int index, IAttributeVisitor visitor);
+	
+	/**
+	 * Inspect all attributes of this geometry through visitor
+	 */
+	void accept(IAttributesVisitor visitor);
 }

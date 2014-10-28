@@ -133,7 +133,7 @@ public final class SimpleTextureExample {
 				// apply changes to geometry
 				mesh.getGeometry().setScale(new Vec3(f, f, f));
 				DefaultGeometry g = (DefaultGeometry) mesh.getGeometry();
-				g.modify(1, (String id, float[] colors) -> {
+				g.accept(1, (PrimitiveType type, String id, float[] colors) -> {
 					for (int i = 0; i < colors.length; ++i) {
 						if (i % 4 == 3)
 							continue;
@@ -141,6 +141,7 @@ public final class SimpleTextureExample {
 						if (colors[i + 0] <= 0)
 							colors[i + 0] = 1;
 					}
+					return true;
 				});
 
 				// update view, because we have no fix rendering loop but event-based rendering
