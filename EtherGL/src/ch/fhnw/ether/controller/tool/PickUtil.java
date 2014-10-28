@@ -33,6 +33,9 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import ch.fhnw.ether.scene.I3DObject;
+import ch.fhnw.ether.scene.mesh.IMesh;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry.PrimitiveType;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.ProjectionUtil;
 import ch.fhnw.util.math.Vec3;
@@ -54,18 +57,39 @@ public final class PickUtil {
 
 	private static final float PICK_DISTANCE = 5;
 
-	// TODO: this needs to be generalized when spatial indices are available (e.g. RTree based)
-	public static Map<Float, I3DObject> pickFromModel(PickMode mode, int x, int y, int w, int h, IView view) {
+	public static Map<Float, I3DObject> pickFromScene(PickMode mode, int x, int y, int w, int h, IView view) {
 		final Map<Float, I3DObject> pickables = new TreeMap<>();
-		for (I3DObject geometry : view.getController().getScene().get3DObjects()) {
-			float d = pickBoundingBox(mode, x, y, w, h, view, geometry.getBounds());
-			if (d < Float.POSITIVE_INFINITY)
-				pickables.put(d, geometry);
+		for (I3DObject object : view.getController().getScene().get3DObjects()) {
+			float d = pickBoundingBox(mode, x, y, w, h, view, object.getBounds());
+			if (d == Float.POSITIVE_INFINITY)
+				continue;
+			
+			if (!(object instanceof IMesh)) {
+				pickables.put(d, object);
+				continue;
+			}
+			
+			IGeometry geometry = ((IMesh)object).getGeometry();
+			geometry.accept(0, (PrimitiveType type, String attribute, float[] data) -> {
+				float dd = Float.POSITIVE_INFINITY;
+				switch (type) {
+				case LINES:
+					dd = pickEdges(mode, x, y, w, h, view, data);
+					break;
+				case POINTS:
+					dd = pickPoints(mode, x, y, w, h, view, data);
+					break;
+				case TRIANGLES:
+					dd = pickTriangles(mode, x, y, w, h, view, data);
+					break;
+				}
+				if (dd < Float.POSITIVE_INFINITY)
+					pickables.put(dd, object);
+				return false;
+			});
 		}
 		return pickables;
 	}
-
-	// TODO: pickFromUI (basically same as above, but need to define UI geometry access) (in case we need this)
 
 	public static float pickBoundingBox(PickMode mode, int x, int y, int w, int h, IView view, BoundingBox bounds) {
 		BoundingBox b = new BoundingBox();
