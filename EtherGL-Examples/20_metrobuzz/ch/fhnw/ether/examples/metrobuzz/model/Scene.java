@@ -34,7 +34,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ch.fhnw.ether.camera.ICamera;
 import ch.fhnw.ether.render.IRenderer;
 import ch.fhnw.ether.scene.DefaultScene;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
@@ -56,8 +55,8 @@ public class Scene extends DefaultScene {
 
 	private final List<Agent> agents = new ArrayList<>();
 
-	public Scene(IRenderer renderer, ICamera camera) {
-		super(renderer, camera);
+	public Scene(IRenderer renderer) {
+		super(renderer);
 	}
 
 	public List<Node> getNodes() {

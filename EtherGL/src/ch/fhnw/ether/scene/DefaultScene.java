@@ -48,14 +48,12 @@ public class DefaultScene implements IScene {
 	private final List<I3DObject> objects = new ArrayList<>();
 
 	
-	public DefaultScene(IRenderer renderer, ICamera camera) {
+	public DefaultScene(IRenderer renderer) {
 		this.renderer = renderer;
-		cameras.add(camera);
-		objects.add(camera);
 	}
 	
 	public DefaultScene(IRenderer renderer, ICamera camera, List<IMesh> meshes) {
-		this(renderer, camera);
+		this(renderer);
 		meshes.addAll(meshes);
 		objects.addAll(meshes);
 	}

@@ -90,7 +90,7 @@ public final class CustomShaderExample {
 		IView view = new DefaultView(controller, 100, 100, 500, 500, IView.ViewType.INTERACTIVE_VIEW, "Test", camera);
 
 		// Create scene and add triangle
-		IScene scene = new DefaultScene(controller.getRenderer(), camera);
+		IScene scene = new DefaultScene(controller.getRenderer());
 		IMesh mesh = makeColoredTriangle();
 		scene.add3DObject(mesh);
 

@@ -54,19 +54,19 @@ public class RaytracerExample2 {
 
 	public RaytracerExample2() {
 		// create controller, camera, scene and view
-		IController c = new DefaultController(new EventDrivenScheduler(), new RayTracingRenderer());
+		IController controller = new DefaultController(new EventDrivenScheduler(), new RayTracingRenderer());
+		
+		IScene scene = new DefaultScene(controller.getRenderer());
+		controller.setScene(scene);
 
 		ICamera camera = new Camera(new Vec3(0, -2, 1), Vec3.ZERO, Vec3.Z, 2.5f, 0.5f, Float.POSITIVE_INFINITY);
-		IScene s = new DefaultScene(c.getRenderer(), camera);
-		c.setScene(s);
-
-		IView v = new DefaultView(c, 100, 100, 100, 100, ViewType.INTERACTIVE_VIEW, "Raytracing", camera);
-		c.addView(v);
+		IView view = new DefaultView(controller, 100, 100, 100, 100, ViewType.INTERACTIVE_VIEW, "Raytracing", camera);
+		controller.addView(view);
 		
 	
 		// setup scene;
 		ILight light = new PointLight(new Vec3(-1, -1, 3), RGBA.WHITE);
-		s.add3DObject(light);
+		scene.add3DObject(light);
 
 		Sphere sphere = new Sphere(0.5f);
 		sphere.setPosition(new Vec3(0, 0, 0.5f));
@@ -77,13 +77,13 @@ public class RaytracerExample2 {
 		RayTraceMesh wand = new RayTraceMesh(new Plane(Vec3.Y_NEG, 4), RGBA.GREEN);
 		RayTraceMesh henderi_wand = new RayTraceMesh(new Plane(Vec3.Y, 4), RGBA.CYAN);
 		RayTraceMesh dach = new RayTraceMesh(new Plane(Vec3.Z_NEG, 4), RGBA.BLUE);
-		s.add3DObject(chugeli);
-		s.add3DObject(bode);
-		s.add3DObject(waendli);
-		s.add3DObject(anders_waendli);
-		s.add3DObject(dach);
-		s.add3DObject(wand);
-		s.add3DObject(henderi_wand);		
+		scene.add3DObject(chugeli);
+		scene.add3DObject(bode);
+		scene.add3DObject(waendli);
+		scene.add3DObject(anders_waendli);
+		scene.add3DObject(dach);
+		scene.add3DObject(wand);
+		scene.add3DObject(henderi_wand);		
 		
 		Timer t = new Timer();
 		t.scheduleAtFixedRate(new TimerTask() {
@@ -95,7 +95,7 @@ public class RaytracerExample2 {
 				n += 0.1;
 				if (n >= Math.PI)
 					n = 0;
-				v.repaint();
+				view.repaint();
 			}
 		}, 1000, 50);
 	}

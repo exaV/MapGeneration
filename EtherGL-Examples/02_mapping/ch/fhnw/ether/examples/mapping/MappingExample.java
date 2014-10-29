@@ -53,17 +53,18 @@ public final class MappingExample {
 	public MappingExample() {
 		IController controller = new MappingController();
 
+		IScene scene = new MappingTriangleScene(controller.getRenderer());
+		controller.setScene(scene);
+		
 		ICamera camera = new Camera();
-		IScene model = new MappingTriangleScene(controller.getRenderer(), camera);
-
-		controller.setScene(model);
-
+		
 		// FIXME: for every view use separate camera with dedicated angle
 		controller.addView(new MappingView(controller, 0, 10, 512, 512, ViewType.INTERACTIVE_VIEW, "View 0", camera));
 		controller.addView(new MappingView(controller, 530, 0, 400, 400, ViewType.MAPPED_VIEW, "View 1", camera));
 		// controller.addView(new MappingView(controller, 940, 0, 400, 400, ViewType.MAPPED_VIEW, "View 2", 90.0f));
 		// controller.addView(new MappingView(controller, 530, 410, 400, 400, ViewType.MAPPED_VIEW, "View 3", 180.0f));
 		// controller.addView(new MappingView(controller, 940, 410, 400, 400, ViewType.MAPPED_VIEW, "View 4", 270.0f));
+
 
 		// try {
 		// new TUIO(controller);

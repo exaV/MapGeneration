@@ -56,25 +56,26 @@ public class MetroBuzz {
 			throw new IllegalArgumentException("Pass path to Sioux OSM as command line argument");
 
 		MetroBuzzController controller = new MetroBuzzController();
+
 		Camera camera = new Camera();
 		controller.addView(new View(controller, 0, 10, 512, 512, ViewType.INTERACTIVE_VIEW, camera));
 		controller.addView(new View(controller, 512, 10, 512, 512, ViewType.MAPPED_VIEW, camera));
 
-		Scene model = new Scene(controller.getRenderer(), camera);
+		Scene scene = new Scene(controller.getRenderer());
 		System.out.println("Loading Data");
 		try {
-			Loader.load(model, args[0], 100 /* Integer.MAX_VALUE */);
+			Loader.load(scene, args[0], 100 /* Integer.MAX_VALUE */);
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);
 		}
 		System.out.println("Done.");
 
-		Scene.printAgent(model.getAgents().get(0));
+		Scene.printAgent(scene.getAgents().get(0));
 		// Model.printAgent(model.getAgents().get(1));
 		// Model.printAgent(model.getAgents().get(2));
 
-		controller.setScene(model);
+		controller.setScene(scene);
 	}
 
 }

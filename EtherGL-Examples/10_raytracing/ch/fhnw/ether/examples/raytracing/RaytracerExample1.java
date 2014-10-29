@@ -53,10 +53,10 @@ public class RaytracerExample1 {
 		// create controller, camera, scene and view
 		IController controller = new DefaultController(new EventDrivenScheduler(), new RayTracingRenderer());
 
-		ICamera camera = new Camera(new Vec3(0, -2, 1), Vec3.ZERO, Vec3.Z, 2.5f, 0.5f, Float.POSITIVE_INFINITY);
-		IScene scene = new DefaultScene(controller.getRenderer(), camera);
+		IScene scene = new DefaultScene(controller.getRenderer());
 		controller.setScene(scene);
 
+		ICamera camera = new Camera(new Vec3(0, -2, 1), Vec3.ZERO, Vec3.Z, 2.5f, 0.5f, Float.POSITIVE_INFINITY);
 		IView view = new DefaultView(controller, 100, 100, 100, 100, ViewType.INTERACTIVE_VIEW, "Raytracing", camera);
 		controller.addView(view);
 		

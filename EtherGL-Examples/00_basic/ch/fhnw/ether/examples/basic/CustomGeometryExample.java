@@ -72,7 +72,7 @@ public final class CustomGeometryExample {
 		IView view = new DefaultView(controller, 100, 100, 500, 500, IView.ViewType.INTERACTIVE_VIEW, "Test", camera);
 
 		// Create scene and add triangle
-		IScene scene = new DefaultScene(controller.getRenderer(), camera);
+		IScene scene = new DefaultScene(controller.getRenderer());
 		scene.add3DObject(makeColorTriangle());
 
 		// Setup MVC

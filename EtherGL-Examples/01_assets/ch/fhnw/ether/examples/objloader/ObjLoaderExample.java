@@ -55,14 +55,15 @@ public class ObjLoaderExample {
 
 	public ObjLoaderExample() throws IOException {
 		IController controller = new ObjLoaderController();
+		
 		ICamera camera = new Camera();
+		controller.addView(new ObjLoaderView(controller, 0, 10, 512, 512, "Obj View", camera));
 
-		IScene scene = new DefaultScene(controller.getRenderer(), camera);
+		IScene scene = new DefaultScene(controller.getRenderer());
 		new OBJReader(getClass().getResource("fhnw.obj")).getMeshes().forEach((x) -> {
 			scene.add3DObject(x);
 		});
 		controller.setScene(scene);
 
-		controller.addView(new ObjLoaderView(controller, 0, 10, 512, 512, "Obj View", camera));
 	}
 }
