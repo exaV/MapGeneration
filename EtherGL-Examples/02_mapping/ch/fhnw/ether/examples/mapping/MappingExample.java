@@ -53,8 +53,6 @@ public final class MappingExample {
 	public MappingExample() {
 		IController controller = new MappingController();
 
-		IScene scene = new MappingTriangleScene(controller.getRenderer());
-		controller.setScene(scene);
 		
 		ICamera camera = new Camera();
 		
@@ -65,7 +63,10 @@ public final class MappingExample {
 		// controller.addView(new MappingView(controller, 530, 410, 400, 400, ViewType.MAPPED_VIEW, "View 3", 180.0f));
 		// controller.addView(new MappingView(controller, 940, 410, 400, 400, ViewType.MAPPED_VIEW, "View 4", 270.0f));
 
+		IScene scene = new MappingTriangleScene(controller.getRenderer());
+		controller.setScene(scene);
 
+		
 		// try {
 		// new TUIO(controller);
 		// } catch (Exception e) {

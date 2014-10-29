@@ -41,6 +41,7 @@ import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.util.FloatList;
 import ch.fhnw.util.UpdateRequest;
 
+// FIXME: concurrency both on renderables and disposed lists
 final class Renderables {
 	private final UpdateRequest updater = new UpdateRequest();
 
