@@ -29,7 +29,7 @@
 
 package ch.fhnw.ether.scene.mesh.geometry;
 
-import ch.fhnw.ether.render.attribute.IAttributeProvider;
+import ch.fhnw.ether.scene.mesh.IAttributeProvider;
 import ch.fhnw.util.IUpdateRequester;
 import ch.fhnw.util.math.ITransformable;
 import ch.fhnw.util.math.geometry.BoundingBox;
@@ -38,18 +38,25 @@ public interface IGeometry extends IAttributeProvider, ITransformable, IUpdateRe
 	enum PrimitiveType {
 		POINTS, LINES, TRIANGLES;
 	}
-	
+
 	@FunctionalInterface
 	public interface IAttributeVisitor {
+		/**
+		 * @return true if the visitor has changed the attribute data
+		 */
 		boolean visit(PrimitiveType type, String attribute, float[] data);
 	}
 
 	@FunctionalInterface
 	public interface IAttributesVisitor {
+		/**
+		 * @return true if the visitor has changed the attribute data. Note that in the current implementation, the
+		 *         attributes must not be changed, otherwise the mesh will result in an undefined state. It is however
+		 *         ok, to replace all attribute data arrays with new arrays, e.g. of different size.
+		 */
 		boolean visit(PrimitiveType type, String[] attributes, float[][] data);
 	}
-	
-	
+
 	/**
 	 * @return primitive type of this geometry
 	 */
@@ -59,12 +66,12 @@ public interface IGeometry extends IAttributeProvider, ITransformable, IUpdateRe
 	 * @return axis-aligned bounding box of this geometry
 	 */
 	BoundingBox getBounds();
-	
+
 	/**
 	 * Inspect specific attribute of this geometry through visitor
 	 */
 	void accept(int index, IAttributeVisitor visitor);
-	
+
 	/**
 	 * Inspect all attributes of this geometry through visitor
 	 */

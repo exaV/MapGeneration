@@ -29,8 +29,8 @@
 
 package ch.fhnw.ether.scene.mesh.material;
 
-import ch.fhnw.ether.render.attribute.IAttributeProvider;
 import ch.fhnw.ether.scene.mesh.IAttribute;
+import ch.fhnw.ether.scene.mesh.IAttributeProvider;
 import ch.fhnw.util.IUpdateRequester;
 
 public interface IMaterial extends IAttributeProvider, IUpdateRequester {

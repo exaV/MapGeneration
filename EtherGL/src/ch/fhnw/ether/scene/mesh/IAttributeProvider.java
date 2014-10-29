@@ -27,9 +27,10 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.render.attribute;
+package ch.fhnw.ether.scene.mesh;
 
 import ch.fhnw.ether.scene.mesh.IAttribute.ISuppliers;
+
 
 public interface IAttributeProvider {
 	void getAttributeSuppliers(ISuppliers dst);

@@ -36,7 +36,7 @@ import java.util.Map;
 
 import javax.media.opengl.GL3;
 
-import ch.fhnw.ether.render.attribute.IAttributeProvider;
+import ch.fhnw.ether.scene.mesh.IAttributeProvider;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.util.FloatList;
 import ch.fhnw.util.UpdateRequest;
