@@ -74,6 +74,9 @@ public final class Renderable {
 		this.mesh = mesh;
 
 		createAttributes(attributes);
+
+		// make sure update flag is set, so everything get initialized on the next render cycle
+		mesh.requestUpdate(null);
 	}
 
 	public void dispose(GL3 gl) {
@@ -209,20 +212,19 @@ public final class Renderable {
 		}
 
 		Suppliers suppliers = new Suppliers();
-		
+
 		// 0. get all attributes, so we can create shader
 		mesh.getMaterial().getAttributeSuppliers(suppliers);
 		mesh.getGeometry().getAttributeSuppliers(suppliers);
 		if (uniformAttributeProvider != null)
 			uniformAttributeProvider.getAttributeSuppliers(suppliers);
-		
+
 		for (String id : suppliers.requiredAttibutes) {
 			if (!suppliers.providedAttributes.containsKey(id))
 				throw new IllegalStateException("geometry does not provide required attribute " + id);
 		}
-		
+
 		createShader(new Attributes(suppliers.providedAttributes.keySet()));
-		
 
 		uniformAttributes.clear();
 		arrayAttributes.clear();
@@ -308,10 +310,10 @@ public final class Renderable {
 	// FIXME: make more flexible/dynamic (as soon as we have more builtin shaders): derive shader from attributes
 	private void createShader(Attributes attributes) {
 		if (mesh.getMaterial() instanceof CustomMaterial) {
-			shader = ((CustomMaterial)mesh.getMaterial()).getShader();
+			shader = ((CustomMaterial) mesh.getMaterial()).getShader();
 			return;
 		}
-		
+
 		switch (mesh.getGeometry().getPrimitiveType()) {
 		case POINTS:
 			shader = new PointShader(attributes);
