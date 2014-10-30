@@ -96,6 +96,14 @@ public interface IController {
 	IView getCurrentView();
 
 	/**
+	 * Set the current view.
+	 * 
+	 * @param view
+	 *            the current view
+	 */
+	void setCurrentView(IView view);
+
+	/**
 	 * Enable a list of views for rendering.
 	 *
 	 * @param views

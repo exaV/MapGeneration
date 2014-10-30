@@ -124,6 +124,15 @@ public class DefaultController implements IController {
 	}
 
 	@Override
+	public void setCurrentView(IView view) {
+		if (currentView != view) {
+			currentView = view;
+			getCurrentTool().refresh(currentView);
+			repaintViews();
+		}
+	}
+	
+	@Override
 	public final void enableViews(Collection<IView> views) {
 		if (views != null) {
 			for (IView view : this.views) {
@@ -281,14 +290,6 @@ public class DefaultController implements IController {
 
 	private boolean isModifierDown(MouseEvent e) {
 		return e.isShiftDown() || e.isControlDown() || e.isAltDown() || e.isMetaDown();
-	}
-
-	private void setCurrentView(IView view) {
-		if (currentView != view) {
-			currentView = view;
-			getCurrentTool().refresh(currentView);
-			repaintViews();
-		}
 	}
 
 	public static void printHelp(String[] help) {

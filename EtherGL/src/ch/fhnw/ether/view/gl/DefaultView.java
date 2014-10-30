@@ -46,6 +46,9 @@ import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.KeyListener;
 import com.jogamp.newt.event.MouseEvent;
 import com.jogamp.newt.event.MouseListener;
+import com.jogamp.newt.event.WindowAdapter;
+import com.jogamp.newt.event.WindowEvent;
+import com.jogamp.newt.event.WindowListener;
 
 /**
  * Default view class that implements some basic functionality. Use as base for more complex implementations.
@@ -75,6 +78,7 @@ public class DefaultView implements IView {
 
 		window = new NEWTWindow(w, h, title);
 		window.getWindow().addGLEventListener(glEventListener);
+		window.getWindow().addWindowListener(windowListener);
 		window.getWindow().addMouseListener(mouseListener);
 		window.getWindow().addKeyListener(keyListener);
 
@@ -268,7 +272,22 @@ public class DefaultView implements IView {
 		}
 
 	};
-
+	
+	
+	// window listener
+	
+	private WindowListener windowListener = new WindowAdapter() {
+		@Override
+		public void windowGainedFocus(WindowEvent e) {
+			try {
+				controller.setCurrentView(DefaultView.this);
+			} catch(Exception ex) {
+				ex.printStackTrace();
+			}
+		};
+	};
+	
+	
 	// key listener
 
 	private KeyListener keyListener = new KeyListener() {
@@ -290,9 +309,9 @@ public class DefaultView implements IView {
 				ex.printStackTrace();
 			}
 		}
-
 	};
 
+	
 	// mouse listener
 
 	private MouseListener mouseListener = new MouseListener() {
