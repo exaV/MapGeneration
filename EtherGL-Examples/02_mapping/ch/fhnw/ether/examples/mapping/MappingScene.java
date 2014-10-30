@@ -29,51 +29,32 @@
 
 package ch.fhnw.ether.examples.mapping;
 
-import ch.fhnw.ether.camera.Camera;
-import ch.fhnw.ether.camera.ICamera;
 import ch.fhnw.ether.controller.IController;
-import ch.fhnw.ether.scene.IScene;
-import ch.fhnw.ether.view.IView.ViewType;
+import ch.fhnw.ether.scene.DefaultScene;
+import ch.fhnw.ether.scene.mesh.DefaultMesh;
+import ch.fhnw.ether.scene.mesh.MeshLibrary;
+import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry.PrimitiveType;
+import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
+import ch.fhnw.ether.scene.mesh.material.IMaterial;
+import ch.fhnw.util.color.RGBA;
+import ch.fhnw.util.math.Vec3;
 
-public final class MappingExample {
-	public static void main(String[] args) {
-		new MappingExample();
-		try {
-			Thread.sleep(Long.MAX_VALUE);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+public class MappingScene extends DefaultScene {
+
+	public MappingScene(IController controller) {
+		super(controller);
+		IMaterial material = new ColorMaterial(RGBA.WHITE);
+		for (int i = 0; i < 10; ++i) {
+			IGeometry geometry = DefaultGeometry.createV(PrimitiveType.TRIANGLES, MeshLibrary.UNIT_CUBE_TRIANGLES);
+			double s = 0.1 + 0.1 * Math.random();
+			double tx = -1 + 2 * Math.random();
+			double ty = -1 + 2 * Math.random();
+			geometry.setScale(new Vec3(s, s, s));
+			geometry.setRotation(new Vec3(0, 0, 360 * Math.random()));
+			geometry.setTranslation(new Vec3(tx, ty, s * 0.5f));
+			add3DObject(new DefaultMesh(material, geometry));
 		}
-	}
-
-	/*
-	 * Creates a sample setup with 1 control view and 4 projector views, each with 90 degrees rotation around the model.
-	 * Uses the sample calibration model with a calibration rig of 0.5 units (~meters) edge lenght, and an additional
-	 * square 4 points at 0.8 units.
-	 */
-	public MappingExample() {
-		IController controller = new MappingController();
-
-		IScene scene = new MappingScene(controller);
-		controller.setScene(scene);
-		
-		ICamera camera = new Camera();
-		
-		// FIXME: for every view use separate camera with dedicated angle
-		controller.addView(new MappingView(controller, 0, 10, 512, 512, ViewType.INTERACTIVE_VIEW, "View 0", camera));
-		controller.addView(new MappingView(controller, 530, 0, 400, 400, ViewType.MAPPED_VIEW, "View 1", camera));
-		// controller.addView(new MappingView(controller, 940, 0, 400, 400, ViewType.MAPPED_VIEW, "View 2", 90.0f));
-		// controller.addView(new MappingView(controller, 530, 410, 400, 400, ViewType.MAPPED_VIEW, "View 3", 180.0f));
-		// controller.addView(new MappingView(controller, 940, 410, 400, 400, ViewType.MAPPED_VIEW, "View 4", 270.0f));
-
-
-		
-		// try {
-		// new TUIO(controller);
-		// } catch (Exception e) {
-		// e.printStackTrace();
-		// }
-
-		// geometry server currently disabled
-		// new GeometryServer(controller);
 	}
 }

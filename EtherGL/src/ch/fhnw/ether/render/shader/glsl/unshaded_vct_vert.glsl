@@ -6,13 +6,11 @@ uniform mat4 viewMatrix;
 uniform bool useVertexColors;
 uniform bool useTexture;
 
-uniform vec4 color;
+uniform vec4 materialColor;
 
 in vec4 vertexPosition;
 in vec4 vertexColor;
 in vec2 vertexTexCoord;
-
-uniform vec4 materialColor;
 
 out vec4 vsColor;
 out vec2 vsTexCoord;

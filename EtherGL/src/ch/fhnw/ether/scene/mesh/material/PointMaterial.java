@@ -29,31 +29,36 @@
 
 package ch.fhnw.ether.scene.mesh.material;
 
-import ch.fhnw.ether.render.gl.Texture;
 import ch.fhnw.ether.scene.mesh.IAttribute.ISuppliers;
 import ch.fhnw.util.color.RGBA;
 
-// FIXME: add support for texture units (forward compatible if possible, if we get dsa one day)
-public class ColorMapMaterial extends ColorMaterial {
-	private Texture texture;
+public class PointMaterial extends ColorMaterial {
+	private float size;
+	private boolean perVertexSize;
 	
-	public ColorMapMaterial(Texture texture) {
-		this(texture, RGBA.WHITE);
+	public PointMaterial(float size) {
+		this(size, RGBA.WHITE);
 	}
 
-	public ColorMapMaterial(Texture texture, RGBA color) {
-		this(texture, color, false);
+	public PointMaterial(float size, RGBA color) {
+		this(size, color, false);
 	}
 
-	public ColorMapMaterial(Texture texture, RGBA color, boolean perVertexColor) {
+	public PointMaterial(float size, RGBA color, boolean perVertexColor) {
+		this(size, false, color, perVertexColor);
+	}
+
+	public PointMaterial(float size, boolean perVertexSize, RGBA color, boolean perVertexColor) {
 		super(color, perVertexColor);
-		this.texture = texture;
+		this.size = size;
+		this.perVertexSize = perVertexSize;
 	}
 
 	@Override
 	public void getAttributeSuppliers(ISuppliers dst) {
-		dst.provide(IMaterial.COLOR_MAP, () -> texture);
-		dst.require(IMaterial.COLOR_MAP_ARRAY);
+		dst.provide(IMaterial.POINT_SIZE, () -> size);
+		if (perVertexSize)
+			dst.require(IMaterial.POINT_SIZE_ARRAY);
 		super.getAttributeSuppliers(dst);
 	}
 }

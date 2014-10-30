@@ -37,8 +37,8 @@ public class BoxCalibrationModel implements ICalibrationModel {
 	private float planeExtentX;
 	private float planeExtentY;
 
-	private float[] lines = getLines();
-	private float[] points = getPoints();
+	private float[] lines;
+	private float[] points;
 
 	public BoxCalibrationModel(float boxExtentX, float boxExtentY, float boxExtentZ, float planeExtentX, float planeExtentY) {
 		this.boxExtentX = boxExtentX;
@@ -46,6 +46,8 @@ public class BoxCalibrationModel implements ICalibrationModel {
 		this.boxExtentZ = boxExtentZ;
 		this.planeExtentX = planeExtentX;
 		this.planeExtentY = planeExtentY;
+		lines = getLines();
+		points = getPoints();
 	}
 
 	@Override

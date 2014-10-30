@@ -27,34 +27,30 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.examples.mapping;
+package ch.fhnw.ether.scene.mesh.material;
 
-import ch.fhnw.ether.controller.IController;
-import ch.fhnw.ether.scene.DefaultScene;
-import ch.fhnw.ether.scene.mesh.DefaultMesh;
-import ch.fhnw.ether.scene.mesh.MeshLibrary;
-import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
-import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
-import ch.fhnw.ether.scene.mesh.geometry.IGeometry.PrimitiveType;
-import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
-import ch.fhnw.ether.scene.mesh.material.IMaterial;
+import ch.fhnw.ether.scene.mesh.IAttribute.ISuppliers;
 import ch.fhnw.util.color.RGBA;
-import ch.fhnw.util.math.Vec3;
 
-public class MappingTriangleScene extends DefaultScene {
+public class LineMaterial extends ColorMaterial {
+	private float width;
+	
+	public LineMaterial(float width) {
+		this(width, RGBA.WHITE);
+	}
 
-	public MappingTriangleScene(IController controller) {
-		super(controller);
-		IMaterial material = new ColorMaterial(RGBA.WHITE);
-		for (int i = 0; i < 10; ++i) {
-			IGeometry geometry = DefaultGeometry.createV(PrimitiveType.TRIANGLES, MeshLibrary.UNIT_CUBE_TRIANGLES);
-			double s = 0.1 + 0.1 * Math.random();
-			double tx = -1 + 2 * Math.random();
-			double ty = -1 + 2 * Math.random();
-			geometry.setScale(new Vec3(s, s, s));
-			geometry.setRotation(new Vec3(0, 0, 360 * Math.random()));
-			geometry.setTranslation(new Vec3(tx, ty, 0));
-			add3DObject(new DefaultMesh(material, geometry));
-		}
+	public LineMaterial(float width, RGBA color) {
+		this(width, color, false);
+	}
+
+	public LineMaterial(float width, RGBA color, boolean perVertexColor) {
+		super(color, perVertexColor);
+		this.width = width;
+	}
+
+	@Override
+	public void getAttributeSuppliers(ISuppliers dst) {
+		dst.provide(IMaterial.LINE_WIDTH, () -> width);
+		super.getAttributeSuppliers(dst);
 	}
 }

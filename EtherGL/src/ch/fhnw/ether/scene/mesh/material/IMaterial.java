@@ -75,8 +75,7 @@ public interface IMaterial extends IAttributeProvider, IUpdateRequester {
 	public static MaterialAttribute LINE_WIDTH_ARRAY = new MaterialAttribute("builtin.line_width_array");
 	public static MaterialAttribute LINE_WIDTH = new MaterialAttribute("builtin.line_width");
 
-	// points only: point size & decay
+	// points only: point size
 	public static MaterialAttribute POINT_SIZE_ARRAY = new MaterialAttribute("builtin.point_size_array");
 	public static MaterialAttribute POINT_SIZE = new MaterialAttribute("builtin.point_size");
-	public static MaterialAttribute POINT_DECAY = new MaterialAttribute("builtin.point_decay");
 }
