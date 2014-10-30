@@ -183,8 +183,7 @@ public class GeometryServer {
 						}
 						if (vertices.length > 0) {
 							System.out.println("udp: model updated");
-							// XXX DISABLED
-							// controller.getModel().setTriangles(vertices, colors);
+							// TODO: send triangles (vertices) to scene
 							controller.modelChanged();
 						} else {
 							System.out.println("udp: no data received");
@@ -240,8 +239,7 @@ public class GeometryServer {
 			i += triangles.length;
 		}
 		if (allTriangles.length > 0) {
-			// XXX DISABLED
-			// controller.getModel().setTriangles(allTriangles, null);
+			// TODO: send allTriangles to scene
 		} else {
 			System.out.println("empty model");
 		}

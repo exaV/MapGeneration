@@ -73,7 +73,7 @@ public final class MappingExample {
 		// e.printStackTrace();
 		// }
 
-		// XXX geometry server currently disabled
+		// geometry server currently disabled
 		// new GeometryServer(controller);
 	}
 }

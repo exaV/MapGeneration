@@ -46,9 +46,7 @@ public class DefaultScene implements IScene {
 	private final List<ICamera> cameras = new ArrayList<>();
 	private final List<ILight> lights = new ArrayList<>();
 	private final List<I3DObject> objects = new ArrayList<>();
-
 	
-	// FIXME: would it be better to take the controller as argument here? i think so
 	public DefaultScene(IController controller) {
 		this.controller = controller;
 	}

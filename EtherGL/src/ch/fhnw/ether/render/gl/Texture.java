@@ -63,7 +63,6 @@ public class Texture {
 		setData(url);
 	}
 
-	// FIXME: textures don't seem to be disposed!
 	public void dispose(GL gl) {
 		if (tex != null) {
 			gl.glDeleteTextures(1, tex, 0);
