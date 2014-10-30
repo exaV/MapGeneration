@@ -34,13 +34,13 @@ import java.util.Collections;
 import java.util.List;
 
 import ch.fhnw.ether.camera.ICamera;
-import ch.fhnw.ether.render.IRenderer;
+import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.IMesh;
 
 public class DefaultScene implements IScene {
 
-	private final IRenderer renderer;
+	private final IController controller;
 
 	private final List<IMesh> meshes = new ArrayList<>();
 	private final List<ICamera> cameras = new ArrayList<>();
@@ -48,12 +48,13 @@ public class DefaultScene implements IScene {
 	private final List<I3DObject> objects = new ArrayList<>();
 
 	
-	public DefaultScene(IRenderer renderer) {
-		this.renderer = renderer;
+	// FIXME: would it be better to take the controller as argument here? i think so
+	public DefaultScene(IController controller) {
+		this.controller = controller;
 	}
 	
-	public DefaultScene(IRenderer renderer, ICamera camera, List<IMesh> meshes) {
-		this(renderer);
+	public DefaultScene(IController controller, ICamera camera, List<IMesh> meshes) {
+		this(controller);
 		meshes.addAll(meshes);
 		objects.addAll(meshes);
 	}
@@ -62,7 +63,7 @@ public class DefaultScene implements IScene {
 	public final void add3DObject(I3DObject object) {
 		if (object instanceof IMesh) {
 			meshes.add((IMesh)object);
-			renderer.addMesh((IMesh)object);
+			controller.getRenderer().addMesh((IMesh)object);
 		}
 		if (object instanceof ICamera)
 			cameras.add((ICamera)object);
@@ -75,7 +76,7 @@ public class DefaultScene implements IScene {
 	public final void remove3DObject(I3DObject object) {
 		if (object instanceof IMesh) {
 			meshes.remove(object);
-			renderer.removeMesh((IMesh)object);
+			controller.getRenderer().removeMesh((IMesh)object);
 		}
 		if (object instanceof ICamera)
 			cameras.remove(object);
@@ -104,7 +105,7 @@ public class DefaultScene implements IScene {
 		return Collections.unmodifiableList(lights);
 	}
 
-	protected final IRenderer getRenderer() {
-		return renderer;
+	protected final IController getController() {
+		return controller;
 	}
 }

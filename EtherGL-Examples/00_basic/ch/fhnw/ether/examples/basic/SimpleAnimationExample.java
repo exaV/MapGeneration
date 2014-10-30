@@ -81,7 +81,7 @@ public final class SimpleAnimationExample {
 		IView view = new DefaultView(controller, 100, 100, 500, 500, IView.ViewType.INTERACTIVE_VIEW, "Test", camera);
 
 		// Create scene and add triangle
-		IScene scene = new DefaultScene(controller.getRenderer());
+		IScene scene = new DefaultScene(controller);
 		IMesh mesh = makeColoredTriangle();
 		scene.add3DObject(mesh);
 

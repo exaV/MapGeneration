@@ -34,7 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ch.fhnw.ether.render.IRenderer;
+import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.scene.DefaultScene;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
@@ -55,8 +55,8 @@ public class Scene extends DefaultScene {
 
 	private final List<Agent> agents = new ArrayList<>();
 
-	public Scene(IRenderer renderer) {
-		super(renderer);
+	public Scene(IController controller) {
+		super(controller);
 	}
 
 	public List<Node> getNodes() {

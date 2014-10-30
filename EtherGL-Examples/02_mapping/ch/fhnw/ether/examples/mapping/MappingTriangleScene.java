@@ -29,7 +29,7 @@
 
 package ch.fhnw.ether.examples.mapping;
 
-import ch.fhnw.ether.render.IRenderer;
+import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.scene.DefaultScene;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.MeshLibrary;
@@ -43,8 +43,8 @@ import ch.fhnw.util.math.Vec3;
 
 public class MappingTriangleScene extends DefaultScene {
 
-	public MappingTriangleScene(IRenderer renderer) {
-		super(renderer);
+	public MappingTriangleScene(IController controller) {
+		super(controller);
 		IMaterial material = new ColorMaterial(RGBA.WHITE);
 		for (int i = 0; i < 10; ++i) {
 			IGeometry geometry = DefaultGeometry.createV(PrimitiveType.TRIANGLES, MeshLibrary.UNIT_CUBE_TRIANGLES);
