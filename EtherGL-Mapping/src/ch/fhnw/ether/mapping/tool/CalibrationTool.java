@@ -62,8 +62,7 @@ import ch.fhnw.util.math.Vec3;
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.MouseEvent;
 
-// FIXME: this tool is currently defunct
-// - need possibility to disable current 3d scene
+// FIXME: need possibility to disable current 3d scene when tool is active
 public final class CalibrationTool extends AbstractTool {
 	//@formatter:off	
 	private static final String[] HELP = { 
@@ -81,8 +80,8 @@ public final class CalibrationTool extends AbstractTool {
 	public static final double MAX_CALIBRATION_ERROR = 0.5;
 
 	public static final RGBA MODEL_COLOR = RGBA.WHITE;
-	public static final RGBA CALIBRATION_COLOR_UNCALIBRATED = RGBA.YELLOW;
-	public static final RGBA CALIBRATION_COLOR_CALIBRATED = RGBA.GREEN;
+	public static final RGBA UNCALIBRATED_COLOR = RGBA.YELLOW;
+	public static final RGBA CALIBRATED_COLOR = RGBA.GREEN;
 
 	private static final float CROSSHAIR_SIZE = 20;
 
@@ -99,10 +98,12 @@ public final class CalibrationTool extends AbstractTool {
 	public CalibrationTool(IController controller, ICalibrationModel model) {
 		super(controller);
 		this.model = model;
-		lines = new DefaultMesh(new ColorMaterial(RGBA.WHITE), DefaultGeometry.createV(PrimitiveType.LINES, model.getCalibrationLines()));
-		points = new DefaultMesh(new PointMaterial(10, RGBA.WHITE), DefaultGeometry.createV(PrimitiveType.POINTS, model.getCalibrationPoints()));
-		calibratedLines = new DefaultMesh(new ColorMaterial(RGBA.YELLOW), DefaultGeometry.createV(PrimitiveType.LINES, new float[0]), Pass.DEVICE_SPACE_OVERLAY);
-		calibratedPoints = new DefaultMesh(new PointMaterial(10, RGBA.YELLOW), DefaultGeometry.createV(PrimitiveType.POINTS, new float[0]), Pass.DEVICE_SPACE_OVERLAY);
+		lines = new DefaultMesh(new ColorMaterial(MODEL_COLOR), DefaultGeometry.createV(PrimitiveType.LINES, model.getCalibrationLines()), Pass.OVERLAY);
+		points = new DefaultMesh(new PointMaterial(10, MODEL_COLOR), DefaultGeometry.createV(PrimitiveType.POINTS, model.getCalibrationPoints()), Pass.OVERLAY);
+		calibratedLines = new DefaultMesh(new ColorMaterial(UNCALIBRATED_COLOR), DefaultGeometry.createV(PrimitiveType.LINES, new float[0]),
+				Pass.DEVICE_SPACE_OVERLAY);
+		calibratedPoints = new DefaultMesh(new PointMaterial(10, UNCALIBRATED_COLOR), DefaultGeometry.createV(PrimitiveType.POINTS, new float[0]),
+				Pass.DEVICE_SPACE_OVERLAY);
 	}
 
 	@Override
@@ -310,6 +311,7 @@ public final class CalibrationTool extends AbstractTool {
 				return true;
 			}
 		});
+		((ColorMaterial) calibratedPoints.getMaterial()).setColor(context.calibrated ? CALIBRATED_COLOR : UNCALIBRATED_COLOR);
 
 		// prepare lines
 		List<Vec3> v = new ArrayList<>();
@@ -327,7 +329,7 @@ public final class CalibrationTool extends AbstractTool {
 				MeshLibrary.addLine(v, a.x, a.y - CROSSHAIR_SIZE / viewport.h, a.z, a.x, a.y + CROSSHAIR_SIZE / viewport.h, a.z);
 			}
 		}
-		
+
 		calibratedLines.getGeometry().accept(new IAttributesVisitor() {
 			@Override
 			public boolean visit(PrimitiveType type, String[] attributes, float[][] data) {
@@ -335,6 +337,7 @@ public final class CalibrationTool extends AbstractTool {
 				return true;
 			}
 		});
+		((ColorMaterial) calibratedLines.getMaterial()).setColor(context.calibrated ? CALIBRATED_COLOR : UNCALIBRATED_COLOR);
 	}
 
 }
