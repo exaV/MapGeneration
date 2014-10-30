@@ -33,6 +33,7 @@ import javax.media.opengl.GLEventListener;
 import ch.fhnw.ether.camera.CameraMatrices;
 import ch.fhnw.ether.camera.ICamera;
 import ch.fhnw.ether.controller.IController;
+import ch.fhnw.util.IUpdateListener;
 import ch.fhnw.util.Viewport;
 import ch.fhnw.util.math.Mat4;
 
@@ -45,7 +46,7 @@ import com.jogamp.newt.event.MouseListener;
  * 
  * @author radar
  */
-public interface IView extends GLEventListener, MouseListener, KeyListener {
+public interface IView extends IUpdateListener, GLEventListener, MouseListener, KeyListener {
 	enum ViewType {
 		INTERACTIVE_VIEW, MAPPED_VIEW
 	}
@@ -132,10 +133,4 @@ public interface IView extends GLEventListener, MouseListener, KeyListener {
 	 * Request to repaint this view.
 	 */
 	void repaint();
-
-	/**
-	 * Request to update view and its dependencies (e.g. tools) and then repaint. For instance, this is called when the
-	 * camera changed.
-	 */
-	void refresh();
 }

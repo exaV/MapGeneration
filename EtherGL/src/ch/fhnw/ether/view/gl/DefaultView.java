@@ -53,11 +53,11 @@ import com.jogamp.newt.event.MouseEvent;
  */
 public class DefaultView implements IView {
 
-	private final NEWTWindow window;
-
-	private final IController controller;
-
 	private final ViewType viewType;
+
+	private NEWTWindow window;
+
+	private IController controller;
 
 	private final Object lock = new Object();
 
@@ -71,10 +71,8 @@ public class DefaultView implements IView {
 	private boolean enabled = true;
 
 	public DefaultView(IController controller, int x, int y, int w, int h, ViewType viewType, String title, ICamera camera) {
-		this.window = new NEWTWindow(w, h, title);
-		this.controller = controller;
 		this.viewType = viewType;
-		this.camera = camera;
+		this.window = new NEWTWindow(w, h, title);
 		window.setView(this);
 		Point p = window.getPosition();
 		if (x != -1)
@@ -82,6 +80,8 @@ public class DefaultView implements IView {
 		if (y != -1)
 			p.setY(y);
 		window.setPosition(p);
+		this.controller = controller;
+		setCamera(camera);
 	}
 
 	@Override
@@ -102,8 +102,9 @@ public class DefaultView implements IView {
 	@Override
 	public final void setCamera(ICamera camera) {
 		synchronized (lock) {
+			if (this.camera != null) this.camera.removeUpdateListener(this);
 			this.camera = camera;
-			refresh();
+			if (camera != null) this.camera.addUpdateListener(this);
 		}
 	}
 
@@ -162,14 +163,18 @@ public class DefaultView implements IView {
 		getController().repaintView(this);
 	}
 
+	
 	@Override
-	public final void refresh() {
-		synchronized (lock) {
-			if (!cameraLocked)
-				cameraMatrices = null;
+	public void requestUpdate(Object source) {
+		if (source instanceof ICamera) {
+			synchronized (lock) {
+				if (!cameraLocked)
+					cameraMatrices = null;
+			}
+			getController().getCurrentTool().refresh(this);
+			repaint();
+			
 		}
-		getController().getCurrentTool().refresh(this);
-		repaint();
 	}
 
 	// GLEventListener implementation
@@ -238,6 +243,11 @@ public class DefaultView implements IView {
 	public final void dispose(GLAutoDrawable drawable) {
 		try {
 			window.dispose();
+			controller.removeView(this);
+			setCamera(null);
+			window = null;
+			controller = null;
+			camera = null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

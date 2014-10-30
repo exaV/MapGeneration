@@ -104,7 +104,6 @@ public class NavigationTool extends AbstractTool {
 		}
 		mouseX = e.getX();
 		mouseY = e.getY();
-		view.refresh();
 	}
 
 	@Override
@@ -116,7 +115,6 @@ public class NavigationTool extends AbstractTool {
 		} else {
 			control.addToDistance(e.getRotation()[1] * zoomFactor);
 		}
-		view.refresh();
 	}
 
 	private static DefaultMesh makeGrid() {

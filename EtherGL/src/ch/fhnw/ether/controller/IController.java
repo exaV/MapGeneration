@@ -73,6 +73,15 @@ public interface IController {
 	void addView(IView view);
 
 	/**
+	 * Remove a view from the controller. Do not call this method directly, it will be called by the view itself when it
+	 * is disposed.
+	 *
+	 * @param view
+	 *            the view to remove
+	 */
+	void removeView(IView view);
+
+	/**
 	 * Get a list of all views.
 	 *
 	 * @return list of views
@@ -139,7 +148,6 @@ public interface IController {
 	 * @return the ui
 	 */
 	UI getUI();
-
 
 	// key listener
 

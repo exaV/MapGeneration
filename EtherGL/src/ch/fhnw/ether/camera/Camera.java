@@ -29,10 +29,13 @@
 
 package ch.fhnw.ether.camera;
 
+import ch.fhnw.util.IUpdateListener;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.BoundingBox;
 
 public final class Camera implements ICamera {
+
+	private final UpdateListeners listeners = new UpdateListeners();
 
 	private Vec3 position = new Vec3(0, -10, 0);
 	private Vec3 target = Vec3.ZERO;
@@ -71,6 +74,7 @@ public final class Camera implements ICamera {
 	@Override
 	public void setPosition(Vec3 position) {
 		this.position = position;
+		requestUpdate();
 	}
 
 	@Override
@@ -81,6 +85,7 @@ public final class Camera implements ICamera {
 	@Override
 	public void setTarget(Vec3 target) {
 		this.target = target;
+		requestUpdate();
 	}
 
 	@Override
@@ -91,6 +96,7 @@ public final class Camera implements ICamera {
 	@Override
 	public void setUp(Vec3 up) {
 		this.up = up;
+		requestUpdate();
 	}
 
 	@Override
@@ -101,6 +107,7 @@ public final class Camera implements ICamera {
 	@Override
 	public void setFov(float fov) {
 		this.fov = fov;
+		requestUpdate();
 	}
 
 	@Override
@@ -111,6 +118,7 @@ public final class Camera implements ICamera {
 	@Override
 	public void setNear(float near) {
 		this.near = near;
+		requestUpdate();
 	}
 
 	@Override
@@ -121,6 +129,7 @@ public final class Camera implements ICamera {
 	@Override
 	public void setFar(float far) {
 		this.far = far;
+		requestUpdate();
 	}
 	
 	@Override
@@ -131,5 +140,20 @@ public final class Camera implements ICamera {
 	@Override
 	public void setName(String name) {
 		this.name = name;
+		requestUpdate();
+	}
+	
+	@Override
+	public void addUpdateListener(IUpdateListener listener) {
+		listeners.addListener(listener);
+	}
+	
+	@Override
+	public void removeUpdateListener(IUpdateListener listener) {
+		listeners.removeListener(listener);
+	}
+	
+	private void requestUpdate() {
+		listeners.requestUpdate(this);
 	}
 }

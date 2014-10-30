@@ -103,6 +103,15 @@ public class DefaultController implements IController {
 
 		view.repaint();
 	}
+	
+	@Override
+	public void removeView(IView view) {
+		views.remove(view);
+		if (currentView == view)
+			currentView = null;
+		
+		scheduler.removeDrawable(view.getDrawable());
+	}
 
 	@Override
 	public final List<IView> getViews() {

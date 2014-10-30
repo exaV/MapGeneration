@@ -64,7 +64,6 @@ public class ObjLoaderView extends DefaultView {
 			ICamera cam = getCamera();
 			cam.setPosition(params[0]);
 			cam.setUp(params[1]);
-			refresh();
 			break;
 		default:
 			super.keyPressed(e);
