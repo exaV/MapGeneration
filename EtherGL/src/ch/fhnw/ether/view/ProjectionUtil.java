@@ -163,6 +163,6 @@ public final class ProjectionUtil {
 	public static Line getRay(IView view, float x, float y) {
 		Vec3 p0 = unprojectFromScreen(view, new Vec3(x, y, 0.1f));
 		Vec3 p1 = unprojectFromScreen(view, new Vec3(x, y, 0.9f));
-		return new Line(p0, p1);
+		return Line.fromPoints(p0, p1);
 	}
 }

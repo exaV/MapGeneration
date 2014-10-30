@@ -29,8 +29,8 @@
 
 package ch.fhnw.ether.examples.raytracing.surface;
 
-import ch.fhnw.ether.examples.raytracing.util.Ray;
 import ch.fhnw.util.math.Vec3;
+import ch.fhnw.util.math.geometry.Line;
 
 public class Plane implements IParametricSurface {
 
@@ -47,9 +47,9 @@ public class Plane implements IParametricSurface {
 
 	// From http://www.trenki.net/files/Raytracing1.pdf
 	@Override
-	public Vec3 intersect(Ray ray) {
-		float t = -(normal.dot(ray.origin) + distance) / normal.dot(ray.direction);
-		return t < 0 ? null : ray.origin.add(ray.direction.scale(t));
+	public Vec3 intersect(Line ray) {
+		float t = -(normal.dot(ray.getOrigin()) + distance) / normal.dot(ray.getDirection());
+		return t < 0 ? null : ray.getOrigin().add(ray.getDirection().scale(t));
 	}
 
 	@Override

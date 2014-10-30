@@ -38,7 +38,6 @@ import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.camera.ICamera;
 import ch.fhnw.ether.examples.raytracing.util.IntersectResult;
-import ch.fhnw.ether.examples.raytracing.util.Ray;
 import ch.fhnw.ether.render.IRenderer;
 import ch.fhnw.ether.render.forward.ForwardRenderer;
 import ch.fhnw.ether.render.gl.Texture;
@@ -57,6 +56,7 @@ import ch.fhnw.ether.view.IView;
 import ch.fhnw.util.Viewport;
 import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Vec3;
+import ch.fhnw.util.math.geometry.Line;
 
 public class RayTracingRenderer implements IRenderer {
 	private static final RGBA BACKGROUND_COLOR = RGBA.WHITE;
@@ -102,7 +102,7 @@ public class RayTracingRenderer implements IRenderer {
 				Vec3 x = sideVector.scale(i * deltaX);
 				Vec3 y = upVector.scale(j * deltaY);
 				Vec3 dir = lookVector.add(x).add(y);
-				Ray ray = new Ray(camPos, dir);
+				Line ray = new Line(camPos, dir);
 				RGBA color = intersection(ray, light);
 				colors[(j + h / 2) * w + (i + w / 2)] = color.toInt();
 			}
@@ -125,7 +125,7 @@ public class RayTracingRenderer implements IRenderer {
 		meshes.remove(mesh);
 	}
 
-	private RGBA intersection(Ray ray, ILight light) {
+	private RGBA intersection(Line ray, ILight light) {
 
 		// find nearest intersection point in scene
 		IntersectResult nearest = new IntersectResult(null, null, BACKGROUND_COLOR, Float.POSITIVE_INFINITY);
@@ -141,22 +141,22 @@ public class RayTracingRenderer implements IRenderer {
 			return BACKGROUND_COLOR;
 
 		// create vector which is sure over surface
-		Vec3 position_ontop_surface = nearest.position.subtract(ray.direction.scale(0.01f));
-		position_ontop_surface = position_ontop_surface.add(nearest.surface.getNormalAt(nearest.position).scale(0.0001f));
+		Vec3 positionOnSurface = nearest.position.subtract(ray.getDirection().scale(0.01f));
+		positionOnSurface = positionOnSurface.add(nearest.surface.getNormalAt(nearest.position).scale(0.0001f));
 
-		float dist_to_light = light.getPosition().subtract(nearest.position).length();
+		float distanceToLight = light.getPosition().subtract(nearest.position).length();
 
 		// check if path to light is clear
-		Ray light_ray = new Ray(position_ontop_surface, light.getPosition().subtract(position_ontop_surface));
+		Line lightRay = new Line(positionOnSurface, light.getPosition().subtract(positionOnSurface));
 		for (RayTraceMesh r : meshes) {
-			IntersectResult intersect = r.intersect(light_ray);
-			if (intersect.isValid() && intersect.dist < dist_to_light) {
+			IntersectResult intersect = r.intersect(lightRay);
+			if (intersect.isValid() && intersect.dist < distanceToLight) {
 				return RGBA.BLACK;
 			}
 		}
 
 		// diffuse color
-		float f = Math.max(0, light_ray.direction.dot(nearest.surface.getNormalAt(nearest.position)));
+		float f = Math.max(0, lightRay.getDirection().dot(nearest.surface.getNormalAt(nearest.position)));
 		RGBA c = nearest.color;
 		RGBA lc = light.getColor();
 

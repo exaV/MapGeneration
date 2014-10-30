@@ -37,19 +37,29 @@ import ch.fhnw.util.math.Vec3;
  * @author radar
  *
  */
-// FIXME: revise - use constructor(origin, direction) & static method(p1, p2)
-public class Line {
-	private Vec3 origin;
-	private Vec3 direction;
+public final class Line {
+	private final Vec3 origin;
+	private final Vec3 direction;
 
-	public Line(Vec3 p1, Vec3 p2) {
+	public Line(Vec3 origin, Vec3 direction) {
+		this.origin = origin;
+		this.direction = direction.normalize();
+	}
+	
+	public Line(Vec3 origin, Vec3 direction, boolean normalize) {
+		this.origin = origin;
+		this.direction = normalize ? direction.normalize() : direction;
+	}
+	
+	public static Line fromPoints(Vec3 p1, Vec3 p2) {
 		Vec3 delta = p2.subtract(p1);
 		float length = delta.length();
 		if (length == 0.0) {
 			throw new IllegalArgumentException();
 		}
-		direction = delta.scale(1.0f / length);
-		origin = p1.add(direction.scale(-p1.dot(delta) / length));
+		Vec3 direction = delta.normalize();
+		Vec3 origin = p1.add(direction.scale(-p1.dot(delta) / length));
+		return new Line(origin, direction, false);
 	}
 
 	public Vec3 getOrigin() {
@@ -59,4 +69,9 @@ public class Line {
 	public Vec3 getDirection() {
 		return direction;
 	}
+
+	@Override
+	public String toString() {
+		return "[origin:" + origin + ", direction:" + direction + "]";
+	}	
 }

@@ -31,7 +31,6 @@ import java.util.EnumSet;
 
 import ch.fhnw.ether.examples.raytracing.surface.IParametricSurface;
 import ch.fhnw.ether.examples.raytracing.util.IntersectResult;
-import ch.fhnw.ether.examples.raytracing.util.Ray;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
@@ -39,6 +38,7 @@ import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.BoundingBox;
+import ch.fhnw.util.math.geometry.Line;
 
 public class RayTraceMesh implements IMesh {
 	private final IParametricSurface surface;
@@ -56,12 +56,12 @@ public class RayTraceMesh implements IMesh {
 		this.color = color;
 	}
 
-	public IntersectResult intersect(Ray ray) {
-		Vec3 point = surface.intersect(new Ray(ray.origin.add(position.negate()), ray.direction));
+	public IntersectResult intersect(Line ray) {
+		Vec3 point = surface.intersect(new Line(ray.getOrigin().add(position.negate()), ray.getDirection()));
 		if (point == null) {
 			return IntersectResult.VOID;
 		}
-		return new IntersectResult(surface, point, color, ray.origin.subtract(point).length());
+		return new IntersectResult(surface, point, color, ray.getOrigin().subtract(point).length());
 	}
 
 	// I3DObject implementation

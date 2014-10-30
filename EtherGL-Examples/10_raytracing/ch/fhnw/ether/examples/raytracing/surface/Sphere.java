@@ -29,8 +29,8 @@
 
 package ch.fhnw.ether.examples.raytracing.surface;
 
-import ch.fhnw.ether.examples.raytracing.util.Ray;
 import ch.fhnw.util.math.Vec3;
+import ch.fhnw.util.math.geometry.Line;
 
 public class Sphere implements IParametricSurface {
 
@@ -43,9 +43,9 @@ public class Sphere implements IParametricSurface {
 
 	// From http://www.trenki.net/files/Raytracing1.pdf
 	@Override
-	public Vec3 intersect(Ray ray) {
-		Vec3 o = ray.origin;
-		Vec3 d = ray.direction;
+	public Vec3 intersect(Line ray) {
+		Vec3 o = ray.getOrigin();
+		Vec3 d = ray.getDirection();
 		Vec3 c = pos;
 
 		Vec3 l = c.subtract(o);
