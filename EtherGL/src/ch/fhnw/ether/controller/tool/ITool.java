@@ -47,11 +47,10 @@ public interface ITool {
 	void deactivate();
 
 	/**
-	 * Called when current view or camera has changed. Tools should use this to update view-dependent buffers (e.g.
-	 * screen-space buffers).
+	 * Called when current view or camera has changed. Tools should use this to update view-dependent geometry.
 	 *
 	 * @param view
-	 *            the new current view
+	 *            the current view
 	 */
 	void refresh(IView view);
 
