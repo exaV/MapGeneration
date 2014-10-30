@@ -28,7 +28,6 @@
  */package ch.fhnw.ether.view;
 
 import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.GLEventListener;
 
 import ch.fhnw.ether.camera.CameraMatrices;
 import ch.fhnw.ether.camera.ICamera;
@@ -37,20 +36,26 @@ import ch.fhnw.util.IUpdateListener;
 import ch.fhnw.util.Viewport;
 import ch.fhnw.util.math.Mat4;
 
-import com.jogamp.newt.event.KeyListener;
-import com.jogamp.newt.event.MouseListener;
-
 /**
  * A 'view' here is a view with some control functionality, i.e. it handles the rendering of the model and also the user
  * input specific to the view.
  * 
  * @author radar
  */
-public interface IView extends IUpdateListener, GLEventListener, MouseListener, KeyListener {
+public interface IView extends IUpdateListener {
 	enum ViewType {
 		INTERACTIVE_VIEW, MAPPED_VIEW
 	}
-
+	
+	/**
+	 * Dispose this view and release all associated resources
+	 */
+	void dispose();
+	
+	/**
+	 * Get the drawable associated to this view.
+	 * @return the drawable
+	 */
 	GLAutoDrawable getDrawable();
 
 	/**

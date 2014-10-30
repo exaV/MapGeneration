@@ -27,15 +27,29 @@
  */
 package ch.fhnw.ether.examples.objloader;
 
+import ch.fhnw.ether.camera.ICamera;
 import ch.fhnw.ether.controller.DefaultController;
 import ch.fhnw.ether.view.IView;
+import ch.fhnw.util.math.Vec3;
 
 import com.jogamp.newt.event.KeyEvent;
 
 public class ObjLoaderController extends DefaultController {
-	private static final String[] HELP = { "Simple Quaternion Example", "", "[1-6] Side Views", "", "Use Mouse Buttons + Shift or Mouse Wheel to Navigate" };
+	private static final String[] HELP = { "Simple Obj Loader Example", "", "[1-6] Side Views", "", "Use Mouse Buttons + Shift or Mouse Wheel to Navigate" };
+	
+	private static final Vec3[][] CAM_PARAMS = {
+		//@formatter:off
+		{ new Vec3(5, 0, 0), Vec3.Z }, 
+		{ new Vec3(-5, 0, 0), Vec3.Z },
+		{ new Vec3(0, 5, 0), Vec3.Z }, 
+		{ new Vec3(0, -5, 0), Vec3.Z }, 
+		{ new Vec3(0, 0, 5), Vec3.Y }, 
+		{ new Vec3(0, 0, -5), Vec3.Y_NEG }
+		//@formatter:on
+	};
 
 	public ObjLoaderController() {
+		getUI().setMessage("Use 0-6 on keyboard to set camera");
 	}
 
 	public void modelChanged() {
@@ -45,6 +59,17 @@ public class ObjLoaderController extends DefaultController {
 	@Override
 	public void keyPressed(KeyEvent e, IView view) {
 		switch (e.getKeyCode()) {
+		case KeyEvent.VK_1:
+		case KeyEvent.VK_2:
+		case KeyEvent.VK_3:
+		case KeyEvent.VK_4:
+		case KeyEvent.VK_5:
+		case KeyEvent.VK_6:
+			Vec3[] params = CAM_PARAMS[e.getKeyCode() - KeyEvent.VK_1];
+			ICamera cam = getCurrentView().getCamera();
+			cam.setPosition(params[0]);
+			cam.setUp(params[1]);
+			break;
 		case KeyEvent.VK_H:
 			printHelp(HELP);
 			break;
@@ -53,5 +78,4 @@ public class ObjLoaderController extends DefaultController {
 		}
 		repaintViews();
 	}
-
 }

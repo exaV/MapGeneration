@@ -37,6 +37,8 @@ import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.formats.obj.OBJReader;
 import ch.fhnw.ether.scene.DefaultScene;
 import ch.fhnw.ether.scene.IScene;
+import ch.fhnw.ether.view.IView.ViewType;
+import ch.fhnw.ether.view.gl.DefaultView;
 
 public class ObjLoaderExample {
 	public static void main(String[] args) {
@@ -57,7 +59,7 @@ public class ObjLoaderExample {
 		IController controller = new ObjLoaderController();
 		
 		ICamera camera = new Camera();
-		controller.addView(new ObjLoaderView(controller, 0, 10, 512, 512, "Obj View", camera));
+		controller.addView(new DefaultView(controller, 0, 10, 512, 512, ViewType.INTERACTIVE_VIEW, "Obj View", camera));
 
 		IScene scene = new DefaultScene(controller);
 		new OBJReader(getClass().getResource("fhnw.obj")).getMeshes().forEach((x) -> {

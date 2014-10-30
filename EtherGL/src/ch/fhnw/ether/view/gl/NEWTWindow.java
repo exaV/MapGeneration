@@ -35,8 +35,6 @@ import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLDrawableFactory;
 import javax.media.opengl.GLProfile;
 
-import ch.fhnw.ether.view.IView;
-
 import com.jogamp.newt.event.WindowAdapter;
 import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.newt.opengl.GLWindow;
@@ -51,8 +49,6 @@ public final class NEWTWindow {
 	private static int numWindows = 0;
 
 	private GLWindow window;
-
-	private IView view;
 
 	/**
 	 * Creates undecorated frame.
@@ -103,30 +99,7 @@ public final class NEWTWindow {
 	}
 	
 	public void dispose() {
-		setView(null);
 		window.destroy();
-	}
-
-	/**
-	 * Sets/clears the view for this frame.
-	 *
-	 * @param view
-	 *            The view to be assigned, or null if view to be cleared.
-	 */
-	public void setView(IView view) {
-		if (this.view == view)
-			return;
-		if (this.view != null) {
-			window.removeGLEventListener(this.view);
-			window.removeMouseListener(view);
-			window.removeKeyListener(view);
-		}
-		this.view = view;
-		if (this.view != null) {
-			window.addGLEventListener(this.view);
-			window.addMouseListener(view);
-			window.addKeyListener(view);
-		}
 	}
 
 	private static GLCapabilities getCapabilities() {
@@ -152,7 +125,7 @@ public final class NEWTWindow {
 		window.setPosition(position.getX(), position.getY());
 	}
 
-	public GLAutoDrawable getDrawable() {
+	public GLWindow getWindow() {
 		return window;
 	}
 }
