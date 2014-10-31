@@ -51,9 +51,31 @@ public interface IRenderer {
 		}
 	}
 
-	void render(GL3 gl, IView view);
-
+	/**
+	 * Add mesh to renderer. Allocates all renderer-dependent resources. Thread-safe.
+	 * 
+	 * @param mesh
+	 *            mesh to be added
+	 * @throws IllegalArgumentException
+	 *             if mesh already in renderer.
+	 */
 	void addMesh(IMesh mesh);
 
+	/**
+	 * Remove mesh from renderer. Releases all renderer-dependent resources. Thread-safe.
+	 * 
+	 * @param mesh
+	 *            mesh to be removed
+	 * @throws IllegalArgumentException
+	 *             if mesh not in renderer.
+	 */
+	// TODO: we could use a special flag (or similar) to prevent deallocation of resources for cases where meshes are
+	// added and removed quickly.
 	void removeMesh(IMesh mesh);
+
+	/**
+	 * Called view from render thread to render the meshes. Do not call this method otherwise.
+	 */
+	void render(GL3 gl, IView view);
+
 }

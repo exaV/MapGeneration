@@ -42,7 +42,6 @@ public interface IMesh extends I3DObject, IUpdateListener {
 		DEPTH, TRANSPARENCY, OVERLAY, DEVICE_SPACE_OVERLAY, SCREEN_SPACE_OVERLAY
 	}
 
-	// FIXME: add "PERSISTENT" flag, so renderer can cache mesh-shader binding, for meshes that are added / removed frequently
 	public enum Flags {
 		INTERACTIVE_VIEWS_ONLY
 	}
