@@ -41,7 +41,6 @@ import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.util.FloatList;
 import ch.fhnw.util.UpdateRequest;
 
-// FIXME: concurrency both on renderables and disposed lists
 final class Renderables {
 	private final UpdateRequest updater = new UpdateRequest();
 
@@ -55,38 +54,49 @@ final class Renderables {
 	}
 
 	public void addMesh(IMesh mesh, IAttributeProvider attributes) {
-		if (!renderables.containsKey(mesh)) {
-			Renderable renderable = new Renderable(mesh, attributes);
-			renderables.put(mesh, renderable);
-			updater.requestUpdate();
+		Renderable renderable = new Renderable(mesh, attributes);
+		synchronized (renderables) {
+			if (renderables.putIfAbsent(mesh, renderable) != null)
+				throw new IllegalArgumentException("mesh already in renderer: " + mesh);
 		}
+		updater.requestUpdate();
 	}
-	
+
 	public void removeMesh(IMesh mesh) {
-		Renderable renderable = renderables.remove(mesh);
-		if (renderable != null) {
-			disposed.add(renderable);
-			updater.requestUpdate();
+		Renderable renderable;
+		synchronized (renderables) {
+			renderable = renderables.remove(mesh);
+			if (renderable == null)
+				throw new IllegalArgumentException("mesh not in renderer: " + mesh);
 		}
+		synchronized (disposed) {
+			disposed.add(renderable);
+		}
+		updater.requestUpdate();
 	}
 
 	void update(GL3 gl) {
 		if (updater.needsUpdate()) {
 			// update added / removed groups
-			for (Renderable renderable : disposed) {
-				renderable.dispose(gl);
+			synchronized (disposed) {
+				for (Renderable renderable : disposed) {
+					renderable.dispose(gl);
+				}
+				disposed.clear();
 			}
-			disposed.clear();
 		}
 	}
 
 	void render(GL3 gl, IRenderer.RenderState state, IMesh.Pass pass, boolean interactive) {
-		for (Renderable renderable : renderables.values()) {
-			if (renderable.containsFlag(IMesh.Flags.INTERACTIVE_VIEWS_ONLY) && !interactive)
-				continue;
-			if (renderable.getPass() == pass) {
-				renderable.update(gl, data);
-				renderable.render(gl, state);
+		// FIXME: i'm not sure if this is good (long lock). better options? ConcurrentHashMap, etc?
+		synchronized (renderables) {
+			for (Renderable renderable : renderables.values()) {
+				if (renderable.containsFlag(IMesh.Flags.INTERACTIVE_VIEWS_ONLY) && !interactive)
+					continue;
+				if (renderable.getPass() == pass) {
+					renderable.update(gl, data);
+					renderable.render(gl, state);
+				}
 			}
 		}
 	}
