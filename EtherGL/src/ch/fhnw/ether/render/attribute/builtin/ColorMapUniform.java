@@ -31,26 +31,28 @@ package ch.fhnw.ether.render.attribute.builtin;
 
 import java.util.function.Supplier;
 
+import javax.media.opengl.GL;
+
 import ch.fhnw.ether.render.attribute.base.SamplerUniformAttribute;
-import ch.fhnw.ether.render.gl.Texture;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
+import ch.fhnw.ether.scene.mesh.material.Texture;
 
 public final class ColorMapUniform extends SamplerUniformAttribute {
 	private static final String DEFAULT_SHADER_NAME = "tex";
 
 	public ColorMapUniform() {
-		super(IMaterial.COLOR_MAP, DEFAULT_SHADER_NAME);
+		this(DEFAULT_SHADER_NAME);
 	}
 
 	public ColorMapUniform(String shaderName) {
-		super(IMaterial.COLOR_MAP, shaderName);
+		this(shaderName, null);
 	}
 
 	public ColorMapUniform(Supplier<Texture> supplier) {
-		super(IMaterial.COLOR_MAP, DEFAULT_SHADER_NAME, supplier);
+		this(DEFAULT_SHADER_NAME, supplier);
 	}
 
 	public ColorMapUniform(String shaderName, Supplier<Texture> supplier) {
-		super(IMaterial.COLOR_MAP, shaderName, supplier);
+		super(IMaterial.COLOR_MAP, shaderName, supplier, 0, GL.GL_TEXTURE_2D);
 	}
 }

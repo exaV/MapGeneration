@@ -40,7 +40,6 @@ import java.util.EnumSet;
 
 import javax.media.opengl.GL;
 
-import ch.fhnw.ether.render.gl.Texture;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IAttribute;
 import ch.fhnw.ether.scene.mesh.IMesh;
@@ -52,6 +51,7 @@ import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.PrimitiveType;
 import ch.fhnw.ether.scene.mesh.material.ColorMapMaterial;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
+import ch.fhnw.ether.scene.mesh.material.Texture;
 import ch.fhnw.util.UpdateRequest;
 
 class GraphicsPlane {

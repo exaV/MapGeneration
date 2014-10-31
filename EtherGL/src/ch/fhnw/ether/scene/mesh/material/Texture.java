@@ -27,7 +27,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.render.gl;
+package ch.fhnw.ether.scene.mesh.material;
 
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
@@ -40,17 +40,16 @@ import java.nio.ByteBuffer;
 import javax.imageio.ImageIO;
 import javax.media.opengl.GL;
 
-//FIXME: we should switch to a texture class which is independent of GL
-// - should support different texture types (2d, 3d, array, cube map, etc) in an abstract way
-// - gl renderer would wrap around these types, in combination with texture unit provided by material
+import ch.fhnw.util.UpdateRequest;
 
 /**
- * Very simple texture wrapper.
+ * Texture data encapsulation (FIXME: needs extension/generalization, array tex, 3d tex etc)
  *
  * @author radar
  */
 public class Texture {
-	private int[] tex;
+	private final UpdateRequest updater = new UpdateRequest();
+	
 	private int width;
 	private int height;
 	private Buffer buffer;
@@ -61,14 +60,6 @@ public class Texture {
 	
 	public Texture(URL url) {
 		setData(url);
-	}
-
-	public void dispose(GL gl) {
-		if (tex != null) {
-			gl.glDeleteTextures(1, tex, 0);
-			tex = null;
-			buffer = null;
-		}
 	}
 
 	public void setData(URL url) {
@@ -91,44 +82,31 @@ public class Texture {
 		this.height = height;
 		this.buffer = buffer;
 		this.format = format;
+		updater.requestUpdate();
 	}
-
-	private void load(GL gl) {
-		if (buffer != null) {
-			load(gl, width, height, buffer, format);
-			buffer = null;
-		}
+	
+	public boolean needsUpdate() {
+		return updater.needsUpdate();
 	}
-
-	private void load(GL gl, int width, int height, Buffer buffer, int format) {
-		if (tex == null) {
-			tex = new int[1];
-			gl.glGenTextures(1, tex, 0);
-			gl.glBindTexture(GL.GL_TEXTURE_2D, tex[0]);
-			gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
-			gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR_MIPMAP_LINEAR);
-		} else {
-			gl.glBindTexture(GL.GL_TEXTURE_2D, tex[0]);
-		}
-		gl.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
-		buffer.rewind();
-		gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, width, height, 0, format, GL.GL_UNSIGNED_BYTE, buffer);
-		gl.glGenerateMipmap(GL.GL_TEXTURE_2D);
-		gl.glBindTexture(GL.GL_TEXTURE_2D, 0);
+	
+	public int getWidth() {
+		return width;
 	}
-
-	public void enable(GL gl) {
-		load(gl);
-		if (tex != null)
-			gl.glBindTexture(GL.GL_TEXTURE_2D, tex[0]);
+	
+	public int getHeight() {
+		return height;
 	}
-
-	public void disable(GL gl) {
-		gl.glBindTexture(GL.GL_TEXTURE_2D, 0);
+	
+	public Buffer getBuffer() {
+		return buffer;
+	}
+	
+	public int getFormat() {
+		return format;
 	}
 
 	@Override
 	public String toString() {
-		return "texture[valid=" + (tex != null) + " w=" + width + " h=" + height + "]";
+		return "texture[w=" + width + " h=" + height + "]";
 	}
 }
