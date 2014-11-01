@@ -29,9 +29,23 @@
 
 package ch.fhnw.ether.scene.mesh;
 
-import ch.fhnw.ether.scene.mesh.IAttribute.ISuppliers;
+import java.util.function.Supplier;
 
-
+/**
+ * 
+ * @author radar
+ *
+ */
 public interface IAttributeProvider {
+	interface ISuppliers {
+		void provide(IAttribute attribute, Supplier<?> supplier);
+
+		void provide(String id, Supplier<?> supplier);
+
+		void require(IAttribute attribute);
+
+		void require(String id);
+	}
+
 	void getAttributeSuppliers(ISuppliers dst);
 }

@@ -29,7 +29,6 @@
 
 package ch.fhnw.ether.scene.mesh.material;
 
-import ch.fhnw.ether.scene.mesh.IAttribute.ISuppliers;
 import ch.fhnw.util.color.RGBA;
 
 // FIXME: add support for texture units (forward compatible if possible, if we get dsa one day)

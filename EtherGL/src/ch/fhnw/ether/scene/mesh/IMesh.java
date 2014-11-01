@@ -36,6 +36,16 @@ import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.util.IUpdateListener;
 
+/**
+ * Basic mesh abstraction. A mesh is a light weight structure that combines render pass, scene/view/render flags,
+ * material and geometry.
+ * 
+ * Thread safety: Meshes are designed to be immutable and are thus thread safe. Should a particular implementation
+ * violate this contract, corresponding measured need to be taken from client side.
+ * 
+ * @author radar
+ *
+ */
 public interface IMesh extends I3DObject, IUpdateListener {
 
 	public enum Pass {
@@ -47,9 +57,9 @@ public interface IMesh extends I3DObject, IUpdateListener {
 	}
 
 	public static final EnumSet<Flags> NO_FLAGS = EnumSet.noneOf(Flags.class);
-	
+
 	Pass getPass();
-	
+
 	EnumSet<Flags> getFlags();
 
 	IMaterial getMaterial();

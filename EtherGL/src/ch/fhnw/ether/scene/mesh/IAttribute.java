@@ -29,16 +29,13 @@
 
 package ch.fhnw.ether.scene.mesh;
 
-import java.util.function.Supplier;
 
+/**
+ * Abstraction of attribute. Sub-classes on material as well as shader side implement specific attributes.
+ * 
+ * @author radar
+ *
+ */
 public interface IAttribute {
-	interface ISuppliers {
-		void provide(IAttribute attribute, Supplier<?> supplier);
-		void provide(String id, Supplier<?> supplier);
-		
-		void require(IAttribute attribute);
-		void require(String id);
-	}
-
 	String id();
 }

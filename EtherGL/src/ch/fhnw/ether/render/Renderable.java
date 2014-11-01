@@ -165,7 +165,7 @@ public final class Renderable {
 	}
 
 	private void createAttributes(IAttributeProvider uniformAttributeProvider) {
-		class Suppliers implements IAttribute.ISuppliers {
+		class Suppliers implements IAttributeProvider.ISuppliers {
 			private final Map<String, Supplier<?>> providedAttributes = new HashMap<>();
 			private final Set<String> requiredAttibutes = new HashSet<>();
 
