@@ -37,13 +37,13 @@ import ch.fhnw.ether.render.attribute.builtin.ProjMatrixUniform;
 import ch.fhnw.ether.render.attribute.builtin.ViewMatrixUniform;
 import ch.fhnw.ether.render.shader.IShader;
 import ch.fhnw.ether.render.shader.base.AbstractShader;
-import ch.fhnw.ether.scene.mesh.geometry.IGeometry.PrimitiveType;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.util.color.RGBA;
 
 public class LineShader extends AbstractShader {
 	public LineShader(Attributes attributes) {
-		super(IShader.class, "builtin.lines", "unshaded_vct", PrimitiveType.LINES);
+		super(IShader.class, "builtin.lines", "unshaded_vct", Primitive.LINES);
 
 		boolean useVertexColors = attributes.contains(IMaterial.COLOR_ARRAY);
 		

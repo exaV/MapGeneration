@@ -314,7 +314,7 @@ public final class Renderable {
 			return;
 		}
 
-		switch (mesh.getGeometry().getPrimitiveType()) {
+		switch (mesh.getGeometry().getType()) {
 		case POINTS:
 			shader = new PointShader(attributes);
 			break;

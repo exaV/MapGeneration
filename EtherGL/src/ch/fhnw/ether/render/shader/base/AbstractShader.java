@@ -39,7 +39,7 @@ import ch.fhnw.ether.render.attribute.IArrayAttribute;
 import ch.fhnw.ether.render.attribute.IUniformAttribute;
 import ch.fhnw.ether.render.gl.Program;
 import ch.fhnw.ether.render.shader.IShader;
-import ch.fhnw.ether.scene.mesh.geometry.IGeometry.PrimitiveType;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 
 public abstract class AbstractShader implements IShader {
 	// important: keep this in sync with PrimitiveType enum
@@ -48,13 +48,13 @@ public abstract class AbstractShader implements IShader {
 	private Class<?> root;
 	private String name;
 	private String source;
-	private PrimitiveType type;
+	private Primitive type;
 	private Program program;
 
 	private List<IUniformAttribute> uniforms = new ArrayList<>();
 	private List<IArrayAttribute> arrays = new ArrayList<>();
 
-	protected AbstractShader(Class<?> root, String name, String source, PrimitiveType type) {
+	protected AbstractShader(Class<?> root, String name, String source, Primitive type) {
 		this.root = root;
 		this.name = name;
 		this.source = source;
@@ -100,7 +100,7 @@ public abstract class AbstractShader implements IShader {
 	}
 
 	@Override
-	public final PrimitiveType getPrimitiveType() {
+	public final Primitive getPrimitiveType() {
 		return type;
 	}
 

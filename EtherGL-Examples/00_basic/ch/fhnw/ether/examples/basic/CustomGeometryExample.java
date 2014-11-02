@@ -39,7 +39,7 @@ import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IAttribute;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
-import ch.fhnw.ether.scene.mesh.geometry.IGeometry.PrimitiveType;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.ether.view.IView;
@@ -58,7 +58,7 @@ public final class CustomGeometryExample {
 		float[] color = { 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1 };
 		float[][] data = { position, color };
 
-		return new DefaultMesh(new ColorMaterial(RGBA.WHITE), new DefaultGeometry(PrimitiveType.TRIANGLES, attribs, data));
+		return new DefaultMesh(new ColorMaterial(RGBA.WHITE), new DefaultGeometry(Primitive.TRIANGLES, attribs, data));
 	}
 
 	// Setup the whole thing

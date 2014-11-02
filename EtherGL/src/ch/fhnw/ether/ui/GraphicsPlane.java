@@ -48,7 +48,7 @@ import ch.fhnw.ether.scene.mesh.IMesh.Pass;
 import ch.fhnw.ether.scene.mesh.MeshLibrary;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
-import ch.fhnw.ether.scene.mesh.geometry.IGeometry.PrimitiveType;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.ColorMapMaterial;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.ether.scene.mesh.material.Texture;
@@ -85,7 +85,7 @@ class GraphicsPlane {
 		IAttribute[] attribs = { IMaterial.POSITION_ARRAY, IMaterial.COLOR_MAP_ARRAY };
 		float[] position = { x, y, 0, x + w, y, 0, x + w, y + h, 0, x, y, 0, x + w, y + h, 0, x, y + h, 0 };
 		float[] texCoords = MeshLibrary.DEFAULT_QUAD_TEX_COORDS;
-		IGeometry geometry = new DefaultGeometry(PrimitiveType.TRIANGLES, attribs, new float[][] { position, texCoords });
+		IGeometry geometry = new DefaultGeometry(Primitive.TRIANGLES, attribs, new float[][] { position, texCoords });
 		IMaterial material = new ColorMapMaterial(texture);
 
 		mesh = new DefaultMesh(material, geometry, Pass.SCREEN_SPACE_OVERLAY, EnumSet.of(Flags.INTERACTIVE_VIEWS_ONLY));

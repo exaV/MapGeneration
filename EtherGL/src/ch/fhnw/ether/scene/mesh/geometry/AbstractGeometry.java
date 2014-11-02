@@ -3,15 +3,15 @@ package ch.fhnw.ether.scene.mesh.geometry;
 import ch.fhnw.util.IUpdateListener;
 
 public abstract class AbstractGeometry implements IGeometry {
-	private final PrimitiveType type;
+	private final Primitive type;
 	private final UpdateListeners listeners = new UpdateListeners();
 
-	protected AbstractGeometry(PrimitiveType type) {
+	protected AbstractGeometry(Primitive type) {
 		this.type = type;
 	}
 	
 	@Override
-	public final PrimitiveType getPrimitiveType() {
+	public final Primitive getType() {
 		return type;
 	}
 	

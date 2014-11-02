@@ -32,7 +32,7 @@ package ch.fhnw.ether.scene.mesh;
 import java.util.List;
 
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
-import ch.fhnw.ether.scene.mesh.geometry.IGeometry.PrimitiveType;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.util.color.RGBA;
@@ -102,7 +102,7 @@ public class MeshLibrary {
 
 	private final static IAttribute[] ATTRIBUTES = { IMaterial.POSITION_ARRAY };
 	private final static float[][] DATA = { UNIT_CUBE_TRIANGLES };
-	private final static DefaultGeometry CUBE_GEOMETRY = new DefaultGeometry(PrimitiveType.TRIANGLES, ATTRIBUTES, DATA);
+	private final static DefaultGeometry CUBE_GEOMETRY = new DefaultGeometry(Primitive.TRIANGLES, ATTRIBUTES, DATA);
 
 	public static IMesh createCube() {
 		return new DefaultMesh(new ColorMaterial(RGBA.WHITE), CUBE_GEOMETRY.copy());

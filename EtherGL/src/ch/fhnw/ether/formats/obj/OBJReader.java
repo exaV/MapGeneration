@@ -40,7 +40,7 @@ import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
-import ch.fhnw.ether.scene.mesh.geometry.IGeometry.PrimitiveType;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.util.FloatList;
@@ -96,7 +96,7 @@ public class OBJReader extends AbstractModelReader {
 			RGB diffuse = mat.getKd();
 			float[] triv = triVertices.toArray();
 			IMaterial material = new ColorMaterial(new RGBA(diffuse.x, diffuse.y, diffuse.z, 1));
-			IGeometry geometry = DefaultGeometry.createVN(PrimitiveType.TRIANGLES, triv, GeometryUtil.calculateNormals(triv));
+			IGeometry geometry = DefaultGeometry.createVN(Primitive.TRIANGLES, triv, GeometryUtil.calculateNormals(triv));
 			DefaultMesh mesh = new DefaultMesh(material, geometry);
 			mesh.setName(path + '/' + g.getName());
 			meshes.add(mesh);

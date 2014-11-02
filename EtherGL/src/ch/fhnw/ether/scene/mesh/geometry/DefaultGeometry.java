@@ -78,7 +78,7 @@ public class DefaultGeometry extends AbstractGeometry {
 	 * @param data
 	 *            Vertex data, may contain positions, colors, normals, etc.
 	 */
-	public DefaultGeometry(PrimitiveType type, String[] attributes, float[][] data) {
+	public DefaultGeometry(Primitive type, String[] attributes, float[][] data) {
 		super(type);
 
 		if (!attributes[0].equals(IMaterial.POSITION_ARRAY.id()))
@@ -94,7 +94,7 @@ public class DefaultGeometry extends AbstractGeometry {
 		}
 	}
 
-	public DefaultGeometry(PrimitiveType type, IAttribute[] attributes, float[][] data) {
+	public DefaultGeometry(Primitive type, IAttribute[] attributes, float[][] data) {
 		this(type, getAttributeIds(attributes), data);
 	}
 
@@ -111,7 +111,7 @@ public class DefaultGeometry extends AbstractGeometry {
 	 * @return the copy
 	 */
 	public DefaultGeometry copy() {
-		DefaultGeometry geometry = new DefaultGeometry(getPrimitiveType(), attributeTypes, attributeData);
+		DefaultGeometry geometry = new DefaultGeometry(getType(), attributeTypes, attributeData);
 		geometry.transform.setOrigin(getOrigin());
 		geometry.transform.setTranslation(getTranslation());
 		geometry.transform.setRotation(getRotation());
@@ -120,19 +120,28 @@ public class DefaultGeometry extends AbstractGeometry {
 	}
 
 	@Override
-	public void accept(int index, IAttributeVisitor visitor) {
-		if (visitor.visit(getPrimitiveType(), attributeTypes[index], attributeData[index])) {
-			if (attributeTypes[index].equals(IMaterial.POSITION_ARRAY.id()) || attributeTypes[index].equals(IMaterial.NORMAL_ARRAY.id()))
-				invalidateCache();
-			else
-				requestUpdate();
-		}
+	public void inspect(int index, IAttributeVisitor visitor) {
+		visitor.visit(attributeTypes[index], attributeData[index]);
 	}
 
 	@Override
-	public void accept(IAttributesVisitor visitor) {
-		if (visitor.visit(getPrimitiveType(), attributeTypes, attributeData))
+	public void inspect(IAttributesVisitor visitor) {
+		visitor.visit(attributeTypes, attributeData);
+	}
+
+	@Override
+	public void modify(int index, IAttributeVisitor visitor) {
+		visitor.visit(attributeTypes[index], attributeData[index]);
+		if (attributeTypes[index].equals(IMaterial.POSITION_ARRAY.id()) || attributeTypes[index].equals(IMaterial.NORMAL_ARRAY.id()))
 			invalidateCache();
+		else
+			requestUpdate();
+	}
+
+	@Override
+	public void modify(IAttributesVisitor visitor) {
+		visitor.visit(attributeTypes, attributeData);
+		invalidateCache();
 	}
 
 	// ---- IArrayAttributeProvider implementation
@@ -215,32 +224,32 @@ public class DefaultGeometry extends AbstractGeometry {
 
 	// ---- static helpers for simple geometry creation from arrays
 
-	public static DefaultGeometry createV(PrimitiveType type, float[] vertices) {
+	public static DefaultGeometry createV(Primitive type, float[] vertices) {
 		IAttribute[] attributes = { IMaterial.POSITION_ARRAY };
 		float[][] data = { vertices };
 		return new DefaultGeometry(type, attributes, data);
 	}
 
-	public static DefaultGeometry createVN(PrimitiveType type, float[] vertices, float[] normals) {
+	public static DefaultGeometry createVN(Primitive type, float[] vertices, float[] normals) {
 		IAttribute[] attributes = { IMaterial.POSITION_ARRAY, IMaterial.NORMAL_ARRAY };
 		float[][] data = { vertices, normals };
 		return new DefaultGeometry(type, attributes, data);
 	}
 
-	public static DefaultGeometry createVC(PrimitiveType type, float[] vertices, float[] colors) {
+	public static DefaultGeometry createVC(Primitive type, float[] vertices, float[] colors) {
 		IAttribute[] attributes = { IMaterial.POSITION_ARRAY, IMaterial.COLOR_ARRAY };
 		float[][] data = { vertices, colors };
 		return new DefaultGeometry(type, attributes, data);
 	}
 
-	public static DefaultGeometry createVNC(PrimitiveType type, float[] vertices, float[] normals, float[] colors) {
+	public static DefaultGeometry createVNC(Primitive type, float[] vertices, float[] normals, float[] colors) {
 		IAttribute[] attributes = { IMaterial.POSITION_ARRAY, IMaterial.NORMAL_ARRAY, IMaterial.COLOR_ARRAY };
 		float[][] data = { vertices, normals, colors };
 		System.out.println(vertices.length + " " + normals.length + " " + colors.length);
 		return new DefaultGeometry(type, attributes, data);
 	}
 
-	public static DefaultGeometry createVNCM(PrimitiveType type, float[] vertices, float[] normals, float[] colors, float[] texCoords) {
+	public static DefaultGeometry createVNCM(Primitive type, float[] vertices, float[] normals, float[] colors, float[] texCoords) {
 		IAttribute[] attributes = { IMaterial.POSITION_ARRAY, IMaterial.NORMAL_ARRAY, IMaterial.COLOR_ARRAY, IMaterial.COLOR_MAP_ARRAY };
 		float[][] data = { vertices, normals, colors, texCoords };
 		return new DefaultGeometry(type, attributes, data);

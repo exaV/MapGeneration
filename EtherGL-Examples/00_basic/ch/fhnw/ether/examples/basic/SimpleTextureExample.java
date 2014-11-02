@@ -43,7 +43,7 @@ import ch.fhnw.ether.scene.mesh.IAttribute;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
-import ch.fhnw.ether.scene.mesh.geometry.IGeometry.PrimitiveType;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.ColorMapMaterial;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.ether.scene.mesh.material.Texture;
@@ -67,7 +67,7 @@ public final class SimpleTextureExample {
 
 		try {
 			IMaterial m = new ColorMapMaterial(new Texture(SimpleTextureExample.class.getResource("assets/fhnw_logo.jpg")));
-			IGeometry g = new DefaultGeometry(PrimitiveType.TRIANGLES, attribs, data);
+			IGeometry g = new DefaultGeometry(Primitive.TRIANGLES, attribs, data);
 			return new DefaultMesh(m, g);
 		} catch (Exception e) {
 			System.err.println("cant load image");
@@ -111,8 +111,7 @@ public final class SimpleTextureExample {
 
 				// apply changes to geometry
 				mesh.getGeometry().setScale(new Vec3(f, f, f));
-				DefaultGeometry g = (DefaultGeometry) mesh.getGeometry();
-				g.accept(1, (PrimitiveType type, String id, float[] colors) -> {
+				mesh.getGeometry().modify(1, (String id, float[] colors) -> {
 					for (int i = 0; i < colors.length; ++i) {
 						if (i % 4 == 3)
 							continue;
@@ -120,7 +119,6 @@ public final class SimpleTextureExample {
 						if (colors[i + 0] <= 0)
 							colors[i + 0] = 1;
 					}
-					return true;
 				});
 
 				// update view, because we have no fix rendering loop but event-based rendering

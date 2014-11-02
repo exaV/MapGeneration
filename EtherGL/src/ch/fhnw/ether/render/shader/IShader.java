@@ -38,7 +38,7 @@ import ch.fhnw.ether.render.attribute.IArrayAttribute;
 import ch.fhnw.ether.render.attribute.IUniformAttribute;
 import ch.fhnw.ether.render.gl.Program;
 import ch.fhnw.ether.scene.mesh.IAttribute;
-import ch.fhnw.ether.scene.mesh.geometry.IGeometry.PrimitiveType;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 
 public interface IShader {
 	public static final class Attributes {
@@ -69,7 +69,7 @@ public interface IShader {
 
 	Program getProgram();
 
-	PrimitiveType getPrimitiveType();
+	Primitive getPrimitiveType();
 
 	void getAttributes(List<IUniformAttribute> uniforms, List<IArrayAttribute> arrays);
 }

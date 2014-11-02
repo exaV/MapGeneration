@@ -38,7 +38,7 @@ import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.scene.DefaultScene;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
-import ch.fhnw.ether.scene.mesh.geometry.IGeometry.PrimitiveType;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.geometry.BoundingBox;
@@ -149,8 +149,8 @@ public class Scene extends DefaultScene {
 			networkEdges[i++] = 0;
 		}
 
-		DefaultMesh networkGeometryPoints = new DefaultMesh(new ColorMaterial(RGBA.YELLOW), DefaultGeometry.createV(PrimitiveType.POINTS, networkNodes));
-		DefaultMesh networkGeometryLines = new DefaultMesh(new ColorMaterial(RGBA.YELLOW), DefaultGeometry.createV(PrimitiveType.LINES, networkEdges));
+		DefaultMesh networkGeometryPoints = new DefaultMesh(new ColorMaterial(RGBA.YELLOW), DefaultGeometry.createV(Primitive.POINTS, networkNodes));
+		DefaultMesh networkGeometryLines = new DefaultMesh(new ColorMaterial(RGBA.YELLOW), DefaultGeometry.createV(Primitive.LINES, networkEdges));
 		add3DObject(networkGeometryPoints);
 		add3DObject(networkGeometryLines);
 
@@ -249,7 +249,7 @@ public class Scene extends DefaultScene {
 				}
 				}
 			}
-			DefaultMesh geometry = new DefaultMesh(new ColorMaterial(RGBA.WHITE), DefaultGeometry.createVC(PrimitiveType.LINES, agentEdges, agentColors));
+			DefaultMesh geometry = new DefaultMesh(new ColorMaterial(RGBA.WHITE), DefaultGeometry.createVC(Primitive.LINES, agentEdges, agentColors));
 			add3DObject(geometry);
 		}
 	}

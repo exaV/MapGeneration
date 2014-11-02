@@ -37,7 +37,7 @@ import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.MeshLibrary;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
-import ch.fhnw.ether.scene.mesh.geometry.IGeometry.PrimitiveType;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.ProjectionUtil;
@@ -63,7 +63,7 @@ public final class AreaTool extends AbstractTool {
 
 	public AreaTool(IController controller) {
 		super(controller);
-		IGeometry geometry = DefaultGeometry.createV(PrimitiveType.TRIANGLES, MeshLibrary.UNIT_CUBE_TRIANGLES);
+		IGeometry geometry = DefaultGeometry.createV(Primitive.TRIANGLES, MeshLibrary.UNIT_CUBE_TRIANGLES);
 		geometry.setScale(new Vec3(0.1, 0.1, 0.001));
 		mesh = new DefaultMesh(new ColorMaterial(TOOL_COLOR), geometry);
 	}

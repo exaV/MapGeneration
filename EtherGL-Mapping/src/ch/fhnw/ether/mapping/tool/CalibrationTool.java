@@ -45,11 +45,10 @@ import ch.fhnw.ether.mapping.ICalibrationModel;
 import ch.fhnw.ether.mapping.ICalibrator;
 import ch.fhnw.ether.render.IRenderer;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
-import ch.fhnw.ether.scene.mesh.MeshLibrary;
 import ch.fhnw.ether.scene.mesh.IMesh.Pass;
+import ch.fhnw.ether.scene.mesh.MeshLibrary;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
-import ch.fhnw.ether.scene.mesh.geometry.IGeometry.IAttributesVisitor;
-import ch.fhnw.ether.scene.mesh.geometry.IGeometry.PrimitiveType;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.scene.mesh.material.PointMaterial;
 import ch.fhnw.ether.view.IView;
@@ -98,11 +97,11 @@ public final class CalibrationTool extends AbstractTool {
 	public CalibrationTool(IController controller, ICalibrationModel model) {
 		super(controller);
 		this.model = model;
-		lines = new DefaultMesh(new ColorMaterial(MODEL_COLOR), DefaultGeometry.createV(PrimitiveType.LINES, model.getCalibrationLines()), Pass.OVERLAY);
-		points = new DefaultMesh(new PointMaterial(10, MODEL_COLOR), DefaultGeometry.createV(PrimitiveType.POINTS, model.getCalibrationPoints()), Pass.OVERLAY);
-		calibratedLines = new DefaultMesh(new ColorMaterial(UNCALIBRATED_COLOR), DefaultGeometry.createV(PrimitiveType.LINES, new float[0]),
+		lines = new DefaultMesh(new ColorMaterial(MODEL_COLOR), DefaultGeometry.createV(Primitive.LINES, model.getCalibrationLines()), Pass.OVERLAY);
+		points = new DefaultMesh(new PointMaterial(10, MODEL_COLOR), DefaultGeometry.createV(Primitive.POINTS, model.getCalibrationPoints()), Pass.OVERLAY);
+		calibratedLines = new DefaultMesh(new ColorMaterial(UNCALIBRATED_COLOR), DefaultGeometry.createV(Primitive.LINES, new float[0]),
 				Pass.DEVICE_SPACE_OVERLAY);
-		calibratedPoints = new DefaultMesh(new PointMaterial(10, UNCALIBRATED_COLOR), DefaultGeometry.createV(PrimitiveType.POINTS, new float[0]),
+		calibratedPoints = new DefaultMesh(new PointMaterial(10, UNCALIBRATED_COLOR), DefaultGeometry.createV(Primitive.POINTS, new float[0]),
 				Pass.DEVICE_SPACE_OVERLAY);
 	}
 
@@ -304,13 +303,7 @@ public final class CalibrationTool extends AbstractTool {
 		CalibrationContext context = getContext(view);
 
 		// prepare points
-		calibratedPoints.getGeometry().accept(new IAttributesVisitor() {
-			@Override
-			public boolean visit(PrimitiveType type, String[] attributes, float[][] data) {
-				data[0] = Vec3.toArray(context.projectedVertices);
-				return true;
-			}
-		});
+		calibratedPoints.getGeometry().modify((attributes, data) -> data[0] = Vec3.toArray(context.projectedVertices));
 		((ColorMaterial) calibratedPoints.getMaterial()).setColor(context.calibrated ? CALIBRATED_COLOR : UNCALIBRATED_COLOR);
 
 		// prepare lines
@@ -330,13 +323,7 @@ public final class CalibrationTool extends AbstractTool {
 			}
 		}
 
-		calibratedLines.getGeometry().accept(new IAttributesVisitor() {
-			@Override
-			public boolean visit(PrimitiveType type, String[] attributes, float[][] data) {
-				data[0] = Vec3.toArray(v);
-				return true;
-			}
-		});
+		calibratedLines.getGeometry().modify((attributes, data) -> data[0] = Vec3.toArray(v));
 		((ColorMaterial) calibratedLines.getMaterial()).setColor(context.calibrated ? CALIBRATED_COLOR : UNCALIBRATED_COLOR);
 	}
 

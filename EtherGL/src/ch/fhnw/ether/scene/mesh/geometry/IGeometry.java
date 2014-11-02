@@ -35,32 +35,32 @@ import ch.fhnw.util.math.ITransformable;
 import ch.fhnw.util.math.geometry.BoundingBox;
 
 public interface IGeometry extends IAttributeProvider, ITransformable, IUpdateRequester {
-	enum PrimitiveType {
+	enum Primitive {
 		POINTS, LINES, TRIANGLES;
 	}
 
 	@FunctionalInterface
 	public interface IAttributeVisitor {
 		/**
-		 * @return true if the visitor has changed the attribute data
+		 * Inspect or modify a specific attribute of a geometry.
 		 */
-		boolean visit(PrimitiveType type, String attribute, float[] data);
+		void visit(String attribute, float[] data);
 	}
 
 	@FunctionalInterface
 	public interface IAttributesVisitor {
 		/**
-		 * @return true if the visitor has changed the attribute data. Note that in the current implementation, the
-		 *         attributes must not be changed, otherwise the mesh will result in an undefined state. It is however
-		 *         ok, to replace all attribute data arrays with new arrays, e.g. of different size.
+		 * Inspect or modify attributes of a geometry through visitor. Note that in the current implementation, the
+		 * attributes must not be changed, otherwise the mesh will result in an undefined state. It is however ok, to
+		 * replace all attribute data arrays with new arrays, e.g. of different size.
 		 */
-		boolean visit(PrimitiveType type, String[] attributes, float[][] data);
+		void visit(String[] attributes, float[][] data);
 	}
 
 	/**
 	 * @return primitive type of this geometry
 	 */
-	PrimitiveType getPrimitiveType();
+	Primitive getType();
 
 	/**
 	 * @return axis-aligned bounding box of this geometry
@@ -68,12 +68,23 @@ public interface IGeometry extends IAttributeProvider, ITransformable, IUpdateRe
 	BoundingBox getBounds();
 
 	/**
-	 * Inspect specific attribute of this geometry through visitor
+	 * Inspect specific attribute of this geometry through visitor. Must not modify geometry.
 	 */
-	void accept(int index, IAttributeVisitor visitor);
+	void inspect(int index, IAttributeVisitor visitor);
 
 	/**
-	 * Inspect all attributes of this geometry through visitor
+	 * Inspect all attributes of this geometry through visitor. Must not modify geometry.
 	 */
-	void accept(IAttributesVisitor visitor);
+	void inspect(IAttributesVisitor visitor);
+
+	/**
+	 * Modify specific attribute of this geometry through visitor.
+	 */
+	void modify(int index, IAttributeVisitor visitor);
+
+	/**
+	 * Modify any attribute of this geometry through visitor.
+	 */
+	void modify(IAttributesVisitor visitor);
+
 }

@@ -42,7 +42,7 @@ import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IAttribute;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
-import ch.fhnw.ether.scene.mesh.geometry.IGeometry.PrimitiveType;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.ether.view.IView;
@@ -63,7 +63,7 @@ public final class SimpleAnimationExample {
 		float[] color = { 1, 0.1f, 0.1f, 1, 0.1f, 1, 0.1f, 1, 0, 0, 1, 1 };
 		float[][] data = { position, color };
 
-		DefaultGeometry g = new DefaultGeometry(PrimitiveType.TRIANGLES, attribs, data);
+		DefaultGeometry g = new DefaultGeometry(Primitive.TRIANGLES, attribs, data);
 
 		g.setOrigin(new Vec3(0, 0, 0.25));
 		g.setTranslation(new Vec3(0, 0, 0.5f));
@@ -105,9 +105,7 @@ public final class SimpleAnimationExample {
 
 				// apply changes to geometry
 				mesh.getGeometry().setScale(new Vec3(f, f, f));
-				DefaultGeometry g = (DefaultGeometry) mesh.getGeometry();
-				
-				g.accept(1, (PrimitiveType type, String id, float[] colors) -> {
+				mesh.getGeometry().modify(1, (String id, float[] colors) -> {
 					for (int i = 0; i < colors.length; ++i) {
 						if (i % 4 == 3)
 							continue;
@@ -115,7 +113,6 @@ public final class SimpleAnimationExample {
 						if (colors[i + 0] <= 0)
 							colors[i + 0] = 1;
 					}
-					return true;
 				});
 				
 				// update view, because we have no fix rendering loop but event-based rendering
