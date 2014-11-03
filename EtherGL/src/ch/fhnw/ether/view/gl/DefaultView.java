@@ -31,6 +31,7 @@ package ch.fhnw.ether.view.gl;
 
 import javax.media.nativewindow.util.Point;
 import javax.media.opengl.GL;
+import javax.media.opengl.GL3;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
 
@@ -216,25 +217,25 @@ public class DefaultView implements IView {
 		public final void display(GLAutoDrawable drawable) {
 			try {
 				GL gl = drawable.getGL();
+				GL3 gl3 = gl.getGL3();
+				// GL3 gl3 = new DebugGL3(gl.getGL3());
 
 				gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT | GL.GL_STENCIL_BUFFER_BIT);
 
 				if (!isEnabled())
 					return;
 
-				// fetch viewport
-				int[] vp = new int[4];
-				gl.glGetIntegerv(GL.GL_VIEWPORT, vp, 0);
-				viewport = new Viewport(vp[0], vp[1], vp[2], vp[3]);
-
-				// render everything
-
 				// repaint UI surface to texture if necessary (FIXME: should this be done on model or render thread?)
 				UI ui = getController().getUI();
 				if (ui != null)
 					ui.update();
 
-				getController().getRenderer().render(gl.getGL3(), DefaultView.this);
+				// render everything
+				getController().getRenderer().render(gl3, DefaultView.this);
+
+				int error = gl.glGetError();
+				if (error != 0)
+					System.err.println("renderer returned with exisiting GL error 0x" + Integer.toHexString(error));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -272,22 +273,20 @@ public class DefaultView implements IView {
 		}
 
 	};
-	
-	
+
 	// window listener
-	
+
 	private WindowListener windowListener = new WindowAdapter() {
 		@Override
 		public void windowGainedFocus(WindowEvent e) {
 			try {
 				controller.setCurrentView(DefaultView.this);
-			} catch(Exception ex) {
+			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
 		};
 	};
-	
-	
+
 	// key listener
 
 	private KeyListener keyListener = new KeyListener() {
@@ -311,7 +310,6 @@ public class DefaultView implements IView {
 		}
 	};
 
-	
 	// mouse listener
 
 	private MouseListener mouseListener = new MouseListener() {

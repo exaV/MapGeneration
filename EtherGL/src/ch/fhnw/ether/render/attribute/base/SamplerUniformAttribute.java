@@ -80,10 +80,10 @@ public class SamplerUniformAttribute extends AbstractUniformAttribute<Texture> {
 		if (tex == null)
 			return;
 		
-		gl.glActiveTexture(unit);
+		gl.glActiveTexture(GL.GL_TEXTURE0 + unit);
 		gl.glBindTexture(target, tex[0]);
 		program.setUniformSampler(gl, getShaderIndex(gl, program), unit);
-		gl.glActiveTexture(0);
+		gl.glActiveTexture(GL.GL_TEXTURE0);
 	}
 
 	@Override
@@ -92,9 +92,9 @@ public class SamplerUniformAttribute extends AbstractUniformAttribute<Texture> {
 		if (texture == null || tex == null)
 			return;
 
-		gl.glActiveTexture(unit);
+		gl.glActiveTexture(GL.GL_TEXTURE0 + unit);
 		gl.glBindTexture(target, 0);
-		gl.glActiveTexture(0);
+		gl.glActiveTexture(GL.GL_TEXTURE0);
 	}
 
 	private void load(GL gl) {
