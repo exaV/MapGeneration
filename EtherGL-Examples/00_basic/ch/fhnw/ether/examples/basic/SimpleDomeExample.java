@@ -66,10 +66,10 @@ public final class SimpleDomeExample {
 		// Create scene and add a cube
 		IScene scene = new DefaultScene(controller);
 
-		GeodesicDome dome = new GeodesicDome(2);
+		GeodesicDome dome = new GeodesicDome(3);
 		scene.add3DObject(new DefaultMesh(new ColorMaterial(new RGBA(1, 1, 1, 0.5f)), DefaultGeometry.createV(Primitive.TRIANGLES, dome.getTriangles()), Pass.TRANSPARENCY));
 		scene.add3DObject(new DefaultMesh(new ColorMaterial(new RGBA(1, 1, 1, 1)), DefaultGeometry.createV(Primitive.LINES, dome.getLines()), Pass.TRANSPARENCY));
-		scene.add3DObject(new DefaultMesh(new PointMaterial(10, new RGBA(1, 1, 0, 0.5f)), DefaultGeometry.createV(Primitive.POINTS, dome.getPoints()), Pass.TRANSPARENCY));
+		scene.add3DObject(new DefaultMesh(new PointMaterial(8, new RGBA(1, 1, 0, 0.5f)), DefaultGeometry.createV(Primitive.POINTS, dome.getPoints()), Pass.TRANSPARENCY));
 
 		// Setup MVC
 		controller.addView(view);
