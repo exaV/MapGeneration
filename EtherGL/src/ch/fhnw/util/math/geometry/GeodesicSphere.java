@@ -12,7 +12,7 @@ import ch.fhnw.util.math.Vec3;
 
 // FIXME: we still create too many points when correspondance is not set
 
-public class GeodesicDome {
+public class GeodesicSphere {
 	private static final float SCALE = 0.5f;
 
 	private static final float X = SCALE * 0.525731112119133606f;
@@ -53,11 +53,11 @@ public class GeodesicDome {
 	private final int depth;
 	private final boolean vertexCoherence;
 
-	public GeodesicDome(int depth) {
+	public GeodesicSphere(int depth) {
 		this(depth, false);
 	}
 
-	public GeodesicDome(int depth, boolean vertexCoherence) {
+	public GeodesicSphere(int depth, boolean vertexCoherence) {
 		this.depth = depth;
 		this.vertexCoherence = vertexCoherence;
 	}

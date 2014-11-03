@@ -46,7 +46,7 @@ import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.gl.DefaultView;
 import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Vec3;
-import ch.fhnw.util.math.geometry.GeodesicDome;
+import ch.fhnw.util.math.geometry.GeodesicSphere;
 
 public final class SimpleDomeExample {
 	public static void main(String[] args) {
@@ -66,10 +66,10 @@ public final class SimpleDomeExample {
 		// Create scene and add a cube
 		IScene scene = new DefaultScene(controller);
 
-		GeodesicDome dome = new GeodesicDome(3);
-		scene.add3DObject(new DefaultMesh(new ColorMaterial(new RGBA(1, 1, 1, 0.5f)), DefaultGeometry.createV(Primitive.TRIANGLES, dome.getTriangles()), Pass.TRANSPARENCY));
-		scene.add3DObject(new DefaultMesh(new ColorMaterial(new RGBA(1, 1, 1, 1)), DefaultGeometry.createV(Primitive.LINES, dome.getLines()), Pass.TRANSPARENCY));
-		scene.add3DObject(new DefaultMesh(new PointMaterial(8, new RGBA(1, 1, 0, 0.5f)), DefaultGeometry.createV(Primitive.POINTS, dome.getPoints()), Pass.TRANSPARENCY));
+		GeodesicSphere sphere = new GeodesicSphere(3);
+		scene.add3DObject(new DefaultMesh(new ColorMaterial(new RGBA(1, 1, 1, 0.5f)), DefaultGeometry.createV(Primitive.TRIANGLES, sphere.getTriangles()), Pass.TRANSPARENCY));
+		scene.add3DObject(new DefaultMesh(new ColorMaterial(new RGBA(1, 1, 1, 1)), DefaultGeometry.createV(Primitive.LINES, sphere.getLines()), Pass.TRANSPARENCY));
+		scene.add3DObject(new DefaultMesh(new PointMaterial(8, new RGBA(1, 1, 0, 0.5f)), DefaultGeometry.createV(Primitive.POINTS, sphere.getPoints()), Pass.TRANSPARENCY));
 
 		// Setup MVC
 		controller.addView(view);
