@@ -34,7 +34,7 @@ import java.util.function.Supplier;
 import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.render.gl.Program;
-import ch.fhnw.ether.scene.mesh.IAttribute;
+import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.util.math.Mat4;
 
 public class Mat4FloatUniformAttribute extends AbstractUniformAttribute<Mat4> {

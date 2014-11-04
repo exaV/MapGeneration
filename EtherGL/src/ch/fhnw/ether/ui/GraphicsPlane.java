@@ -40,8 +40,8 @@ import java.util.EnumSet;
 
 import javax.media.opengl.GL;
 
+import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
-import ch.fhnw.ether.scene.mesh.IAttribute;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.IMesh.Flags;
 import ch.fhnw.ether.scene.mesh.IMesh.Pass;

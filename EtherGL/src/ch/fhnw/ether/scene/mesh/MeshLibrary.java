@@ -31,6 +31,7 @@ package ch.fhnw.ether.scene.mesh;
 
 import java.util.List;
 
+import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;

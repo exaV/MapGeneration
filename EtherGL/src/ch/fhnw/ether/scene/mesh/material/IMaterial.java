@@ -29,26 +29,14 @@
 
 package ch.fhnw.ether.scene.mesh.material;
 
-import ch.fhnw.ether.scene.mesh.IAttribute;
-import ch.fhnw.ether.scene.mesh.IAttributeProvider;
+import ch.fhnw.ether.scene.attribute.AbstractAttribute;
+import ch.fhnw.ether.scene.attribute.IAttributeProvider;
 import ch.fhnw.util.IUpdateRequester;
 
 public interface IMaterial extends IAttributeProvider, IUpdateRequester {
-	public static final class MaterialAttribute implements IAttribute {
-		private final String id;
-
+	public static final class MaterialAttribute extends AbstractAttribute {
 		public MaterialAttribute(String id) {
-			this.id = id;
-		}
-
-		@Override
-		public String id() {
-			return id;
-		}
-		
-		@Override
-		public String toString() {
-			return id;
+			super(id);
 		}
 	}
 

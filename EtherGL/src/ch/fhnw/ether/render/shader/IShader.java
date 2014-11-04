@@ -37,7 +37,7 @@ import javax.media.opengl.GL3;
 import ch.fhnw.ether.render.attribute.IArrayAttribute;
 import ch.fhnw.ether.render.attribute.IUniformAttribute;
 import ch.fhnw.ether.render.gl.Program;
-import ch.fhnw.ether.scene.mesh.IAttribute;
+import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 
 public interface IShader {

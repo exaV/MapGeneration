@@ -31,7 +31,7 @@ package ch.fhnw.ether.scene.mesh.geometry;
 
 import java.util.Arrays;
 
-import ch.fhnw.ether.scene.mesh.IAttribute;
+import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.util.math.Transform;
 import ch.fhnw.util.math.Vec3;

@@ -27,25 +27,32 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.scene.mesh;
+package ch.fhnw.ether.render.attribute.base;
 
-import java.util.function.Supplier;
+import javax.media.opengl.GL3;
 
-/**
- * 
- * @author radar
- *
- */
-public interface IAttributeProvider {
-	interface ISuppliers {
-		void provide(IAttribute attribute, Supplier<?> supplier);
+import ch.fhnw.ether.render.gl.Program;
+import ch.fhnw.ether.scene.attribute.AbstractAttribute;
+import ch.fhnw.ether.scene.attribute.IAttribute;
 
-		void provide(String id, Supplier<?> supplier);
+abstract class AbstractShaderAttribute extends AbstractAttribute {
+	private final String shaderName;
+	private int shaderIndex = -1;
 
-		void require(IAttribute attribute);
-
-		void require(String id);
+	protected AbstractShaderAttribute(IAttribute attribute, String shaderName) {
+		this(attribute.id(), shaderName);
 	}
 
-	void getAttributeSuppliers(ISuppliers dst);
+	protected AbstractShaderAttribute(String id, String shaderName) {
+		super(id);
+		this.shaderName = shaderName;
+	}
+
+	protected final int getShaderIndex(GL3 gl, Program program) {
+		if (shaderIndex == -1)
+			shaderIndex = resolveShaderIndex(gl, program, shaderName);
+		return shaderIndex;
+	}
+
+	protected abstract int resolveShaderIndex(GL3 gl, Program program, String shaderName);
 }

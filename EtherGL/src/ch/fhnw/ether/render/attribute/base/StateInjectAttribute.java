@@ -37,7 +37,7 @@ import javax.media.opengl.GL3;
 import ch.fhnw.ether.render.attribute.IUniformAttribute;
 import ch.fhnw.ether.render.gl.Program;
 
-public final class StateInjectAttribute extends AbstractAttribute implements IUniformAttribute {
+public final class StateInjectAttribute extends AbstractShaderAttribute implements IUniformAttribute {
 	private final BiConsumer<GL3, Program> enable;
 	private final BiConsumer<GL3, Program> disable;
 

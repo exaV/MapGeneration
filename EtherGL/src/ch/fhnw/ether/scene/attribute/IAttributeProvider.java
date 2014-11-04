@@ -27,15 +27,25 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.scene.mesh;
+package ch.fhnw.ether.scene.attribute;
 
+import java.util.function.Supplier;
 
 /**
- * Abstraction of attribute. Sub-classes on material as well as shader side implement specific attributes.
  * 
  * @author radar
  *
  */
-public interface IAttribute {
-	String id();
+public interface IAttributeProvider {
+	interface ISuppliers {
+		void provide(IAttribute attribute, Supplier<?> supplier);
+
+		void provide(String id, Supplier<?> supplier);
+
+		void require(IAttribute attribute);
+
+		void require(String id);
+	}
+
+	void getAttributeSuppliers(ISuppliers dst);
 }

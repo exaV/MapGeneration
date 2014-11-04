@@ -34,7 +34,7 @@ import java.util.function.Supplier;
 import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.render.gl.Program;
-import ch.fhnw.ether.scene.mesh.IAttribute;
+import ch.fhnw.ether.scene.attribute.IAttribute;
 
 public class FloatUniformAttribute extends AbstractUniformAttribute<Float> {
 	public FloatUniformAttribute(IAttribute attribute, String shaderName) {

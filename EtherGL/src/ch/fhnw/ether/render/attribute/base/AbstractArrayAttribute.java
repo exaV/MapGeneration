@@ -32,9 +32,9 @@ package ch.fhnw.ether.render.attribute.base;
 import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.render.attribute.IArrayAttribute;
-import ch.fhnw.ether.scene.mesh.IAttribute;
+import ch.fhnw.ether.scene.attribute.IAttribute;
 
-abstract class AbstractArrayAttribute extends AbstractAttribute implements IArrayAttribute {
+abstract class AbstractArrayAttribute extends AbstractShaderAttribute implements IArrayAttribute {
 	private final NumComponents numComponents;
 	private int stride;
 	private int offset;

@@ -27,43 +27,15 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.render.attribute.base;
+package ch.fhnw.ether.scene.attribute;
 
-import javax.media.opengl.GL3;
 
-import ch.fhnw.ether.render.gl.Program;
-import ch.fhnw.ether.scene.mesh.IAttribute;
-
-abstract class AbstractAttribute implements IAttribute {
-	private final String id;
-	private final String shaderName;
-	private int shaderIndex = -1;
-
-	protected AbstractAttribute(IAttribute attribute, String shaderName) {
-		this.id = attribute.id();
-		this.shaderName = shaderName;
-	}
-
-	protected AbstractAttribute(String id, String shaderName) {
-		this.id = id;
-		this.shaderName = shaderName;
-	}
-
-	@Override
-	public String id() {
-		return id;
-	}
-
-	@Override
-	public String toString() {
-		return id;
-	}
-
-	protected final int getShaderIndex(GL3 gl, Program program) {
-		if (shaderIndex == -1)
-			shaderIndex = resolveShaderIndex(gl, program, shaderName);
-		return shaderIndex;
-	}
-
-	protected abstract int resolveShaderIndex(GL3 gl, Program program, String shaderName);
+/**
+ * Abstraction of attribute. Sub-classes on material as well as shader side implement specific attributes.
+ * 
+ * @author radar
+ *
+ */
+public interface IAttribute {
+	String id();
 }
