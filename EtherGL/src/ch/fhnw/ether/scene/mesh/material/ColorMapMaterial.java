@@ -31,7 +31,6 @@ package ch.fhnw.ether.scene.mesh.material;
 
 import ch.fhnw.util.color.RGBA;
 
-// FIXME: add support for texture units (forward compatible if possible, if we get dsa one day)
 public class ColorMapMaterial extends ColorMaterial {
 	private Texture texture;
 	
