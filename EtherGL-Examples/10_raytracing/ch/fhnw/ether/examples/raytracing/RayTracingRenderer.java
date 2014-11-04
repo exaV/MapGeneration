@@ -54,6 +54,7 @@ import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.ether.scene.mesh.material.Texture;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.util.Viewport;
+import ch.fhnw.util.color.RGB;
 import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.Line;
@@ -158,7 +159,7 @@ public class RayTracingRenderer implements IRenderer {
 		// diffuse color
 		float f = Math.max(0, lightRay.getDirection().dot(nearest.surface.getNormalAt(nearest.position)));
 		RGBA c = nearest.color;
-		RGBA lc = light.getColor();
+		RGB lc = light.getColor();
 
 		return new RGBA(f * c.x * lc.x, f * c.y * lc.y, f * c.z * lc.z, c.w);
 	}

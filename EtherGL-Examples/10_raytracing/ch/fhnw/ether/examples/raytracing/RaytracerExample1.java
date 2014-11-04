@@ -37,10 +37,11 @@ import ch.fhnw.ether.examples.raytracing.surface.Sphere;
 import ch.fhnw.ether.scene.DefaultScene;
 import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.scene.light.ILight;
+import ch.fhnw.ether.scene.light.PointLight;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.IView.ViewType;
 import ch.fhnw.ether.view.gl.DefaultView;
-import ch.fhnw.util.color.RGBA;
+import ch.fhnw.util.color.RGB;
 import ch.fhnw.util.math.Vec3;
 
 public class RaytracerExample1 {
@@ -61,7 +62,7 @@ public class RaytracerExample1 {
 		controller.addView(view);
 		
 		// setup scene
-		ILight light = new PointLight(new Vec3(0, 0, 3), RGBA.WHITE);
+		ILight light = new PointLight(new Vec3(0, 0, 3), RGB.WHITE);
 		scene.add3DObject(light);
 		
 		RayTraceMesh sphere = new RayTraceMesh(new Sphere(0.5f));

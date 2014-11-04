@@ -30,13 +30,12 @@
 package ch.fhnw.ether.scene.light;
 
 import ch.fhnw.ether.scene.I3DObject;
-import ch.fhnw.ether.scene.mesh.IAttributeProvider;
-import ch.fhnw.util.color.RGBA;
+import ch.fhnw.util.color.RGB;
 
-public interface ILight extends I3DObject, IAttributeProvider {
+public interface ILight extends I3DObject /* , IAttributeProvider */{
 
-	RGBA getColor();
+	RGB getColor();
 
-	void setColor(RGBA color);
+	void setColor(RGB color);
 
 }
