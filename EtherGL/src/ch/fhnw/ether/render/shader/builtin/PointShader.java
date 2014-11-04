@@ -48,7 +48,7 @@ import ch.fhnw.util.color.RGBA;
 
 public class PointShader extends AbstractShader {
 	public PointShader(Attributes attributes) {
-		super(IShader.class, "builtin.points", "point_vc", Primitive.POINTS);
+		super(IShader.class, "builtin.shader.points", "point_vc", Primitive.POINTS);
 
 		boolean useVertexColors = attributes.contains(IMaterial.COLOR_ARRAY);
 		boolean useVertexPointSize = attributes.contains(IMaterial.POINT_SIZE_ARRAY);

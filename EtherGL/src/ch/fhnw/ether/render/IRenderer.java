@@ -31,6 +31,7 @@ package ch.fhnw.ether.render;
 
 import javax.media.opengl.GL3;
 
+import ch.fhnw.ether.scene.attribute.IAttributeProvider;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.util.math.Mat4;
@@ -61,6 +62,8 @@ public interface IRenderer {
 	 */
 	void addMesh(IMesh mesh);
 
+	// TODO: we could use a special flag (or similar) to prevent deallocation of resources for cases where meshes are
+	// added and removed quickly.
 	/**
 	 * Remove mesh from renderer. Releases all renderer-dependent resources. Thread-safe.
 	 * 
@@ -69,9 +72,12 @@ public interface IRenderer {
 	 * @throws IllegalArgumentException
 	 *             if mesh not in renderer.
 	 */
-	// TODO: we could use a special flag (or similar) to prevent deallocation of resources for cases where meshes are
-	// added and removed quickly.
 	void removeMesh(IMesh mesh);
+	
+	
+	void addAttributeProvider(IAttributeProvider provider);
+	
+	void removeAttributeProvider(IAttributeProvider provider);
 
 	/**
 	 * Called view from render thread to render the meshes. Do not call this method otherwise.

@@ -36,7 +36,6 @@ import ch.fhnw.ether.controller.DefaultController;
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.scene.DefaultScene;
 import ch.fhnw.ether.scene.IScene;
-import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.camera.Camera;
 import ch.fhnw.ether.scene.camera.ICamera;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
@@ -57,17 +56,15 @@ public final class SimpleTextureExample {
 		new SimpleTextureExample();
 	}
 
-	// Let's generate a textured, colored triangle
-	static IMesh makeTexturedTriangle() {
-		IAttribute[] attribs = { IMaterial.POSITION_ARRAY, IMaterial.COLOR_ARRAY, IMaterial.COLOR_MAP_ARRAY };
-		float[] position = { 0, 0, 0, 0, 0, 0.5f, 0.5f, 0, 0.5f };
-		float[] color = { 1, 0.1f, 0.1f, 1, 0.1f, 1, 0.1f, 1, 0, 0, 1, 1 };
-		float[] texCoord = { 0, 0, 0, 1, 1, 1 };
-		float[][] data = { position, color, texCoord };
+	private static IMesh makeTexturedTriangle() {
+		float[] vertices = { 0, 0, 0, 0, 0, 0.5f, 0.5f, 0, 0.5f };
+		float[] colors = { 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1 };
+		float[] texCoords = { 0, 0, 0, 1, 1, 1 };
 
+		
 		try {
 			IMaterial m = new ColorMapMaterial(new Texture(SimpleTextureExample.class.getResource("assets/fhnw_logo.jpg")));
-			IGeometry g = new DefaultGeometry(Primitive.TRIANGLES, attribs, data);
+			IGeometry g = DefaultGeometry.createVCM(Primitive.TRIANGLES, vertices, colors, texCoords);
 			return new DefaultMesh(m, g);
 		} catch (Exception e) {
 			System.err.println("cant load image");

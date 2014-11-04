@@ -58,7 +58,8 @@ import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.material.CustomMaterial;
 import ch.fhnw.util.FloatList;
 
-// TODO: we currently support float arrays only
+// FIXME: deal with max vbo size & multiple vbos, handle non-float arrays
+
 public final class Renderable {
 	private IMesh mesh;
 	private IShader shader;
@@ -70,10 +71,10 @@ public final class Renderable {
 	private int[] sizes;
 	private int stride;
 
-	public Renderable(IMesh mesh, IAttributeProvider attributes) {
+	public Renderable(IMesh mesh, AttributeProviders providers) {
 		this.mesh = mesh;
 
-		createAttributes(attributes);
+		createAttributes(providers);
 
 		// make sure update flag is set, so everything get initialized on the next render cycle
 		mesh.requestUpdate(null);
@@ -103,7 +104,7 @@ public final class Renderable {
 		}
 	}
 
-	public void render(GL3 gl, IRenderer.RenderState state) {
+	public void render(GL3 gl) {
 		// 1. enable program
 		shader.enable(gl);
 		Program program = shader.getProgram();
@@ -114,14 +115,11 @@ public final class Renderable {
 			attr.enable(gl, program);
 		}
 
-		// FIXME: deal with max vbo size & multiple vbos
-
 		// 3. for each parallel buffer
 		// 3.1. bind buffer
 		// 3.2. for each array attribute associated to the buffer
 		// 3.2.1 enable vertex attrib array (shader index)
 		// 3.2.2 set vertex attrib pointer (shader index, size, stride, offset)
-		// NOTE currently we only use one float buffer, and also don't limit the length
 		buffer.bind(gl);
 		for (IArrayAttribute attr : arrayAttributes) {
 			attr.enable(gl, program, buffer);
@@ -164,7 +162,7 @@ public final class Renderable {
 		return "renderable[pass=" + mesh.getPass() + " shader=" + shader + " stride=" + stride + "]";
 	}
 
-	private void createAttributes(IAttributeProvider uniformAttributeProvider) {
+	private void createAttributes(AttributeProviders providers) {
 		class Suppliers implements IAttributeProvider.ISuppliers {
 			private final Map<String, Supplier<?>> providedAttributes = new HashMap<>();
 			private final Set<String> requiredAttibutes = new HashSet<>();
@@ -213,34 +211,36 @@ public final class Renderable {
 
 		Suppliers suppliers = new Suppliers();
 
-		// 0. get all attributes, so we can create shader
+		// 0. get all attributes, and check if all required attributes are present
+
+		providers.getAttributeSuppliers(suppliers);
 		mesh.getMaterial().getAttributeSuppliers(suppliers);
 		mesh.getGeometry().getAttributeSuppliers(suppliers);
-		if (uniformAttributeProvider != null)
-			uniformAttributeProvider.getAttributeSuppliers(suppliers);
 
 		for (String id : suppliers.requiredAttibutes) {
 			if (!suppliers.providedAttributes.containsKey(id))
 				throw new IllegalStateException("geometry does not provide required attribute " + id);
 		}
 
+		
+		// 1. create shader and get all attributes this shader requires
+
 		createShader(new Attributes(suppliers.providedAttributes.keySet()));
 
-		uniformAttributes.clear();
-		arrayAttributes.clear();
 		shader.getAttributes(uniformAttributes, arrayAttributes);
 
-		// 1. handle uniform attributes
+		
+		// 2. bind shader attributes to provided global attributes (matrices, lights), material and geometry
 
-		if (uniformAttributeProvider != null) {
-			for (IUniformAttribute attr : uniformAttributes) {
-				if (!attr.hasSupplier()) {
-					attr.setSupplier(suppliers.get(attr.id()));
-				}
+		// 2.1. handle uniform attributes
+
+		for (IUniformAttribute attr : uniformAttributes) {
+			if (!attr.hasSupplier()) {
+				attr.setSupplier(suppliers.get(attr.id()));
 			}
 		}
 
-		// 2. handle array attributes
+		// 2.2. handle array attributes
 
 		// FIXME: currently mesh only contains one geometry
 		List<? extends IAttributeProvider> arrayAttributeProviders = Collections.singletonList(mesh.getGeometry());

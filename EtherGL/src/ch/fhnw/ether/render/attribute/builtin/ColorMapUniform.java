@@ -38,7 +38,7 @@ import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.ether.scene.mesh.material.Texture;
 
 public final class ColorMapUniform extends SamplerUniformAttribute {
-	private static final String DEFAULT_SHADER_NAME = "tex";
+	private static final String DEFAULT_SHADER_NAME = "colorMap";
 
 	public ColorMapUniform() {
 		this(DEFAULT_SHADER_NAME);

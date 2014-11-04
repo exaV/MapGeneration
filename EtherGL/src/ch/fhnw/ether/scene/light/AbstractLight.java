@@ -1,10 +1,13 @@
 package ch.fhnw.ether.scene.light;
 
+import ch.fhnw.util.UpdateRequest;
 import ch.fhnw.util.color.RGB;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.BoundingBox;
 
-public class AbstractLight implements ILight {
+public abstract class AbstractLight implements ILight {
+	private final UpdateRequest updater = new UpdateRequest(true);
+	
 	private Vec3 position;
 	private String name = "unnamed_light";
 	private RGB color;
@@ -49,5 +52,14 @@ public class AbstractLight implements ILight {
 	@Override
 	public void setColor(RGB color) {
 		this.color = color;
+	}
+	
+	@Override
+	public boolean needsUpdate() {
+		return updater.needsUpdate();
+	}
+	
+	protected void requestUpdate() {
+		updater.requestUpdate();
 	}
 }

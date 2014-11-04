@@ -4,6 +4,8 @@ import ch.fhnw.util.color.RGB;
 import ch.fhnw.util.math.Vec3;
 
 public class PointLight extends AbstractLight {
+	public static LightAttribute POINT_LIGHT = new LightAttribute("builtin.light.point_light");
+
 	private float intensity;
 	private float distance;
 	
@@ -31,5 +33,10 @@ public class PointLight extends AbstractLight {
 
 	public void setDistance(float distance) {
 		this.distance = distance;
+	}
+
+	@Override
+	public void getAttributeSuppliers(ISuppliers suppliers) {
+		suppliers.provide(POINT_LIGHT, () -> this);
 	}
 }

@@ -49,9 +49,9 @@ public class ColorMaterial extends AbstractMaterial {
 	}
 
 	@Override
-	public void getAttributeSuppliers(ISuppliers dst) {
-		dst.provide(IMaterial.COLOR, () -> color);
+	public void getAttributeSuppliers(ISuppliers suppliers) {
+		suppliers.provide(IMaterial.COLOR, () -> color);
 		if (perVertexColor)
-			dst.require(IMaterial.COLOR_ARRAY);
+			suppliers.require(IMaterial.COLOR_ARRAY);
 	}
 }

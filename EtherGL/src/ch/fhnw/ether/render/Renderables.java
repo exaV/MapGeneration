@@ -36,7 +36,6 @@ import java.util.Map;
 
 import javax.media.opengl.GL3;
 
-import ch.fhnw.ether.scene.attribute.IAttributeProvider;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.util.FloatList;
 import ch.fhnw.util.UpdateRequest;
@@ -53,8 +52,8 @@ final class Renderables {
 	public Renderables() {
 	}
 
-	public void addMesh(IMesh mesh, IAttributeProvider attributes) {
-		Renderable renderable = new Renderable(mesh, attributes);
+	public void addMesh(IMesh mesh, AttributeProviders providers) {
+		Renderable renderable = new Renderable(mesh, providers);
 		synchronized (renderables) {
 			if (renderables.putIfAbsent(mesh, renderable) != null)
 				throw new IllegalArgumentException("mesh already in renderer: " + mesh);
@@ -87,7 +86,7 @@ final class Renderables {
 		}
 	}
 
-	void render(GL3 gl, IRenderer.RenderState state, IMesh.Pass pass, boolean interactive) {
+	void render(GL3 gl, IMesh.Pass pass, boolean interactive) {
 		// FIXME: i'm not sure if this is good (long lock). better options? ConcurrentHashMap, etc?
 		synchronized (renderables) {
 			for (Renderable renderable : renderables.values()) {
@@ -95,7 +94,7 @@ final class Renderables {
 					continue;
 				if (renderable.getPass() == pass) {
 					renderable.update(gl, data);
-					renderable.render(gl, state);
+					renderable.render(gl);
 				}
 			}
 		}

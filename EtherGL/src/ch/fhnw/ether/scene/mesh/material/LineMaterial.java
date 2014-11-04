@@ -48,8 +48,8 @@ public class LineMaterial extends ColorMaterial {
 	}
 
 	@Override
-	public void getAttributeSuppliers(ISuppliers dst) {
-		dst.provide(IMaterial.LINE_WIDTH, () -> width);
-		super.getAttributeSuppliers(dst);
+	public void getAttributeSuppliers(ISuppliers suppliers) {
+		suppliers.provide(IMaterial.LINE_WIDTH, () -> width);
+		super.getAttributeSuppliers(suppliers);
 	}
 }

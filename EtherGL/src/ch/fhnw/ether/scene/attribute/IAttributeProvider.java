@@ -47,5 +47,5 @@ public interface IAttributeProvider {
 		void require(String id);
 	}
 
-	void getAttributeSuppliers(ISuppliers dst);
+	void getAttributeSuppliers(ISuppliers suppliers);
 }

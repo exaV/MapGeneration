@@ -45,7 +45,7 @@ import ch.fhnw.util.color.RGBA;
 
 public class UnshadedTriangleShader extends AbstractShader {
 	public UnshadedTriangleShader(Attributes attributes) {
-		super(IShader.class, "material", "unshaded_vct", Primitive.TRIANGLES);
+		super(IShader.class, "builtin.shader.unshaded_triangles", "unshaded_vct", Primitive.TRIANGLES);
 
 		boolean useVertexColors = attributes.contains(IMaterial.COLOR_ARRAY);
 		boolean useTexture = attributes.contains(IMaterial.COLOR_MAP_ARRAY);

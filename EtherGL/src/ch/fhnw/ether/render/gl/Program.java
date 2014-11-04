@@ -130,9 +130,10 @@ public final class Program {
 		program.validateProgram(gl, out);
 	}
 
-	/*
-	 * NOTE: currently we do not plan to destroy / release programs public void dispose(GL3 gl) { program.release(gl); }
-	 */
+	// NOTE: currently we do not plan to destroy / release programs
+	// public void dispose(GL3 gl) {
+	// program.release(gl);
+	// }
 
 	public void enable(GL3 gl) {
 		program.useProgram(gl, true);

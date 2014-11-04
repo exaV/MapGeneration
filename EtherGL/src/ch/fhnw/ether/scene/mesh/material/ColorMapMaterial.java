@@ -48,9 +48,9 @@ public class ColorMapMaterial extends ColorMaterial {
 	}
 
 	@Override
-	public void getAttributeSuppliers(ISuppliers dst) {
-		dst.provide(IMaterial.COLOR_MAP, () -> texture);
-		dst.require(IMaterial.COLOR_MAP_ARRAY);
-		super.getAttributeSuppliers(dst);
+	public void getAttributeSuppliers(ISuppliers supplier) {
+		supplier.provide(IMaterial.COLOR_MAP, () -> texture);
+		supplier.require(IMaterial.COLOR_MAP_ARRAY);
+		super.getAttributeSuppliers(supplier);
 	}
 }

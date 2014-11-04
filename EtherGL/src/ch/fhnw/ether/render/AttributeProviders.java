@@ -27,50 +27,36 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.examples.basic;
+package ch.fhnw.ether.render;
 
-import ch.fhnw.ether.controller.DefaultController;
-import ch.fhnw.ether.controller.IController;
-import ch.fhnw.ether.examples.basic.CustomShaderExample.CustomShader;
-import ch.fhnw.ether.scene.DefaultScene;
-import ch.fhnw.ether.scene.IScene;
-import ch.fhnw.ether.scene.camera.Camera;
-import ch.fhnw.ether.scene.camera.ICamera;
-import ch.fhnw.ether.scene.mesh.DefaultMesh;
-import ch.fhnw.ether.scene.mesh.IMesh;
-import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
-import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
-import ch.fhnw.ether.scene.mesh.material.CustomMaterial;
-import ch.fhnw.ether.view.IView;
-import ch.fhnw.ether.view.gl.DefaultView;
+import java.util.ArrayList;
+import java.util.List;
 
-public final class CustomGeometryExample {
-	public static void main(String[] args) {
-		new CustomGeometryExample();
+import ch.fhnw.ether.scene.attribute.IAttributeProvider;
+import ch.fhnw.ether.scene.attribute.IAttributeProvider.ISuppliers;
+import ch.fhnw.util.UpdateRequest;
+
+final class AttributeProviders {
+	private final UpdateRequest updater = new UpdateRequest();
+
+	private final List<IAttributeProvider> providers = new ArrayList<>();
+
+	public AttributeProviders() {
 	}
 
-	private static IMesh makeColoredTriangle() {
-		float[] vertices = { 0, 0, 0, 0, 0, 0.5f, 0.5f, 0, 0.5f };
-		float[] colors = { 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1 };
-
-		DefaultGeometry g = DefaultGeometry.createVC(Primitive.TRIANGLES, vertices, colors);
-		return new DefaultMesh(new CustomMaterial(new CustomShader()), g);
+	public void addProvider(IAttributeProvider provider) {
+		providers.add(provider);
+		updater.requestUpdate();
 	}
 
-	// Setup the whole thing
-	public CustomGeometryExample() {
-		// Create controller
-		IController controller = new DefaultController();
+	public void removeProvider(IAttributeProvider provider) {
+		providers.remove(provider);
+		updater.requestUpdate();
+	}
 
-		// Create view
-		ICamera camera = new Camera();
-		IView view = new DefaultView(controller, 100, 100, 500, 500, IView.ViewType.INTERACTIVE_VIEW, "Test", camera);
-		controller.addView(view);
-
-		// Create scene and add triangle
-		IScene scene = new DefaultScene(controller);
-		controller.setScene(scene);
-
-		scene.add3DObject(makeColoredTriangle());
+	public void getAttributeSuppliers(ISuppliers suppliers) {
+		for (IAttributeProvider provider : providers) {
+			provider.getAttributeSuppliers(suppliers);
+		}
 	}
 }

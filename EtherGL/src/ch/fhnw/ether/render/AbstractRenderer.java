@@ -35,13 +35,15 @@ import ch.fhnw.ether.scene.attribute.IAttributeProvider;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.IMesh.Pass;
 
-public abstract class AbstractRenderer implements IRenderer, IAttributeProvider {
+public abstract class AbstractRenderer implements IRenderer {
 
 	private final Renderables renderables = new Renderables();
 
+	private final AttributeProviders attributes = new AttributeProviders();
+
 	@Override
 	public void addMesh(IMesh mesh) {
-		renderables.addMesh(mesh, this);
+		renderables.addMesh(mesh, attributes);
 	}
 
 	@Override
@@ -49,11 +51,21 @@ public abstract class AbstractRenderer implements IRenderer, IAttributeProvider 
 		renderables.removeMesh(mesh);
 	}
 
+	@Override
+	public void addAttributeProvider(IAttributeProvider provider) {
+		attributes.addProvider(provider);
+	}
+
+	@Override
+	public void removeAttributeProvider(IAttributeProvider provider) {
+		attributes.removeProvider(provider);
+	}
+
 	protected void update(GL3 gl) {
 		this.renderables.update(gl);
 	}
 
-	protected void renderPass(GL3 gl, RenderState state, Pass pass, boolean interactive) {
-		this.renderables.render(gl, state, pass, interactive);
+	protected void renderPass(GL3 gl, Pass pass, boolean interactive) {
+		this.renderables.render(gl, pass, interactive);
 	}
 }

@@ -54,10 +54,10 @@ public class PointMaterial extends ColorMaterial {
 	}
 
 	@Override
-	public void getAttributeSuppliers(ISuppliers dst) {
-		dst.provide(IMaterial.POINT_SIZE, () -> size);
+	public void getAttributeSuppliers(ISuppliers suppliers) {
+		suppliers.provide(IMaterial.POINT_SIZE, () -> size);
 		if (perVertexSize)
-			dst.require(IMaterial.POINT_SIZE_ARRAY);
-		super.getAttributeSuppliers(dst);
+			suppliers.require(IMaterial.POINT_SIZE_ARRAY);
+		super.getAttributeSuppliers(suppliers);
 	}
 }

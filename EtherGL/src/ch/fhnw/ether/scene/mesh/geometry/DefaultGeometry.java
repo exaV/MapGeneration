@@ -147,10 +147,10 @@ public class DefaultGeometry extends AbstractGeometry {
 	// ---- IArrayAttributeProvider implementation
 
 	@Override
-	public void getAttributeSuppliers(ISuppliers dst) {
+	public void getAttributeSuppliers(ISuppliers suppliers) {
 		for (int i = 0; i < attributeTypes.length; ++i) {
 			final int a = i;
-			dst.provide(attributeTypes[a], () -> {
+			suppliers.provide(attributeTypes[a], () -> {
 				validateCache();
 				return cache.data[a];
 			});
@@ -242,10 +242,28 @@ public class DefaultGeometry extends AbstractGeometry {
 		return new DefaultGeometry(type, attributes, data);
 	}
 
+	public static DefaultGeometry createVM(Primitive type, float[] vertices, float[] texCoords) {
+		IAttribute[] attributes = { IMaterial.POSITION_ARRAY, IMaterial.COLOR_MAP_ARRAY };
+		float[][] data = { vertices, texCoords };
+		return new DefaultGeometry(type, attributes, data);
+	}
+	
 	public static DefaultGeometry createVNC(Primitive type, float[] vertices, float[] normals, float[] colors) {
 		IAttribute[] attributes = { IMaterial.POSITION_ARRAY, IMaterial.NORMAL_ARRAY, IMaterial.COLOR_ARRAY };
 		float[][] data = { vertices, normals, colors };
 		System.out.println(vertices.length + " " + normals.length + " " + colors.length);
+		return new DefaultGeometry(type, attributes, data);
+	}
+
+	public static DefaultGeometry createVNM(Primitive type, float[] vertices, float[] normals, float[] texCoords) {
+		IAttribute[] attributes = { IMaterial.POSITION_ARRAY, IMaterial.NORMAL_ARRAY, IMaterial.COLOR_MAP_ARRAY };
+		float[][] data = { vertices, normals, texCoords };
+		return new DefaultGeometry(type, attributes, data);
+	}
+
+	public static DefaultGeometry createVCM(Primitive type, float[] vertices, float[] colors, float[] texCoords) {
+		IAttribute[] attributes = { IMaterial.POSITION_ARRAY, IMaterial.COLOR_ARRAY, IMaterial.COLOR_MAP_ARRAY };
+		float[][] data = { vertices, colors, texCoords };
 		return new DefaultGeometry(type, attributes, data);
 	}
 
