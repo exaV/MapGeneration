@@ -48,12 +48,12 @@ import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.GeodesicSphere;
 
-public final class SimpleDomeExample {
+public final class SimpleSphereExample {
 	public static void main(String[] args) {
-		new SimpleDomeExample();
+		new SimpleSphereExample();
 	}
 
-	public SimpleDomeExample() {
+	public SimpleSphereExample() {
 		// Create controller
 		IController controller = new DefaultController();
 

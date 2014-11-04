@@ -11,6 +11,7 @@ import ch.fhnw.util.math.Vec3;
 // http://wackel.home.comcast.net/~wackel/Geometry/GeoSubdivision.html
 
 // FIXME: we still create too many points when correspondance is not set
+// TODO: support for normals and tex coords
 
 public class GeodesicSphere {
 	private static final float SCALE = 0.5f;
@@ -53,6 +54,12 @@ public class GeodesicSphere {
 	private final int depth;
 	private final boolean vertexCoherence;
 
+	private float[] points;
+	private float[] lines;
+	private float[] triangles;
+	//private float[] normals;
+	//private float[] texCoords;
+
 	public GeodesicSphere(int depth) {
 		this(depth, false);
 	}
@@ -63,46 +70,55 @@ public class GeodesicSphere {
 	}
 
 	public float[] getPoints() {
-		List<Vec3> vertices = new ArrayList<>();
+		if (points == null) {
+			List<Vec3> vertices = new ArrayList<>();
 
-		if (vertexCoherence) {
-			for (int i = 0; i < 20; i++)
-				subdividePoints(VERTICES[INDICES[i][0]], VERTICES[INDICES[i][1]], VERTICES[INDICES[i][2]], vertices, true, true, true, depth);
-		} else {
-			for (int i = 0; i < 20; i++)
-				subdividePoints(VERTICES[INDICES[i][0]], VERTICES[INDICES[i][1]], VERTICES[INDICES[i][2]], vertices, PFLAGS[i][0], PFLAGS[i][1], PFLAGS[i][2],
-						depth);
+			if (vertexCoherence) {
+				for (int i = 0; i < 20; i++)
+					subdividePoints(VERTICES[INDICES[i][0]], VERTICES[INDICES[i][1]], VERTICES[INDICES[i][2]], vertices, true, true, true, depth);
+			} else {
+				for (int i = 0; i < 20; i++)
+					subdividePoints(VERTICES[INDICES[i][0]], VERTICES[INDICES[i][1]], VERTICES[INDICES[i][2]], vertices, PFLAGS[i][0], PFLAGS[i][1],
+							PFLAGS[i][2], depth);
+			}
+			System.out.println("# points:" + vertices.size());
+
+			points = Vec3.toArray(vertices);
 		}
-		System.out.println("# points:" + vertices.size());
-
-		return Vec3.toArray(vertices);
+		return points;
 	}
 
 	public float[] getLines() {
-		List<Vec3> vertices = new ArrayList<>();
+		if (lines == null) {
+			List<Vec3> vertices = new ArrayList<>();
 
-		if (vertexCoherence) {
-			for (int i = 0; i < 20; i++)
-				subdivideLines(VERTICES[INDICES[i][0]], VERTICES[INDICES[i][1]], VERTICES[INDICES[i][2]], vertices, true, true, true, depth);
-		} else {
-			for (int i = 0; i < 20; i++)
-				subdivideLines(VERTICES[INDICES[i][0]], VERTICES[INDICES[i][1]], VERTICES[INDICES[i][2]], vertices, LFLAGS[i][0], LFLAGS[i][1], LFLAGS[i][2],
-						depth);
+			if (vertexCoherence) {
+				for (int i = 0; i < 20; i++)
+					subdivideLines(VERTICES[INDICES[i][0]], VERTICES[INDICES[i][1]], VERTICES[INDICES[i][2]], vertices, true, true, true, depth);
+			} else {
+				for (int i = 0; i < 20; i++)
+					subdivideLines(VERTICES[INDICES[i][0]], VERTICES[INDICES[i][1]], VERTICES[INDICES[i][2]], vertices, LFLAGS[i][0], LFLAGS[i][1],
+							LFLAGS[i][2], depth);
+			}
+			System.out.println("# lines:" + vertices.size() / 2);
+
+			lines = Vec3.toArray(vertices);
 		}
-		System.out.println("# lines:" + vertices.size() / 2);
-
-		return Vec3.toArray(vertices);
+		return lines;
 	}
 
 	public float[] getTriangles() {
-		List<Vec3> vertices = new ArrayList<>();
+		if (triangles == null) {
+			List<Vec3> vertices = new ArrayList<>();
 
-		for (int i = 0; i < 20; i++)
-			subdivideTriangles(VERTICES[INDICES[i][0]], VERTICES[INDICES[i][1]], VERTICES[INDICES[i][2]], vertices, depth);
+			for (int i = 0; i < 20; i++)
+				subdivideTriangles(VERTICES[INDICES[i][0]], VERTICES[INDICES[i][1]], VERTICES[INDICES[i][2]], vertices, depth);
 
-		System.out.println("# triangles:" + vertices.size() / 3);
+			System.out.println("# triangles:" + vertices.size() / 3);
 
-		return Vec3.toArray(vertices);
+			triangles = Vec3.toArray(vertices);
+		}
+		return triangles;
 	}
 
 	private void subdividePoints(Vec3 v1, Vec3 v2, Vec3 v3, List<Vec3> vertices, boolean d1, boolean d2, boolean d3, int depth) {
