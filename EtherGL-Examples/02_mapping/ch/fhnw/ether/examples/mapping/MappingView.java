@@ -29,8 +29,8 @@
 
 package ch.fhnw.ether.examples.mapping;
 
-import ch.fhnw.ether.camera.ICamera;
 import ch.fhnw.ether.controller.IController;
+import ch.fhnw.ether.scene.camera.ICamera;
 import ch.fhnw.ether.view.gl.DefaultView;
 
 public class MappingView extends DefaultView {

@@ -29,10 +29,10 @@
 
 package ch.fhnw.ether.examples.mapping;
 
-import ch.fhnw.ether.camera.Camera;
-import ch.fhnw.ether.camera.ICamera;
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.scene.IScene;
+import ch.fhnw.ether.scene.camera.Camera;
+import ch.fhnw.ether.scene.camera.ICamera;
 import ch.fhnw.ether.view.IView.ViewType;
 
 public final class MappingExample {

@@ -27,7 +27,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.camera;
+package ch.fhnw.ether.scene.camera;
 
 import ch.fhnw.util.math.Mat4;
 import ch.fhnw.util.math.Vec3;

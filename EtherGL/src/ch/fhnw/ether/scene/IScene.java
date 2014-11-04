@@ -29,7 +29,7 @@
 
 import java.util.List;
 
-import ch.fhnw.ether.camera.ICamera;
+import ch.fhnw.ether.scene.camera.ICamera;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.IMesh;
 

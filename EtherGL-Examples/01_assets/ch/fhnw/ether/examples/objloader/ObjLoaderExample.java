@@ -31,12 +31,12 @@ import java.io.IOException;
 
 import javax.swing.SwingUtilities;
 
-import ch.fhnw.ether.camera.Camera;
-import ch.fhnw.ether.camera.ICamera;
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.formats.obj.OBJReader;
 import ch.fhnw.ether.scene.DefaultScene;
 import ch.fhnw.ether.scene.IScene;
+import ch.fhnw.ether.scene.camera.Camera;
+import ch.fhnw.ether.scene.camera.ICamera;
 import ch.fhnw.ether.view.IView.ViewType;
 import ch.fhnw.ether.view.gl.DefaultView;
 

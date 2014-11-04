@@ -33,8 +33,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import ch.fhnw.ether.camera.ICamera;
 import ch.fhnw.ether.controller.IController;
+import ch.fhnw.ether.scene.camera.ICamera;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.IMesh;
 

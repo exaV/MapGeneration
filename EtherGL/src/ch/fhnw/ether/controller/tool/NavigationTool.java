@@ -32,8 +32,8 @@ package ch.fhnw.ether.controller.tool;
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.fhnw.ether.camera.DefaultCameraControl;
 import ch.fhnw.ether.controller.IController;
+import ch.fhnw.ether.scene.camera.DefaultCameraControl;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.MeshLibrary;

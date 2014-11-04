@@ -29,12 +29,12 @@
 
 package ch.fhnw.ether.examples.basic;
 
-import ch.fhnw.ether.camera.Camera;
-import ch.fhnw.ether.camera.ICamera;
 import ch.fhnw.ether.controller.DefaultController;
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.scene.DefaultScene;
 import ch.fhnw.ether.scene.IScene;
+import ch.fhnw.ether.scene.camera.Camera;
+import ch.fhnw.ether.scene.camera.ICamera;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IAttribute;
 import ch.fhnw.ether.scene.mesh.IMesh;

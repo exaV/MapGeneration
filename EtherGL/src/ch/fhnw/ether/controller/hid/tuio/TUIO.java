@@ -39,8 +39,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import ch.fhnw.ether.camera.DefaultCameraControl;
 import ch.fhnw.ether.controller.IController;
+import ch.fhnw.ether.scene.camera.DefaultCameraControl;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.util.math.geometry.BoundingBox;
 import ch.fhnw.util.net.osc.OSCHandler;

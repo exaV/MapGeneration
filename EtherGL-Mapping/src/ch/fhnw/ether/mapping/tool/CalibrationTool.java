@@ -36,7 +36,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.prefs.Preferences;
 
-import ch.fhnw.ether.camera.ICamera;
 import ch.fhnw.ether.controller.DefaultController;
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.controller.tool.AbstractTool;
@@ -44,6 +43,7 @@ import ch.fhnw.ether.mapping.BimberRaskarCalibrator;
 import ch.fhnw.ether.mapping.ICalibrationModel;
 import ch.fhnw.ether.mapping.ICalibrator;
 import ch.fhnw.ether.render.IRenderer;
+import ch.fhnw.ether.scene.camera.ICamera;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh.Pass;
 import ch.fhnw.ether.scene.mesh.MeshLibrary;

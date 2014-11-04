@@ -27,8 +27,8 @@
  */
 package ch.fhnw.ether.examples.objloader;
 
-import ch.fhnw.ether.camera.ICamera;
 import ch.fhnw.ether.controller.DefaultController;
+import ch.fhnw.ether.scene.camera.ICamera;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.util.math.Vec3;
 

@@ -35,9 +35,9 @@ import javax.media.opengl.GL3;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
 
-import ch.fhnw.ether.camera.CameraMatrices;
-import ch.fhnw.ether.camera.ICamera;
 import ch.fhnw.ether.controller.IController;
+import ch.fhnw.ether.scene.camera.CameraMatrices;
+import ch.fhnw.ether.scene.camera.ICamera;
 import ch.fhnw.ether.ui.UI;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.util.Viewport;

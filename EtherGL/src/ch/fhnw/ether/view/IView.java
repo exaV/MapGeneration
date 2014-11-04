@@ -29,9 +29,9 @@
 
 import javax.media.opengl.GLAutoDrawable;
 
-import ch.fhnw.ether.camera.CameraMatrices;
-import ch.fhnw.ether.camera.ICamera;
 import ch.fhnw.ether.controller.IController;
+import ch.fhnw.ether.scene.camera.CameraMatrices;
+import ch.fhnw.ether.scene.camera.ICamera;
 import ch.fhnw.util.IUpdateListener;
 import ch.fhnw.util.Viewport;
 import ch.fhnw.util.math.Mat4;

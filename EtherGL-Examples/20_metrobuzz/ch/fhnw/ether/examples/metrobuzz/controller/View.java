@@ -29,7 +29,7 @@
 
 package ch.fhnw.ether.examples.metrobuzz.controller;
 
-import ch.fhnw.ether.camera.ICamera;
+import ch.fhnw.ether.scene.camera.ICamera;
 import ch.fhnw.ether.view.gl.DefaultView;
 
 public class View extends DefaultView {

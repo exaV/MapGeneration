@@ -36,10 +36,10 @@ import java.util.List;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL3;
 
-import ch.fhnw.ether.camera.ICamera;
 import ch.fhnw.ether.examples.raytracing.util.IntersectResult;
 import ch.fhnw.ether.render.IRenderer;
 import ch.fhnw.ether.render.forward.ForwardRenderer;
+import ch.fhnw.ether.scene.camera.ICamera;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IAttribute;

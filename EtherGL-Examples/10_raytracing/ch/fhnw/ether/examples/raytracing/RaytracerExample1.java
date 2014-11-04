@@ -27,8 +27,6 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */package ch.fhnw.ether.examples.raytracing;
 
-import ch.fhnw.ether.camera.Camera;
-import ch.fhnw.ether.camera.ICamera;
 import ch.fhnw.ether.controller.DefaultController;
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.controller.event.EventDrivenScheduler;
@@ -36,6 +34,8 @@ import ch.fhnw.ether.examples.raytracing.surface.Plane;
 import ch.fhnw.ether.examples.raytracing.surface.Sphere;
 import ch.fhnw.ether.scene.DefaultScene;
 import ch.fhnw.ether.scene.IScene;
+import ch.fhnw.ether.scene.camera.Camera;
+import ch.fhnw.ether.scene.camera.ICamera;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.light.PointLight;
 import ch.fhnw.ether.view.IView;

@@ -33,11 +33,11 @@ import java.io.IOException;
 
 import javax.swing.SwingUtilities;
 
-import ch.fhnw.ether.camera.Camera;
 import ch.fhnw.ether.examples.metrobuzz.controller.MetroBuzzController;
 import ch.fhnw.ether.examples.metrobuzz.controller.View;
 import ch.fhnw.ether.examples.metrobuzz.io.matsim.Loader;
 import ch.fhnw.ether.examples.metrobuzz.model.Scene;
+import ch.fhnw.ether.scene.camera.Camera;
 import ch.fhnw.ether.view.IView.ViewType;
 
 public class MetroBuzz {
