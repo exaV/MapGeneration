@@ -53,7 +53,6 @@ public final class MappingExample {
 	public MappingExample() {
 		IController controller = new MappingController();
 
-		
 		ICamera camera = new Camera();
 		
 		// FIXME: for every view use separate camera with dedicated angle
@@ -62,7 +61,6 @@ public final class MappingExample {
 		// controller.addView(new MappingView(controller, 940, 0, 400, 400, ViewType.MAPPED_VIEW, "View 2", 90.0f));
 		// controller.addView(new MappingView(controller, 530, 410, 400, 400, ViewType.MAPPED_VIEW, "View 3", 180.0f));
 		// controller.addView(new MappingView(controller, 940, 410, 400, 400, ViewType.MAPPED_VIEW, "View 4", 270.0f));
-
 
 		IScene scene = new MappingScene(controller);
 		controller.setScene(scene);

@@ -54,14 +54,13 @@ public final class SimpleCubeExample {
 		camera.setPosition(new Vec3(0, 5, 0));
 		camera.setUp(new Vec3(0, 0, 1));
 		IView view = new DefaultView(controller, 100, 100, 500, 500, IView.ViewType.INTERACTIVE_VIEW, "Simple Cube", camera);
+		controller.addView(view);
 
 		// Create scene and add a cube
 		IScene scene = new DefaultScene(controller);
-		scene.add3DObject(MeshLibrary.createCube());
-
-		// Setup MVC
-		controller.addView(view);
 		controller.setScene(scene);
+
+		scene.add3DObject(MeshLibrary.createCube());
 		
 		// Add an exit button
 		controller.getUI().addWidget(new Button(0, 0, "Quit", "Quit", KeyEvent.VK_ESCAPE, (button, v) -> System.exit(0)));

@@ -62,19 +62,17 @@ public final class SimpleSphereExample {
 		camera.setPosition(new Vec3(0, 5, 0));
 		camera.setUp(new Vec3(0, 0, 1));
 		IView view = new DefaultView(controller, 100, 100, 500, 500, IView.ViewType.INTERACTIVE_VIEW, "Simple Dome", camera);
+		controller.addView(view);
 
 		// Create scene and add a cube
 		IScene scene = new DefaultScene(controller);
+		controller.setScene(scene);
 
 		GeodesicSphere sphere = new GeodesicSphere(3);
 		scene.add3DObject(new DefaultMesh(new ColorMaterial(new RGBA(1, 1, 1, 0.5f)), DefaultGeometry.createV(Primitive.TRIANGLES, sphere.getTriangles()), Pass.TRANSPARENCY));
 		scene.add3DObject(new DefaultMesh(new ColorMaterial(new RGBA(1, 1, 1, 1)), DefaultGeometry.createV(Primitive.LINES, sphere.getLines()), Pass.TRANSPARENCY));
 		scene.add3DObject(new DefaultMesh(new PointMaterial(8, new RGBA(1, 1, 0, 0.5f)), DefaultGeometry.createV(Primitive.POINTS, sphere.getPoints()), Pass.TRANSPARENCY));
 
-		// Setup MVC
-		controller.addView(view);
-		controller.setScene(scene);
-		
 		// Add an exit button
 		controller.getUI().addWidget(new Button(0, 0, "Quit", "Quit", KeyEvent.VK_ESCAPE, (button, v) -> System.exit(0)));
 	}

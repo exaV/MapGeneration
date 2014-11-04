@@ -62,10 +62,10 @@ public class ObjLoaderExample {
 		controller.addView(new DefaultView(controller, 0, 10, 512, 512, ViewType.INTERACTIVE_VIEW, "Obj View", camera));
 
 		IScene scene = new DefaultScene(controller);
+		controller.setScene(scene);
+
 		new OBJReader(getClass().getResource("fhnw.obj")).getMeshes().forEach((x) -> {
 			scene.add3DObject(x);
 		});
-		controller.setScene(scene);
-
 	}
 }

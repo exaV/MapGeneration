@@ -78,22 +78,20 @@ public final class SimpleTextureExample {
 
 	// Setup the whole thing
 	public SimpleTextureExample() {
-
 		// Create controller
 		IController controller = new DefaultController();
 
 		// Create view
 		ICamera camera = new Camera();
 		IView view = new DefaultView(controller, 100, 100, 500, 500, IView.ViewType.INTERACTIVE_VIEW, "Test", camera);
+		controller.addView(view);
 
 		// Create scene and add triangle
 		IScene scene = new DefaultScene(controller);
+		controller.setScene(scene);
+
 		IMesh mesh = makeTexturedTriangle();
 		scene.add3DObject(mesh);
-
-		// Setup MVC
-		controller.addView(view);
-		controller.setScene(scene);
 
 		// Animate (Using event timer)
 		Timer timer = new Timer();
