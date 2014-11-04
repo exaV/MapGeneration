@@ -36,6 +36,7 @@ import ch.fhnw.ether.scene.DefaultScene;
 import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.scene.camera.Camera;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
+import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.IMesh.Pass;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
@@ -69,9 +70,26 @@ public final class SimpleSphereExample {
 		controller.setScene(scene);
 
 		GeodesicSphere sphere = new GeodesicSphere(3);
-		scene.add3DObject(new DefaultMesh(new ColorMaterial(new RGBA(1, 1, 1, 0.5f)), DefaultGeometry.createV(Primitive.TRIANGLES, sphere.getTriangles()), Pass.TRANSPARENCY));
-		scene.add3DObject(new DefaultMesh(new ColorMaterial(new RGBA(1, 1, 1, 1)), DefaultGeometry.createV(Primitive.LINES, sphere.getLines()), Pass.TRANSPARENCY));
-		scene.add3DObject(new DefaultMesh(new PointMaterial(8, new RGBA(1, 1, 0, 0.5f)), DefaultGeometry.createV(Primitive.POINTS, sphere.getPoints()), Pass.TRANSPARENCY));
+
+		// FIXME: API issue - below stuff is not very convenient, and it would be nice to have this a bit more streamlined
+		
+		IMesh transparentMeshT = new DefaultMesh(new ColorMaterial(new RGBA(1, 1, 1, 0.5f)), DefaultGeometry.createV(Primitive.TRIANGLES, sphere.getTriangles()), Pass.TRANSPARENCY);
+		IMesh transparentMeshL = new DefaultMesh(new ColorMaterial(new RGBA(1, 1, 1, 1)), DefaultGeometry.createV(Primitive.LINES, sphere.getLines()), Pass.TRANSPARENCY);
+		IMesh transparentMeshP = new DefaultMesh(new PointMaterial(8, new RGBA(1, 1, 0, 0.5f)), DefaultGeometry.createV(Primitive.POINTS, sphere.getPoints()), Pass.TRANSPARENCY);
+
+		IMesh solidMeshT = new DefaultMesh(new ColorMaterial(new RGBA(0.5f, 0.5f, 0.5f, 1)), DefaultGeometry.createV(Primitive.TRIANGLES, sphere.getTriangles()), Pass.DEPTH);
+		IMesh solidMeshL = new DefaultMesh(new ColorMaterial(new RGBA(1, 1, 1, 1)), DefaultGeometry.createV(Primitive.LINES, sphere.getLines()), Pass.DEPTH);
+		IMesh solidMeshP = new DefaultMesh(new PointMaterial(8, new RGBA(1, 1, 0, 1)), DefaultGeometry.createV(Primitive.POINTS, sphere.getPoints()), Pass.DEPTH);
+		
+		transparentMeshT.getGeometry().setTranslation(Vec3.X_NEG);
+		transparentMeshL.getGeometry().setTranslation(Vec3.X_NEG);
+		transparentMeshP.getGeometry().setTranslation(Vec3.X_NEG);
+
+		solidMeshT.getGeometry().setTranslation(Vec3.X);
+		solidMeshL.getGeometry().setTranslation(Vec3.X);
+		solidMeshP.getGeometry().setTranslation(Vec3.X);
+		
+		scene.add3DObjects(transparentMeshT, transparentMeshL, transparentMeshP, solidMeshT, solidMeshL, solidMeshP);
 
 		// Add an exit button
 		controller.getUI().addWidget(new Button(0, 0, "Quit", "Quit", KeyEvent.VK_ESCAPE, (button, v) -> System.exit(0)));

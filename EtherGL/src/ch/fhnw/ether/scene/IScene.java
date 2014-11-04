@@ -37,7 +37,11 @@ import ch.fhnw.ether.scene.mesh.IMesh;
 public interface IScene {
 	void add3DObject(I3DObject object);
 	
+	void add3DObjects(I3DObject... objects);
+	
 	void remove3DObject(I3DObject object);
+	
+	void remove3DObjects(I3DObject... objects);
 
 	List<? extends I3DObject> get3DObjects();
 

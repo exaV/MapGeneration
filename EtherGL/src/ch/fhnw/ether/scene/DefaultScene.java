@@ -71,6 +71,12 @@ public class DefaultScene implements IScene {
 	}
 	
 	@Override
+	public void add3DObjects(I3DObject... objects) {
+		for (I3DObject object : objects)
+			add3DObject(object);
+	}
+	
+	@Override
 	public final void remove3DObject(I3DObject object) {
 		if (object instanceof IMesh) {
 			meshes.remove(object);
@@ -82,6 +88,13 @@ public class DefaultScene implements IScene {
 			lights.remove(object);		
 		objects.remove(object);
 	}
+	
+	@Override
+	public void remove3DObjects(I3DObject... objects) {
+		for (I3DObject object : objects)
+			add3DObject(object);
+	}
+
 
 	@Override
 	public final List<? extends I3DObject> get3DObjects() {
