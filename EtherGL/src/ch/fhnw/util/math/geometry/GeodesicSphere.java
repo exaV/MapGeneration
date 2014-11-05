@@ -3,6 +3,7 @@ package ch.fhnw.util.math.geometry;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.fhnw.util.math.MathUtil;
 import ch.fhnw.util.math.Vec3;
 
 // #faces = 20 * f^2
@@ -57,8 +58,8 @@ public class GeodesicSphere {
 	private float[] points;
 	private float[] lines;
 	private float[] triangles;
-	//private float[] normals;
-	//private float[] texCoords;
+	private float[] normals;
+	private float[] texCoords;
 
 	public GeodesicSphere(int depth) {
 		this(depth, false);
@@ -119,6 +120,36 @@ public class GeodesicSphere {
 			triangles = Vec3.toArray(vertices);
 		}
 		return triangles;
+	}
+
+	public float[] getNormals() {
+		if (normals == null) {
+			normals = getTriangles().clone();
+			for (int i = 0; i < normals.length; i += 3) {
+				float l = MathUtil.length(normals[i], normals[i + 1], normals[i + 2]);
+				normals[i] /= l;
+				normals[i + 1] /= l;
+				normals[i + 2] /= l;
+			}
+		}
+		return normals;
+	}
+	
+	// FIXME: generation of texture coordinates at border and pole
+	public float[] getTexCoords() {
+		if (texCoords == null) {
+			float[] vertices = getTriangles();
+			double r = SCALE;
+			texCoords = new float[vertices.length / 3 * 2];
+			int j = 0;
+			for (int i = 0; i < vertices.length; i += 3) {
+				float s = 0.5f - (float)(0.5 * Math.atan2(vertices[i], vertices[i + 1]) / Math.PI);
+				float t = 1.0f - (float)(Math.acos(vertices[i + 2] / r) / Math.PI);
+				texCoords[j++] = s;
+				texCoords[j++] = t;
+			}
+		}
+		return texCoords;
 	}
 
 	private void subdividePoints(Vec3 v1, Vec3 v2, Vec3 v3, List<Vec3> vertices, boolean d1, boolean d2, boolean d3, int depth) {

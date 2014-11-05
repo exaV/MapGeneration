@@ -40,8 +40,10 @@ import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.IMesh.Pass;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
+import ch.fhnw.ether.scene.mesh.material.ColorMapMaterial;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.scene.mesh.material.PointMaterial;
+import ch.fhnw.ether.scene.mesh.material.Texture;
 import ch.fhnw.ether.ui.Button;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.gl.DefaultView;
@@ -77,19 +79,22 @@ public final class SimpleSphereExample {
 		IMesh transparentMeshL = new DefaultMesh(new ColorMaterial(new RGBA(1, 1, 1, 1)), DefaultGeometry.createV(Primitive.LINES, sphere.getLines()), Pass.TRANSPARENCY);
 		IMesh transparentMeshP = new DefaultMesh(new PointMaterial(8, new RGBA(1, 1, 0, 0.5f)), DefaultGeometry.createV(Primitive.POINTS, sphere.getPoints()), Pass.TRANSPARENCY);
 
+		transparentMeshT.getGeometry().setTranslation(Vec3.X_NEG);
+		transparentMeshL.getGeometry().setTranslation(Vec3.X_NEG);
+		transparentMeshP.getGeometry().setTranslation(Vec3.X_NEG);
+		
 		IMesh solidMeshT = new DefaultMesh(new ColorMaterial(new RGBA(0.5f, 0.5f, 0.5f, 1)), DefaultGeometry.createV(Primitive.TRIANGLES, sphere.getTriangles()), Pass.DEPTH);
 		IMesh solidMeshL = new DefaultMesh(new ColorMaterial(new RGBA(1, 1, 1, 1)), DefaultGeometry.createV(Primitive.LINES, sphere.getLines()), Pass.DEPTH);
 		IMesh solidMeshP = new DefaultMesh(new PointMaterial(8, new RGBA(1, 1, 0, 1)), DefaultGeometry.createV(Primitive.POINTS, sphere.getPoints()), Pass.DEPTH);
 		
-		transparentMeshT.getGeometry().setTranslation(Vec3.X_NEG);
-		transparentMeshL.getGeometry().setTranslation(Vec3.X_NEG);
-		transparentMeshP.getGeometry().setTranslation(Vec3.X_NEG);
-
 		solidMeshT.getGeometry().setTranslation(Vec3.X);
 		solidMeshL.getGeometry().setTranslation(Vec3.X);
 		solidMeshP.getGeometry().setTranslation(Vec3.X);
 		
-		scene.add3DObjects(transparentMeshT, transparentMeshL, transparentMeshP, solidMeshT, solidMeshL, solidMeshP);
+		Texture t = new Texture(SimpleSphereExample.class.getResource("assets/earth_nasa.jpg"));
+		IMesh texturedMeshT = new DefaultMesh(new ColorMapMaterial(t), DefaultGeometry.createVM(Primitive.TRIANGLES, sphere.getTriangles(), sphere.getTexCoords()), Pass.DEPTH);
+
+		scene.add3DObjects(transparentMeshT, transparentMeshL, transparentMeshP, solidMeshT, solidMeshL, solidMeshP, texturedMeshT);
 
 		// Add an exit button
 		controller.getUI().addWidget(new Button(0, 0, "Quit", "Quit", KeyEvent.VK_ESCAPE, (button, v) -> System.exit(0)));
