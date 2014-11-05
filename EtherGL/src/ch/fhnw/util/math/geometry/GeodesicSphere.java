@@ -134,22 +134,60 @@ public class GeodesicSphere {
 		}
 		return normals;
 	}
-	
-	// FIXME: generation of texture coordinates at border and pole
+
 	public float[] getTexCoords() {
 		if (texCoords == null) {
 			float[] vertices = getTriangles();
-			double r = SCALE;
+			float r = SCALE;
 			texCoords = new float[vertices.length / 3 * 2];
 			int j = 0;
-			for (int i = 0; i < vertices.length; i += 3) {
-				float s = 0.5f - (float)(0.5 * Math.atan2(vertices[i], vertices[i + 1]) / Math.PI);
-				float t = 1.0f - (float)(Math.acos(vertices[i + 2] / r) / Math.PI);
-				texCoords[j++] = s;
-				texCoords[j++] = t;
+			for (int i = 0; i < vertices.length;) {
+				float x0 = vertices[i++];
+				float y0 = vertices[i++];
+				float z0 = vertices[i++];
+				float s0 = toS(x0, y0);
+				float t0 = toT(z0, r);
+				float x1 = vertices[i++];
+				float y1 = vertices[i++];
+				float z1 = vertices[i++];
+				float s1 = toS(x1, y1);
+				float t1 = toT(z1, r);
+				float x2 = vertices[i++];
+				float y2 = vertices[i++];
+				float z2 = vertices[i++];
+				float s2 = toS(x2, y2);
+				float t2 = toT(z2, r);
+				if (x0 <= 0) {
+					if (s0 < 0.5f) {
+						if (s1 > 0.5f)
+							s1 -= 1;
+						if (s2 > 0.5f)
+							s2 -= 1;
+					} else {
+						if (s1 < 0.5f)
+							s1 += 1;
+						if (s2 < 0.5f)
+							s2 += 1;
+					}
+				}
+
+				texCoords[j++] = s0;
+				texCoords[j++] = t0;
+				texCoords[j++] = s1;
+				texCoords[j++] = t1;
+				texCoords[j++] = s2;
+				texCoords[j++] = t2;
 			}
 		}
 		return texCoords;
+	}
+
+	private float toS(float x, float y) {
+		return 0.5f + (float) (0.5 * Math.atan2(y, x) / Math.PI);
+	}
+
+	private float toT(float z, float r) {
+		return 1.0f - (float) (Math.acos(z / r) / Math.PI);
 	}
 
 	private void subdividePoints(Vec3 v1, Vec3 v2, Vec3 v3, List<Vec3> vertices, boolean d1, boolean d2, boolean d3, int depth) {

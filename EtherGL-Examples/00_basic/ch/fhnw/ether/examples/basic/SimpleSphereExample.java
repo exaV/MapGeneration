@@ -62,7 +62,7 @@ public final class SimpleSphereExample {
 
 		// Create view
 		Camera camera = new Camera();
-		camera.setPosition(new Vec3(0, 5, 0));
+		camera.setPosition(new Vec3(0, -5, 0));
 		camera.setUp(new Vec3(0, 0, 1));
 		IView view = new DefaultView(controller, 100, 100, 500, 500, IView.ViewType.INTERACTIVE_VIEW, "Simple Dome", camera);
 		controller.addView(view);
@@ -71,7 +71,7 @@ public final class SimpleSphereExample {
 		IScene scene = new DefaultScene(controller);
 		controller.setScene(scene);
 
-		GeodesicSphere sphere = new GeodesicSphere(3);
+		GeodesicSphere sphere = new GeodesicSphere(4);
 
 		// FIXME: API issue - below stuff is not very convenient, and it would be nice to have this a bit more streamlined
 		
@@ -93,7 +93,8 @@ public final class SimpleSphereExample {
 		
 		Texture t = new Texture(SimpleSphereExample.class.getResource("assets/earth_nasa.jpg"));
 		IMesh texturedMeshT = new DefaultMesh(new ColorMapMaterial(t), DefaultGeometry.createVM(Primitive.TRIANGLES, sphere.getTriangles(), sphere.getTexCoords()), Pass.DEPTH);
-
+		texturedMeshT.getGeometry().setTranslation(Vec3.Y);
+		
 		scene.add3DObjects(transparentMeshT, transparentMeshL, transparentMeshP, solidMeshT, solidMeshL, solidMeshP, texturedMeshT);
 
 		// Add an exit button

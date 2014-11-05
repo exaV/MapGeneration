@@ -114,6 +114,8 @@ public class SamplerUniformAttribute extends AbstractUniformAttribute<Texture> {
 			gl.glBindTexture(target, tex[0]);
 			gl.glTexParameteri(target, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
 			gl.glTexParameteri(target, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR_MIPMAP_LINEAR);
+			gl.glTexParameterf(target, GL.GL_TEXTURE_WRAP_S, GL.GL_REPEAT);
+			gl.glTexParameterf(target, GL.GL_TEXTURE_WRAP_T, GL.GL_REPEAT);
 		} else {
 			gl.glBindTexture(target, tex[0]);
 		}
