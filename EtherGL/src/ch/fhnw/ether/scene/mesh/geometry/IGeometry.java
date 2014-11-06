@@ -68,22 +68,26 @@ public interface IGeometry extends IAttributeProvider, ITransformable, IUpdateRe
 	BoundingBox getBounds();
 
 	/**
-	 * Inspect specific attribute of this geometry through visitor. Must not modify geometry.
+	 * Inspect specific attribute of this geometry through visitor. Note that this will inspect the transformed vertices
+	 * and normals. Must not modify geometry.
 	 */
 	void inspect(int index, IAttributeVisitor visitor);
 
 	/**
-	 * Inspect all attributes of this geometry through visitor. Must not modify geometry.
+	 * Inspect all attributes of this geometry through visitor. Note that this will inspect the transformed vertices and
+	 * normals. Must not modify geometry.
 	 */
 	void inspect(IAttributesVisitor visitor);
 
 	/**
-	 * Modify specific attribute of this geometry through visitor.
+	 * Modify specific attribute of this geometry through visitor. Note that this will modify the original (i.e.
+	 * untransformed) vertices and normals.
 	 */
 	void modify(int index, IAttributeVisitor visitor);
 
 	/**
-	 * Modify any attribute of this geometry through visitor.
+	 * Modify any attribute of this geometry through visitor. Note that this will modify the original (i.e.
+	 * untransformed) vertices and normals.
 	 */
 	void modify(IAttributesVisitor visitor);
 

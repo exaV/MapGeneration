@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 - 2014 Stefan Muller Arisona, Simon Schubiger, Samuel von Stachelski
+\ * Copyright (c) 2013 - 2014 Stefan Muller Arisona, Simon Schubiger, Samuel von Stachelski
  * Copyright (c) 2013 - 2014 FHNW & ETH Zurich
  * All rights reserved.
  *
@@ -121,12 +121,14 @@ public class DefaultGeometry extends AbstractGeometry {
 
 	@Override
 	public void inspect(int index, IAttributeVisitor visitor) {
-		visitor.visit(attributeTypes[index], attributeData[index]);
+		validateCache();
+		visitor.visit(attributeTypes[index], cache.data[index]);
 	}
 
 	@Override
 	public void inspect(IAttributesVisitor visitor) {
-		visitor.visit(attributeTypes, attributeData);
+		validateCache();
+		visitor.visit(attributeTypes, cache.data);
 	}
 
 	@Override
