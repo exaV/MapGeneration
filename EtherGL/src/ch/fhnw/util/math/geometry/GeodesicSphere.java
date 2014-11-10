@@ -157,18 +157,39 @@ public class GeodesicSphere {
 				float z2 = vertices[i++];
 				float s2 = toS(x2, y2);
 				float t2 = toT(z2, r);
-				if (x0 <= 0) {
-					if (s0 < 0.5f) {
-						if (s1 > 0.5f)
-							s1 -= 1;
-						if (s2 > 0.5f)
-							s2 -= 1;
-					} else {
-						if (s1 < 0.5f)
-							s1 += 1;
-						if (s2 < 0.5f)
-							s2 += 1;
-					}
+
+				boolean p0 = Math.abs(x0) == 0 && Math.abs(y0) == 0;
+				boolean p1 = Math.abs(x1) == 0 && Math.abs(y1) == 0;
+				boolean p2 = Math.abs(x2) == 0 && Math.abs(y2) == 0;
+
+				if (p0) {
+					if (s1 < s2 - 0.5f)
+						s1 += 1;
+					else if (s1 > s2 + 0.5f)
+						s1 -= 1;
+					s0 = (s1 + s2) / 2;
+				} else if (p1) {
+					if (s0 < s2 - 0.5f)
+						s0 += 1;
+					else if (s0 > s2 + 0.5f)
+						s0 -= 1;
+					s1 = (s0 + s2) / 2;
+				} else if (p2) {
+					if (s0 < s1 - 0.5f)
+						s0 += 1;
+					else if (s0 > s1 + 0.5f)
+						s0 -= 1;
+					s2 = (s0 + s1) / 2;
+				} else {
+					if (s1 < s0 - 0.5f)
+						s1 += 1;
+					else if (s1 > s0 + 0.5f)
+						s1 -= 1;
+					if (s2 < s0 - 0.5f)
+						s2 += 1;
+					else if (s2 > s0 + 0.5f)
+						s2 -= 1;
+
 				}
 
 				texCoords[j++] = s0;
@@ -183,7 +204,10 @@ public class GeodesicSphere {
 	}
 
 	private float toS(float x, float y) {
-		return 0.5f + (float) (0.5 * Math.atan2(y, x) / Math.PI);
+		float s = (float) (0.5 * Math.atan2(y, x) / Math.PI);
+		if (s < 0)
+			s += 1;
+		return s;
 	}
 
 	private float toT(float z, float r) {

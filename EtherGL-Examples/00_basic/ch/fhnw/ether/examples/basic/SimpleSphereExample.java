@@ -93,7 +93,7 @@ public final class SimpleSphereExample {
 		
 		Texture t = new Texture(SimpleSphereExample.class.getResource("assets/earth_nasa.jpg"));
 		IMesh texturedMeshT = new DefaultMesh(new ColorMapMaterial(t), DefaultGeometry.createVM(Primitive.TRIANGLES, sphere.getTriangles(), sphere.getTexCoords()), Pass.DEPTH);
-		texturedMeshT.getGeometry().setTranslation(Vec3.Y);
+		texturedMeshT.getGeometry().setTranslation(Vec3.ZERO);
 		
 		scene.add3DObjects(transparentMeshT, transparentMeshL, transparentMeshP, solidMeshT, solidMeshL, solidMeshP, texturedMeshT);
 
