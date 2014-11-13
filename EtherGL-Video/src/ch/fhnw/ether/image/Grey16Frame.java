@@ -54,20 +54,16 @@ public final class Grey16Frame extends Frame {
 	}
 
 	public Grey16Frame(int dimI, int dimJ) {
-		this(dimI, dimJ, 1);
-	}
-
-	public Grey16Frame(int dimI, int dimJ, int dimK) {
 		super(2);
-		init(dimI, dimJ, dimK);
+		init(dimI, dimJ);
 	}
 
-	public Grey16Frame(int dimI, int dimJ, int dimK, ByteBuffer data) {
-		super(dimI, dimJ, dimK, data, 2);
+	public Grey16Frame(int dimI, int dimJ, ByteBuffer data) {
+		super(dimI, dimJ, data, 2);
 	}
 
 	public Grey16Frame(Frame frame) {
-		this(frame.dimI, frame.dimJ, frame.dimK);
+		this(frame.dimI, frame.dimJ);
 		if (pixelSize == frame.pixelSize)
 			BufferUtil.arraycopy(frame.pixels, 0, pixels, 0, pixels.capacity());
 		else if (frame instanceof FloatFrame) {
@@ -76,36 +72,32 @@ public final class Grey16Frame extends Frame {
 			final float rng = ((FloatFrame) frame).getMinMax()[1] - min;
 
 			final ByteBuffer dst = pixels;
-			for (int k = 0; k < dimK; k++) {
-				int spos = k * dimJ * dimI;
-				dst.position(k * dimJ * dimI * pixelSize);
-				for (int j = 0; j < dimJ; j++) {
-					for (int i = 0; i < dimI; i++) {
-						int val = (byte) ((65535f * (src.get(spos) - min)) / rng);
-						// assume little endian
-						dst.put((byte) val);
-						dst.put((byte) (val >> 8));
-						spos++;
-					}
+			int spos = 0;
+			dst.position(0);
+			for (int j = 0; j < dimJ; j++) {
+				for (int i = 0; i < dimI; i++) {
+					int val = (byte) ((65535f * (src.get(spos) - min)) / rng);
+					// assume little endian
+					dst.put((byte) val);
+					dst.put((byte) (val >> 8));
+					spos++;
 				}
 			}
 		} else {
 			final ByteBuffer src = frame.pixels;
 			final ByteBuffer dst = pixels;
 			int sps = frame.pixelSize;
-			for (int k = 0; k < dimK; k++) {
-				int spos = k * dimJ * dimI * frame.pixelSize;
-				dst.position(k * dimJ * dimI * pixelSize);
-				for (int j = 0; j < dimJ; j++) {
-					for (int i = 0; i < dimI; i++) {
-						int val = src.get(spos) & 0xFF;
-						val += src.get(spos + 1) & 0xFF;
-						val += src.get(spos + 2) & 0xFF;
-						val /= 3;
-						dst.put((byte) val);
-						dst.put((byte) val);
-						spos += sps;
-					}
+			int spos = 0;
+			dst.position(0);
+			for (int j = 0; j < dimJ; j++) {
+				for (int i = 0; i < dimI; i++) {
+					int val = src.get(spos) & 0xFF;
+					val += src.get(spos + 1) & 0xFF;
+					val += src.get(spos + 2) & 0xFF;
+					val /= 3;
+					dst.put((byte) val);
+					dst.put((byte) val);
+					spos += sps;
 				}
 			}
 		}
@@ -113,16 +105,16 @@ public final class Grey16Frame extends Frame {
 	}
 
 	@Override
-	public void setRGB(int i, int j, int k, byte[] rgb) {
-		pixels.position(((k * dimI * dimJ) + (j * dimI) + i) * pixelSize);
+	public void setRGB(int i, int j, byte[] rgb) {
+		pixels.position((j * dimI + i) * pixelSize);
 		final byte grey = (byte) (((rgb[0] & 0xFF) + (rgb[1] & 0xFF) + (rgb[2] & 0xFF)) / 3);
 		pixels.put(grey);
 		pixels.put(grey);
 	}
 
 	@Override
-	public void setARGB(int i, int j, int k, int argb) {
-		pixels.position(((k * dimI * dimJ) + (j * dimI) + i) * pixelSize);
+	public void setARGB(int i, int j, int argb) {
+		pixels.position((j * dimI + i) * pixelSize);
 		final byte grey = (byte) ((((argb >> 16) & 0xFF) + ((argb >> 8) & 0xFF) + (argb & 0xFF)) / 3);
 		pixels.put(grey);
 		pixels.put(grey);
@@ -146,8 +138,8 @@ public final class Grey16Frame extends Frame {
 	}
 
 	@Override
-	public void getRGB(int i, int j, int k, byte[] rgb) {
-		byte val = pixels.get(((k * dimI * dimJ) + (j * dimI) + i) * pixelSize + 1);
+	public void getRGB(int i, int j, byte[] rgb) {
+		byte val = pixels.get((j * dimI + i) * pixelSize + 1);
 
 		rgb[0] = val;
 		rgb[1] = val;
@@ -155,15 +147,15 @@ public final class Grey16Frame extends Frame {
 	}
 
 	@Override
-	public float getFloatComponent(int i, int j, int k, int unused) {
-		byte hi = pixels.get(((k * dimI * dimJ) + (j * dimI) + i) * pixelSize + 1);
-		byte lo = pixels.get(((k * dimI * dimJ) + (j * dimI) + i) * pixelSize);
+	public float getFloatComponent(int i, int j, int unused) {
+		byte hi = pixels.get((j * dimI + i) * pixelSize + 1);
+		byte lo = pixels.get((j * dimI + i) * pixelSize);
 		return ((hi << 8 | (lo & 0xFF)) & 0xFFFF) / 65535f;
 	}
 
 	@Override
-	public float getBrightnessBilinear(double u, double v, int k) {
-		return getComponentBilinear(u, v, k, 0);
+	public float getBrightnessBilinear(double u, double v) {
+		return getComponentBilinear(u, v, 0);
 	}
 
 	@Override
@@ -174,7 +166,7 @@ public final class Grey16Frame extends Frame {
 
 	@Override
 	public Frame alloc() {
-		return new Grey16Frame(dimI, dimJ, dimK);
+		return new Grey16Frame(dimI, dimJ);
 	}
 
 	@Override
@@ -440,33 +432,33 @@ public final class Grey16Frame extends Frame {
 	}
 
 	@Override
-	public float getBrightness(int i, int j, int k) {
-		return getFloatComponent(i, j, k, 0);
+	public float getBrightness(int i, int j) {
+		return getFloatComponent(i, j, 0);
 	}
 
 	@Override
-	public void getRGBBilinear(double u, double v, int k, byte[] rgb) {
+	public void getRGBBilinear(double u, double v, byte[] rgb) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public int getARGB(int i, int j, int k) {
-		int rgb = pixels.get(((k * dimI * dimJ) + (j * dimI) + i) * pixelSize) & 0xFF;
+	public int getARGB(int i, int j) {
+		int rgb = pixels.get((j * dimI + i) * pixelSize) & 0xFF;
 		return rgb << 16 | rgb << 8 | rgb | 0xFF000000;
 	}
 
 	@Override
-	public Grey16Frame getSubframe(int i, int j, int k, int dimI, int dimJ, int dimK) {
-		Grey16Frame result = new Grey16Frame(dimI, dimJ, dimK);
-		getSubframeImpl(i, j, k, result);
+	public Grey16Frame getSubframe(int i, int j, int dimI, int dimJ) {
+		Grey16Frame result = new Grey16Frame(dimI, dimJ);
+		getSubframeImpl(i, j, result);
 		return result;
 	}
 
 	@Override
-	public void setSubframe(int i, int j, int k, Frame src) {
+	public void setSubframe(int i, int j, Frame src) {
 		if (src.getClass() != getClass())
 			src = new Grey16Frame(src);
-		setSubframeImpl(i, j, k, src);
+		setSubframeImpl(i, j, src);
 	}
 
 	@Override
@@ -486,7 +478,7 @@ public final class Grey16Frame extends Frame {
 		if (alphaValue > 2 << 16 || alphaValue < 0)
 			alphaValue = Double.NaN;
 
-		Grey16Frame out = new Grey16Frame(dimI, dimJ, 1);
+		Grey16Frame out = new Grey16Frame(dimI, dimJ);
 		out.setPixels_(0, 0, dimI, dimJ, toBufferedImage(), ImageScaler.NORMALIZE, alphaValue);
 
 		return out;

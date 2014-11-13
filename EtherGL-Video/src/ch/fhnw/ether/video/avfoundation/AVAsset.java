@@ -120,12 +120,12 @@ public final class AVAsset implements ISequentialVideoTrack, IRandomAccessVideoT
 
 	@Override
 	public Frame getFrame(double time) {
-		return new RGBA8Frame(getWidth(), getHeight(), 1, nativeGetFrame(nativeHandle, time));
+		return new RGBA8Frame(getWidth(), getHeight(), nativeGetFrame(nativeHandle, time));
 	}
 
 	@Override
 	public Frame getNextFrame() {
-		return new RGBA8Frame(getWidth(), getHeight(), 1, nativeGetNextFrame(nativeHandle));
+		return new RGBA8Frame(getWidth(), getHeight(), nativeGetNextFrame(nativeHandle));
 	}
 
 	@Override

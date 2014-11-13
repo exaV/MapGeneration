@@ -44,36 +44,32 @@ import ch.fhnw.util.color.ColorUtil;
 public class RGB8Frame extends Frame {
 
 	public RGB8Frame(int dimI, int dimJ) {
-		this(dimI, dimJ, 1);
+		this(dimI, dimJ, 3);
 	}
 
-	public RGB8Frame(int dimI, int dimJ, int dimK) {
-		this(dimI, dimJ, dimK, 3);
-	}
-
-	protected RGB8Frame(int dimI, int dimJ, int dimK, int pixelSize) {
+	protected RGB8Frame(int dimI, int dimJ, int pixelSize) {
 		super(pixelSize);
-		init(dimI, dimJ, dimK);
+		init(dimI, dimJ);
 	}
 
-	public RGB8Frame(int dimI, int dimJ, int dimK, ByteBuffer targetBuffer) {
-		this(dimI, dimJ, dimK, targetBuffer, 3);
+	public RGB8Frame(int dimI, int dimJ, ByteBuffer targetBuffer) {
+		this(dimI, dimJ, targetBuffer, 3);
 	}
 
-	public RGB8Frame(int dimI, int dimJ, int dimK, byte[] targetBuffer) {
-		super(dimI, dimJ, dimK, targetBuffer, 3);
+	public RGB8Frame(int dimI, int dimJ, byte[] targetBuffer) {
+		super(dimI, dimJ, targetBuffer, 3);
 	}
 
-	protected RGB8Frame(int dimI, int dimJ, int dimK, ByteBuffer targetBuffer, int pixelSize) {
-		super(dimI, dimJ, dimK, targetBuffer, pixelSize);
+	protected RGB8Frame(int dimI, int dimJ, ByteBuffer targetBuffer, int pixelSize) {
+		super(dimI, dimJ, targetBuffer, pixelSize);
 	}
 
-	protected RGB8Frame(int dimI, int dimJ, int dimK, byte[] targetBuffer, int pixelSize) {
-		super(dimI, dimJ, dimK, targetBuffer, pixelSize);
+	protected RGB8Frame(int dimI, int dimJ, byte[] targetBuffer, int pixelSize) {
+		super(dimI, dimJ, targetBuffer, pixelSize);
 	}
 
 	public RGB8Frame(Frame frame) {
-		this(frame.dimI, frame.dimJ, frame.dimK, 3);
+		this(frame.dimI, frame.dimJ, 3);
 		if (pixelSize == frame.pixelSize)
 			BufferUtil.arraycopy(frame.pixels, 0, pixels, 0, pixels.capacity());
 		else {
@@ -81,18 +77,16 @@ public class RGB8Frame extends Frame {
 				final ByteBuffer src = frame.pixels;
 				final ByteBuffer dst = pixels;
 				int sps = frame.pixelSize;
-				for (int k = 0; k < dimK; k++) {
-					int spos = k * dimJ * dimI * sps;
-					spos++; // assume little endian
-					dst.position(k * dimJ * dimI * pixelSize);
-					for (int j = 0; j < dimJ; j++) {
-						for (int i = 0; i < dimI; i++) {
-							byte val = src.get(spos);
-							dst.put(val);
-							dst.put(val);
-							dst.put(val);
-							spos += sps;
-						}
+				int spos = 0;
+				spos++; // assume little endian
+				dst.position(0);
+				for (int j = 0; j < dimJ; j++) {
+					for (int i = 0; i < dimI; i++) {
+						byte val = src.get(spos);
+						dst.put(val);
+						dst.put(val);
+						dst.put(val);
+						spos += sps;
 					}
 				}
 			} else if (frame instanceof FloatFrame) {
@@ -101,33 +95,29 @@ public class RGB8Frame extends Frame {
 				final float rng = ((FloatFrame) frame).getMinMax()[1] - min;
 
 				final ByteBuffer dst = pixels;
-				for (int k = 0; k < dimK; k++) {
-					int spos = k * dimJ * dimI;
-					dst.position(k * dimJ * dimI * pixelSize);
-					for (int j = 0; j < dimJ; j++) {
-						for (int i = 0; i < dimI; i++) {
-							byte val = (byte) ((255f * (src.get(spos) - min)) / rng);
-							dst.put(val);
-							dst.put(val);
-							dst.put(val);
-							spos++;
-						}
+				int spos = 0;
+				dst.position(0);
+				for (int j = 0; j < dimJ; j++) {
+					for (int i = 0; i < dimI; i++) {
+						byte val = (byte) ((255f * (src.get(spos) - min)) / rng);
+						dst.put(val);
+						dst.put(val);
+						dst.put(val);
+						spos++;
 					}
 				}
 			} else {
 				final ByteBuffer src = frame.pixels;
 				final ByteBuffer dst = pixels;
 				int sps = frame.pixelSize;
-				for (int k = 0; k < dimK; k++) {
-					int spos = k * dimJ * dimI * sps;
-					dst.position(k * dimJ * dimI * pixelSize);
-					for (int j = 0; j < dimJ; j++) {
-						for (int i = 0; i < dimI; i++) {
-							dst.put(src.get(spos));
-							dst.put(src.get(spos + 1));
-							dst.put(src.get(spos + 2));
-							spos += sps;
-						}
+				int spos = 0;
+				dst.position(0);
+				for (int j = 0; j < dimJ; j++) {
+					for (int i = 0; i < dimI; i++) {
+						dst.put(src.get(spos));
+						dst.put(src.get(spos + 1));
+						dst.put(src.get(spos + 2));
+						spos += sps;
 					}
 				}
 			}
@@ -179,9 +169,9 @@ public class RGB8Frame extends Frame {
 	}
 
 	@Override
-	public RGB8Frame getSubframe(int i, int j, int k, int dimI, int dimJ, int dimK) {
-		RGB8Frame result = new RGB8Frame(dimI, dimJ, dimK);
-		getSubframeImpl(i, j, k, result);
+	public RGB8Frame getSubframe(int i, int j, int dimI, int dimJ) {
+		RGB8Frame result = new RGB8Frame(dimI, dimJ);
+		getSubframeImpl(i, j, result);
 		return result;
 	}
 
@@ -205,10 +195,10 @@ public class RGB8Frame extends Frame {
 	}
 
 	@Override
-	public float getFloatComponent(int i, int j, int k, int component) {
+	public float getFloatComponent(int i, int j, int component) {
 		if (component == 3)
 			return 1.0f;
-		return (pixels.get(((k * dimI * dimJ) + (j * dimI) + i) * pixelSize + component) & 0xFF) / 255f;
+		return (pixels.get((j * dimI + i) * pixelSize + component) & 0xFF) / 255f;
 	}
 
 	@Override
@@ -219,7 +209,7 @@ public class RGB8Frame extends Frame {
 
 	@Override
 	public Frame alloc() {
-		return new RGB8Frame(dimI, dimJ, dimK);
+		return new RGB8Frame(dimI, dimJ);
 	}
 
 	protected final static byte bits2byte(int val, final int shift, final int size, int m) {
@@ -415,8 +405,8 @@ public class RGB8Frame extends Frame {
 	}
 
 	@Override
-	public int getARGB(int i, int j, int k) {
-		pixels.position(((k * dimI * dimJ) + (j * dimI) + i) * pixelSize);
+	public int getARGB(int i, int j) {
+		pixels.position((j * dimI + i) * pixelSize);
 		int result = pixels.get() & 0xFF;
 		result <<= 8;
 		result |= pixels.get() & 0xFF;
@@ -426,39 +416,39 @@ public class RGB8Frame extends Frame {
 	}
 
 	@Override
-	public void getRGB(int i, int j, int k, byte[] rgb) {
-		pixels.position(((k * dimI * dimJ) + (j * dimI) + i) * pixelSize);
+	public void getRGB(int i, int j, byte[] rgb) {
+		pixels.position((j * dimI + i) * pixelSize);
 		rgb[0] = pixels.get();
 		rgb[1] = pixels.get();
 		rgb[2] = pixels.get();
 	}
 
 	@Override
-	public final void getRGBUnsigned(int i, int j, int k, int[] rgb) {
-		pixels.position(((k * dimI * dimJ) + (j * dimI) + i) * pixelSize);
+	public final void getRGBUnsigned(int i, int j, int[] rgb) {
+		pixels.position((j * dimI + i) * pixelSize);
 		rgb[0] = pixels.get() & 0xFF;
 		rgb[1] = pixels.get() & 0xFF;
 		rgb[2] = pixels.get() & 0xFF;
 	}
 
-	public final void getRGBFloat(int i, int j, int k, float[] rgb) {
-		pixels.position(((k * dimI * dimJ) + (j * dimI) + i) * pixelSize);
+	public final void getRGBFloat(int i, int j, float[] rgb) {
+		pixels.position((j * dimI + i) * pixelSize);
 		rgb[0] = (pixels.get() & 0xFF) / 255.0f;
 		rgb[1] = (pixels.get() & 0xFF) / 255.0f;
 		rgb[2] = (pixels.get() & 0xFF) / 255.0f;
 	}
 
 	@Override
-	public void setRGB(int i, int j, int k, byte[] rgb) {
-		pixels.position(((k * dimI * dimJ) + (j * dimI) + i) * pixelSize);
+	public void setRGB(int i, int j, byte[] rgb) {
+		pixels.position((j * dimI + i) * pixelSize);
 		pixels.put(rgb[0]);
 		pixels.put(rgb[1]);
 		pixels.put(rgb[2]);
 	}
 
 	@Override
-	public void setARGB(int i, int j, int k, int argb) {
-		pixels.position(((k * dimI * dimJ) + (j * dimI) + i) * pixelSize);
+	public void setARGB(int i, int j, int argb) {
+		pixels.position((j * dimI + i) * pixelSize);
 		pixels.put((byte) (argb >> 16));
 		pixels.put((byte) (argb >> 8));
 		pixels.put((byte) argb);
@@ -470,7 +460,7 @@ public class RGB8Frame extends Frame {
 	protected byte[] rgb11 = new byte[3];
 
 	@Override
-	public final void getRGBBilinear(double u, double v, int k, byte[] rgb) {
+	public final void getRGBBilinear(double u, double v, byte[] rgb) {
 		// bilinear interpolation
 		final int dimI_ = dimI - 1;
 		final int dimJ_ = dimJ - 1;
@@ -508,10 +498,10 @@ public class RGB8Frame extends Frame {
 		final byte[] rgb10 = this.rgb10;
 		final byte[] rgb11 = this.rgb11;
 
-		getRGB(i0, j0, k, rgb00);
-		getRGB(i0, j1, k, rgb01);
-		getRGB(i1, j0, k, rgb10);
-		getRGB(i1, j1, k, rgb11);
+		getRGB(i0, j0, rgb00);
+		getRGB(i0, j1, rgb01);
+		getRGB(i1, j0, rgb10);
+		getRGB(i1, j1, rgb11);
 
 		for (int i = 0; i < 3; ++i) {
 
@@ -525,9 +515,9 @@ public class RGB8Frame extends Frame {
 	protected byte[] rgb20 = new byte[3];
 
 	@Override
-	public final float getBrightnessBilinear(double u, double v, int k) {
+	public final float getBrightnessBilinear(double u, double v) {
 		final byte[] rgb = rgb20;
-		getRGBBilinear(u, v, k, rgb);
+		getRGBBilinear(u, v, rgb);
 		float result = rgb[0] & 0xFF;
 		result += rgb[1] & 0xFF;
 		result += rgb[2] & 0xFF;
@@ -536,8 +526,8 @@ public class RGB8Frame extends Frame {
 	}
 
 	@Override
-	public final float getBrightness(int i, int j, int k) {
-		pixels.position(((k * dimI * dimJ) + (j * dimI) + i) * pixelSize);
+	public final float getBrightness(int i, int j) {
+		pixels.position((j * dimI + i) * pixelSize);
 		int result = pixels.get() & 0xFF;
 		result += pixels.get() & 0xFF;
 		result += pixels.get() & 0xFF;
@@ -545,8 +535,8 @@ public class RGB8Frame extends Frame {
 	}
 
 	@Override
-	public void getLUV(int i, int j, int k, float[] luv) {
-		pixels.position(((k * dimI * dimJ) + (j * dimI) + i) * pixelSize);
+	public void getLUV(int i, int j, float[] luv) {
+		pixels.position((j * dimI + i) * pixelSize);
 		int lidx = (pixels.get() >> 1) & 0x7F;
 		lidx <<= 7;
 		lidx |= (pixels.get() >> 1) & 0x7F;
@@ -558,9 +548,9 @@ public class RGB8Frame extends Frame {
 	}
 
 	@Override
-	public void setSubframe(int i, int j, int k, Frame src) {
+	public void setSubframe(int i, int j, Frame src) {
 		if (src.getClass() != getClass())
 			src = new RGB8Frame(src);
-		setSubframeImpl(i, j, k, src);
+		setSubframeImpl(i, j, src);
 	}
 }

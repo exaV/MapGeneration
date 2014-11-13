@@ -30,7 +30,7 @@ private:
 public:
     AVAssetWrapper(std::string url) : url(url), reader(nullptr), generator(nullptr) {
         rewind();
-        MSG("avfoundation asset: %s: duration=%f framerate=%f size=%dx%d\n", url.c_str(), duration, frameRate, (int)size.width, (int)size.height);
+        //MSG("avfoundation asset: %s: duration=%f framerate=%f size=%dx%d\n", url.c_str(), duration, frameRate, (int)size.width, (int)size.height);
     }
     
     ~AVAssetWrapper() {

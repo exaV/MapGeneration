@@ -43,7 +43,6 @@ public abstract class Frame {
 	public ByteBuffer pixels = EMPTY;
 	public int dimI;
 	public int dimJ;
-	public int dimK;
 	public int pixelSize;
 	public boolean isPOT;
 	private boolean transientBuffer;
@@ -53,14 +52,14 @@ public abstract class Frame {
 		this.pixelSize = pixelSize;
 	}
 
-	protected Frame(int dimI, int dimJ, int dimK, byte[] frameBuffer, int pixelSize) {
+	protected Frame(int dimI, int dimJ, byte[] frameBuffer, int pixelSize) {
 		this.pixels = BufferUtil.allocateDirect(frameBuffer.length);
 		this.pixels.put(frameBuffer);
 		this.pixelSize = pixelSize;
-		init(dimI, dimJ, dimK);
+		init(dimI, dimJ);
 	}
 
-	protected Frame(int dimI, int dimJ, int dimK, ByteBuffer frameBuffer, int pixelSize) {
+	protected Frame(int dimI, int dimJ, ByteBuffer frameBuffer, int pixelSize) {
 		if (frameBuffer.isDirect()) {
 			this.pixels = frameBuffer;
 		} else {
@@ -68,7 +67,7 @@ public abstract class Frame {
 			this.pixels.put(frameBuffer);
 		}
 		this.pixelSize = pixelSize;
-		init(dimI, dimJ, dimK);
+		init(dimI, dimJ);
 	}
 
 	@Override
@@ -82,7 +81,7 @@ public abstract class Frame {
 			Frame other = (Frame) obj;
 			pixels.rewind();
 			other.pixels.rewind();
-			return dimI == other.dimI && dimJ == other.dimJ && dimK == other.dimK && pixelSize == other.pixelSize && pixels.equals(other.pixels);
+			return dimI == other.dimI && dimJ == other.dimJ && pixelSize == other.pixelSize && pixels.equals(other.pixels);
 		}
 		return false;
 	}
@@ -93,34 +92,33 @@ public abstract class Frame {
 
 	@Override
 	public String toString() {
-		return dimI + "x" + dimJ + "x" + dimK;
+		return dimI + "x" + dimJ;
 	}
 
-	public void init(int dimI, int dimJ, int dimK) {
+	protected void init(int dimI, int dimJ) {
 		this.dimI = dimI;
 		this.dimJ = dimJ;
-		this.dimK = dimK;
-		int bufsize = dimI * dimJ * dimK * pixelSize;
+		int bufsize = dimI * dimJ * pixelSize;
 		if (this.pixels.capacity() < bufsize)
 			this.pixels = BufferUtil.allocateDirect(bufsize);
-		isPOT = isPOT(dimI) && isPOT(dimJ) && isPOT(dimK);
+		isPOT = isPOT(dimI) && isPOT(dimJ);
 	}
 
-	public static Frame newFrame(int dimI, int dimJ, int dimK, int pixelSize, ByteBuffer buffer) {
+	public static Frame newFrame(int dimI, int dimJ, int pixelSize, ByteBuffer buffer) {
 		switch (pixelSize) {
 		case 2:
-			return new Grey16Frame(dimI, dimJ, dimK, buffer);
+			return new Grey16Frame(dimI, dimJ, buffer);
 		case 3:
-			return new RGB8Frame(dimI, dimJ, dimK, buffer);
+			return new RGB8Frame(dimI, dimJ, buffer);
 		case 4:
-			return new RGBA8Frame(dimI, dimJ, dimK, buffer);
+			return new RGBA8Frame(dimI, dimJ, buffer);
 		default:
 			throw new IllegalArgumentException("Can't create frame wiht pixelSize=" + pixelSize);
 		}
 	}
 
-	public static Frame newFrame(int dimI, int dimJ, int dimK, int pixelSize, byte[] pixelsData) {
-		return newFrame(dimI, dimJ, dimK, pixelSize, ByteBuffer.wrap(pixelsData));
+	public static Frame newFrame(int dimI, int dimJ, int pixelSize, byte[] pixelsData) {
+		return newFrame(dimI, dimJ, pixelSize, ByteBuffer.wrap(pixelsData));
 	}
 
 	public static Frame newFrame(BufferedImage img) {
@@ -133,12 +131,12 @@ public abstract class Frame {
 		case BufferedImage.TYPE_BYTE_BINARY:
 		case BufferedImage.TYPE_CUSTOM:
 			if (img.getColorModel().getNumColorComponents() == 1)
-				result = new Grey16Frame(img.getWidth(), img.getHeight(), 1);
+				result = new Grey16Frame(img.getWidth(), img.getHeight());
 			else {
 				if (img.getColorModel().hasAlpha())
-					result = new RGBA8Frame(img.getWidth(), img.getHeight(), 1);
+					result = new RGBA8Frame(img.getWidth(), img.getHeight());
 				else
-					result = new RGB8Frame(img.getWidth(), img.getHeight(), 1);
+					result = new RGB8Frame(img.getWidth(), img.getHeight());
 			}
 			break;
 		case BufferedImage.TYPE_4BYTE_ABGR:
@@ -146,17 +144,17 @@ public abstract class Frame {
 		case BufferedImage.TYPE_4BYTE_ABGR_PRE:
 		case BufferedImage.TYPE_INT_ARGB_PRE:
 		case BufferedImage.TYPE_BYTE_INDEXED:
-			result = new RGBA8Frame(img.getWidth(), img.getHeight(), 1);
+			result = new RGBA8Frame(img.getWidth(), img.getHeight());
 			break;
 		case BufferedImage.TYPE_USHORT_555_RGB:
 		case BufferedImage.TYPE_USHORT_565_RGB:
 		case BufferedImage.TYPE_INT_RGB:
 		case BufferedImage.TYPE_3BYTE_BGR:
-			result = new RGB8Frame(img.getWidth(), img.getHeight(), 1);
+			result = new RGB8Frame(img.getWidth(), img.getHeight());
 			break;
 		case BufferedImage.TYPE_BYTE_GRAY:
 		case BufferedImage.TYPE_USHORT_GRAY:
-			result = new Grey16Frame(img.getWidth(), img.getHeight(), 1);
+			result = new Grey16Frame(img.getWidth(), img.getHeight());
 			break;
 		default:
 			throw new RuntimeException("Unsupported image type " + img.getType());
@@ -172,58 +170,43 @@ public abstract class Frame {
 
 	public abstract void setPixels(int i, int j, int width, int height, BufferedImage img, int flags);
 
-	public abstract Frame getSubframe(int i, int j, int k, int dimI, int dimJ, int dimK);
+	public abstract Frame getSubframe(int i, int j, int dimI, int dimJ);
 
-	public abstract void setSubframe(int i, int j, int k, Frame frame);
+	public abstract void setSubframe(int i, int j, Frame frame);
 
-	protected void getSubframeImpl(int i, int j, int k, Frame dst) {
+	protected void getSubframeImpl(int i, int j, Frame dst) {
 		if (i + dst.dimI > dimI)
 			throw new IllegalArgumentException("i(" + i + ")+dst.dimI(" + dst.dimI + ") > dimI(" + dimI + ")");
 		if (j + dst.dimJ > dimJ)
 			throw new IllegalArgumentException("j(" + j + ")+dst.dimJ(" + dst.dimJ + ") > dimJ(" + dimJ + ")");
-		if (k + dst.dimK > dimK)
-			throw new IllegalArgumentException("k(" + k + ")+dst.dimK(" + dst.dimK + ") > dimK(" + dimK + ")");
-		int sslsize = dimI * dimJ;
-		int dslsize = dst.dimI * dst.dimJ;
-		for (int kk = 0; kk < dst.dimK; kk++) {
-			int slnsize = dimI;
-			int dlnsize = dst.dimI;
-			for (int jj = 0; jj < dst.dimJ; jj++)
-				BufferUtil.arraycopy(pixels, ((k + kk) * sslsize + (j + jj) * slnsize + i) * pixelSize, dst.pixels, (kk * dslsize + jj * dlnsize) * pixelSize,
-						dlnsize * pixelSize);
+		int slnsize = dimI;
+		int dlnsize = dst.dimI;
+		for (int jj = 0; jj < dst.dimJ; jj++) {
+			BufferUtil.arraycopy(pixels, ((j + jj) * slnsize + i) * pixelSize, dst.pixels, jj * dlnsize * pixelSize, dlnsize * pixelSize);
 		}
 	}
 
-	protected void setSubframeImpl(int i, int j, int k, Frame src) {
+	protected void setSubframeImpl(int i, int j, Frame src) {
 		if (i + src.dimI > dimI)
 			throw new IllegalArgumentException("i(" + i + ")+src.dimI(" + src.dimI + ") > dimI(" + dimI + ")");
 		if (j + src.dimJ > dimJ)
 			throw new IllegalArgumentException("j(" + j + ")+src.dimJ(" + src.dimJ + ") > dimJ(" + dimJ + ")");
-		if (k + src.dimK > dimK)
-			throw new IllegalArgumentException("k(" + k + ")+src.dimK(" + src.dimK + ") > dimK(" + dimK + ")");
-		int dslsize = dimI * dimJ;
-		int sslsize = src.dimI * src.dimJ;
-		for (int kk = 0; kk < src.dimK; kk++) {
-			int slnsize = src.dimI;
-			int dlnsize = dimI;
-			for (int jj = 0; jj < src.dimJ; jj++)
-				BufferUtil.arraycopy(src.pixels, (kk * sslsize + jj * slnsize) * pixelSize, pixels, ((k + kk) * dslsize + (j + jj) * dlnsize + i) * pixelSize,
-						slnsize * pixelSize);
+		int slnsize = src.dimI;
+		int dlnsize = dimI;
+		for (int jj = 0; jj < src.dimJ; jj++) {
+			BufferUtil.arraycopy(src.pixels, jj * slnsize * pixelSize, pixels, ((j + jj) * dlnsize + i) * pixelSize, slnsize * pixelSize);
 		}
-	}
+	}	
 
 	public static Frame copyTo(Frame src, Frame dst) {
 		if (src.getClass() == dst.getClass()) {
-			for (int k = Math.min(src.dimK, dst.dimK); --k >= 0;)
-				for (int j = Math.min(src.dimJ, dst.dimJ); --j >= 0;)
-					BufferUtil.arraycopy(src.pixels, (k * src.dimI * src.dimJ + j * src.dimI) * src.pixelSize, dst.pixels, (k * dst.dimI * dst.dimJ + j
-							* dst.dimI)
-							* dst.pixelSize, Math.min(src.dimI, dst.dimI) * src.pixelSize);
+			for (int j = Math.min(src.dimJ, dst.dimJ); --j >= 0;)
+				BufferUtil.arraycopy(src.pixels, (j * src.dimI) * src.pixelSize, dst.pixels, (j * dst.dimI) * dst.pixelSize, Math.min(src.dimI, dst.dimI)
+						* src.pixelSize);
 		} else {
-			for (int k = Math.min(src.dimK, dst.dimK); --k >= 0;)
-				for (int j = Math.min(src.dimJ, dst.dimJ); --j >= 0;)
-					for (int i = Math.min(src.dimI, dst.dimI); --i >= 0;)
-						dst.setARGB(i, j, k, src.getARGB(i, j, k));
+			for (int j = Math.min(src.dimJ, dst.dimJ); --j >= 0;)
+				for (int i = Math.min(src.dimI, dst.dimI); --i >= 0;)
+					dst.setARGB(i, j, src.getARGB(i, j));
 		}
 		dst.modified();
 		return dst;
@@ -255,33 +238,33 @@ public abstract class Frame {
 
 	public abstract Frame alloc();
 
-	public void getRGBUnsigned(int i, int j, int k, int[] rgb) {
-		int irgb = getARGB(i, j, k);
+	public void getRGBUnsigned(int i, int j, int[] rgb) {
+		int irgb = getARGB(i, j);
 		rgb[0] = (irgb >> 16) & 0xFF;
 		rgb[1] = (irgb >> 8) & 0xFF;
 		rgb[2] = irgb & 0xFF;
 	}
 
-	public void getRGB(int i, int j, int k, byte[] rgb) {
-		int irgb = getARGB(i, j, k);
+	public void getRGB(int i, int j, byte[] rgb) {
+		int irgb = getARGB(i, j);
 		rgb[0] = (byte) (irgb >> 16);
 		rgb[1] = (byte) (irgb >> 8);
 		rgb[2] = (byte) irgb;
 	}
 
-	public void getLUV(int i, int j, int k, float[] luv) {
-		ColorUtil.getLUVfromRGB(getARGB(i, j, k), luv);
+	public void getLUV(int i, int j, float[] luv) {
+		ColorUtil.getLUVfromRGB(getARGB(i, j), luv);
 	}
 
-	public void setRGB(int i, int j, int k, byte[] rgb) {
+	public void setRGB(int i, int j, byte[] rgb) {
 		int argb = (rgb[0] & 0xFF) << 16;
 		argb |= (rgb[1] & 0xFF) << 8;
 		argb |= (rgb[2] & 0xFF);
 		argb |= 0xFF000000;
-		setARGB(i, j, k, argb);
+		setARGB(i, j, argb);
 	}
 
-	public final float getComponentBilinear(double u, double v, int k, int component) {
+	public final float getComponentBilinear(double u, double v, int component) {
 		// bilinear interpolation
 		final int dimI_ = dimI - 1;
 		final int dimJ_ = dimJ - 1;
@@ -314,10 +297,10 @@ public abstract class Frame {
 		final double w = (u - i0 / (double) dimI_) * dimI_;
 		final double h = (v - j0 / (double) dimJ_) * dimJ_;
 
-		float c00 = getFloatComponent(i0, j0, k, component);
-		float c01 = getFloatComponent(i0, j1, k, component);
-		float c10 = getFloatComponent(i1, j0, k, component);
-		float c11 = getFloatComponent(i1, j1, k, component);
+		float c00 = getFloatComponent(i0, j0, component);
+		float c01 = getFloatComponent(i0, j1, component);
+		float c10 = getFloatComponent(i1, j0, component);
+		float c11 = getFloatComponent(i1, j1, component);
 
 		float c = (float) (h * ((1 - w) * c01 + w * c11) + (1 - h) * ((1 - w) * c00 + w * c10));
 
@@ -379,44 +362,30 @@ public abstract class Frame {
 		BufferUtil.fill(pixels, 0, pixels.capacity(), B0);
 	}
 
-	public final Frame getSlice(int k) {
-		pixels.position(dimI * dimJ * k * pixelSize);
-		pixels.limit(pixels.position() + dimI * dimJ * pixelSize);
-		try {
-			return getClass().getConstructor(int.class, int.class, int.class, ByteBuffer.class).newInstance(Integer.valueOf(dimI), Integer.valueOf(dimJ),
-					Integer.valueOf(1), pixels.slice());
-		} catch (Throwable t) {
-			return null;
-		}
-	}
+	public abstract float getBrightness(int i, int j);
 
-	public abstract float getBrightness(int i, int j, int k);
+	public abstract float getBrightnessBilinear(double u, double v);
 
-	public abstract float getBrightnessBilinear(double u, double v, int k);
+	public abstract void getRGBBilinear(double u, double v, byte[] rgb);
 
-	public abstract void getRGBBilinear(double u, double v, int k, byte[] rgb);
+	public abstract float getFloatComponent(int i, int j, int component);
 
-	public abstract float getFloatComponent(int i, int j, int k, int component);
+	public abstract void setARGB(int i, int j, int argb);
 
-	public abstract void setARGB(int i, int j, int k, int argb);
-
-	public abstract int getARGB(int i, int j, int k);
+	public abstract int getARGB(int i, int j);
 
 	public Frame flipJ() {
 		Frame result = alloc();
 		int linelen = dimI * pixelSize;
-		for (int k = 0; k < dimK; k++) {
-			int base = k * dimJ * dimI * pixelSize;
-			for (int j = dimJ / 2; --j >= 0;) {
-				int top = base + j * linelen;
-				int bottom = base + (dimJ - 1 - j) * linelen;
-				BufferUtil.arraycopy(pixels, top, result.pixels, bottom, linelen);
-				BufferUtil.arraycopy(pixels, bottom, result.pixels, top, linelen);
-			}
-			if ((dimJ & 1) == 1) {
-				int line = base + (dimJ / 2) * linelen;
-				BufferUtil.arraycopy(pixels, line, result.pixels, line, linelen);
-			}
+		for (int j = dimJ / 2; --j >= 0;) {
+			int top = j * linelen;
+			int bottom = (dimJ - 1 - j) * linelen;
+			BufferUtil.arraycopy(pixels, top, result.pixels, bottom, linelen);
+			BufferUtil.arraycopy(pixels, bottom, result.pixels, top, linelen);
+		}
+		if ((dimJ & 1) == 1) {
+			int line = (dimJ / 2) * linelen;
+			BufferUtil.arraycopy(pixels, line, result.pixels, line, linelen);
 		}
 		return result;
 	}

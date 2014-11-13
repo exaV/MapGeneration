@@ -56,23 +56,19 @@ public final class FloatFrame extends Frame {
 	}
 
 	public FloatFrame(int dimI, int dimJ) {
-		this(dimI, dimJ, 1);
-	}
-
-	public FloatFrame(int dimI, int dimJ, int dimK) {
 		super(4);
 		buffer = pixels.asFloatBuffer();
-		init(dimI, dimJ, dimK);
+		init(dimI, dimJ);
 	}
 
-	public FloatFrame(int dimI, int dimJ, int dimK, ByteBuffer frameBuffer) {
-		super(dimI, dimJ, dimK, frameBuffer, 4);
+	public FloatFrame(int dimI, int dimJ, ByteBuffer frameBuffer) {
+		super(dimI, dimJ, frameBuffer, 4);
 		pixels.rewind();
 		buffer = pixels.asFloatBuffer();
 	}
 
 	public FloatFrame(Frame frame, float[] minMax) {
-		this(frame.dimI, frame.dimJ, frame.dimK);
+		this(frame.dimI, frame.dimJ);
 		if (pixelSize == frame.pixelSize && frame instanceof FloatFrame)
 			BufferUtil.arraycopy(frame.pixels, 0, pixels, 0, pixels.capacity());
 		else {
@@ -80,29 +76,25 @@ public final class FloatFrame extends Frame {
 			final ByteBuffer src = frame.pixels;
 			int sps = frame.pixelSize;
 			if (frame instanceof Grey16Frame) {
-				for (int k = 0; k < dimK; k++) {
-					int spos = k * dimJ * dimI * frame.pixelSize;
-					int dpos = k * dimJ * dimI;
-					for (int j = 0; j < dimJ; j++) {
-						for (int i = 0; i < dimI; i++) {
-							buffer.put(dpos++, encoder.decode(src.get(spos + 1), src.get(spos)));
-							spos += sps;
-						}
+				int spos = 0;
+				int dpos = 0;
+				for (int j = 0; j < dimJ; j++) {
+					for (int i = 0; i < dimI; i++) {
+						buffer.put(dpos++, encoder.decode(src.get(spos + 1), src.get(spos)));
+						spos += sps;
 					}
 				}
 			} else {
-				for (int k = 0; k < dimK; k++) {
-					int spos = k * dimJ * dimI * frame.pixelSize;
-					int dpos = k * dimJ * dimI;
-					for (int j = 0; j < dimJ; j++) {
-						for (int i = 0; i < dimI; i++) {
-							int val = src.get(spos) & 0xFF;
-							val += src.get(spos) & 0xFF;
-							val += src.get(spos) & 0xFF;
-							val /= 3;
-							buffer.put(dpos++, encoder.decode(val, val));
-							spos += sps;
-						}
+				int spos = 0;
+				int dpos = 0;
+				for (int j = 0; j < dimJ; j++) {
+					for (int i = 0; i < dimI; i++) {
+						int val = src.get(spos) & 0xFF;
+						val += src.get(spos) & 0xFF;
+						val += src.get(spos) & 0xFF;
+						val /= 3;
+						buffer.put(dpos++, encoder.decode(val, val));
+						spos += sps;
 					}
 				}
 			}
@@ -111,8 +103,8 @@ public final class FloatFrame extends Frame {
 	}
 
 	@Override
-	public void init(int dimI, int dimJ, int dimK) {
-		super.init(dimI, dimJ, dimK);
+	protected void init(int dimI, int dimJ) {
+		super.init(dimI, dimJ);
 		buffer = pixels.asFloatBuffer();
 	}
 
@@ -168,17 +160,17 @@ public final class FloatFrame extends Frame {
 
 	@Override
 	public Frame alloc() {
-		return new FloatFrame(dimI, dimJ, dimK);
+		return new FloatFrame(dimI, dimJ);
 	}
 
 	@Override
-	public float getBrightnessBilinear(double u, double v, int k) {
-		return getComponentBilinear(u, v, k, 0);
+	public float getBrightnessBilinear(double u, double v) {
+		return getComponentBilinear(u, v, 0);
 	}
 
 	@Override
-	public float getFloatComponent(int i, int j, int k, int component) {
-		float out = buffer.get((k * dimI * dimJ) + (j * dimI) + i);
+	public float getFloatComponent(int i, int j, int component) {
+		float out = buffer.get(j * dimI + i);
 
 		if (component == 3)
 			return Float.isNaN(out) ? 0 : 1;
@@ -231,41 +223,41 @@ public final class FloatFrame extends Frame {
 	}
 
 	@Override
-	public float getBrightness(int i, int j, int k) {
-		return buffer.get((k * dimI * dimJ) + (j * dimI) + i);
+	public float getBrightness(int i, int j) {
+		return buffer.get(j * dimI + i);
 	}
 
 	@Override
-	public void setARGB(int i, int j, int k, int argb) {
-		buffer.put((k * dimI * dimJ) + (j * dimI) + i, ((((argb >> 16) & 0xFF) + ((argb >> 8) & 0xFF) + (argb & 0xFF)) / 765f));
+	public void setARGB(int i, int j, int argb) {
+		buffer.put((j * dimI) + i, ((((argb >> 16) & 0xFF) + ((argb >> 8) & 0xFF) + (argb & 0xFF)) / 765f));
 	}
 
-	public void setBrightness(int i, int j, int k, float value) {
-		buffer.put((k * dimI * dimJ) + (j * dimI) + i, value);
+	public void setBrightness(int i, int j, float value) {
+		buffer.put(j * dimI + i, value);
 	}
 
 	@Override
-	public int getARGB(int i, int j, int k) {
-		int rgb = (int) (buffer.get((k * dimI * dimJ) + (j * dimI) + i) * 255f) & 0xFF;
+	public int getARGB(int i, int j) {
+		int rgb = (int) (buffer.get(j * dimI + i) * 255f) & 0xFF;
 		return rgb << 16 | rgb << 8 | rgb | 0xFF000000;
 	}
 
 	@Override
-	public void getRGBBilinear(double u, double v, int k, byte[] rgb) {
-		rgb[0] = rgb[1] = rgb[2] = (byte) (getComponentBilinear(u, v, k, 0) * 255f);
+	public void getRGBBilinear(double u, double v, byte[] rgb) {
+		rgb[0] = rgb[1] = rgb[2] = (byte) (getComponentBilinear(u, v, 0) * 255f);
 	}
 
 	@Override
-	public FloatFrame getSubframe(int i, int j, int k, int dimI, int dimJ, int dimK) {
-		FloatFrame result = new FloatFrame(dimI, dimJ, dimK);
-		getSubframeImpl(i, j, k, result);
+	public FloatFrame getSubframe(int i, int j, int dimI, int dimJ) {
+		FloatFrame result = new FloatFrame(dimI, dimJ);
+		getSubframeImpl(i, j, result);
 		return result;
 	}
 
 	@Override
-	public void setSubframe(int i, int j, int k, Frame src) {
+	public void setSubframe(int i, int j, Frame src) {
 		if (src.getClass() != getClass())
 			src = new FloatFrame(src);
-		setSubframeImpl(i, j, k, src);
+		setSubframeImpl(i, j, src);
 	}
 }
