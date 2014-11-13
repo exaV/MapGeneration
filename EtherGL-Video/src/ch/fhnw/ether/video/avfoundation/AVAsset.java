@@ -129,18 +129,21 @@ public final class AVAsset implements ISequentialVideoTrack, IRandomAccessVideoT
 	}
 
 	@Override
-	public int loadFrame(long frame, int textureId) {
-		return nativeLoadFrame(nativeHandle, frameToTime(frame), textureId);
+	public void loadFrame(long frame, int textureId) {
+		throw new UnsupportedOperationException("unimplemented");
+		// nativeLoadFrame(nativeHandle, frameToTime(frame), textureId);
 	}
 
 	@Override
-	public int loadFrame(double time, int textureId) {
-		return nativeLoadFrame(nativeHandle, time, textureId);
+	public void loadFrame(double time, int textureId) {
+		throw new UnsupportedOperationException("unimplemented");
+		// nativeLoadFrame(nativeHandle, time, textureId);
 	}
 
 	@Override
 	public int loadFrames(int numFrames, int textureId) {
-		return nativeLoadFrames(nativeHandle, numFrames, textureId);
+		throw new UnsupportedOperationException("unimplemented");
+		// nativeLoadFrames(nativeHandle, numFrames, textureId);
 	}
 
 	@Override

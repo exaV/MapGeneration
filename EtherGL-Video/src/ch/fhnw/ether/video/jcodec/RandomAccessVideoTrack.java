@@ -66,12 +66,12 @@ public final class RandomAccessVideoTrack extends AbstractVideoTrack implements 
 	}
 
 	@Override
-	public int loadFrame(long frame, int textureId) {
-		return -1;
+	public void loadFrame(long frame, int textureId) {
+		throw new UnsupportedOperationException("unimplemented");
 	}
 
 	@Override
-	public int loadFrame(double time, int textureId) {
-		return -1;
+	public void loadFrame(double time, int textureId) {
+		throw new UnsupportedOperationException("unimplemented");
 	}
 }
