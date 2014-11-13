@@ -125,8 +125,11 @@ public:
 
         NSData* data = (NSData*)CGDataProviderCopyData(CGImageGetDataProvider(image));
 
-        int width = (int)CGImageGetWidth(image);
-        int height = (int)CGImageGetHeight(image);
+        // same here (as below): we have to make sure, we return an image that has the size of getWidth/getHeight
+        //int width = (int)CGImageGetWidth(image);
+        //int height = (int)CGImageGetHeight(image);
+        int width = getWidth();
+        int height = getHeight();
         int bytesPerRow = (int)CGImageGetBytesPerRow(image);
         int skip = bytesPerRow - width * 4;
         int length = width * height * 4;
@@ -176,7 +179,7 @@ public:
         CVPixelBufferLockBaseAddress(imageBuffer, 0);
         
         // XXX: note if movie width cannot be divided by 4 it seems the movie is scaled up to the next width that can
-        // i.e. if you open a move with 1278 pixels with, here, the imageBuffer will have a with of 1280. this of course
+        // i.e. if you open a moive with 1278 pixels width, here, the imageBuffer will have a width of 1280. this of course
         // screws up our interface further up a bit, which relies on movie.getWidth ... thus we for now just ignore the scaling.
         //int width = (int)CVPixelBufferGetWidth(imageBuffer);
         //int height = (int)CVPixelBufferGetHeight(imageBuffer);
