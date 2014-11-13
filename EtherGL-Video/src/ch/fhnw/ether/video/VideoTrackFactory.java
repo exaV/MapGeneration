@@ -68,8 +68,9 @@ public final class VideoTrackFactory {
 		}
 	}
 
+	
+	// TODO: move tests elsewhere
 	public static void main(String[] args) {
-		// file:///Users/radar/Desktop/movies/hot_chip-flutes_(sacha_remix).mp4
 		SwingUtilities.invokeLater(() -> {
 			try {
 				test(new URL(args[0]), 32.0);

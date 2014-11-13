@@ -87,7 +87,7 @@ final class Renderables {
 	}
 
 	void render(GL3 gl, IMesh.Pass pass, boolean interactive) {
-		// FIXME: i'm not sure if this is good (long lock). better options? ConcurrentHashMap, etc?
+		// FIXME: i'm not sure if this is good (long lock). probably better to use queues
 		synchronized (renderables) {
 			for (Renderable renderable : renderables.values()) {
 				if (renderable.containsFlag(IMesh.Flags.INTERACTIVE_VIEWS_ONLY) && !interactive)
