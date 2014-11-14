@@ -33,7 +33,6 @@ import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 
 import ch.fhnw.util.BufferUtil;
-import ch.fhnw.util.color.ColorUtil;
 
 public abstract class Frame {
 	protected static final byte B0 = 0;
@@ -250,10 +249,6 @@ public abstract class Frame {
 		rgb[0] = (byte) (irgb >> 16);
 		rgb[1] = (byte) (irgb >> 8);
 		rgb[2] = (byte) irgb;
-	}
-
-	public void getLUV(int i, int j, float[] luv) {
-		ColorUtil.getLUVfromRGB(getARGB(i, j), luv);
 	}
 
 	public void setRGB(int i, int j, byte[] rgb) {

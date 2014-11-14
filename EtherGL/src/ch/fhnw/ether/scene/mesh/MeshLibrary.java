@@ -106,9 +106,12 @@ public class MeshLibrary {
 	private final static DefaultGeometry CUBE_GEOMETRY = new DefaultGeometry(Primitive.TRIANGLES, ATTRIBUTES, DATA);
 
 	public static IMesh createCube() {
-		return new DefaultMesh(new ColorMaterial(RGBA.WHITE), CUBE_GEOMETRY.copy());
+		return createCube(new ColorMaterial(RGBA.WHITE));
 	}
 	
+	public static IMesh createCube(IMaterial material) {
+		return new DefaultMesh(material, CUBE_GEOMETRY.copy());
+	}
 
 	// TODO: this needs some revision / organization
 	

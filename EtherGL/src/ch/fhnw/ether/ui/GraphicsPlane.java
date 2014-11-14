@@ -34,12 +34,9 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferInt;
-import java.nio.IntBuffer;
 import java.util.EnumSet;
 
-import javax.media.opengl.GL;
-
+import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
@@ -161,7 +158,7 @@ class GraphicsPlane {
 	
 	public void update() {
 		if (updater.needsUpdate())
-			texture.setData(w, h, IntBuffer.wrap(((DataBufferInt) image.getRaster().getDataBuffer()).getData()), GL.GL_BGRA);			
+			texture.setData(Frame.newFrame(image));			
 	}
 
 	private void requestUpdate() {

@@ -40,13 +40,6 @@ import ch.fhnw.ether.image.Frame;
  *
  */
 public interface IRandomAccessVideoTrack extends IVideoTrack {
-
 	Frame getFrame(long frame);
-
 	Frame getFrame(double time);
-
-	void loadFrame(long frame, int textureId);
-
-	void loadFrame(double time, int textureId);
-
 }

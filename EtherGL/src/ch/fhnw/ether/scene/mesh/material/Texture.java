@@ -29,26 +29,17 @@
 
 package ch.fhnw.ether.scene.mesh.material;
 
-import java.awt.AlphaComposite;
-import java.awt.Graphics2D;
-import java.awt.color.ColorSpace;
-import java.awt.geom.AffineTransform;
-import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.ComponentColorModel;
-import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferByte;
-import java.awt.image.Raster;
-import java.awt.image.WritableRaster;
 import java.net.URL;
 import java.nio.Buffer;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.util.Hashtable;
 
-import javax.imageio.ImageIO;
-import javax.media.opengl.GL;
+import javax.media.opengl.GL3;
 
+import ch.fhnw.ether.image.FloatFrame;
+import ch.fhnw.ether.image.Frame;
+import ch.fhnw.ether.image.Grey16Frame;
+import ch.fhnw.ether.image.RGB8Frame;
+import ch.fhnw.ether.image.RGBA8Frame;
+import ch.fhnw.ether.video.VideoTrackFactory;
 import ch.fhnw.util.UpdateRequest;
 
 /**
@@ -57,18 +48,10 @@ import ch.fhnw.util.UpdateRequest;
  * @author radar
  */
 public class Texture {
-	private static final ColorModel GL_SRGBA_MODEL = new ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_sRGB), new int[] { 8, 8, 8, 8 }, true, false,
-			ComponentColorModel.TRANSLUCENT, DataBuffer.TYPE_BYTE);
-
-	private static final ColorModel GL_SRGB_MODEL = new ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_sRGB), new int[] { 8, 8, 8, 0 }, false, false,
-			ComponentColorModel.OPAQUE, DataBuffer.TYPE_BYTE);
-
 	private final UpdateRequest updater = new UpdateRequest();
 
-	private int width;
-	private int height;
-	private Buffer buffer;
-	private int format;
+	private Frame frame;
+	private int   format;
 
 	public Texture() {
 	}
@@ -79,19 +62,22 @@ public class Texture {
 
 	public void setData(URL url) {
 		try {
-			BufferedImage image = ImageIO.read(url);
-			Buffer buffer = convertImage(image, true);
-			setData(image.getWidth(), image.getHeight(), buffer, image.getColorModel().hasAlpha() ? GL.GL_RGBA : GL.GL_RGB);
-		} catch (Exception e) {
+			frame = VideoTrackFactory.createSequentialTrack(url).getNextFrame();
+		} catch (Throwable e) {
 			throw new IllegalArgumentException("can't load image " + url);
 		}
 	}
 
-	public void setData(int width, int height, Buffer buffer, int format) {
-		this.width = width;
-		this.height = height;
-		this.buffer = buffer;
-		this.format = format;
+	public void setData(Frame frame) {
+		this.frame  = frame;
+		if(frame instanceof RGB8Frame)
+			this.format = GL3.GL_RGB;
+		else if(frame instanceof RGBA8Frame)
+			this.format = GL3.GL_RGBA;
+		else if(frame instanceof FloatFrame)
+			this.format = GL3.GL_RED;
+		else if(frame instanceof Grey16Frame)
+			this.format = GL3.GL_RED;
 		updater.requestUpdate();
 	}
 
@@ -100,15 +86,15 @@ public class Texture {
 	}
 
 	public int getWidth() {
-		return width;
+		return frame.dimI;
 	}
 
 	public int getHeight() {
-		return height;
+		return frame.dimJ;
 	}
 
 	public Buffer getBuffer() {
-		return buffer;
+		return frame.pixels;
 	}
 
 	public int getFormat() {
@@ -117,40 +103,6 @@ public class Texture {
 
 	@Override
 	public String toString() {
-		return "texture[w=" + width + " h=" + height + "]";
-	}
-
-	// FIXME: this is incredibly slow...
-	private Buffer convertImage(BufferedImage image, boolean flipVertically) {
-		int w = image.getWidth();
-		int h = image.getHeight();
-		boolean alpha = image.getColorModel().hasAlpha();
-		boolean premult = image.getColorModel().isAlphaPremultiplied();
-
-		BufferedImage tex;
-		if (alpha) {
-			WritableRaster raster = Raster.createInterleavedRaster(DataBuffer.TYPE_BYTE, w, h, 4, null);
-			tex = new BufferedImage(GL_SRGBA_MODEL, raster, premult, new Hashtable<>());
-		} else {
-			WritableRaster raster = Raster.createInterleavedRaster(DataBuffer.TYPE_BYTE, w, h, 3, null);
-			tex = new BufferedImage(GL_SRGB_MODEL, raster, premult, new Hashtable<>());
-		}
-
-		Graphics2D g = tex.createGraphics();
-		g.setComposite(AlphaComposite.Src);
-		if (flipVertically) {
-			AffineTransform tx = AffineTransform.getScaleInstance(1, -1);
-			tx.translate(0, -image.getHeight(null));
-			g.setTransform(tx);
-		}
-		g.drawImage(image, 0, 0, null);
-
-		byte[] data = ((DataBufferByte) tex.getRaster().getDataBuffer()).getData();
-
-		ByteBuffer buffer = ByteBuffer.allocateDirect(data.length);
-		buffer.order(ByteOrder.nativeOrder());
-		buffer.put(data, 0, data.length);
-
-		return buffer;
+		return "texture[w=" + frame.dimI + " h=" + frame.dimJ + "]";
 	}
 }

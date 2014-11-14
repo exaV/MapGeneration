@@ -43,6 +43,4 @@ public interface ISequentialVideoTrack extends IVideoTrack {
 	void rewind();
 
 	Frame getNextFrame();
-
-	int loadFrames(int numFrames, int textureId);
 }

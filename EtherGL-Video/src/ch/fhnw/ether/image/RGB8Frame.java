@@ -39,7 +39,6 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
 import ch.fhnw.util.BufferUtil;
-import ch.fhnw.util.color.ColorUtil;
 
 public class RGB8Frame extends Frame {
 
@@ -532,19 +531,6 @@ public class RGB8Frame extends Frame {
 		result += pixels.get() & 0xFF;
 		result += pixels.get() & 0xFF;
 		return result / 765f;
-	}
-
-	@Override
-	public void getLUV(int i, int j, float[] luv) {
-		pixels.position((j * dimI + i) * pixelSize);
-		int lidx = (pixels.get() >> 1) & 0x7F;
-		lidx <<= 7;
-		lidx |= (pixels.get() >> 1) & 0x7F;
-		lidx <<= 7;
-		lidx |= (pixels.get() >> 1) & 0x7F;
-		luv[0] = ColorUtil.getL(lidx);
-		luv[1] = ColorUtil.getU(lidx);
-		luv[2] = ColorUtil.getV(lidx);
 	}
 
 	@Override

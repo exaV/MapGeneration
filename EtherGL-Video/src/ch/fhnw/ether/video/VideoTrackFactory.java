@@ -39,6 +39,7 @@ import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
 
 import ch.fhnw.ether.image.Frame;
+import ch.fhnw.ether.image.ImageTrack;
 import ch.fhnw.ether.video.avfoundation.AVAsset;
 import ch.fhnw.ether.video.jcodec.RandomAccessVideoTrack;
 import ch.fhnw.ether.video.jcodec.SequentialVideoTrack;
@@ -46,29 +47,31 @@ import ch.fhnw.ether.video.jcodec.SequentialVideoTrack;
 public final class VideoTrackFactory {
 	private static final boolean USE_AV_FOUNDATION = true;
 
-	public static IRandomAccessVideoTrack createRandomAccessTrack(URL url) {
-		if (USE_AV_FOUNDATION && AVAsset.isReady())
+	public static IRandomAccessVideoTrack createRandomAccessTrack(URL url) throws IOException {
+		if(isImage(url))
+			return new ImageTrack(url);
+		else if (USE_AV_FOUNDATION && AVAsset.isReady())
 			return new AVAsset(url);
-
 		try {
 			return new RandomAccessVideoTrack(url);
-		} catch (Exception e) {
-			throw new IllegalArgumentException("cannot create video track from " + url);
+		} catch (Throwable t) {
+			throw new IOException("cannot create video track from " + url, t);
 		}
 	}
 
-	public static ISequentialVideoTrack createSequentialTrack(URL url) {
-		if (USE_AV_FOUNDATION && AVAsset.isReady())
+	public static ISequentialVideoTrack createSequentialTrack(URL url) throws IOException {
+		if(isImage(url))
+			return new ImageTrack(url);
+		else if (USE_AV_FOUNDATION && AVAsset.isReady())
 			return new AVAsset(url);
-
 		try {
 			return new SequentialVideoTrack(url);
-		} catch (Exception e) {
-			throw new IllegalArgumentException("cannot create video track from " + url);
+		} catch (Throwable t) {
+			throw new IOException("cannot create video track from " + url, t);
 		}
 	}
 
-	
+
 	// TODO: move tests elsewhere
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(() -> {
@@ -137,4 +140,10 @@ public final class VideoTrackFactory {
 			e.printStackTrace();
 		}
 	}
+
+	private static boolean isImage(URL url) {
+		String path = url.getPath();
+		return ImageIO.getImageReadersBySuffix(path.substring(path.lastIndexOf('.') + 1, path.length())).hasNext();
+	}
+
 }

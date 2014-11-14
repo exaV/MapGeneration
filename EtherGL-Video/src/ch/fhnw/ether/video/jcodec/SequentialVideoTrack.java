@@ -61,9 +61,4 @@ public final class SequentialVideoTrack extends AbstractVideoTrack implements IS
 		}
 		return null;
 	}
-
-	@Override
-	public int loadFrames(int numFrames, int textureId) {
-		throw new UnsupportedOperationException("unimplemented");
-	}
 }
