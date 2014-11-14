@@ -29,12 +29,15 @@
 
 package ch.fhnw.ether.render.attribute.base;
 
-import java.nio.Buffer;
 import java.util.function.Supplier;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL3;
 
+import ch.fhnw.ether.image.FloatFrame;
+import ch.fhnw.ether.image.Frame;
+import ch.fhnw.ether.image.Grey16Frame;
+import ch.fhnw.ether.image.RGBA8Frame;
 import ch.fhnw.ether.render.gl.Program;
 import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.mesh.material.Texture;
@@ -79,7 +82,7 @@ public class SamplerUniformAttribute extends AbstractUniformAttribute<Texture> {
 		load(gl);
 		if (tex == null)
 			return;
-		
+
 		gl.glActiveTexture(GL.GL_TEXTURE0 + unit);
 		gl.glBindTexture(target, tex[0]);
 		program.setUniformSampler(gl, getShaderIndex(gl, program), unit);
@@ -101,13 +104,13 @@ public class SamplerUniformAttribute extends AbstractUniformAttribute<Texture> {
 		Texture texture = get();
 		if (texture == null)
 			return;
-		
+
 		if (texture.needsUpdate()) {
-			load(gl, texture.getWidth(), texture.getHeight(), texture.getBuffer(), texture.getFormat());
+			load(gl, texture.getFrame());
 		}
 	}
 
-	private void load(GL gl, int width, int height, Buffer buffer, int format) {
+	private void load(GL gl, Frame frame) {
 		if (tex == null) {
 			tex = new int[1];
 			gl.glGenTextures(1, tex, 0);
@@ -120,8 +123,15 @@ public class SamplerUniformAttribute extends AbstractUniformAttribute<Texture> {
 			gl.glBindTexture(target, tex[0]);
 		}
 		gl.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
-		buffer.rewind();
-		gl.glTexImage2D(target, 0, GL.GL_RGBA, width, height, 0, format, GL.GL_UNSIGNED_BYTE, buffer);
+		frame.pixels.rewind();
+		if(frame instanceof RGBA8Frame)
+			gl.glTexImage2D(target, 0, GL.GL_RGBA, frame.dimI, frame.dimJ, 0, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, frame.pixels);
+		else if(frame instanceof RGBA8Frame)
+			gl.glTexImage2D(target, 0, GL.GL_RGB, frame.dimI, frame.dimJ, 0, GL.GL_RGB, GL.GL_UNSIGNED_BYTE, frame.pixels);
+		else if(frame instanceof FloatFrame)
+			gl.glTexImage2D(target, 0, GL3.GL_RED, frame.dimI, frame.dimJ, 0, GL3.GL_RED, GL.GL_FLOAT, frame.pixels);
+		else if(frame instanceof Grey16Frame)
+			gl.glTexImage2D(target, 0, GL3.GL_RED, frame.dimI, frame.dimJ, 0, GL3.GL_RED, GL.GL_UNSIGNED_SHORT, frame.pixels);
 		gl.glGenerateMipmap(target);
 		gl.glBindTexture(target, 0);
 	}

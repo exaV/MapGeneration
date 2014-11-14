@@ -29,14 +29,13 @@
 
 package ch.fhnw.ether.examples.raytracing;
 
-import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.media.opengl.GL;
 import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.examples.raytracing.util.IntersectResult;
+import ch.fhnw.ether.image.RGBA8Frame;
 import ch.fhnw.ether.render.IRenderer;
 import ch.fhnw.ether.render.forward.ForwardRenderer;
 import ch.fhnw.ether.scene.attribute.IAttribute;
@@ -68,10 +67,10 @@ public class RayTracingRenderer implements IRenderer {
 	private final ForwardRenderer renderer = new ForwardRenderer();
 	private final Texture screenTexture = new Texture();
 	private final IMesh plane = createScreenPlane(-1, -1, 2, 2, screenTexture);
-	private int[] colors;
+	private RGBA8Frame frame;
 	private int w = 0, h = 0;
 	private long n = 0;
-
+	
 	public RayTracingRenderer() {
 		renderer.addMesh(plane);
 	}
@@ -83,7 +82,7 @@ public class RayTracingRenderer implements IRenderer {
 		if (viewport.w != w || viewport.h != h) {
 			w = viewport.w;
 			h = viewport.h;
-			colors = new int[w * h];
+			frame = new RGBA8Frame(w, h);
 		}
 		ICamera camera = view.getCamera();
 		ILight light = view.getController().getScene().getLights().get(0);
@@ -106,11 +105,11 @@ public class RayTracingRenderer implements IRenderer {
 				Vec3 dir = lookVector.add(x).add(y);
 				Line ray = new Line(camPos, dir);
 				RGBA color = intersection(ray, light);
-				colors[(j + h / 2) * w + (i + w / 2)] = color.toInt();
+				frame.setRGBA((i + w / 2), (j + h / 2), color.toRGBA());
 			}
 		}
 
-		screenTexture.setData(viewport.w, viewport.h, IntBuffer.wrap(colors), GL.GL_RGBA);
+		screenTexture.setData(frame);
 
 		renderer.render(gl, view);
 		System.out.println((System.currentTimeMillis() - t) + "ms for " + ++n + "th frame");

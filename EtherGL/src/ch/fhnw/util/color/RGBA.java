@@ -100,11 +100,20 @@ public class RGBA extends Vec4 implements IColor {
 		return new RGBA(x * s, y * s, z * s, w);
 	}
 
-	public int toInt() {
+	public int toABGR() {
 		int r = (int) (x * 255);
 		int g = (int) (y * 255);
 		int b = (int) (z * 255);
 		int a = (int) (w * 255);
 		return (a << 24 | b << 16 | g << 8 | r << 0);
 	}
+	
+	public int toRGBA() {
+		int r = (int) (x * 255);
+		int g = (int) (y * 255);
+		int b = (int) (z * 255);
+		int a = (int) (w * 255);
+		return (r << 24 | g << 16 | b << 8 | a << 0);
+	}
+
 }

@@ -30,15 +30,8 @@
 package ch.fhnw.ether.scene.mesh.material;
 
 import java.net.URL;
-import java.nio.Buffer;
 
-import javax.media.opengl.GL3;
-
-import ch.fhnw.ether.image.FloatFrame;
 import ch.fhnw.ether.image.Frame;
-import ch.fhnw.ether.image.Grey16Frame;
-import ch.fhnw.ether.image.RGB8Frame;
-import ch.fhnw.ether.image.RGBA8Frame;
 import ch.fhnw.ether.video.VideoTrackFactory;
 import ch.fhnw.util.UpdateRequest;
 
@@ -51,7 +44,6 @@ public class Texture {
 	private final UpdateRequest updater = new UpdateRequest();
 
 	private Frame frame;
-	private int   format;
 
 	public Texture() {
 	}
@@ -70,14 +62,6 @@ public class Texture {
 
 	public void setData(Frame frame) {
 		this.frame  = frame;
-		if(frame instanceof RGB8Frame)
-			this.format = GL3.GL_RGB;
-		else if(frame instanceof RGBA8Frame)
-			this.format = GL3.GL_RGBA;
-		else if(frame instanceof FloatFrame)
-			this.format = GL3.GL_RED;
-		else if(frame instanceof Grey16Frame)
-			this.format = GL3.GL_RED;
 		updater.requestUpdate();
 	}
 
@@ -93,16 +77,12 @@ public class Texture {
 		return frame.dimJ;
 	}
 
-	public Buffer getBuffer() {
-		return frame.pixels;
-	}
-
-	public int getFormat() {
-		return format;
-	}
-
 	@Override
 	public String toString() {
 		return "texture[w=" + frame.dimI + " h=" + frame.dimJ + "]";
+	}
+
+	public Frame getFrame() {
+		return frame;
 	}
 }
