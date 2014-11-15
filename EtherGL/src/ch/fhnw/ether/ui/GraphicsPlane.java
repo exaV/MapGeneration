@@ -158,7 +158,7 @@ class GraphicsPlane {
 	
 	public void update() {
 		if (updater.needsUpdate())
-			texture.setData(Frame.newFrame(image));			
+			texture.setData(Frame.newFrame(image).flipJ());
 	}
 
 	private void requestUpdate() {

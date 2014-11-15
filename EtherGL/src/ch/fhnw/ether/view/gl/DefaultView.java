@@ -207,7 +207,10 @@ public class DefaultView implements IView {
 				gl.glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
 				gl.glClearDepth(1.0f);
 
-				gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+				gl.glEnable( GL.GL_LINE_SMOOTH );
+				gl.glHint( GL.GL_LINE_SMOOTH_HINT, GL.GL_NICEST );
+				
+				gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);				
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
