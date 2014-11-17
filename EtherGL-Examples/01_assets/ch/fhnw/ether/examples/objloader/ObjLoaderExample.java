@@ -37,7 +37,7 @@ import ch.fhnw.ether.scene.DefaultScene;
 import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.scene.camera.Camera;
 import ch.fhnw.ether.scene.camera.ICamera;
-import ch.fhnw.ether.view.IView.ViewType;
+import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.gl.DefaultView;
 
 public class ObjLoaderExample {
@@ -59,7 +59,7 @@ public class ObjLoaderExample {
 		IController controller = new ObjLoaderController();
 		
 		ICamera camera = new Camera();
-		controller.addView(new DefaultView(controller, 0, 10, 512, 512, ViewType.INTERACTIVE_VIEW, "Obj View", camera));
+		controller.addView(new DefaultView(controller, 0, 10, 512, 512, IView.INTERACTIVE_VIEW, "Obj View", camera));
 
 		IScene scene = new DefaultScene(controller);
 		controller.setScene(scene);

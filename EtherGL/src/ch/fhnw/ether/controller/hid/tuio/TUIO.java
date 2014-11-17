@@ -145,7 +145,7 @@ public class TUIO {
 
 	public TUIO(IController controller, int port) throws IOException {
 		for (IView view : controller.getViews()) {
-			if (view.getViewType() == IView.ViewType.INTERACTIVE_VIEW) {
+			if (view.getConfig().getViewType() == IView.ViewType.INTERACTIVE_VIEW) {
 				this.view = view;
 				break;
 			}

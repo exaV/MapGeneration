@@ -41,6 +41,7 @@ import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.view.IView;
+import ch.fhnw.ether.view.IView.ViewFlag;
 import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Vec3;
 
@@ -54,24 +55,24 @@ public class NavigationTool extends AbstractTool {
 	private int mouseY;
 
 	private IMesh grid;
-	
-	// TODO: make grid dynamic/configurable
 
 	public NavigationTool(IController controller) {
 		super(controller);
-		// XXX hack: currently grid is always enabled
 		grid = makeGrid();
-		activate();
 	}
 
 	@Override
 	public void activate() {
-		getController().getRenderer().addMesh(grid);
+		IView view = getController().getCurrentView(); 
+		if(view != null && view.getConfig().has(ViewFlag.GRID))
+			getController().getRenderer().addMesh(grid);
 	}
 
 	@Override
 	public void deactivate() {
-		getController().getRenderer().removeMesh(grid);
+		IView view = getController().getCurrentView(); 
+		if(view != null && getController().getCurrentView().getConfig().has(ViewFlag.GRID))
+			getController().getRenderer().removeMesh(grid);
 	}
 	
 	@Override
@@ -81,7 +82,7 @@ public class NavigationTool extends AbstractTool {
 		button = e.getButton();
 		view.repaint();
 	}
-	
+
 	@Override
 	public void mouseMoved(MouseEvent e, IView view) {
 		mouseX = e.getX();

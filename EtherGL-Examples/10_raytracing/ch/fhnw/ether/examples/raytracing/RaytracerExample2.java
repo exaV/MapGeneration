@@ -42,7 +42,6 @@ import ch.fhnw.ether.scene.camera.ICamera;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.light.PointLight;
 import ch.fhnw.ether.view.IView;
-import ch.fhnw.ether.view.IView.ViewType;
 import ch.fhnw.ether.view.gl.DefaultView;
 import ch.fhnw.util.color.RGB;
 import ch.fhnw.util.color.RGBA;
@@ -62,7 +61,7 @@ public class RaytracerExample2 {
 		controller.setScene(scene);
 
 		ICamera camera = new Camera(new Vec3(0, -2, 1), Vec3.ZERO, Vec3.Z, 2.5f, 0.5f, Float.POSITIVE_INFINITY);
-		IView view = new DefaultView(controller, 100, 100, 100, 100, ViewType.INTERACTIVE_VIEW, "Raytracing", camera);
+		IView view = new DefaultView(controller, 100, 100, 100, 100, IView.INTERACTIVE_VIEW, "Raytracing", camera);
 		controller.addView(view);
 		
 	

@@ -36,10 +36,10 @@ public class ColorMaterial extends AbstractMaterial {
 	private boolean perVertexColor;
 
 	public ColorMaterial(RGBA color) {
-		this(color, false);
+		this(color, color == RGBA.PER_VERTEX_COLOR);
 	}
 
-	public ColorMaterial(RGBA color, boolean perVertexColor) {
+	protected ColorMaterial(RGBA color, boolean perVertexColor) {
 		this.color = color.toArray();
 		this.perVertexColor = perVertexColor;
 	}

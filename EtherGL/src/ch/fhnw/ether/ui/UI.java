@@ -125,7 +125,7 @@ public final class UI {
 	// key listener
 
 	public boolean keyPressed(KeyEvent e, IView view) {
-		if (view.getViewType() == IView.ViewType.INTERACTIVE_VIEW) {
+		if (view.getConfig().getViewType() == IView.ViewType.INTERACTIVE_VIEW) {
 			for (IWidget widget : getWidgets()) {
 				if (widget.keyPressed(e, view))
 					return true;
@@ -143,7 +143,7 @@ public final class UI {
 	}
 
 	public boolean mousePressed(MouseEvent e, IView view) {
-		if (view.getViewType() == IView.ViewType.INTERACTIVE_VIEW) {
+		if (view.getConfig().getViewType() == IView.ViewType.INTERACTIVE_VIEW) {
 			for (IWidget widget : getWidgets()) {
 				if (widget.mousePressed(e, view))
 					return true;
@@ -153,7 +153,7 @@ public final class UI {
 	}
 
 	public boolean mouseReleased(MouseEvent e, IView view) {
-		if (view.getViewType() == IView.ViewType.INTERACTIVE_VIEW) {
+		if (view.getConfig().getViewType() == IView.ViewType.INTERACTIVE_VIEW) {
 			for (IWidget widget : getWidgets()) {
 				if (widget.mouseReleased(e, view))
 					return true;
@@ -165,7 +165,7 @@ public final class UI {
 	// mouse motion listener
 
 	public void mouseMoved(MouseEvent e, IView view) {
-		if (view.getViewType() == IView.ViewType.INTERACTIVE_VIEW) {
+		if (view.getConfig().getViewType() == IView.ViewType.INTERACTIVE_VIEW) {
 			for (IWidget widget : getWidgets()) {
 				if (widget.hit(e.getX(), e.getY(), view)) {
 					String message = widget.getHelp();
@@ -177,7 +177,7 @@ public final class UI {
 	}
 
 	public boolean mouseDragged(MouseEvent e, IView view) {
-		if (view.getViewType() == IView.ViewType.INTERACTIVE_VIEW) {
+		if (view.getConfig().getViewType() == IView.ViewType.INTERACTIVE_VIEW) {
 			for (IWidget widget : getWidgets()) {
 				if (widget.mouseDragged(e, view))
 					return true;

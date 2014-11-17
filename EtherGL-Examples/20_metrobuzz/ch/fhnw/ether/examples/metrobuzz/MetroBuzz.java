@@ -38,7 +38,7 @@ import ch.fhnw.ether.examples.metrobuzz.controller.View;
 import ch.fhnw.ether.examples.metrobuzz.io.matsim.Loader;
 import ch.fhnw.ether.examples.metrobuzz.model.Scene;
 import ch.fhnw.ether.scene.camera.Camera;
-import ch.fhnw.ether.view.IView.ViewType;
+import ch.fhnw.ether.view.IView;
 
 public class MetroBuzz {
 	public static void main(final String[] args) {
@@ -58,8 +58,8 @@ public class MetroBuzz {
 		MetroBuzzController controller = new MetroBuzzController();
 
 		Camera camera = new Camera();
-		controller.addView(new View(controller, 0, 10, 512, 512, ViewType.INTERACTIVE_VIEW, camera));
-		controller.addView(new View(controller, 512, 10, 512, 512, ViewType.MAPPED_VIEW, camera));
+		controller.addView(new View(controller, 0, 10, 512, 512, IView.INTERACTIVE_VIEW, camera));
+		controller.addView(new View(controller, 512, 10, 512, 512, IView.MAPPED_VIEW, camera));
 
 		Scene scene = new Scene(controller);
 		System.out.println("Loading Data");

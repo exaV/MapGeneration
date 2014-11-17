@@ -32,6 +32,11 @@ package ch.fhnw.ether.scene.mesh.material;
 import ch.fhnw.util.color.RGBA;
 
 public class PointMaterial extends ColorMaterial {
+	/**
+	 * Special value to indicate per-vertex size for materials.
+	 */
+	public static final float PER_VERTEX_SIZE = Float.MIN_VALUE;
+	
 	private float size;
 	private boolean perVertexSize;
 	
@@ -40,17 +45,9 @@ public class PointMaterial extends ColorMaterial {
 	}
 
 	public PointMaterial(float size, RGBA color) {
-		this(size, color, false);
-	}
-
-	public PointMaterial(float size, RGBA color, boolean perVertexColor) {
-		this(size, false, color, perVertexColor);
-	}
-
-	public PointMaterial(float size, boolean perVertexSize, RGBA color, boolean perVertexColor) {
-		super(color, perVertexColor);
-		this.size = size;
-		this.perVertexSize = perVertexSize;
+		super(color, color == RGBA.PER_VERTEX_COLOR);
+		this.size          = size;
+		this.perVertexSize = size == PER_VERTEX_SIZE;
 	}
 
 	@Override

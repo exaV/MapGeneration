@@ -27,6 +27,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */package ch.fhnw.ether.view;
 
+import java.util.EnumSet;
+
 import javax.media.opengl.GLAutoDrawable;
 
 import ch.fhnw.ether.controller.IController;
@@ -46,6 +48,40 @@ public interface IView extends IUpdateListener {
 	enum ViewType {
 		INTERACTIVE_VIEW, MAPPED_VIEW
 	}
+	
+	enum ViewFlag {
+		/** Grid visibility in navigation tool. */
+		GRID, 
+	}
+
+	public static final class Config {
+		private final ViewType          viewType;
+		private final int               fsaaSamples;
+		private final EnumSet<ViewFlag> flags;
+		
+		public Config(ViewType viewType, int fsaaSamples, ViewFlag ...flags) {
+			this.viewType    = viewType;
+			this.fsaaSamples = fsaaSamples;
+			this.flags = EnumSet.noneOf(ViewFlag.class);
+			for(ViewFlag flag : flags)
+				this.flags.add(flag);
+		}
+		
+		public ViewType getViewType() {
+			return viewType;
+		}
+		
+		public int getFSAASamples() {
+			return fsaaSamples;
+		}
+
+		public boolean has(ViewFlag flag) {
+			return flags.contains(flag);
+		}
+	}
+	
+	Config INTERACTIVE_VIEW = new Config(ViewType.INTERACTIVE_VIEW, 0, ViewFlag.GRID);
+	Config MAPPED_VIEW      = new Config(ViewType.MAPPED_VIEW,      0, ViewFlag.GRID);
 	
 	/**
 	 * Dispose this view and release all associated resources
@@ -106,11 +142,11 @@ public interface IView extends IUpdateListener {
 	Viewport getViewport();
 
 	/**
-	 * Get view type.
+	 * Get view configuration.
 	 * 
-	 * @return the view type
+	 * @return the view configuration
 	 */
-	ViewType getViewType();
+	Config getConfig();
 
 	/**
 	 * Check whether view is enabled for rendering.

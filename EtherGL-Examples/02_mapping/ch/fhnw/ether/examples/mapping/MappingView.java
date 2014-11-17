@@ -47,14 +47,14 @@ public class MappingView extends DefaultView {
 	 *            view width
 	 * @param h
 	 *            view height
-	 * @param viewType
+	 * @param viewConfig
 	 *            view type
 	 * @param title
 	 *            view title (control view only)
 	 * @param initialCamRotateZ
 	 *            initial z angle of view
 	 */
-	public MappingView(IController controller, int x, int y, int w, int h, ViewType viewType, String title, ICamera camera) {
-		super(controller, x, y, w, h, viewType, viewType == ViewType.MAPPED_VIEW ? null : title, camera);
+	public MappingView(IController controller, int x, int y, int w, int h, Config viewConfig, String title, ICamera camera) {
+		super(controller, x, y, w, h, viewConfig, viewConfig.getViewType() == ViewType.MAPPED_VIEW ? null : title, camera);
 	}
 }

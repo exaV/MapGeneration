@@ -35,6 +35,8 @@ import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLDrawableFactory;
 import javax.media.opengl.GLProfile;
 
+import ch.fhnw.ether.view.IView.Config;
+
 import com.jogamp.newt.event.WindowAdapter;
 import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.newt.opengl.GLWindow;
@@ -57,9 +59,11 @@ public final class NEWTWindow {
 	 *            the frame's width
 	 * @param height
 	 *            the frame's height
+	 * @param config 
+	 *            The configuration.
 	 */
-	public NEWTWindow(int width, int height) {
-		this(width, height, null);
+	public NEWTWindow(int width, int height, Config config) {
+		this(width, height, null, config);
 	}
 
 	/**
@@ -71,15 +75,17 @@ public final class NEWTWindow {
 	 *            the frame's height
 	 * @param title
 	 *            the frame's title, nor null for an undecorated frame
+	 * @param config 
+	 *            The configuration.
 	 */
-	public NEWTWindow(int width, int height, String title) {
-		GLCapabilities capabilities = getCapabilities();
+	public NEWTWindow(int width, int height, String title, Config config) {
+		GLCapabilities capabilities = getCapabilities(config);
 		if (sharedDrawable == null) {
-	        sharedDrawable = GLDrawableFactory.getFactory(capabilities.getGLProfile()).createDummyAutoDrawable(null, true, capabilities, null);
-	        sharedDrawable.display();			
+			sharedDrawable = GLDrawableFactory.getFactory(capabilities.getGLProfile()).createDummyAutoDrawable(null, true, capabilities, null);
+			sharedDrawable.display();			
 		}
 		numWindows++;
-		window = GLWindow.create(getCapabilities());
+		window = GLWindow.create(getCapabilities(config));
 		window.setSharedAutoDrawable(sharedDrawable);
 		window.setSize(width, height);
 
@@ -97,19 +103,24 @@ public final class NEWTWindow {
 			window.setUndecorated(true);
 		window.setVisible(true);
 	}
-	
+
 	public void dispose() {
 		window.destroy();
 	}
 
-	private static GLCapabilities getCapabilities() {
+	private static GLCapabilities getCapabilities(Config config) {
 		// FIXME: make this configurable
 		GLProfile profile = GLProfile.get(GLProfile.GL3);
 		GLCapabilities caps = new GLCapabilities(profile);
 		caps.setAlphaBits(8);
 		caps.setStencilBits(16);
-		caps.setSampleBuffers(true);
-		caps.setNumSamples(4);
+		if(config.getFSAASamples() > 0) {
+			caps.setSampleBuffers(true);
+			caps.setNumSamples(config.getFSAASamples());
+		} else {
+			caps.setSampleBuffers(false);
+			caps.setNumSamples(1);
+		}
 		return caps;
 	}
 

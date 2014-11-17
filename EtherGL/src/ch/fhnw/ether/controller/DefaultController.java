@@ -67,6 +67,7 @@ public class DefaultController implements IController {
 	private final PickTool pickTool;
 
 	private IView currentView;
+	private IView hoverView;
 	private ITool activeTool;
 
 	public DefaultController() {
@@ -100,7 +101,7 @@ public class DefaultController implements IController {
 			currentView = view;
 
 		scheduler.addDrawable(view.getDrawable());
-
+		
 		view.repaint();
 	}
 	
@@ -217,6 +218,8 @@ public class DefaultController implements IController {
 
 	@Override
 	public void mouseEntered(MouseEvent e, IView view) {
+		hoverView = view;
+		navigationTool.activate();
 		if (ui != null)
 			ui.mouseEntered(e, view);
 	}
@@ -225,10 +228,15 @@ public class DefaultController implements IController {
 	public void mouseExited(MouseEvent e, IView view) {
 		if (ui != null)
 			ui.mouseExited(e, view);
+		navigationTool.deactivate();
+		hoverView = null;
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e, IView view) {
+		if(hoverView == null)
+			mouseEntered(e, view);
+		
 		setCurrentView(view);
 
 		// ui has precedence over everything else
@@ -244,6 +252,9 @@ public class DefaultController implements IController {
 
 	@Override
 	public void mouseReleased(MouseEvent e, IView view) {
+		if(hoverView == null)
+			mouseEntered(e, view);
+
 		if (ui != null && ui.mouseReleased(e, view))
 			return;
 
@@ -255,12 +266,17 @@ public class DefaultController implements IController {
 
 	@Override
 	public void mouseClicked(MouseEvent e, IView view) {
+		if(hoverView == null)
+			mouseEntered(e, view);
 	}
 
 	// mouse motion listener
 
 	@Override
 	public void mouseMoved(MouseEvent e, IView view) {
+		if(hoverView == null)
+			mouseEntered(e, view);
+
 		if (ui != null)
 			ui.mouseMoved(e, view);
 		activeTool.mouseMoved(e, view);
@@ -269,6 +285,9 @@ public class DefaultController implements IController {
 
 	@Override
 	public void mouseDragged(MouseEvent e, IView view) {
+		if(hoverView == null)
+			mouseEntered(e, view);
+
 		// ui has precedence over everything else
 		if (ui != null && ui.mouseDragged(e, view))
 			return;
@@ -283,6 +302,9 @@ public class DefaultController implements IController {
 
 	@Override
 	public void mouseWheelMoved(MouseEvent e, IView view) {
+		if(hoverView == null)
+			mouseEntered(e, view);
+
 		navigationTool.mouseWheelMoved(e, view);
 	}
 

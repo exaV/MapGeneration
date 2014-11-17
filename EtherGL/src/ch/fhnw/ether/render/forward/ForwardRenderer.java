@@ -83,7 +83,7 @@ public class ForwardRenderer extends AbstractRenderer {
 
 	@Override
 	public void render(GL3 gl, IView view) {
-		boolean interactive = view.getViewType() == IView.ViewType.INTERACTIVE_VIEW;
+		boolean interactive = view.getConfig().getViewType() == IView.ViewType.INTERACTIVE_VIEW;
 		
 		update(gl);
 		Mat4 viewMatrix = view.getCameraMatrices().getViewMatrix();

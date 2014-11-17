@@ -60,7 +60,7 @@ import com.jogamp.newt.event.WindowListener;
  */
 public class DefaultView implements IView {
 
-	private final ViewType viewType;
+	private final Config viewConfig;
 
 	private NEWTWindow window;
 
@@ -74,10 +74,10 @@ public class DefaultView implements IView {
 
 	private boolean enabled = true;
 
-	public DefaultView(IController controller, int x, int y, int w, int h, ViewType viewType, String title, ICamera camera) {
-		this.viewType = viewType;
+	public DefaultView(IController controller, int x, int y, int w, int h, Config viewConfig, String title, ICamera camera) {
+		this.viewConfig = viewConfig;
 
-		window = new NEWTWindow(w, h, title);
+		window = new NEWTWindow(w, h, title, viewConfig);
 		window.getWindow().addGLEventListener(glEventListener);
 		window.getWindow().addWindowListener(windowListener);
 		window.getWindow().addMouseListener(mouseListener);
@@ -158,8 +158,8 @@ public class DefaultView implements IView {
 	}
 
 	@Override
-	public final ViewType getViewType() {
-		return viewType;
+	public Config getConfig() {
+		return viewConfig;
 	}
 
 	@Override
