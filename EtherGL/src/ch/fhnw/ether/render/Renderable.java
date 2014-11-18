@@ -115,6 +115,7 @@ public final class Renderable {
 			attr.enable(gl, program);
 		}
 
+		// FIXME: use VAO here
 		// 3. for each parallel buffer
 		// 3.1. bind buffer
 		// 3.2. for each array attribute associated to the buffer
@@ -211,6 +212,9 @@ public final class Renderable {
 
 		Suppliers suppliers = new Suppliers();
 
+		// FIXME: here's a bug - only those arrays required by material should be used, but currently all arrays that a
+		// geometry provides are used
+
 		// 0. get all attributes, and check if all required attributes are present
 
 		providers.getAttributeSuppliers(suppliers);
@@ -222,14 +226,12 @@ public final class Renderable {
 				throw new IllegalStateException("geometry does not provide required attribute " + id);
 		}
 
-		
 		// 1. create shader and get all attributes this shader requires
 
 		createShader(new Attributes(suppliers.providedAttributes.keySet()));
 
 		shader.getAttributes(uniformAttributes, arrayAttributes);
 
-		
 		// 2. bind shader attributes to provided global attributes (matrices, lights), material and geometry
 
 		// 2.1. handle uniform attributes
