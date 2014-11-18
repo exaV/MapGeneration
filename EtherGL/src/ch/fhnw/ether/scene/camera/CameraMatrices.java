@@ -47,7 +47,8 @@ public final class CameraMatrices {
 	private Mat4 projMatrix;
 	private Mat4 viewProjMatrix;
 	private Mat4 viewProjInvMatrix;
-	private Mat4 viewProjInvTpMatrix;
+	private Mat4 normalMatrix;
+	private Vec3 eyeDirection;
 
 	public CameraMatrices(Vec3 position, Vec3 target, Vec3 up, float fov, float near, float far, float aspect) {
 		this.position = position;
@@ -94,10 +95,25 @@ public final class CameraMatrices {
 		return viewProjInvMatrix;
 	}
 
-	public Mat4 getViewProjInvTpMatrix() {
-		if (viewProjInvTpMatrix == null) {
-			viewProjInvTpMatrix = getViewProjInvMatrix().transposed();
+	public Mat4 getNormalMatrix() {
+		if (normalMatrix == null) {
+			Mat4 m = getViewMatrix().copy();
+			m.m[Mat4.M03] = 0;
+			m.m[Mat4.M13] = 0;
+			m.m[Mat4.M23] = 0;
+			m.m[Mat4.M30] = 0;
+			m.m[Mat4.M31] = 0;
+			m.m[Mat4.M32] = 0;
+			m.m[Mat4.M33] = 1;
+			normalMatrix = m.inverse().transposed();
 		}
-		return viewProjInvTpMatrix;
+		return normalMatrix;
+	}
+	
+	public Vec3 getEyeDirection() {
+		if (eyeDirection == null) {
+			eyeDirection = Vec3.Z;
+		}
+		return eyeDirection;
 	}
 }

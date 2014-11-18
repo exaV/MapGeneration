@@ -54,10 +54,10 @@ public interface IMaterial extends IAttributeProvider, IUpdateRequester {
 	// triangles only: normals & shading
 	public static MaterialAttribute NORMAL_ARRAY = new MaterialAttribute("builtin.material.normal_array");
 	public static MaterialAttribute EMISSION = new MaterialAttribute("builtin.material.shading.emission");
-	public static MaterialAttribute AMBIENT = new MaterialAttribute("builtin.material.shading.ambient");
 	public static MaterialAttribute DIFFUSE = new MaterialAttribute("builtin.material.shading.diffuse");
 	public static MaterialAttribute SPECULAR = new MaterialAttribute("builtin.material.shading.specular");
 	public static MaterialAttribute SHININESS = new MaterialAttribute("builtin.material.shading.shininess");
+	public static MaterialAttribute STRENGTH = new MaterialAttribute("builtin.material.shading.strength");
 
 	// lines only: line width
 	public static MaterialAttribute LINE_WIDTH_ARRAY = new MaterialAttribute("builtin.material.line_width_array");

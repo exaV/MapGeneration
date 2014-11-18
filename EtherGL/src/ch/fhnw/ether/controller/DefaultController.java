@@ -53,8 +53,10 @@ import com.jogamp.newt.event.MouseEvent;
  *
  * @author radar
  */
-// TODO: PickTool doesn't really belong here (any tools at all?)
+// FIXME: PickTool doesn't really belong here (any tools at all?)
 public class DefaultController implements IController {
+	private static final boolean DBG = false;
+
 	private final IScheduler scheduler;
 	private final IRenderer renderer;
 
@@ -101,16 +103,16 @@ public class DefaultController implements IController {
 			currentView = view;
 
 		scheduler.addDrawable(view.getDrawable());
-		
+
 		view.repaint();
 	}
-	
+
 	@Override
 	public void removeView(IView view) {
 		views.remove(view);
 		if (currentView == view)
 			currentView = null;
-		
+
 		scheduler.removeDrawable(view.getDrawable());
 	}
 
@@ -126,13 +128,15 @@ public class DefaultController implements IController {
 
 	@Override
 	public void setCurrentView(IView view) {
+		if (DBG)
+			System.out.println("set current view");
 		if (currentView != view) {
 			currentView = view;
 			getCurrentTool().refresh(currentView);
 			repaintViews();
 		}
 	}
-	
+
 	@Override
 	public final void enableViews(Collection<IView> views) {
 		if (views != null) {
@@ -196,6 +200,8 @@ public class DefaultController implements IController {
 
 	@Override
 	public void keyPressed(KeyEvent e, IView view) {
+		if (DBG)
+			System.out.println("key pressed");
 		setCurrentView(view);
 
 		// ui has precedence over everything else
@@ -218,6 +224,8 @@ public class DefaultController implements IController {
 
 	@Override
 	public void mouseEntered(MouseEvent e, IView view) {
+		if (DBG)
+			System.out.println("mouse entered");
 		hoverView = view;
 		navigationTool.activate();
 		if (ui != null)
@@ -226,6 +234,8 @@ public class DefaultController implements IController {
 
 	@Override
 	public void mouseExited(MouseEvent e, IView view) {
+		if (DBG)
+			System.out.println("mouse exited");
 		if (ui != null)
 			ui.mouseExited(e, view);
 		navigationTool.deactivate();
@@ -234,9 +244,11 @@ public class DefaultController implements IController {
 
 	@Override
 	public void mousePressed(MouseEvent e, IView view) {
-		if(hoverView == null)
+		if (DBG)
+			System.out.println("mouse pressed");
+		if (hoverView == null)
 			mouseEntered(e, view);
-		
+
 		setCurrentView(view);
 
 		// ui has precedence over everything else
@@ -252,7 +264,9 @@ public class DefaultController implements IController {
 
 	@Override
 	public void mouseReleased(MouseEvent e, IView view) {
-		if(hoverView == null)
+		if (DBG)
+			System.out.println("released");
+		if (hoverView == null)
 			mouseEntered(e, view);
 
 		if (ui != null && ui.mouseReleased(e, view))
@@ -266,7 +280,9 @@ public class DefaultController implements IController {
 
 	@Override
 	public void mouseClicked(MouseEvent e, IView view) {
-		if(hoverView == null)
+		if (DBG)
+			System.out.println("clicked");
+		if (hoverView == null)
 			mouseEntered(e, view);
 	}
 
@@ -274,7 +290,9 @@ public class DefaultController implements IController {
 
 	@Override
 	public void mouseMoved(MouseEvent e, IView view) {
-		if(hoverView == null)
+		if (DBG)
+			System.out.println("moved");
+		if (hoverView == null)
 			mouseEntered(e, view);
 
 		if (ui != null)
@@ -285,7 +303,9 @@ public class DefaultController implements IController {
 
 	@Override
 	public void mouseDragged(MouseEvent e, IView view) {
-		if(hoverView == null)
+		if (DBG)
+			System.out.println("dragged");
+		if (hoverView == null)
 			mouseEntered(e, view);
 
 		// ui has precedence over everything else
@@ -302,7 +322,7 @@ public class DefaultController implements IController {
 
 	@Override
 	public void mouseWheelMoved(MouseEvent e, IView view) {
-		if(hoverView == null)
+		if (hoverView == null)
 			mouseEntered(e, view);
 
 		navigationTool.mouseWheelMoved(e, view);

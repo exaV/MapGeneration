@@ -343,14 +343,17 @@ public final class Mat4 {
 		result.m[M10] = m[M01];
 		result.m[M20] = m[M02];
 		result.m[M30] = m[M03];
+		
 		result.m[M01] = m[M10];
 		result.m[M11] = m[M11];
 		result.m[M21] = m[M12];
 		result.m[M31] = m[M13];
+		
 		result.m[M02] = m[M20];
 		result.m[M12] = m[M21];
 		result.m[M22] = m[M22];
-		result.m[M32] = m[M33];
+		result.m[M32] = m[M23];
+		
 		result.m[M03] = m[M30];
 		result.m[M13] = m[M31];
 		result.m[M23] = m[M32];

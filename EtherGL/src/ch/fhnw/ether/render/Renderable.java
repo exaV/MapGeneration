@@ -51,11 +51,15 @@ import ch.fhnw.ether.render.shader.IShader;
 import ch.fhnw.ether.render.shader.IShader.Attributes;
 import ch.fhnw.ether.render.shader.builtin.LineShader;
 import ch.fhnw.ether.render.shader.builtin.PointShader;
+import ch.fhnw.ether.render.shader.builtin.ShadedTriangleShader;
 import ch.fhnw.ether.render.shader.builtin.UnshadedTriangleShader;
 import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.attribute.IAttributeProvider;
 import ch.fhnw.ether.scene.mesh.IMesh;
+import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.scene.mesh.material.CustomMaterial;
+import ch.fhnw.ether.scene.mesh.material.IMaterial;
+import ch.fhnw.ether.scene.mesh.material.ShadedMaterial;
 import ch.fhnw.util.FloatList;
 
 // FIXME: deal with max vbo size & multiple vbos, handle non-float arrays
@@ -311,7 +315,8 @@ public final class Renderable {
 
 	// FIXME: make more flexible/dynamic (as soon as we have more builtin shaders): derive shader from attributes
 	private void createShader(Attributes attributes) {
-		if (mesh.getMaterial() instanceof CustomMaterial) {
+		IMaterial material = mesh.getMaterial();
+		if (material instanceof CustomMaterial) {
 			shader = ((CustomMaterial) mesh.getMaterial()).getShader();
 			return;
 		}
@@ -324,8 +329,15 @@ public final class Renderable {
 			shader = new LineShader(attributes);
 			break;
 		case TRIANGLES:
-			shader = new UnshadedTriangleShader(attributes);
-			break;
+			if (material instanceof ColorMaterial) {
+				shader = new UnshadedTriangleShader(attributes);
+				break;
+			} else if (material instanceof ShadedMaterial) {
+				shader = new ShadedTriangleShader(attributes);
+				break;
+			}
+		default:
+			throw new UnsupportedOperationException("material type not supported: " + material);
 		}
 	}
 

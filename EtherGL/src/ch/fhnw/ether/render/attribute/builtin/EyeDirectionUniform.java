@@ -27,48 +27,29 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.render;
+package ch.fhnw.ether.render.attribute.builtin;
 
-import javax.media.opengl.GL3;
+import java.util.function.Supplier;
 
-import ch.fhnw.ether.scene.light.ILight;
-import ch.fhnw.ether.scene.mesh.IMesh;
-import ch.fhnw.ether.view.IView;
+import ch.fhnw.ether.render.attribute.base.Vec3FloatUniformAttribute;
 
-/**
- * Simple rendering interface.
- *
- * @author radar
- */
-public interface IRenderer {
-	/**
-	 * Add mesh to renderer. Allocates all renderer-dependent resources. Thread-safe.
-	 * 
-	 * @param mesh
-	 *            mesh to be added
-	 * @throws IllegalArgumentException
-	 *             if mesh already in renderer.
-	 */
-	void addMesh(IMesh mesh);
+public final class EyeDirectionUniform extends Vec3FloatUniformAttribute {
+	public static final String ID = "builtin.eye_direction";
+	private static final String DEFAULT_SHADER_NAME = "eyeDirection";
 
-	// TODO: we could use a special flag (or similar) to prevent deallocation of resources for cases where meshes are
-	// added and removed quickly.
-	/**
-	 * Remove mesh from renderer. Releases all renderer-dependent resources. Thread-safe.
-	 * 
-	 * @param mesh
-	 *            mesh to be removed
-	 * @throws IllegalArgumentException
-	 *             if mesh not in renderer.
-	 */
-	void removeMesh(IMesh mesh);
+	public EyeDirectionUniform() {
+		super(ID, DEFAULT_SHADER_NAME);
+	}
 
-	void addLight(ILight light);
+	public EyeDirectionUniform(String shaderName) {
+		super(ID, shaderName);
+	}
 
-	void removeLight(ILight light);
+	public EyeDirectionUniform(Supplier<float[]> supplier) {
+		super(ID, DEFAULT_SHADER_NAME, supplier);
+	}
 
-	/**
-	 * Called view from render thread to render the meshes. Do not call this method otherwise.
-	 */
-	void render(GL3 gl, IView view);
+	public EyeDirectionUniform(String shaderName, Supplier<float[]> supplier) {
+		super(ID, shaderName, supplier);
+	}
 }

@@ -27,48 +27,30 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.render;
+package ch.fhnw.ether.render.attribute.builtin;
 
-import javax.media.opengl.GL3;
+import java.util.function.Supplier;
 
-import ch.fhnw.ether.scene.light.ILight;
-import ch.fhnw.ether.scene.mesh.IMesh;
-import ch.fhnw.ether.view.IView;
+import ch.fhnw.ether.render.attribute.base.Mat4FloatUniformAttribute;
+import ch.fhnw.util.math.Mat4;
 
-/**
- * Simple rendering interface.
- *
- * @author radar
- */
-public interface IRenderer {
-	/**
-	 * Add mesh to renderer. Allocates all renderer-dependent resources. Thread-safe.
-	 * 
-	 * @param mesh
-	 *            mesh to be added
-	 * @throws IllegalArgumentException
-	 *             if mesh already in renderer.
-	 */
-	void addMesh(IMesh mesh);
+public final class NormalMatrixUniform extends Mat4FloatUniformAttribute {
+	public static final String ID = "builtin.normal_matrix";
+	private static final String DEFAULT_SHADER_NAME = "normalMatrix";
 
-	// TODO: we could use a special flag (or similar) to prevent deallocation of resources for cases where meshes are
-	// added and removed quickly.
-	/**
-	 * Remove mesh from renderer. Releases all renderer-dependent resources. Thread-safe.
-	 * 
-	 * @param mesh
-	 *            mesh to be removed
-	 * @throws IllegalArgumentException
-	 *             if mesh not in renderer.
-	 */
-	void removeMesh(IMesh mesh);
+	public NormalMatrixUniform() {
+		super(ID, DEFAULT_SHADER_NAME);
+	}
 
-	void addLight(ILight light);
+	public NormalMatrixUniform(String shaderName) {
+		super(ID, shaderName);
+	}
 
-	void removeLight(ILight light);
+	public NormalMatrixUniform(Supplier<Mat4> supplier) {
+		super(ID, DEFAULT_SHADER_NAME, supplier);
+	}
 
-	/**
-	 * Called view from render thread to render the meshes. Do not call this method otherwise.
-	 */
-	void render(GL3 gl, IView view);
+	public NormalMatrixUniform(String shaderName, Supplier<Mat4> supplier) {
+		super(ID, shaderName, supplier);
+	}
 }

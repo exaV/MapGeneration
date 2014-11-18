@@ -128,6 +128,11 @@ public final class Program {
 		}
 		program.link(gl, out);
 		program.validateProgram(gl, out);
+		
+		if (!program.linked()) {
+			out.println("Exiting.");
+			System.exit(1);
+		}
 	}
 
 	// NOTE: currently we do not plan to destroy / release programs

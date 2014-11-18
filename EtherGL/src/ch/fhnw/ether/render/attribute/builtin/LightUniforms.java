@@ -62,7 +62,7 @@ public class LightUniforms extends AbstractUniformAttribute<LightParameters> {
 		isSpot = new BooleanUniformAttribute("", "lightIsSpot", () -> get().isSpot());	
 
 		position = new Vec3FloatUniformAttribute("", "lightPosition", () -> get().getPosition());
-		ambient = new Vec3FloatUniformAttribute("", "lightAmbient", () -> get().getAmbient());
+		ambient = new Vec3FloatUniformAttribute("", "lightAmbientColor", () -> get().getAmbient());
 		color = new Vec3FloatUniformAttribute("", "lightColor", () -> get().getColor());
 
 		spotDirection = new Vec3FloatUniformAttribute("", "lightSpotDirection", () -> get().getSpotDirection());

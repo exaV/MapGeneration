@@ -63,18 +63,18 @@ public class NavigationTool extends AbstractTool {
 
 	@Override
 	public void activate() {
-		IView view = getController().getCurrentView(); 
-		if(view != null && view.getConfig().has(ViewFlag.GRID))
+		IView view = getController().getCurrentView();
+		if (view != null && view.getConfig().has(ViewFlag.GRID))
 			getController().getRenderer().addMesh(grid);
 	}
 
 	@Override
 	public void deactivate() {
-		IView view = getController().getCurrentView(); 
-		if(view != null && getController().getCurrentView().getConfig().has(ViewFlag.GRID))
+		IView view = getController().getCurrentView();
+		if (view != null && getController().getCurrentView().getConfig().has(ViewFlag.GRID))
 			getController().getRenderer().removeMesh(grid);
 	}
-	
+
 	@Override
 	public void mousePressed(MouseEvent e, IView view) {
 		mouseX = e.getX();

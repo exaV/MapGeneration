@@ -41,7 +41,7 @@ import ch.fhnw.util.color.RGB;
 import ch.fhnw.util.math.Vec3;
 
 public abstract class AbstractRenderer implements IRenderer {
-	private static final LightParameters DEFAULT_LIGHT_PARAMETERS = new LightParameters(false, false, Vec3.Z, RGB.GRAY, RGB.WHITE, Vec3.Z_NEG, 0, 0, 0, 0, 0);
+	private static final LightParameters DEFAULT_LIGHT_PARAMETERS = new LightParameters(false, false, Vec3.Z, RGB.BLACK, RGB.WHITE, Vec3.Z_NEG, 0, 0, 0, 0, 0);
 
 	private final Renderables renderables = new Renderables();
 

@@ -33,6 +33,8 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.render.AbstractRenderer;
+import ch.fhnw.ether.render.attribute.builtin.EyeDirectionUniform;
+import ch.fhnw.ether.render.attribute.builtin.NormalMatrixUniform;
 import ch.fhnw.ether.render.attribute.builtin.ProjMatrixUniform;
 import ch.fhnw.ether.render.attribute.builtin.ViewMatrixUniform;
 import ch.fhnw.ether.scene.attribute.IAttributeProvider;
@@ -68,17 +70,47 @@ import ch.fhnw.util.math.Mat4;
  * @author radar
  */
 public class ForwardRenderer extends AbstractRenderer {
-	private final RenderState state = new RenderState();
-	private final Mat4 viewMatrix2D = Mat4.identityMatrix();
+	
+	private static class ViewState implements IAttributeProvider {
+		private static final Mat4 ID_MATRIX = Mat4.identityMatrix();
+		private static final float[] Z_NEG = { 0, 0, -1 };
+
+		private Mat4 viewMatrix;
+		private Mat4 projMatrix;
+		private Mat4 normalMatrix;
+		private float[] eyeDirection;
+
+		void setCameraSpace(IView view) {
+			viewMatrix = view.getCameraMatrices().getViewMatrix();
+			projMatrix = view.getCameraMatrices().getProjMatrix();
+			normalMatrix = view.getCameraMatrices().getNormalMatrix();
+			eyeDirection = view.getCameraMatrices().getEyeDirection().toArray();
+		}
+		
+		void setOrthoScreenSpace(IView view) {
+			viewMatrix = normalMatrix = ID_MATRIX;
+			projMatrix = Mat4.ortho(0, view.getViewport().w, view.getViewport().h, 0, -1, 1);
+			eyeDirection = Z_NEG;
+			
+		}
+		void setOrthoDeviceSpace(IView view) {
+			viewMatrix = projMatrix = normalMatrix = ID_MATRIX;
+			eyeDirection = Z_NEG;
+		}
+		
+		@Override
+		public void getAttributeSuppliers(ISuppliers suppliers) {
+			suppliers.provide(ProjMatrixUniform.ID, () -> projMatrix);
+			suppliers.provide(ViewMatrixUniform.ID, () -> viewMatrix);
+			suppliers.provide(NormalMatrixUniform.ID, () -> normalMatrix);
+			suppliers.provide(EyeDirectionUniform.ID, () -> eyeDirection);
+		}
+	}
+
+	private final ViewState state = new ViewState();
 
 	public ForwardRenderer() {
-		addAttributeProvider(new IAttributeProvider() {
-			@Override
-			public void getAttributeSuppliers(ISuppliers suppliers) {
-				suppliers.provide(ProjMatrixUniform.ID, () -> state.projMatrix);
-				suppliers.provide(ViewMatrixUniform.ID, () -> state.viewMatrix);
-			}
-		});
+		addAttributeProvider(state);
 	}
 
 	@Override
@@ -86,10 +118,8 @@ public class ForwardRenderer extends AbstractRenderer {
 		boolean interactive = view.getConfig().getViewType() == IView.ViewType.INTERACTIVE_VIEW;
 		
 		update(gl);
-		Mat4 viewMatrix = view.getCameraMatrices().getViewMatrix();
-		Mat4 projMatrix = view.getCameraMatrices().getProjMatrix();
 
-		state.setMatrices(viewMatrix, projMatrix);
+		state.setCameraSpace(view);
 
 		// ---- 1. DEPTH PASS (DEPTH WRITE&TEST ENABLED, BLEND OFF)
 		gl.glEnable(GL.GL_DEPTH_TEST);
@@ -108,11 +138,11 @@ public class ForwardRenderer extends AbstractRenderer {
 		renderPass(gl, Pass.OVERLAY, interactive);
 
 		// ---- 4. DEVICE SPACE OVERLAY (DEPTH WRITE&TEST DISABLED, BLEND ON)
-		state.setMatrices(viewMatrix2D, Mat4.identityMatrix());
+		state.setOrthoDeviceSpace(view);
 		renderPass(gl, Pass.DEVICE_SPACE_OVERLAY, interactive);
 
 		// ---- 5. SCREEN SPACE OVERLAY (DEPTH WRITE&TEST DISABLED, BLEND ON)
-		state.setMatrices(viewMatrix2D, Mat4.ortho(0, view.getViewport().w, view.getViewport().h, 0, -1, 1));
+		state.setOrthoScreenSpace(view);
 		renderPass(gl, Pass.SCREEN_SPACE_OVERLAY, interactive);
 
 		// ---- 6. CLEANUP: RETURN TO DEFAULTS

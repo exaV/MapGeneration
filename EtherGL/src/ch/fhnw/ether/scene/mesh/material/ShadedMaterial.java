@@ -27,48 +27,31 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.render;
+package ch.fhnw.ether.scene.mesh.material;
 
-import javax.media.opengl.GL3;
+import ch.fhnw.util.color.RGB;
 
-import ch.fhnw.ether.scene.light.ILight;
-import ch.fhnw.ether.scene.mesh.IMesh;
-import ch.fhnw.ether.view.IView;
+public class ShadedMaterial extends AbstractMaterial {
+	private float[] emission;
+	private float[] diffuse;
+	private float[] specular;
+	private float shininess;
+	private float strength;
 
-/**
- * Simple rendering interface.
- *
- * @author radar
- */
-public interface IRenderer {
-	/**
-	 * Add mesh to renderer. Allocates all renderer-dependent resources. Thread-safe.
-	 * 
-	 * @param mesh
-	 *            mesh to be added
-	 * @throws IllegalArgumentException
-	 *             if mesh already in renderer.
-	 */
-	void addMesh(IMesh mesh);
+	public ShadedMaterial(RGB emission, RGB diffuse, RGB specular, float shininess, float strength, float alpha) {
+		this.emission = emission.toArray();
+		this.diffuse = new float[] { diffuse.x, diffuse.y, diffuse.z, alpha };
+		this.specular = specular.toArray();
+		this.shininess = shininess;
+		this.strength = strength;
+	}
 
-	// TODO: we could use a special flag (or similar) to prevent deallocation of resources for cases where meshes are
-	// added and removed quickly.
-	/**
-	 * Remove mesh from renderer. Releases all renderer-dependent resources. Thread-safe.
-	 * 
-	 * @param mesh
-	 *            mesh to be removed
-	 * @throws IllegalArgumentException
-	 *             if mesh not in renderer.
-	 */
-	void removeMesh(IMesh mesh);
-
-	void addLight(ILight light);
-
-	void removeLight(ILight light);
-
-	/**
-	 * Called view from render thread to render the meshes. Do not call this method otherwise.
-	 */
-	void render(GL3 gl, IView view);
+	@Override
+	public void getAttributeSuppliers(ISuppliers suppliers) {
+		suppliers.provide(IMaterial.EMISSION, () -> emission);
+		suppliers.provide(IMaterial.DIFFUSE, () -> diffuse);
+		suppliers.provide(IMaterial.SPECULAR, () -> specular);
+		suppliers.provide(IMaterial.SHININESS, () -> shininess);
+		suppliers.provide(IMaterial.STRENGTH, () -> strength);
+	}
 }

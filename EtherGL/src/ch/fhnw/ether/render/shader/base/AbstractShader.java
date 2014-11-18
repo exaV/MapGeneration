@@ -75,7 +75,7 @@ public abstract class AbstractShader implements IShader {
 	@Override
 	public final void update(GL3 gl) {
 		if (program == null)
-			program = Program.create(gl, root, "glsl/" + source + "_vert.glsl", "glsl/" + source + "_frag.glsl", System.out);
+			program = Program.create(gl, root, "glsl/" + source + "_vert.glsl", "glsl/" + source + "_frag.glsl", System.err);
 	}
 
 	@Override

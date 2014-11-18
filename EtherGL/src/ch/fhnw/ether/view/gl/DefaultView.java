@@ -207,10 +207,11 @@ public class DefaultView implements IView {
 				gl.glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
 				gl.glClearDepth(1.0f);
 
-				gl.glEnable( GL.GL_LINE_SMOOTH );
-				gl.glHint( GL.GL_LINE_SMOOTH_HINT, GL.GL_NICEST );
+				// FIXME: this makes things just uglier on an retina display...
+				gl.glEnable(GL.GL_LINE_SMOOTH);
+				gl.glHint(GL.GL_LINE_SMOOTH_HINT, GL.GL_NICEST);
 				
-				gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);				
+				gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -221,7 +222,8 @@ public class DefaultView implements IView {
 			try {
 				GL gl = drawable.getGL();
 				GL3 gl3 = gl.getGL3();
-				// GL3 gl3 = new DebugGL3(gl.getGL3());
+				// gl3 = new TraceGL3(gl3, System.out);
+				// gl3 = new DebugGL3(gl3);
 
 				gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT | GL.GL_STENCIL_BUFFER_BIT);
 

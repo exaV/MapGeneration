@@ -11,8 +11,8 @@ import ch.fhnw.util.math.Vec3;
 // #point = 10 * f^2 + 2
 // http://wackel.home.comcast.net/~wackel/Geometry/GeoSubdivision.html
 
+// FIXME: orientation of starting triangles is wrong...
 // FIXME: we still create too many points when correspondance is not set
-// TODO: support for normals and tex coords
 
 public class GeodesicSphere {
 	private static final float SCALE = 0.5f;
