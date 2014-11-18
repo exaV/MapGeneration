@@ -31,7 +31,7 @@ package ch.fhnw.ether.render;
 
 import javax.media.opengl.GL3;
 
-import ch.fhnw.ether.scene.attribute.IAttributeProvider;
+import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.util.math.Mat4;
@@ -75,9 +75,9 @@ public interface IRenderer {
 	void removeMesh(IMesh mesh);
 	
 	
-	void addAttributeProvider(IAttributeProvider provider);
+	void addLight(ILight light);
 	
-	void removeAttributeProvider(IAttributeProvider provider);
+	void removeLight(ILight light);
 
 	/**
 	 * Called view from render thread to render the meshes. Do not call this method otherwise.

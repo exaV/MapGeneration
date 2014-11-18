@@ -66,7 +66,7 @@ public class RaytracerExample2 {
 		
 	
 		// setup scene;
-		ILight light = new PointLight(new Vec3(-1, -1, 3), RGB.WHITE);
+		ILight light = new PointLight(new Vec3(-1, -1, 3), RGB.BLACK, RGB.WHITE);
 		scene.add3DObject(light);
 
 		Sphere sphere = new Sphere(0.5f);

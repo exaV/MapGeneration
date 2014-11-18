@@ -51,6 +51,10 @@ public class RGB extends Vec3 implements IColor {
 		super(red, green, blue);
 	}
 
+	public RGB(float[] rgb) {
+		this(rgb[0], rgb[1], rgb[2]);
+	}	
+
 	@Override
 	public float red() {
 		return x;

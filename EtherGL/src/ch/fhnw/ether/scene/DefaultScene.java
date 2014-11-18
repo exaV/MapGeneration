@@ -34,6 +34,7 @@ import java.util.Collections;
 import java.util.List;
 
 import ch.fhnw.ether.controller.IController;
+import ch.fhnw.ether.render.IRenderer;
 import ch.fhnw.ether.scene.camera.ICamera;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.IMesh;
@@ -59,14 +60,24 @@ public class DefaultScene implements IScene {
 	
 	@Override
 	public final void add3DObject(I3DObject object) {
+		IRenderer renderer = controller.getRenderer();
 		if (object instanceof IMesh) {
 			meshes.add((IMesh)object);
-			controller.getRenderer().addMesh((IMesh)object);
+			renderer.addMesh((IMesh)object);
 		}
 		if (object instanceof ICamera)
 			cameras.add((ICamera)object);
-		if (object instanceof ILight)
-			lights.add((ILight)object);		
+		if (object instanceof ILight) {
+			ILight newLight = (ILight)object;
+			if (lights.isEmpty()) {
+				lights.add(newLight);		
+			} else {
+				ILight oldLight = lights.get(0);
+				renderer.removeLight(oldLight);
+				lights.set(0, newLight);
+			}
+			renderer.addLight(newLight);
+		}
 		objects.add(object);
 	}
 	
@@ -78,14 +89,17 @@ public class DefaultScene implements IScene {
 	
 	@Override
 	public final void remove3DObject(I3DObject object) {
+		IRenderer renderer = controller.getRenderer();
 		if (object instanceof IMesh) {
 			meshes.remove(object);
-			controller.getRenderer().removeMesh((IMesh)object);
+			renderer.removeMesh((IMesh)object);
 		}
 		if (object instanceof ICamera)
 			cameras.remove(object);
-		if (object instanceof ILight)
-			lights.remove(object);		
+		if (object instanceof ILight) {
+			lights.remove(object);	
+			renderer.removeLight((ILight)object);
+		}
 		objects.remove(object);
 	}
 	

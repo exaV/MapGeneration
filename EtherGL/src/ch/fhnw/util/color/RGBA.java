@@ -52,12 +52,12 @@ public class RGBA extends Vec4 implements IColor {
 	public static final RGBA LIGHT_GRAY = new RGBA(0.75f, 0.75f, 0.75f, 1);
 	public static final RGBA DARK_GRAY = new RGBA(0.25f, 0.25f, 0.25f, 1);
 
-	public RGBA(float[] rgba) {
-		this(rgba[0], rgba[1], rgba[2], rgba[3]);
-	}
-
 	public RGBA(float r, float g, float b, float a) {
 		super(r, g, b, a);
+	}
+
+	public RGBA(float[] rgba) {
+		this(rgba[0], rgba[1], rgba[2], rgba[3]);
 	}
 
 	public RGBA(Vec4 c) {

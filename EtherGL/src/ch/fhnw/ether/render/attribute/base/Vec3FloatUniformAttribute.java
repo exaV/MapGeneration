@@ -33,61 +33,28 @@ import java.util.function.Supplier;
 
 import javax.media.opengl.GL3;
 
-import ch.fhnw.ether.render.attribute.IUniformAttribute;
 import ch.fhnw.ether.render.gl.Program;
 import ch.fhnw.ether.scene.attribute.IAttribute;
 
-public abstract class AbstractUniformAttribute<T> extends AbstractShaderAttribute implements IUniformAttribute {
-	private Supplier<T> supplier;
-
-	protected AbstractUniformAttribute(IAttribute attribute, String shaderName) {
+public class Vec3FloatUniformAttribute extends AbstractUniformAttribute<float[]> {
+	public Vec3FloatUniformAttribute(IAttribute attribute, String shaderName) {
 		super(attribute, shaderName);
 	}
 
-	protected AbstractUniformAttribute(String id, String shaderName) {
+	public Vec3FloatUniformAttribute(String id, String shaderName) {
 		super(id, shaderName);
 	}
 
-	protected AbstractUniformAttribute(IAttribute attribute, String shaderName, Supplier<T> supplier) {
-		this(attribute, shaderName);
-		this.supplier = supplier;
+	public Vec3FloatUniformAttribute(IAttribute attribute, String shaderName, Supplier<float[]> supplier) {
+		super(attribute, shaderName, supplier);
 	}
 
-	protected AbstractUniformAttribute(String id, String shaderName, Supplier<T> supplier) {
-		this(id, shaderName);
-		this.supplier = supplier;
-	}
-
-	protected T get() {
-		return supplier.get();
+	public Vec3FloatUniformAttribute(String id, String shaderName, Supplier<float[]> supplier) {
+		super(id, shaderName, supplier);
 	}
 
 	@Override
-	public final boolean hasSupplier() {
-		return supplier != null;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public final void setSupplier(Supplier<?> supplier) {
-		this.supplier = (Supplier<T>) supplier;
-	}
-
-	@Override
-	public void dispose(GL3 gl) {
-	}
-
-	@Override
-	public void disable(GL3 gl, Program program) {
-	}
-
-	@Override
-	protected final int resolveShaderIndex(GL3 gl, Program program, String shaderName) {
-		return program.getUniformLocation(gl, shaderName);
-	}
-
-	@Override
-	public String toString() {
-		return super.toString() + "[" + supplier + "]";
+	public void enable(GL3 gl, Program program) {
+		program.setUniformVec3(gl, getShaderIndex(gl, program), get());
 	}
 }

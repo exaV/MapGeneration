@@ -32,7 +32,6 @@ package ch.fhnw.ether.scene.light;
 import ch.fhnw.ether.scene.I3DObject;
 import ch.fhnw.ether.scene.attribute.AbstractAttribute;
 import ch.fhnw.ether.scene.attribute.IAttributeProvider;
-import ch.fhnw.util.color.RGB;
 
 public interface ILight extends I3DObject, IAttributeProvider {
 	public static final class LightAttribute extends AbstractAttribute {
@@ -40,10 +39,6 @@ public interface ILight extends I3DObject, IAttributeProvider {
 			super(id);
 		}
 	}
-
-	RGB getColor();
-
-	void setColor(RGB color);
 
 	/**
 	 * @return true if light was modified since last call to this method.

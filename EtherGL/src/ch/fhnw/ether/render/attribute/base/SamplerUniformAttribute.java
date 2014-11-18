@@ -37,6 +37,7 @@ import javax.media.opengl.GL3;
 import ch.fhnw.ether.image.FloatFrame;
 import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.image.Grey16Frame;
+import ch.fhnw.ether.image.RGB8Frame;
 import ch.fhnw.ether.image.RGBA8Frame;
 import ch.fhnw.ether.render.gl.Program;
 import ch.fhnw.ether.scene.attribute.IAttribute;
@@ -124,13 +125,13 @@ public class SamplerUniformAttribute extends AbstractUniformAttribute<Texture> {
 		}
 		gl.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
 		frame.pixels.rewind();
-		if(frame instanceof RGBA8Frame)
+		if (frame instanceof RGBA8Frame)
 			gl.glTexImage2D(target, 0, GL.GL_RGBA, frame.dimI, frame.dimJ, 0, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, frame.pixels);
-		else if(frame instanceof RGBA8Frame)
+		else if (frame instanceof RGB8Frame)
 			gl.glTexImage2D(target, 0, GL.GL_RGB, frame.dimI, frame.dimJ, 0, GL.GL_RGB, GL.GL_UNSIGNED_BYTE, frame.pixels);
-		else if(frame instanceof FloatFrame)
+		else if (frame instanceof FloatFrame)
 			gl.glTexImage2D(target, 0, GL3.GL_RED, frame.dimI, frame.dimJ, 0, GL3.GL_RED, GL.GL_FLOAT, frame.pixels);
-		else if(frame instanceof Grey16Frame)
+		else if (frame instanceof Grey16Frame)
 			gl.glTexImage2D(target, 0, GL3.GL_RED, frame.dimI, frame.dimJ, 0, GL3.GL_RED, GL.GL_UNSIGNED_SHORT, frame.pixels);
 		gl.glGenerateMipmap(target);
 		gl.glBindTexture(target, 0);

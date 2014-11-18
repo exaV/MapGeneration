@@ -39,8 +39,8 @@ import ch.fhnw.ether.image.RGBA8Frame;
 import ch.fhnw.ether.render.IRenderer;
 import ch.fhnw.ether.render.forward.ForwardRenderer;
 import ch.fhnw.ether.scene.attribute.IAttribute;
-import ch.fhnw.ether.scene.attribute.IAttributeProvider;
 import ch.fhnw.ether.scene.camera.ICamera;
+import ch.fhnw.ether.scene.light.GenericLight;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
@@ -125,15 +125,7 @@ public class RayTracingRenderer implements IRenderer {
 	public void removeMesh(IMesh mesh) {
 		meshes.remove(mesh);
 	}
-
-	@Override
-	public void addAttributeProvider(IAttributeProvider provider) {
-	}
-
-	@Override
-	public void removeAttributeProvider(IAttributeProvider provider) {
-
-	};
+	
 
 	private RGBA intersection(Line ray, ILight light) {
 
@@ -168,7 +160,7 @@ public class RayTracingRenderer implements IRenderer {
 		// diffuse color
 		float f = Math.max(0, lightRay.getDirection().dot(nearest.surface.getNormalAt(nearest.position)));
 		RGBA c = nearest.color;
-		RGB lc = light.getColor();
+		RGB lc = new RGB(((GenericLight)light).getLightParameters().getColor());
 
 		return new RGBA(f * c.x * lc.x, f * c.y * lc.y, f * c.z * lc.z, c.w);
 	}
@@ -180,5 +172,13 @@ public class RayTracingRenderer implements IRenderer {
 		IGeometry geometry = new DefaultGeometry(Primitive.TRIANGLES, attribs, data);
 
 		return new DefaultMesh(new ColorMapMaterial(texture), geometry, Pass.DEVICE_SPACE_OVERLAY);
+	}
+
+	@Override
+	public void addLight(ILight light) {
+	}
+
+	@Override
+	public void removeLight(ILight light) {
 	}
 }

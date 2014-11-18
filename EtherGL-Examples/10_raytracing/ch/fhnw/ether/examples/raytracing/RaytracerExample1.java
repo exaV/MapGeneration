@@ -61,7 +61,7 @@ public class RaytracerExample1 {
 		controller.addView(view);
 		
 		// setup scene
-		ILight light = new PointLight(new Vec3(0, 0, 3), RGB.WHITE);
+		ILight light = new PointLight(new Vec3(0, 0, 3), RGB.BLACK, RGB.WHITE);
 		scene.add3DObject(light);
 		
 		RayTraceMesh sphere = new RayTraceMesh(new Sphere(0.5f));

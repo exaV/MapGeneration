@@ -32,15 +32,32 @@ package ch.fhnw.ether.render;
 import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.scene.attribute.IAttributeProvider;
+import ch.fhnw.ether.scene.light.GenericLight;
+import ch.fhnw.ether.scene.light.ILight;
+import ch.fhnw.ether.scene.light.GenericLight.LightParameters;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.IMesh.Pass;
+import ch.fhnw.util.color.RGB;
+import ch.fhnw.util.math.Vec3;
 
 public abstract class AbstractRenderer implements IRenderer {
+	private static final LightParameters DEFAULT_LIGHT_PARAMETERS = new LightParameters(false, false, Vec3.Z, RGB.GRAY, RGB.WHITE, Vec3.Z_NEG, 0, 0, 0, 0, 0);
 
 	private final Renderables renderables = new Renderables();
 
 	private final AttributeProviders attributes = new AttributeProviders();
 
+	private LightParameters lightParameters = DEFAULT_LIGHT_PARAMETERS;;
+
+	public AbstractRenderer() {
+		addAttributeProvider(new IAttributeProvider() {
+			@Override
+			public void getAttributeSuppliers(ISuppliers suppliers) {
+				suppliers.provide(GenericLight.GENERIC_LIGHT, () -> lightParameters);
+			}
+		});
+	}
+	
 	@Override
 	public void addMesh(IMesh mesh) {
 		renderables.addMesh(mesh, attributes);
@@ -52,13 +69,20 @@ public abstract class AbstractRenderer implements IRenderer {
 	}
 
 	@Override
-	public void addAttributeProvider(IAttributeProvider provider) {
-		attributes.addProvider(provider);
+	public void addLight(ILight light) {
+		if (light instanceof GenericLight)
+			lightParameters = ((GenericLight) light).getLightParameters();
+		else
+			throw new IllegalArgumentException("can only handle GenericLight");
 	}
 
 	@Override
-	public void removeAttributeProvider(IAttributeProvider provider) {
-		attributes.removeProvider(provider);
+	public void removeLight(ILight light) {
+		lightParameters = DEFAULT_LIGHT_PARAMETERS;
+	}
+
+	public void addAttributeProvider(IAttributeProvider provider) {
+		attributes.addProvider(provider);
 	}
 
 	protected void update(GL3 gl) {

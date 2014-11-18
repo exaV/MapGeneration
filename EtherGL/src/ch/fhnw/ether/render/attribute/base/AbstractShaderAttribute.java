@@ -35,7 +35,7 @@ import ch.fhnw.ether.render.gl.Program;
 import ch.fhnw.ether.scene.attribute.AbstractAttribute;
 import ch.fhnw.ether.scene.attribute.IAttribute;
 
-abstract class AbstractShaderAttribute extends AbstractAttribute {
+public abstract class AbstractShaderAttribute extends AbstractAttribute {
 	private final String shaderName;
 	private int shaderIndex = -1;
 

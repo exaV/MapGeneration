@@ -155,6 +155,16 @@ public final class Program {
 		gl.glUniform1f(index, value);
 	}
 
+	public void setUniformVec2(GL3 gl, int index, float[] value) {
+		if (value != null)
+			gl.glUniform2fv(index, 1, value, 0);
+	}
+
+	public void setUniformVec3(GL3 gl, int index, float[] value) {
+		if (value != null)
+			gl.glUniform3fv(index, 1, value, 0);
+	}
+
 	public void setUniformVec4(GL3 gl, int index, float[] value) {
 		if (value != null)
 			gl.glUniform4fv(index, 1, value, 0);
