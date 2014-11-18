@@ -54,7 +54,7 @@ public class Texture {
 
 	public void setData(URL url) {
 		try {
-			frame = VideoTrackFactory.createSequentialTrack(url).getNextFrame();
+			setData(VideoTrackFactory.createSequentialTrack(url).getNextFrame());
 		} catch (Throwable e) {
 			throw new IllegalArgumentException("can't load image " + url);
 		}

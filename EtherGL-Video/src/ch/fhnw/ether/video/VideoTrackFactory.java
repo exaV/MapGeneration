@@ -48,7 +48,7 @@ public final class VideoTrackFactory {
 	private static final boolean USE_AV_FOUNDATION = true;
 
 	public static IRandomAccessVideoTrack createRandomAccessTrack(URL url) throws IOException {
-		if(isImage(url))
+		if (isImage(url))
 			return new ImageTrack(url);
 		else if (USE_AV_FOUNDATION && AVAsset.isReady())
 			return new AVAsset(url);
@@ -60,7 +60,7 @@ public final class VideoTrackFactory {
 	}
 
 	public static ISequentialVideoTrack createSequentialTrack(URL url) throws IOException {
-		if(isImage(url))
+		if (isImage(url))
 			return new ImageTrack(url);
 		else if (USE_AV_FOUNDATION && AVAsset.isReady())
 			return new AVAsset(url);
@@ -70,7 +70,6 @@ public final class VideoTrackFactory {
 			throw new IOException("cannot create video track from " + url, t);
 		}
 	}
-
 
 	// TODO: move tests elsewhere
 	public static void main(String[] args) {
