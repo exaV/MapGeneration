@@ -51,9 +51,7 @@ public class SimplePlayer extends Canvas implements Runnable {
 			for(;;) {
 				while(frames.size() > 5)
 					sleep((long) (1000 / track.getFrameRate()));
-				long before = System.currentTimeMillis();
 				frames.add(track.getNextFrame());
-				System.out.println(System.currentTimeMillis() - before);
 				repaint();
 			}
 		}
