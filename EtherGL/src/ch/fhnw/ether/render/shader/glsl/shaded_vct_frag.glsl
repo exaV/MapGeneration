@@ -1,7 +1,5 @@
 #version 330
 
-uniform vec3 eyeDirection;
-
 uniform sampler2D colorMap;
 
 uniform bool useTexture;
