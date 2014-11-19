@@ -32,21 +32,32 @@ package ch.fhnw.util.color;
 import ch.fhnw.util.math.Vec3;
 
 public class RGB extends Vec3 implements IColor {
-	public static final RGB BLACK = new RGB(0, 0, 0);
-	public static final RGB WHITE = new RGB(1, 1, 1);
+	public static final RGB BLACK      = new RGB(0, 0, 0);
+	public static final RGB WHITE      = new RGB(1, 1, 1);
 
-	public static final RGB RED = new RGB(1, 0, 0);
-	public static final RGB GREEN = new RGB(0, 1, 0);
-	public static final RGB BLUE = new RGB(0, 0, 1);
+	public static final RGB RED        = new RGB(1, 0, 0);
+	public static final RGB GREEN      = new RGB(0, 1, 0);
+	public static final RGB BLUE       = new RGB(0, 0, 1);
 
-	public static final RGB YELLOW = new RGB(1, 1, 0);
-	public static final RGB MAGENTA = new RGB(1, 0, 1);
-	public static final RGB CYAN = new RGB(0, 1, 1);
+	public static final RGB YELLOW     = new RGB(1, 1, 0);
+	public static final RGB MAGENTA    = new RGB(1, 0, 1);
+	public static final RGB CYAN       = new RGB(0, 1, 1);
 
-	public static final RGB GRAY = new RGB(0.5f, 0.5f, 0.5f);
+	public static final RGB GRAY       = new RGB(0.5f, 0.5f, 0.5f);
 	public static final RGB LIGHT_GRAY = new RGB(0.75f, 0.75f, 0.75f);
-	public static final RGB DARK_GRAY = new RGB(0.25f, 0.25f, 0.25f);
+	public static final RGB DARK_GRAY  = new RGB(0.25f, 0.25f, 0.25f);
 
+	public static final RGB GRAY10 = new RGB(0.1f, 0.1f, 0.1f);
+	public static final RGB GRAY20 = new RGB(0.2f, 0.2f, 0.2f);
+	public static final RGB GRAY30 = new RGB(0.3f, 0.3f, 0.3f);
+	public static final RGB GRAY40 = new RGB(0.4f, 0.4f, 0.4f);
+	public static final RGB GRAY50 = new RGB(0.5f, 0.5f, 0.5f);
+	public static final RGB GRAY60 = new RGB(0.6f, 0.6f, 0.6f);
+	public static final RGB GRAY70 = new RGB(0.7f, 0.7f, 0.7f);
+	public static final RGB GRAY80 = new RGB(0.8f, 0.8f, 0.7f);
+	public static final RGB GRAY90 = new RGB(0.9f, 0.9f, 0.9f);
+
+	
 	public RGB(float red, float green, float blue) {
 		super(red, green, blue);
 	}

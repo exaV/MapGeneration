@@ -29,8 +29,6 @@
 
 package ch.fhnw.ether.video.jcodec;
 
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -39,10 +37,6 @@ import java.net.URL;
 import org.jcodec.api.JCodecException;
 import org.jcodec.common.NIOUtils;
 import org.jcodec.common.SeekableByteChannel;
-import org.jcodec.common.model.ColorSpace;
-import org.jcodec.common.model.Picture;
-import org.jcodec.scale.ColorUtil;
-import org.jcodec.scale.Transform;
 
 import ch.fhnw.ether.video.IVideoTrack;
 
@@ -97,25 +91,6 @@ abstract class AbstractVideoTrack implements IVideoTrack {
 	@Override
 	public int getHeight() {
 		return grab.getMediaInfo().getDim().getHeight();
-	}
-
-	protected static BufferedImage toBufferedImageNoCrop(Picture src) {
-		if (src.getColor() != ColorSpace.RGB) {
-			Transform transform = ColorUtil.getTransform(src.getColor(), ColorSpace.RGB);
-			Picture rgb = Picture.create(src.getWidth(), src.getHeight(), ColorSpace.RGB, src.getCrop());
-			transform.transform(src, rgb);
-			src = rgb;
-		}
-
-		BufferedImage dst = new BufferedImage(src.getWidth(), src.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
-
-		byte[] data = ((DataBufferByte) dst.getRaster().getDataBuffer()).getData();
-		int[] srcData = src.getPlaneData(0);
-		for (int i = 0; i < data.length; i++) {
-			data[i] = (byte) srcData[i];
-		}
-
-		return dst;
 	}
 
 	@Override

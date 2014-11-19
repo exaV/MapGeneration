@@ -45,7 +45,7 @@ import ch.fhnw.ether.video.jcodec.RandomAccessVideoTrack;
 import ch.fhnw.ether.video.jcodec.SequentialVideoTrack;
 
 public final class VideoTrackFactory {
-	private static final boolean USE_AV_FOUNDATION = true;
+	private static final boolean USE_AV_FOUNDATION = false;
 
 	public static IRandomAccessVideoTrack createRandomAccessTrack(URL url) throws IOException {
 		if (isImage(url))

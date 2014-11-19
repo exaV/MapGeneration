@@ -47,7 +47,7 @@ public final class RandomAccessVideoTrack extends AbstractVideoTrack implements 
 	public Frame getFrame(long frame) {
 		try {
 			grab.seekToFramePrecise((int) frame);
-			return Frame.newFrame(toBufferedImageNoCrop(grab.getNativeFrame()));
+			return Frame.newFrame(grab.getNativeFrame());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -58,7 +58,7 @@ public final class RandomAccessVideoTrack extends AbstractVideoTrack implements 
 	public Frame getFrame(double time) {
 		try {
 			grab.seekToSecondPrecise(time);
-			return Frame.newFrame(toBufferedImageNoCrop(grab.getNativeFrame()));
+			return Frame.newFrame(grab.getNativeFrame());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

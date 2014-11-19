@@ -55,7 +55,7 @@ public final class SequentialVideoTrack extends AbstractVideoTrack implements IS
 	@Override
 	public Frame getNextFrame() {
 		try {
-			return Frame.newFrame(toBufferedImageNoCrop(grab.getNativeFrame()));
+			return Frame.newFrame(grab.getNativeFrame());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -32,6 +32,11 @@ package ch.fhnw.ether.image;
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 
+import org.jcodec.common.model.ColorSpace;
+import org.jcodec.common.model.Picture;
+import org.jcodec.scale.ColorUtil;
+import org.jcodec.scale.Transform;
+
 import ch.fhnw.util.BufferUtil;
 
 public abstract class Frame {
@@ -163,6 +168,29 @@ public abstract class Frame {
 		return result;
 	}
 
+	public final static Frame newFrame(Picture src) {
+		if (src.getColor() != ColorSpace.RGB) {
+			Transform transform = ColorUtil.getTransform(src.getColor(), ColorSpace.RGB);
+			Picture   rgb       = Picture.create(src.getWidth(), src.getHeight(), ColorSpace.RGB, src.getCrop());
+			transform.transform(src, rgb);
+			src = rgb;
+		}
+
+		final Frame      result  = new RGB8Frame(src.getWidth(), src.getHeight());
+		final ByteBuffer pixels  = result.pixels;
+		final int[]      srcData = src.getPlaneData(0);
+		final int        size    = result.dimI * result.dimJ * result.pixelSize;
+		
+		pixels.clear();
+		for (int i = 0; i < size; i += 3) {
+			pixels.put((byte) srcData[i+2]);
+			pixels.put((byte) srcData[i+1]);
+			pixels.put((byte) srcData[i+0]);
+		}
+
+		return result;
+	}
+	
 	public final void setPixels(int i, int j, int width, int height, BufferedImage img) {
 		setPixels(i, j, width, height, img, 0);
 	}

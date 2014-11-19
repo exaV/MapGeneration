@@ -38,6 +38,7 @@ import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Vec3;
+import ch.fhnw.util.math.geometry.GeometryUtil;
 
 public class MeshLibrary {
 
@@ -68,6 +69,8 @@ public class MeshLibrary {
 		+0.5f, -0.5f, -0.5f, +0.5f, +0.5f, +0.5f, +0.5f, -0.5f, +0.5f 
 	};
 
+	public static final float[] UNIT_CUBE_NORMALS = GeometryUtil.calculateNormals(UNIT_CUBE_TRIANGLES);
+	
 	public static final float[] UNIT_CUBE_EDGES = {
 		// bottom
 		-0.5f, -0.5f, -0.5f, -0.5f, +0.5f, -0.5f, 
