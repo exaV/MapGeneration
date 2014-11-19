@@ -160,7 +160,7 @@ public class RayTracingRenderer implements IRenderer {
 		// diffuse color
 		float f = Math.max(0, lightRay.getDirection().dot(nearest.surface.getNormalAt(nearest.position)));
 		RGBA c = nearest.color;
-		RGB lc = new RGB(((GenericLight)light).getLightParameters().getColor());
+		RGB lc = new RGB(((GenericLight)light).getLightSource().getColor());
 
 		return new RGBA(f * c.x * lc.x, f * c.y * lc.y, f * c.z * lc.z, c.w);
 	}

@@ -37,6 +37,8 @@ public class ShadedMaterial extends AbstractMaterial {
 	private float[] specular;
 	private float shininess;
 	private float strength;
+	
+	private Texture colorMap;
 
 	public ShadedMaterial(RGB emission, RGB diffuse, RGB specular, float shininess, float strength, float alpha) {
 		this.emission = emission.toArray();
@@ -46,6 +48,15 @@ public class ShadedMaterial extends AbstractMaterial {
 		this.strength = strength;
 	}
 
+	public ShadedMaterial(RGB emission, RGB diffuse, RGB specular, float shininess, float strength, float alpha, Texture colorMap) {
+		this.emission = emission.toArray();
+		this.diffuse = new float[] { diffuse.x, diffuse.y, diffuse.z, alpha };
+		this.specular = specular.toArray();
+		this.shininess = shininess;
+		this.strength = strength;
+		this.colorMap = colorMap;
+	}
+	
 	@Override
 	public void getAttributeSuppliers(ISuppliers suppliers) {
 		suppliers.provide(IMaterial.EMISSION, () -> emission);
@@ -53,5 +64,10 @@ public class ShadedMaterial extends AbstractMaterial {
 		suppliers.provide(IMaterial.SPECULAR, () -> specular);
 		suppliers.provide(IMaterial.SHININESS, () -> shininess);
 		suppliers.provide(IMaterial.STRENGTH, () -> strength);
+
+		if (colorMap != null) {
+			suppliers.provide(IMaterial.COLOR_MAP, () -> colorMap);
+			suppliers.require(IMaterial.COLOR_MAP_ARRAY);
+		}
 	}
 }

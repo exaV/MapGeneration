@@ -35,7 +35,15 @@ import ch.fhnw.util.math.Vec3;
 import com.jogamp.newt.event.KeyEvent;
 
 public class ObjLoaderController extends DefaultController {
-	private static final String[] HELP = { "Simple Obj Loader Example", "", "[1-6] Side Views", "", "Use Mouse Buttons + Shift or Mouse Wheel to Navigate" };
+	private static final String[] HELP = { 
+		//@formatter:off
+		"Simple Obj Loader Example", 
+		"", 
+		"[1-6] Side Views", 
+		"", 
+		"Use Mouse Buttons + Shift or Mouse Wheel to Navigate" 
+		//@formatter:on
+	};
 	
 	private static final Vec3[][] CAM_PARAMS = {
 		//@formatter:off

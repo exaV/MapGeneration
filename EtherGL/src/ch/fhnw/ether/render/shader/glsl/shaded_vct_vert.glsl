@@ -9,18 +9,23 @@ uniform bool useTexture;
 
 uniform vec4 materialDiffuseColor;
 
-uniform vec3 lightPosition;
+uniform vec4 lightPosition;
+uniform vec3 lightSpotDirection;
 
 in vec4 vertexPosition;
 in vec4 vertexNormal;
 in vec4 vertexColor;
 in vec2 vertexTexCoord;
 
-out vec4 vsPosition;
-out vec3 vsNormal;
-out vec4 vsDiffuseColor;
-out vec2 vsTexCoord;
-out vec3 vsLightPosition;
+out vec4 vsPosition;		// vertex position in eye space
+out vec3 vsNormal;			// vertex normal in eye space
+out vec4 vsDiffuseColor;	// vertex diffuse color
+out vec2 vsTexCoord;		// texture coordinate of color map
+
+// light position and spot direction in eye space 
+// XXX this can be precomputed and passed as uniform
+out vec3 vsLightPosition;	
+out vec3 vsLightSpotDirection;
 
 void main() {
 	vsPosition = viewMatrix * vertexPosition;
@@ -34,7 +39,8 @@ void main() {
 	if (useTexture)
 		vsTexCoord = vertexTexCoord;
 
-	vsLightPosition = mat3(viewMatrix) * lightPosition;
+	vsLightPosition = (viewMatrix * lightPosition).xyz;
+	vsLightSpotDirection = mat3(normalMatrix) * lightSpotDirection;
 
 	gl_Position = projMatrix * viewMatrix * vertexPosition;
 }

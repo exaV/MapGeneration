@@ -32,25 +32,25 @@ package ch.fhnw.ether.scene.mesh.material;
 import ch.fhnw.util.color.RGBA;
 
 public class ColorMapMaterial extends ColorMaterial {
-	private Texture texture;
+	private Texture colorMap;
 	
-	public ColorMapMaterial(Texture texture) {
-		this(texture, RGBA.WHITE);
+	public ColorMapMaterial(Texture colorMap) {
+		this(colorMap, RGBA.WHITE);
 	}
 
-	public ColorMapMaterial(Texture texture, RGBA color) {
-		this(texture, color, false);
+	public ColorMapMaterial(Texture colorMap, RGBA color) {
+		this(colorMap, color, false);
 	}
 
-	public ColorMapMaterial(Texture texture, RGBA color, boolean perVertexColor) {
+	public ColorMapMaterial(Texture colorMap, RGBA color, boolean perVertexColor) {
 		super(color, perVertexColor);
-		this.texture = texture;
+		this.colorMap = colorMap;
 	}
 
 	@Override
-	public void getAttributeSuppliers(ISuppliers supplier) {
-		supplier.provide(IMaterial.COLOR_MAP, () -> texture);
-		supplier.require(IMaterial.COLOR_MAP_ARRAY);
-		super.getAttributeSuppliers(supplier);
+	public void getAttributeSuppliers(ISuppliers suppliers) {
+		suppliers.provide(IMaterial.COLOR_MAP, () -> colorMap);
+		suppliers.require(IMaterial.COLOR_MAP_ARRAY);
+		super.getAttributeSuppliers(suppliers);
 	}
 }
