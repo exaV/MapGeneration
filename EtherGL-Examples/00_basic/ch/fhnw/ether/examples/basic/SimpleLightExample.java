@@ -143,11 +143,11 @@ public final class SimpleLightExample {
 
 		GeodesicSphere s = new GeodesicSphere(4);
 
-		IMaterial solidMaterial = new ShadedMaterial(RGB.BLACK, RGB.GRAY, RGB.RED, 20, 1, 1f);
+		IMaterial solidMaterial = new ShadedMaterial(RGB.BLACK, RGB.BLUE, RGB.GRAY, RGB.RED, 20, 1, 1f);
 		IMaterial lineMaterial = new ColorMaterial(new RGBA(1, 1, 1, 0.2f));
 
 		Texture t = new Texture(SimpleLightExample.class.getResource("assets/earth_nasa.jpg"));
-		IMaterial textureMaterial = new ShadedMaterial(RGB.BLACK, RGB.GRAY, RGB.RED, 20, 1, 1f, t);
+		IMaterial textureMaterial = new ShadedMaterial(RGB.BLACK, RGB.BLUE, RGB.GRAY, RGB.RED, 20, 1, 1f, t);
 
 		IMesh solidMeshT = new DefaultMesh(solidMaterial, DefaultGeometry.createVN(Primitive.TRIANGLES, s.getTriangles(), s.getNormals()), Pass.DEPTH);
 		IMesh solidMeshL = new DefaultMesh(lineMaterial, DefaultGeometry.createV(Primitive.LINES, s.getLines()), Pass.TRANSPARENCY);

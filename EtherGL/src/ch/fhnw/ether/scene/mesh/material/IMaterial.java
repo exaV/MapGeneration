@@ -54,6 +54,7 @@ public interface IMaterial extends IAttributeProvider, IUpdateRequester {
 	// triangles only: normals & shading
 	MaterialAttribute NORMAL_ARRAY = new MaterialAttribute("builtin.material.normal_array");
 	MaterialAttribute EMISSION = new MaterialAttribute("builtin.material.shading.emission");
+	MaterialAttribute AMBIENT = new MaterialAttribute("builtin.material.shading.ambient");
 	MaterialAttribute DIFFUSE = new MaterialAttribute("builtin.material.shading.diffuse");
 	MaterialAttribute SPECULAR = new MaterialAttribute("builtin.material.shading.specular");
 	MaterialAttribute SHININESS = new MaterialAttribute("builtin.material.shading.shininess");

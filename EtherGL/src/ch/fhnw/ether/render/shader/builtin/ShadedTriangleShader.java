@@ -68,6 +68,7 @@ public class ShadedTriangleShader extends AbstractShader {
 		addUniform(new BooleanUniformAttribute("shader.texture_flag", "useTexture", () -> useTexture));
 
 		addUniform(new Vec3FloatUniformAttribute(IMaterial.EMISSION, "materialEmissionColor"));
+		addUniform(new Vec3FloatUniformAttribute(IMaterial.AMBIENT, "materialAmbientColor"));
 		addUniform(new Vec4FloatUniformAttribute(IMaterial.DIFFUSE, "materialDiffuseColor"));
 		addUniform(new Vec3FloatUniformAttribute(IMaterial.SPECULAR, "materialSpecularColor"));
 		addUniform(new FloatUniformAttribute(IMaterial.SHININESS, "materialShininess"));
