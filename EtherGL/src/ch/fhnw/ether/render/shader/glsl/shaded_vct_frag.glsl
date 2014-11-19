@@ -6,6 +6,7 @@ uniform bool useTexture;
 
 // material parameters
 uniform vec3 materialEmissionColor;
+uniform vec3 materialAmbientColor;
 uniform vec3 materialSpecularColor;
 uniform float materialShininess;
 uniform float materialStrength;
@@ -71,7 +72,7 @@ void main() {
 
 	// accumulate all the lights' effects
 	vec3 emittedLight = materialEmissionColor;
-	vec3 scatteredLight = lightAmbientColor * attenuation + vsDiffuseColor.rgb * lightColor * diffuseFactor * attenuation;
+	vec3 scatteredLight = materialAmbientColor * lightAmbientColor * attenuation + vsDiffuseColor.rgb * lightColor * diffuseFactor * attenuation;
     vec3 reflectedLight = materialSpecularColor * lightColor * specularFactor * attenuation;
 
 	vec4 rgba = vec4(min(emittedLight + scatteredLight + reflectedLight, vec3(1.0)), vsDiffuseColor.a);

@@ -32,34 +32,33 @@ package ch.fhnw.ether.scene.mesh.material;
 import ch.fhnw.util.color.RGB;
 
 public class ShadedMaterial extends AbstractMaterial {
-	private float[] emission;
-	private float[] diffuse;
-	private float[] specular;
-	private float shininess;
-	private float strength;
+	private final float[] emission;
+	private final float[] ambient;
+	private final float[] diffuse;
+	private final float[] specular;
+	private final float shininess;
+	private final float strength;
 	
 	private Texture colorMap;
 
-	public ShadedMaterial(RGB emission, RGB diffuse, RGB specular, float shininess, float strength, float alpha) {
+	public ShadedMaterial(RGB emission, RGB ambient, RGB diffuse, RGB specular, float shininess, float strength, float alpha) {
 		this.emission = emission.toArray();
+		this.ambient = ambient.toArray();
 		this.diffuse = new float[] { diffuse.x, diffuse.y, diffuse.z, alpha };
 		this.specular = specular.toArray();
 		this.shininess = shininess;
 		this.strength = strength;
 	}
 
-	public ShadedMaterial(RGB emission, RGB diffuse, RGB specular, float shininess, float strength, float alpha, Texture colorMap) {
-		this.emission = emission.toArray();
-		this.diffuse = new float[] { diffuse.x, diffuse.y, diffuse.z, alpha };
-		this.specular = specular.toArray();
-		this.shininess = shininess;
-		this.strength = strength;
+	public ShadedMaterial(RGB emission, RGB ambient, RGB diffuse, RGB specular, float shininess, float strength, float alpha, Texture colorMap) {
+		this(emission, ambient, diffuse, specular, shininess, strength, alpha);
 		this.colorMap = colorMap;
 	}
 	
 	@Override
 	public void getAttributeSuppliers(ISuppliers suppliers) {
 		suppliers.provide(IMaterial.EMISSION, () -> emission);
+		suppliers.provide(IMaterial.AMBIENT, () -> ambient);
 		suppliers.provide(IMaterial.DIFFUSE, () -> diffuse);
 		suppliers.provide(IMaterial.SPECULAR, () -> specular);
 		suppliers.provide(IMaterial.SHININESS, () -> shininess);
