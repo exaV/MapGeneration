@@ -36,6 +36,7 @@ import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.scene.camera.DefaultCameraControl;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
+import ch.fhnw.ether.scene.mesh.IMesh.Pass;
 import ch.fhnw.ether.scene.mesh.MeshLibrary;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
@@ -138,6 +139,6 @@ public class NavigationTool extends AbstractTool {
 			MeshLibrary.addLine(lines, -e, -i * gridSpacing, e, -i * gridSpacing);
 		}
 
-		return new DefaultMesh(new ColorMaterial(RGBA.WHITE), DefaultGeometry.createV(Primitive.LINES, Vec3.toArray(lines)));
+		return new DefaultMesh(new ColorMaterial(RGBA.GRAY), DefaultGeometry.createV(Primitive.LINES, Vec3.toArray(lines)), Pass.TRANSPARENCY);
 	}
 }

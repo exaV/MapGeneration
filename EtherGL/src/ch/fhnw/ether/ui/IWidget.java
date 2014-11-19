@@ -37,9 +37,9 @@ import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.MouseEvent;
 
 public interface IWidget {
-	static final Color TEXT_COLOR = Color.WHITE;
+	Color TEXT_COLOR = Color.WHITE;
 
-	public interface IWidgetAction<T extends IWidget> {
+	interface IWidgetAction<T extends IWidget> {
 		void execute(T widget, IView view);
 	}
 

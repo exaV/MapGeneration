@@ -48,15 +48,15 @@ import ch.fhnw.util.IUpdateListener;
  */
 public interface IMesh extends I3DObject, IUpdateListener {
 
-	public enum Pass {
+	enum Pass {
 		DEPTH, TRANSPARENCY, OVERLAY, DEVICE_SPACE_OVERLAY, SCREEN_SPACE_OVERLAY
 	}
 
-	public enum Flags {
+	enum Flags {
 		INTERACTIVE_VIEWS_ONLY
 	}
 
-	public static final EnumSet<Flags> NO_FLAGS = EnumSet.noneOf(Flags.class);
+	EnumSet<Flags> NO_FLAGS = EnumSet.noneOf(Flags.class);
 
 	Pass getPass();
 
