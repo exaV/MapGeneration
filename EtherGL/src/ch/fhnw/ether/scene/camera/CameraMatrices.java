@@ -29,6 +29,7 @@
 
 package ch.fhnw.ether.scene.camera;
 
+import ch.fhnw.util.math.Mat3;
 import ch.fhnw.util.math.Mat4;
 import ch.fhnw.util.math.Vec3;
 
@@ -47,7 +48,7 @@ public final class CameraMatrices {
 	private Mat4 projMatrix;
 	private Mat4 viewProjMatrix;
 	private Mat4 viewProjInvMatrix;
-	private Mat4 normalMatrix;
+	private Mat3 normalMatrix;
 	private Vec3 eyeDirection;
 
 	public CameraMatrices(Vec3 position, Vec3 target, Vec3 up, float fov, float near, float far, float aspect) {
@@ -95,17 +96,9 @@ public final class CameraMatrices {
 		return viewProjInvMatrix;
 	}
 
-	public Mat4 getNormalMatrix() {
+	public Mat3 getNormalMatrix() {
 		if (normalMatrix == null) {
-			Mat4 m = getViewMatrix().copy();
-			m.m[Mat4.M03] = 0;
-			m.m[Mat4.M13] = 0;
-			m.m[Mat4.M23] = 0;
-			m.m[Mat4.M30] = 0;
-			m.m[Mat4.M31] = 0;
-			m.m[Mat4.M32] = 0;
-			m.m[Mat4.M33] = 1;
-			normalMatrix = m.inverse().transposed();
+			normalMatrix = new Mat3(getViewMatrix()).inverse().transpose();
 		}
 		return normalMatrix;
 	}

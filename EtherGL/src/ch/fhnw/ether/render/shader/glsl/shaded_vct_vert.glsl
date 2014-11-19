@@ -2,7 +2,7 @@
 
 uniform mat4 projMatrix;
 uniform mat4 viewMatrix;
-uniform mat4 normalMatrix;
+uniform mat3 normalMatrix;
 
 uniform bool useVertexColors;
 uniform bool useTexture;
@@ -30,7 +30,7 @@ out vec3 vsLightSpotDirection;
 void main() {
 	vsPosition = viewMatrix * vertexPosition;
 
-	vsNormal = normalize(mat3(normalMatrix) * vertexNormal.xyz);
+	vsNormal = normalize(normalMatrix * vertexNormal.xyz);
 
 	vsDiffuseColor = materialDiffuseColor;
 	if (useVertexColors)
@@ -40,7 +40,7 @@ void main() {
 		vsTexCoord = vertexTexCoord;
 
 	vsLightPosition = (viewMatrix * lightPosition).xyz;
-	vsLightSpotDirection = mat3(normalMatrix) * lightSpotDirection;
+	vsLightSpotDirection = normalMatrix * lightSpotDirection;
 
 	gl_Position = projMatrix * viewMatrix * vertexPosition;
 }

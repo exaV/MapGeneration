@@ -40,6 +40,7 @@ import ch.fhnw.ether.render.attribute.builtin.ViewMatrixUniform;
 import ch.fhnw.ether.scene.attribute.IAttributeProvider;
 import ch.fhnw.ether.scene.mesh.IMesh.Pass;
 import ch.fhnw.ether.view.IView;
+import ch.fhnw.util.math.Mat3;
 import ch.fhnw.util.math.Mat4;
 
 /*
@@ -72,12 +73,13 @@ import ch.fhnw.util.math.Mat4;
 public class ForwardRenderer extends AbstractRenderer {
 	
 	private static class ViewState implements IAttributeProvider {
-		private static final Mat4 ID_MATRIX = Mat4.identityMatrix();
+		private static final Mat3 ID_3X3 = Mat3.identityMatrix();
+		private static final Mat4 ID_4X4 = Mat4.identityMatrix();
 		private static final float[] Z_NEG = { 0, 0, -1 };
 
 		private Mat4 viewMatrix;
 		private Mat4 projMatrix;
-		private Mat4 normalMatrix;
+		private Mat3 normalMatrix;
 		private float[] eyeDirection;
 
 		void setCameraSpace(IView view) {
@@ -88,13 +90,15 @@ public class ForwardRenderer extends AbstractRenderer {
 		}
 		
 		void setOrthoScreenSpace(IView view) {
-			viewMatrix = normalMatrix = ID_MATRIX;
+			viewMatrix = ID_4X4;
+			normalMatrix = ID_3X3;
 			projMatrix = Mat4.ortho(0, view.getViewport().w, view.getViewport().h, 0, -1, 1);
 			eyeDirection = Z_NEG;
 			
 		}
 		void setOrthoDeviceSpace(IView view) {
-			viewMatrix = projMatrix = normalMatrix = ID_MATRIX;
+			viewMatrix = projMatrix = ID_4X4;
+			normalMatrix = ID_3X3;
 			eyeDirection = Z_NEG;
 		}
 		

@@ -27,30 +27,35 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.render.attribute.builtin;
+package ch.fhnw.ether.render.attribute.base;
 
 import java.util.function.Supplier;
 
-import ch.fhnw.ether.render.attribute.base.Mat3FloatUniformAttribute;
+import javax.media.opengl.GL3;
+
+import ch.fhnw.ether.render.gl.Program;
+import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.util.math.Mat3;
 
-public final class NormalMatrixUniform extends Mat3FloatUniformAttribute {
-	public static final String ID = "builtin.normal_matrix";
-	private static final String DEFAULT_SHADER_NAME = "normalMatrix";
-
-	public NormalMatrixUniform() {
-		super(ID, DEFAULT_SHADER_NAME);
+public class Mat3FloatUniformAttribute extends AbstractUniformAttribute<Mat3> {
+	public Mat3FloatUniformAttribute(IAttribute attribute, String shaderName) {
+		super(attribute, shaderName);
 	}
 
-	public NormalMatrixUniform(String shaderName) {
-		super(ID, shaderName);
+	public Mat3FloatUniformAttribute(String id, String shaderName) {
+		super(id, shaderName);
 	}
 
-	public NormalMatrixUniform(Supplier<Mat3> supplier) {
-		super(ID, DEFAULT_SHADER_NAME, supplier);
+	public Mat3FloatUniformAttribute(IAttribute attribute, String shaderName, Supplier<Mat3> supplier) {
+		super(attribute, shaderName, supplier);
 	}
 
-	public NormalMatrixUniform(String shaderName, Supplier<Mat3> supplier) {
-		super(ID, shaderName, supplier);
+	public Mat3FloatUniformAttribute(String id, String shaderName, Supplier<Mat3> supplier) {
+		super(id, shaderName, supplier);
+	}
+
+	@Override
+	public void enable(GL3 gl, Program program) {
+		program.setUniformMat3(gl, getShaderIndex(gl, program), get().m);
 	}
 }

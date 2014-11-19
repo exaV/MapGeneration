@@ -107,7 +107,7 @@ public class Transform implements ITransformable {
 	private void validateNormalTransform() {
 		if (normalTransform == null) {
 			normalTransform = Mat4.identityMatrix().scale(scale).rotate(rotation.z, Vec3.Z).rotate(rotation.y, Vec3.Y).rotate(rotation.x, Vec3.X);
-			normalTransform = normalTransform.inverse().transposed();
+			normalTransform = normalTransform.inverse().transpose();
 		}
 	}
 

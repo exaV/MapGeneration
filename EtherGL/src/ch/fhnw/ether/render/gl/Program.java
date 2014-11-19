@@ -175,6 +175,11 @@ public final class Program {
 			gl.glUniform4fv(index, 1, value, 0);
 	}
 
+	public void setUniformMat3(GL3 gl, int index, float[] value) {
+		if (value != null)
+			gl.glUniformMatrix3fv(index, 1, false, value, 0);
+	}
+
 	public void setUniformMat4(GL3 gl, int index, float[] value) {
 		if (value != null)
 			gl.glUniformMatrix4fv(index, 1, false, value, 0);

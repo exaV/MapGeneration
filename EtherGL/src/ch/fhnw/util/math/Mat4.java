@@ -38,20 +38,20 @@ import java.util.Arrays;
  */
 public final class Mat4 {
 	public static final int M00 = 0;
-	public static final int M01 = 4;
-	public static final int M02 = 8;
-	public static final int M03 = 12;
 	public static final int M10 = 1;
-	public static final int M11 = 5;
-	public static final int M12 = 9;
-	public static final int M13 = 13;
 	public static final int M20 = 2;
-	public static final int M21 = 6;
-	public static final int M22 = 10;
-	public static final int M23 = 14;
 	public static final int M30 = 3;
+	public static final int M01 = 4;
+	public static final int M11 = 5;
+	public static final int M21 = 6;
 	public static final int M31 = 7;
+	public static final int M02 = 8;
+	public static final int M12 = 9;
+	public static final int M22 = 10;
 	public static final int M32 = 11;
+	public static final int M03 = 12;
+	public static final int M13 = 13;
+	public static final int M23 = 14;
 	public static final int M33 = 15;
 
 	public final float[] m;
@@ -333,27 +333,27 @@ public final class Mat4 {
 	}
 
 	/**
-	 * Get transposed matrix.
+	 * Get transpose matrix.
 	 *
-	 * @return the transposed matrix
+	 * @return the transpose matrix
 	 */
-	public Mat4 transposed() {
+	public Mat4 transpose() {
 		Mat4 result = new Mat4();
 		result.m[M00] = m[M00];
 		result.m[M10] = m[M01];
 		result.m[M20] = m[M02];
 		result.m[M30] = m[M03];
-		
+
 		result.m[M01] = m[M10];
 		result.m[M11] = m[M11];
 		result.m[M21] = m[M12];
 		result.m[M31] = m[M13];
-		
+
 		result.m[M02] = m[M20];
 		result.m[M12] = m[M21];
 		result.m[M22] = m[M22];
 		result.m[M32] = m[M23];
-		
+
 		result.m[M03] = m[M30];
 		result.m[M13] = m[M31];
 		result.m[M23] = m[M32];
@@ -362,62 +362,73 @@ public final class Mat4 {
 	}
 
 	/**
+	 * Get the determinant.
+	 * 
+	 * @return the determinant
+	 */
+	public float determinant() {
+		//@formatter:off
+		return    m[M30] * m[M21] * m[M12] * m[M03] - m[M20] * m[M31] * m[M12] * m[M03] - m[M30] * m[M11]
+				* m[M22] * m[M03] + m[M10] * m[M31] * m[M22] * m[M03] + m[M20] * m[M11] * m[M32] * m[M03] - m[M10]
+				* m[M21] * m[M32] * m[M03] - m[M30] * m[M21] * m[M02] * m[M13] + m[M20] * m[M31] * m[M02] * m[M13]
+				+ m[M30] * m[M01] * m[M22] * m[M13] - m[M00] * m[M31] * m[M22] * m[M13] - m[M20] * m[M01] * m[M32]
+				* m[M13] + m[M00] * m[M21] * m[M32] * m[M13] + m[M30] * m[M11] * m[M02] * m[M23] - m[M10] * m[M31]
+				* m[M02] * m[M23] - m[M30] * m[M01] * m[M12] * m[M23] + m[M00] * m[M31] * m[M12] * m[M23] + m[M10]
+				* m[M01] * m[M32] * m[M23] - m[M00] * m[M11] * m[M32] * m[M23] - m[M20] * m[M11] * m[M02] * m[M33]
+				+ m[M10] * m[M21] * m[M02] * m[M33] + m[M20] * m[M01] * m[M12] * m[M33] - m[M00] * m[M21] * m[M12]
+				* m[M33] - m[M10] * m[M01] * m[M22] * m[M33] + m[M00] * m[M11] * m[M22] * m[M33];
+		//@formatter:on
+	}
+
+	/**
 	 * Get inverse matrix.
 	 *
 	 * @return the inverse or null if a is singular
 	 */
 	public Mat4 inverse() {
-		final float[][] temp = new float[4][4];
+		float d = determinant();
+		if (d == 0)
+			return null;
 
-		for (int i = 0; i < 4; i++) {
-			System.arraycopy(m, i * 4, temp[i], 0, 4);
-		}
+		float[] v = new float[16];
 
-		Mat4 result = identityMatrix();
+		v[M00] = m[M12] * m[M23] * m[M31] - m[M13] * m[M22] * m[M31] + m[M13] * m[M21] * m[M32] - m[M11] * m[M23] * m[M32] - m[M12] * m[M21] * m[M33] + m[M11]
+				* m[M22] * m[M33];
+		v[M01] = m[M03] * m[M22] * m[M31] - m[M02] * m[M23] * m[M31] - m[M03] * m[M21] * m[M32] + m[M01] * m[M23] * m[M32] + m[M02] * m[M21] * m[M33] - m[M01]
+				* m[M22] * m[M33];
+		v[M02] = m[M02] * m[M13] * m[M31] - m[M03] * m[M12] * m[M31] + m[M03] * m[M11] * m[M32] - m[M01] * m[M13] * m[M32] - m[M02] * m[M11] * m[M33] + m[M01]
+				* m[M12] * m[M33];
+		v[M03] = m[M03] * m[M12] * m[M21] - m[M02] * m[M13] * m[M21] - m[M03] * m[M11] * m[M22] + m[M01] * m[M13] * m[M22] + m[M02] * m[M11] * m[M23] - m[M01]
+				* m[M12] * m[M23];
+		v[M10] = m[M13] * m[M22] * m[M30] - m[M12] * m[M23] * m[M30] - m[M13] * m[M20] * m[M32] + m[M10] * m[M23] * m[M32] + m[M12] * m[M20] * m[M33] - m[M10]
+				* m[M22] * m[M33];
+		v[M11] = m[M02] * m[M23] * m[M30] - m[M03] * m[M22] * m[M30] + m[M03] * m[M20] * m[M32] - m[M00] * m[M23] * m[M32] - m[M02] * m[M20] * m[M33] + m[M00]
+				* m[M22] * m[M33];
+		v[M12] = m[M03] * m[M12] * m[M30] - m[M02] * m[M13] * m[M30] - m[M03] * m[M10] * m[M32] + m[M00] * m[M13] * m[M32] + m[M02] * m[M10] * m[M33] - m[M00]
+				* m[M12] * m[M33];
+		v[M13] = m[M02] * m[M13] * m[M20] - m[M03] * m[M12] * m[M20] + m[M03] * m[M10] * m[M22] - m[M00] * m[M13] * m[M22] - m[M02] * m[M10] * m[M23] + m[M00]
+				* m[M12] * m[M23];
+		v[M20] = m[M11] * m[M23] * m[M30] - m[M13] * m[M21] * m[M30] + m[M13] * m[M20] * m[M31] - m[M10] * m[M23] * m[M31] - m[M11] * m[M20] * m[M33] + m[M10]
+				* m[M21] * m[M33];
+		v[M21] = m[M03] * m[M21] * m[M30] - m[M01] * m[M23] * m[M30] - m[M03] * m[M20] * m[M31] + m[M00] * m[M23] * m[M31] + m[M01] * m[M20] * m[M33] - m[M00]
+				* m[M21] * m[M33];
+		v[M22] = m[M01] * m[M13] * m[M30] - m[M03] * m[M11] * m[M30] + m[M03] * m[M10] * m[M31] - m[M00] * m[M13] * m[M31] - m[M01] * m[M10] * m[M33] + m[M00]
+				* m[M11] * m[M33];
+		v[M23] = m[M03] * m[M11] * m[M20] - m[M01] * m[M13] * m[M20] - m[M03] * m[M10] * m[M21] + m[M00] * m[M13] * m[M21] + m[M01] * m[M10] * m[M23] - m[M00]
+				* m[M11] * m[M23];
+		v[M30] = m[M12] * m[M21] * m[M30] - m[M11] * m[M22] * m[M30] - m[M12] * m[M20] * m[M31] + m[M10] * m[M22] * m[M31] + m[M11] * m[M20] * m[M32] - m[M10]
+				* m[M21] * m[M32];
+		v[M31] = m[M01] * m[M22] * m[M30] - m[M02] * m[M21] * m[M30] + m[M02] * m[M20] * m[M31] - m[M00] * m[M22] * m[M31] - m[M01] * m[M20] * m[M32] + m[M00]
+				* m[M21] * m[M32];
+		v[M32] = m[M02] * m[M11] * m[M30] - m[M01] * m[M12] * m[M30] - m[M02] * m[M10] * m[M31] + m[M00] * m[M12] * m[M31] + m[M01] * m[M10] * m[M32] - m[M00]
+				* m[M11] * m[M32];
+		v[M33] = m[M01] * m[M12] * m[M20] - m[M02] * m[M11] * m[M20] + m[M02] * m[M10] * m[M21] - m[M00] * m[M12] * m[M21] - m[M01] * m[M10] * m[M22] + m[M00]
+				* m[M11] * m[M22];
 
-		for (int i = 0; i < 4; i++) {
-			// look for largest element in column
-			int swap = i;
-			for (int j = i + 1; j < 4; j++) {
-				if (Math.abs(temp[j][i]) > Math.abs(temp[i][i])) {
-					swap = j;
-				}
-			}
+		for (int i = 0; i < v.length; ++i)
+			v[i] /= d;
 
-			if (swap != i) {
-				// swap rows
-				for (int k = 0; k < 4; k++) {
-					float t = temp[i][k];
-					temp[i][k] = temp[swap][k];
-					temp[swap][k] = t;
-
-					t = result.m[i * 4 + k];
-					result.m[i * 4 + k] = result.m[swap * 4 + k];
-					result.m[swap * 4 + k] = t;
-				}
-			}
-
-			if (temp[i][i] == 0) {
-				// singular input
-				return null;
-			}
-
-			float t = temp[i][i];
-			for (int k = 0; k < 4; k++) {
-				temp[i][k] /= t;
-				result.m[i * 4 + k] /= t;
-			}
-			for (int j = 0; j < 4; j++) {
-				if (j != i) {
-					t = temp[j][i];
-					for (int k = 0; k < 4; k++) {
-						temp[j][k] -= temp[i][k] * t;
-						result.m[j * 4 + k] -= result.m[i * 4 + k] * t;
-					}
-				}
-			}
-		}
-		return result;
+		return new Mat4(v);
 	}
 
 	/**
