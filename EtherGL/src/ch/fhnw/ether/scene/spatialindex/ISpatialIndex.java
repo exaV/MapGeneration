@@ -35,17 +35,17 @@ import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.util.math.geometry.BoundingBox;
 
 interface ISpatialIndex {
-	public void addGeometry(IGeometry geometry);
+	void addGeometry(IGeometry geometry);
 
-	public boolean removeGeometry(IGeometry geometry);
+	boolean removeGeometry(IGeometry geometry);
 
-	public List<IGeometry> getIntersectingGeometries(BoundingBox bounds);
+	List<IGeometry> getIntersectingGeometries(BoundingBox bounds);
 
-	public List<IGeometry> getContainingGeometries(BoundingBox bounds);
+	List<IGeometry> getContainingGeometries(BoundingBox bounds);
 
-	public List<IGeometry> getGeometries();
+	List<IGeometry> getGeometries();
 
-	public int size();
+	int size();
 
-	public BoundingBox getBounds();
+	BoundingBox getBounds();
 }

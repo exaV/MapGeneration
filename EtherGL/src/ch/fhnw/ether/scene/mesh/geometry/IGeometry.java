@@ -40,7 +40,7 @@ public interface IGeometry extends IAttributeProvider, ITransformable, IUpdateRe
 	}
 
 	@FunctionalInterface
-	public interface IAttributeVisitor {
+	interface IAttributeVisitor {
 		/**
 		 * Inspect or modify a specific attribute of a geometry.
 		 */
@@ -48,7 +48,7 @@ public interface IGeometry extends IAttributeProvider, ITransformable, IUpdateRe
 	}
 
 	@FunctionalInterface
-	public interface IAttributesVisitor {
+	interface IAttributesVisitor {
 		/**
 		 * Inspect or modify attributes of a geometry through visitor. Note that in the current implementation, the
 		 * attributes must not be changed, otherwise the mesh will result in an undefined state. It is however ok, to

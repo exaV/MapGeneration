@@ -34,7 +34,6 @@ import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Vec3;
 
 public class IntersectResult {
-
 	public final IParametricSurface surface;
 	public final Vec3 position;
 	public final RGBA color;

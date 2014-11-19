@@ -5,7 +5,7 @@ import java.util.List;
 
 public interface IUpdateRequester {
 	
-	public final class UpdateListeners implements IUpdateListener {
+	final class UpdateListeners implements IUpdateListener {
 		private final List<IUpdateListener> listeners = new ArrayList<>();
 		
 		public UpdateListeners() {

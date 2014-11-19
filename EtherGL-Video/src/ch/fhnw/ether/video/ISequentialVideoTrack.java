@@ -39,7 +39,6 @@ import ch.fhnw.ether.image.Frame;
  *
  */
 public interface ISequentialVideoTrack extends IVideoTrack {
-
 	void rewind();
 
 	Frame getNextFrame();
