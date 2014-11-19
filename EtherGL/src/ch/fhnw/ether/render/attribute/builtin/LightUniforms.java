@@ -35,16 +35,17 @@ import ch.fhnw.ether.render.attribute.base.AbstractUniformAttribute;
 import ch.fhnw.ether.render.attribute.base.BooleanUniformAttribute;
 import ch.fhnw.ether.render.attribute.base.FloatUniformAttribute;
 import ch.fhnw.ether.render.attribute.base.Vec3FloatUniformAttribute;
+import ch.fhnw.ether.render.attribute.base.Vec4FloatUniformAttribute;
 import ch.fhnw.ether.render.gl.Program;
 import ch.fhnw.ether.scene.light.GenericLight;
-import ch.fhnw.ether.scene.light.GenericLight.LightParameters;
+import ch.fhnw.ether.scene.light.GenericLight.LightSource;
 
-public class LightUniforms extends AbstractUniformAttribute<LightParameters> {
+public class LightUniforms extends AbstractUniformAttribute<LightSource> {
 
 	private final BooleanUniformAttribute isLocal;
 	private final BooleanUniformAttribute isSpot;
 	
-	private final Vec3FloatUniformAttribute position;
+	private final Vec4FloatUniformAttribute position;
 	private final Vec3FloatUniformAttribute ambient;
 	private final Vec3FloatUniformAttribute color;
 
@@ -61,7 +62,7 @@ public class LightUniforms extends AbstractUniformAttribute<LightParameters> {
 		isLocal = new BooleanUniformAttribute("", "lightIsLocal", () -> get().isLocal());	
 		isSpot = new BooleanUniformAttribute("", "lightIsSpot", () -> get().isSpot());	
 
-		position = new Vec3FloatUniformAttribute("", "lightPosition", () -> get().getPosition());
+		position = new Vec4FloatUniformAttribute("", "lightPosition", () -> get().getPosition());
 		ambient = new Vec3FloatUniformAttribute("", "lightAmbientColor", () -> get().getAmbient());
 		color = new Vec3FloatUniformAttribute("", "lightColor", () -> get().getColor());
 

@@ -28,19 +28,20 @@
  */
 package ch.fhnw.ether.examples.basic;
 
-import java.awt.event.KeyEvent;
-
 import ch.fhnw.ether.controller.DefaultController;
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.scene.DefaultScene;
 import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.scene.camera.Camera;
+import ch.fhnw.ether.scene.light.DirectionalLight;
+import ch.fhnw.ether.scene.light.ILight;
+import ch.fhnw.ether.scene.light.PointLight;
+import ch.fhnw.ether.scene.light.SpotLight;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.IMesh.Pass;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
-import ch.fhnw.ether.scene.mesh.material.ColorMapMaterial;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.ether.scene.mesh.material.ShadedMaterial;
@@ -53,14 +54,81 @@ import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.GeodesicSphere;
 
+import com.jogamp.newt.event.KeyEvent;
+
 public final class SimpleLightExample {
+	private static final String[] HELP = { 
+		//@formatter:off
+		"Simple Light Example", 
+		"", 
+		"[1] Directional Light [2] Point Light [3] Spot Light",
+		"Use cursors to move light position / direction x/y axis",
+		"Use q/a to move light position / direction along z axis",
+		"", 
+		"Use Mouse Buttons + Shift or Mouse Wheel to Navigate" 
+		//@formatter:on
+	};
+
 	public static void main(String[] args) {
 		new SimpleLightExample();
 	}
 
+	private static final float INC_XY = 0.25f;
+	private static final float INC_Z = 0.25f;
+	private static final RGB AMBIENT = RGB.BLACK;
+	private static final RGB COLOR = RGB.WHITE;
+
+	private IController controller;
+	private IScene scene;
+	private ILight light = new DirectionalLight(Vec3.Z, AMBIENT, COLOR);
+	private IMesh lightMesh;
+
 	public SimpleLightExample() {
 		// Create controller
-		IController controller = new DefaultController();
+		controller = new DefaultController() {
+			@Override
+			public void keyPressed(KeyEvent e, IView view) {
+				switch (e.getKeyCode()) {
+				case KeyEvent.VK_1:
+					light = new DirectionalLight(light.getPosition(), AMBIENT, COLOR);
+					scene.add3DObject(light);
+					break;
+				case KeyEvent.VK_2:
+					light = new PointLight(light.getPosition(), AMBIENT, COLOR);
+					scene.add3DObject(light);
+					break;
+				case KeyEvent.VK_3:
+					light = new SpotLight(light.getPosition(), AMBIENT, COLOR, Vec3.Z_NEG);
+					scene.add3DObject(light);
+					break;
+				case KeyEvent.VK_UP:
+					lightMesh.setPosition(lightMesh.getPosition().add(Vec3.Y.scale(INC_XY)));
+					break;
+				case KeyEvent.VK_DOWN:
+					lightMesh.setPosition(lightMesh.getPosition().add(Vec3.Y_NEG.scale(INC_XY)));
+					break;
+				case KeyEvent.VK_LEFT:
+					lightMesh.setPosition(lightMesh.getPosition().add(Vec3.X_NEG.scale(INC_XY)));
+					break;
+				case KeyEvent.VK_RIGHT:
+					lightMesh.setPosition(lightMesh.getPosition().add(Vec3.X.scale(INC_XY)));
+					break;
+				case KeyEvent.VK_Q:
+					lightMesh.setPosition(lightMesh.getPosition().add(Vec3.Z.scale(INC_Z)));
+					break;
+				case KeyEvent.VK_A:
+					lightMesh.setPosition(lightMesh.getPosition().add(Vec3.Z_NEG.scale(INC_Z)));
+					break;
+				case KeyEvent.VK_H:
+					printHelp(HELP);
+					break;
+				default:
+					super.keyPressed(e, view);
+				}
+				light.setPosition(lightMesh.getPosition());
+				repaintViews();
+			};
+		};
 
 		// Create view
 		Camera camera = new Camera();
@@ -70,24 +138,33 @@ public final class SimpleLightExample {
 		controller.addView(view);
 
 		// Create scene and add a cube
-		IScene scene = new DefaultScene(controller);
+		scene = new DefaultScene(controller);
 		controller.setScene(scene);
 
-		GeodesicSphere sphere = new GeodesicSphere(2);
-		
-		IMaterial shaded = new ShadedMaterial(RGB.BLACK, RGB.GRAY, RGB.RED, 100, 1000f, 1f);
+		GeodesicSphere s = new GeodesicSphere(4);
 
-		IMesh solidMeshT = new DefaultMesh(shaded, DefaultGeometry.createVN(Primitive.TRIANGLES, sphere.getTriangles(), sphere.getNormals()), Pass.DEPTH);
-		IMesh solidMeshL = new DefaultMesh(new ColorMaterial(new RGBA(1, 1, 1, 0.2f)), DefaultGeometry.createV(Primitive.LINES, sphere.getLines()), Pass.TRANSPARENCY);
-		
+		IMaterial solidMaterial = new ShadedMaterial(RGB.BLACK, RGB.GRAY, RGB.RED, 20, 1, 1f);
+		IMaterial lineMaterial = new ColorMaterial(new RGBA(1, 1, 1, 0.2f));
+
+		Texture t = new Texture(SimpleLightExample.class.getResource("assets/earth_nasa.jpg"));
+		IMaterial textureMaterial = new ShadedMaterial(RGB.BLACK, RGB.GRAY, RGB.RED, 20, 1, 1f, t);
+
+		IMesh solidMeshT = new DefaultMesh(solidMaterial, DefaultGeometry.createVN(Primitive.TRIANGLES, s.getTriangles(), s.getNormals()), Pass.DEPTH);
+		IMesh solidMeshL = new DefaultMesh(lineMaterial, DefaultGeometry.createV(Primitive.LINES, s.getLines()), Pass.TRANSPARENCY);
+
 		solidMeshT.getGeometry().setTranslation(Vec3.X_NEG);
 		solidMeshL.getGeometry().setTranslation(Vec3.X_NEG);
-		
-		Texture t = new Texture(SimpleLightExample.class.getResource("assets/earth_nasa.jpg"));
-		IMesh texturedMeshT = new DefaultMesh(new ColorMapMaterial(t), DefaultGeometry.createVM(Primitive.TRIANGLES, sphere.getTriangles(), sphere.getTexCoords()), Pass.DEPTH);
+
+		IMesh texturedMeshT = new DefaultMesh(textureMaterial, DefaultGeometry.createVNM(Primitive.TRIANGLES, s.getTriangles(), s.getNormals(),
+				s.getTexCoords()), Pass.DEPTH);
 		texturedMeshT.getGeometry().setTranslation(Vec3.X);
+
+		lightMesh = new DefaultMesh(new ColorMaterial(RGBA.YELLOW), DefaultGeometry.createV(Primitive.TRIANGLES, s.getTriangles()));
+		lightMesh.getGeometry().setScale(new Vec3(0.1, 0.1, 0.1));
+		lightMesh.setPosition(Vec3.Z.scale(2));
+		light.setPosition(lightMesh.getPosition());
 		
-		scene.add3DObjects(solidMeshT, solidMeshL, texturedMeshT);
+		scene.add3DObjects(solidMeshT, solidMeshL, texturedMeshT, lightMesh, light);
 
 		// Add an exit button
 		controller.getUI().addWidget(new Button(0, 0, "Quit", "Quit", KeyEvent.VK_ESCAPE, (button, v) -> System.exit(0)));

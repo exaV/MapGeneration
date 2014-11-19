@@ -8,7 +8,7 @@ import ch.fhnw.util.math.geometry.BoundingBox;
 public class GenericLight implements ILight {
 	public static LightAttribute GENERIC_LIGHT = new LightAttribute("builtin.light.generic_light");
 
-	public static class LightParameters {
+	public static class LightSource {
 		private final boolean isLocal;
 		private final boolean isSpot;
 
@@ -24,11 +24,11 @@ public class GenericLight implements ILight {
 		private final float linearAttenuation;
 		private final float quadraticAttenuation;
 
-		public LightParameters(boolean isLocal, boolean isSpot, Vec3 position, RGB ambient, RGB color, Vec3 spotDirection, float spotCosCutoff,
-				float spotExponent, float constantAttenuation, float linearAttenuation, float quadraticAttenuation) {
+		public LightSource(boolean isLocal, boolean isSpot, Vec3 position, RGB ambient, RGB color, Vec3 spotDirection, float spotCosCutoff, float spotExponent,
+				float constantAttenuation, float linearAttenuation, float quadraticAttenuation) {
 			this.isLocal = isLocal;
 			this.isSpot = isSpot;
-			this.position = position.toArray();
+			this.position = makePosition(isLocal, position);
 			this.ambient = ambient.toArray();
 			this.color = color.toArray();
 			this.spotDirection = spotDirection != null ? spotDirection.toArray() : null;
@@ -39,10 +39,10 @@ public class GenericLight implements ILight {
 			this.quadraticAttenuation = quadraticAttenuation;
 		}
 
-		public LightParameters(LightParameters parameters, Vec3 position) {
+		public LightSource(LightSource parameters, Vec3 position) {
 			this.isLocal = parameters.isLocal;
 			this.isSpot = parameters.isSpot;
-			this.position = position.toArray();
+			this.position = makePosition(parameters.isLocal, position);
 			this.ambient = parameters.ambient;
 			this.color = parameters.color;
 			this.spotDirection = parameters.spotDirection;
@@ -51,6 +51,30 @@ public class GenericLight implements ILight {
 			this.constantAttenuation = parameters.constantAttenuation;
 			this.linearAttenuation = parameters.linearAttenuation;
 			this.quadraticAttenuation = parameters.quadraticAttenuation;
+		}
+		
+		private static float[] makePosition(boolean isLocal, Vec3 position) {
+			if (isLocal)
+				return new float[] { position.x, position.y, position.z, 1 };
+			else {
+				position = position.normalize();
+				return new float[] { position.x, position.y, position.z, 0 };
+			}
+		}
+
+		public static LightSource directionalSource(Vec3 direction, RGB ambient, RGB color) {
+			return new LightSource(false, false, direction, ambient, color, null, 0, 0, 0, 0, 0);
+		}
+
+		public static LightSource pointSource(Vec3 position, RGB ambient, RGB color, float constantAttenuation, float linearAttenuation,
+				float quadraticAttenuation) {
+			return new LightSource(true, false, position, ambient, color, null, 0, 0, constantAttenuation, linearAttenuation, quadraticAttenuation);
+		}
+
+		public static LightSource spotSource(Vec3 position, RGB ambient, RGB color, Vec3 spotDirection, float spotCutoff, float spotExponent,
+				float constantAttenuation, float linearAttenuation, float quadraticAttenuation) {
+			return new LightSource(true, true, position, ambient, color, spotDirection, (float)Math.cos(Math.toRadians(spotCutoff)), spotExponent, constantAttenuation, linearAttenuation,
+					quadraticAttenuation);
 		}
 
 		public boolean isLocal() {
@@ -102,18 +126,16 @@ public class GenericLight implements ILight {
 
 	private String name = "unnamed_light";
 
-	private LightParameters lightParameters;
+	private LightSource lightParameters;
 
-	protected GenericLight(LightParameters lightParameters) {
+	protected GenericLight(LightSource lightParameters) {
 		this.lightParameters = lightParameters;
 	}
 
 	@Override
 	public BoundingBox getBounds() {
-		// FIXME: correct...
-		BoundingBox b = new BoundingBox();
-		b.add(lightParameters.getPosition());
-		return b;
+		// TODO
+		return null;
 	}
 
 	@Override
@@ -123,7 +145,7 @@ public class GenericLight implements ILight {
 
 	@Override
 	public void setPosition(Vec3 position) {
-		lightParameters = new LightParameters(lightParameters, position);
+		lightParameters = new LightSource(lightParameters, position);
 		requestUpdate();
 	}
 
@@ -148,11 +170,11 @@ public class GenericLight implements ILight {
 		return updater.needsUpdate();
 	}
 
-	public LightParameters getLightParameters() {
+	public LightSource getLightSource() {
 		return lightParameters;
 	}
 
-	public void setLightParameters(LightParameters lightParameters) {
+	public void setLightParameters(LightSource lightParameters) {
 		this.lightParameters = lightParameters;
 		requestUpdate();
 	}
