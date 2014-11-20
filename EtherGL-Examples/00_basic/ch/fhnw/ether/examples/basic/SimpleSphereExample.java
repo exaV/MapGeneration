@@ -71,10 +71,8 @@ public final class SimpleSphereExample {
 		IScene scene = new DefaultScene(controller);
 		controller.setScene(scene);
 
-		GeodesicSphere sphere = new GeodesicSphere(4);
+		GeodesicSphere sphere = new GeodesicSphere(3);
 
-		// FIXME: API issue - below stuff is not very convenient, and it would be nice to have this a bit more streamlined
-		
 		IMesh transparentMeshT = new DefaultMesh(new ColorMaterial(new RGBA(1, 1, 1, 0.5f)), DefaultGeometry.createV(Primitive.TRIANGLES, sphere.getTriangles()), Pass.TRANSPARENCY);
 		IMesh transparentMeshL = new DefaultMesh(new ColorMaterial(new RGBA(1, 1, 1, 1)), DefaultGeometry.createV(Primitive.LINES, sphere.getLines()), Pass.TRANSPARENCY);
 		IMesh transparentMeshP = new DefaultMesh(new PointMaterial(8, new RGBA(1, 1, 0, 0.5f)), DefaultGeometry.createV(Primitive.POINTS, sphere.getPoints()), Pass.TRANSPARENCY);

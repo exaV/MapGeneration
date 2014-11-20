@@ -64,11 +64,12 @@ void main() {
 	float diffuseFactor = max(0.0, dot(normal, lightDirection));
 	float specularFactor = 0;
 
-	if (diffuseFactor > 0) {
+	// FIXME: should we really ignore specular if diffuse <= 0?
+	//if (diffuseFactor > 0) {
 		vec3 eyeDirection = -normalize(vsPosition.xyz);
 		vec3 halfVector = normalize(lightDirection + eyeDirection); 
 		specularFactor = pow(max(0.0, dot(normal, halfVector)), materialShininess) * materialStrength;
-	}
+	//}
 
 	// accumulate all the lights' effects
 	vec3 emittedLight = materialEmissionColor;

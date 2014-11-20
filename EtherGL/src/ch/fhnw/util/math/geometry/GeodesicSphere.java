@@ -9,48 +9,63 @@ import ch.fhnw.util.math.Vec3;
 // #faces = 20 * f^2
 // #edges = 30 * f^2
 // #point = 10 * f^2 + 2
-// http://wackel.home.comcast.net/~wackel/Geometry/GeoSubdivision.html
 
-// FIXME: orientation of starting triangles is wrong...
 // FIXME: we still create too many points when correspondance is not set
 
 public class GeodesicSphere {
 	private static final float SCALE = 0.5f;
 
-	private static final float X = SCALE * 0.525731112119133606f;
-	private static final float Z = SCALE * 0.850650808352039932f;
+	private static final double PI2 = Math.PI / 2;
+	private static final double PI5 = Math.PI / 5;
+
+	private static final double W = 2.0 * Math.acos(1.0 / (2.0 * Math.sin(PI5)));
+
+	private static final double[] THETAS = { 0, -PI5, PI5, 3 * PI5, 5 * PI5, -3 * PI5, 0, 2 * PI5, 4 * PI5, -4 * PI5, -2 * PI5, 0 };
+	private static final double[] PHIS = { PI2, PI2 - W, PI2 - W, PI2 - W, PI2 - W, PI2 - W, W - PI2, W - PI2, W - PI2, W - PI2, W - PI2, -PI2 };
+
+	private static final Vec3[] VERTICES = makeVertices(THETAS, PHIS);
 
 	//@formatter:off
-    private static final Vec3[] VERTICES = {
-        new Vec3(-X, 0.0, Z), new Vec3(X, 0.0, Z), new Vec3(-X, 0.0, -Z ), new Vec3(X, 0.0, -Z),
-        new Vec3( 0.0, Z, X ), new Vec3(0.0, Z, -X), new Vec3(0.0, -Z, X ), new Vec3(0.0, -Z, -X),
-        new Vec3( Z, X, 0.0 ), new Vec3(-Z, X, 0.0), new Vec3(Z, -X, 0.0 ), new Vec3(-Z, -X, 0.0)
-    };
-    
     private static final int[][] INDICES = {
-        { 0, 4, 1}, { 0, 9, 4 }, { 9, 5, 4 }, { 4, 5, 8 }, { 4, 8, 1 },
-        { 8, 10, 1 }, { 8, 3, 10 }, { 5, 3, 8 }, { 5, 2, 3 }, { 2, 7, 3 },
+        { 0, 1, 2 }, { 0, 2, 3 }, { 0, 3, 4 }, { 0, 4, 5 }, { 0, 5, 1 },
+        { 1, 6, 2 }, { 2, 7, 3 }, { 3, 8, 4 }, { 4, 9, 5 }, { 5, 10, 1 },
         
-        { 7, 10, 3 }, { 7, 6, 10 }, { 7, 11, 6 }, { 11, 0, 6 }, { 0, 1, 6 },
-        { 6, 1, 10 }, { 9, 0, 11 }, { 9, 11, 2 }, { 9, 2, 5 }, { 7, 2, 11 }
+        { 1, 10, 6 }, { 2, 6, 7 }, { 3, 7, 8 }, { 4, 8, 9 }, { 5, 9, 10 },
+        { 11, 7, 6 }, { 11, 8, 7 }, { 11, 9, 8 }, { 11, 10, 9 }, { 11, 6, 10 }
     };
     
     private static final boolean[][] LFLAGS = {
-    	{ true,  true,  true  }, { true,  true,  false }, { true,  true,  false }, { false, true, true  },  { false, true,  false }, 
-    	{ true,  true,  false }, { true,  true,  false }, { true,  false, false }, { true,  true, false },  { true,  true,  false }, 
+    	{ true,  true,  false }, { true,  true,  false }, { true,  true,  false }, { true,  true,  false }, { true,  true,  false }, 
+    	{ true,  true,  false }, { true,  true,  false }, { true,  true,  false }, { true,  true,  false }, { true,  true,  false }, 
     	
-    	{ true,  false, false }, { true,  true,  false }, { true,  true,  false }, { true,  true, false },  { false, true, false }, 
-    	{ false, false, false }, { false, false, true  }, { false, true,  true  }, { false, false, false }, { false, false, false }, 
+    	{ false, true,  false }, { false, true,  false }, { false, true,  false }, { false, true,  false }, { false, true,  false }, 
+    	{ true,  false, false }, { true,  false, false }, { true,  false, false }, { true,  false, false }, { true,  false, false }, 
     };
 
     private static final boolean[][] PFLAGS = {
-    	{ true,  true,  true  }, { false, true,  false }, { false, true,  false }, { false, false, true, }, { false, false, false }, 
-    	{ false, true,  false }, { false, true,  false }, { false, false, false }, { false, true,  false }, { false, true,  false },
+    	{ true,  true,  false }, { false, true,  false }, { false, true,  false }, { false, true,  false }, { false, true,  false }, 
+    	{ false, false, false }, { false, false, false }, { false, false, false }, { false, false, false }, { false, false, false },
     	
-    	{ false, false, false }, { false, true,  false }, { false, true,  false }, { false, false, false }, { false, false, false }, 
-    	{ false, false, false }, { false, false, false }, { false, false, false }, { false, false, false }, { false, false, false }, 
+    	{ false, false, false }, { false, false, false }, { false, false, false }, { false, false, false }, { false, false, false },
+    	{ true,  false, true  }, { false, false, true  }, { false, false, true  }, { false, false, true  }, { false, false, true  },
     };
     //@formatter:on
+
+	private static final Vec3[] makeVertices(double[] thetas, double[] phis) {
+		Vec3[] vertices = new Vec3[thetas.length];
+		for (int i = 0; i < vertices.length; ++i) {
+			vertices[i] = sphericalToCartesian(SCALE, thetas[i], phis[i]);
+		}
+		return vertices;
+	}
+
+	private static final Vec3 sphericalToCartesian(double r, double theta, double phi) {
+		double x = r * Math.cos(phi) * Math.cos(theta);
+		double y = r * Math.cos(phi) * Math.sin(theta);
+		double z = r * Math.sin(phi);
+		return new Vec3(x, y, z);
+	}
+
 
 	private final int depth;
 	private final boolean vertexCoherence;
@@ -158,10 +173,10 @@ public class GeodesicSphere {
 				float s2 = toS(x2, y2);
 				float t2 = toT(z2, r);
 
-				boolean p0 = Math.abs(x0) == 0 && Math.abs(y0) == 0;
-				boolean p1 = Math.abs(x1) == 0 && Math.abs(y1) == 0;
-				boolean p2 = Math.abs(x2) == 0 && Math.abs(y2) == 0;
-
+				boolean p0 = Math.abs(z0) == SCALE;
+				boolean p1 = Math.abs(z1) == SCALE;
+				boolean p2 = Math.abs(z2) == SCALE;
+				
 				if (p0) {
 					if (s1 < s2 - 0.5f)
 						s1 += 1;
@@ -191,7 +206,7 @@ public class GeodesicSphere {
 						s2 -= 1;
 
 				}
-
+				
 				texCoords[j++] = s0;
 				texCoords[j++] = t0;
 				texCoords[j++] = s1;
@@ -227,10 +242,10 @@ public class GeodesicSphere {
 		Vec3 v12 = v1.add(v2).normalize().scale(SCALE);
 		Vec3 v23 = v2.add(v3).normalize().scale(SCALE);
 		Vec3 v31 = v3.add(v1).normalize().scale(SCALE);
-		subdividePoints(v1, v12, v31, vertices, d1, false, false, depth - 1);
-		subdividePoints(v2, v23, v12, vertices, d2, false, false, depth - 1);
+		subdividePoints(v1, v12, v31, vertices, d1, true, false, depth - 1);
+		subdividePoints(v2, v23, v12, vertices, d2, true, false, depth - 1);
 		subdividePoints(v3, v31, v23, vertices, d3, false, false, depth - 1);
-		subdividePoints(v12, v23, v31, vertices, true, true, true, depth - 1);
+		subdividePoints(v12, v23, v31, vertices, false, false, false, depth - 1);
 	}
 
 	private void subdivideLines(Vec3 v1, Vec3 v2, Vec3 v3, List<Vec3> vertices, boolean d1, boolean d2, boolean d3, int depth) {
