@@ -33,7 +33,6 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.render.AbstractRenderer;
-import ch.fhnw.ether.render.attribute.builtin.EyeDirectionUniform;
 import ch.fhnw.ether.render.attribute.builtin.NormalMatrixUniform;
 import ch.fhnw.ether.render.attribute.builtin.ProjMatrixUniform;
 import ch.fhnw.ether.render.attribute.builtin.ViewMatrixUniform;
@@ -75,31 +74,26 @@ public class ForwardRenderer extends AbstractRenderer {
 	private static class ViewState implements IAttributeProvider {
 		private static final Mat3 ID_3X3 = Mat3.identityMatrix();
 		private static final Mat4 ID_4X4 = Mat4.identityMatrix();
-		private static final float[] Z_NEG = { 0, 0, -1 };
 
 		private Mat4 viewMatrix;
 		private Mat4 projMatrix;
 		private Mat3 normalMatrix;
-		private float[] eyeDirection;
 
 		void setCameraSpace(IView view) {
 			viewMatrix = view.getCameraMatrices().getViewMatrix();
 			projMatrix = view.getCameraMatrices().getProjMatrix();
 			normalMatrix = view.getCameraMatrices().getNormalMatrix();
-			eyeDirection = view.getCameraMatrices().getEyeDirection().toArray();
 		}
 		
 		void setOrthoScreenSpace(IView view) {
 			viewMatrix = ID_4X4;
 			normalMatrix = ID_3X3;
-			projMatrix = Mat4.ortho(0, view.getViewport().w, view.getViewport().h, 0, -1, 1);
-			eyeDirection = Z_NEG;
-			
+			projMatrix = Mat4.ortho(0, view.getViewport().w, view.getViewport().h, 0, -1, 1);			
 		}
+
 		void setOrthoDeviceSpace(IView view) {
 			viewMatrix = projMatrix = ID_4X4;
 			normalMatrix = ID_3X3;
-			eyeDirection = Z_NEG;
 		}
 		
 		@Override
@@ -107,7 +101,6 @@ public class ForwardRenderer extends AbstractRenderer {
 			suppliers.provide(ProjMatrixUniform.ID, () -> projMatrix);
 			suppliers.provide(ViewMatrixUniform.ID, () -> viewMatrix);
 			suppliers.provide(NormalMatrixUniform.ID, () -> normalMatrix);
-			suppliers.provide(EyeDirectionUniform.ID, () -> eyeDirection);
 		}
 	}
 

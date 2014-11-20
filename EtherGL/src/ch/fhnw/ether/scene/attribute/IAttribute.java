@@ -31,7 +31,7 @@ package ch.fhnw.ether.scene.attribute;
 
 
 /**
- * Abstraction of attribute. Sub-classes on material as well as shader side implement specific attributes.
+ * Abstraction of attribute. Sub-classes of material as well as shader side implement specific attributes.
  * 
  * @author radar
  *

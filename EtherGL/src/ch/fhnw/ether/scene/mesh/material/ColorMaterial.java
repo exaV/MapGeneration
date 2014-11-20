@@ -32,7 +32,7 @@ package ch.fhnw.ether.scene.mesh.material;
 import ch.fhnw.util.color.RGBA;
 
 public class ColorMaterial extends AbstractMaterial {
-	private float[] color;
+	private RGBA color;
 	private boolean perVertexColor;
 
 	public ColorMaterial(RGBA color) {
@@ -40,12 +40,12 @@ public class ColorMaterial extends AbstractMaterial {
 	}
 
 	protected ColorMaterial(RGBA color, boolean perVertexColor) {
-		this.color = color.toArray();
+		this.color = color;
 		this.perVertexColor = perVertexColor;
 	}
 	
 	public void setColor(RGBA color) {
-		this.color = color.toArray();
+		this.color = color;
 	}
 
 	@Override

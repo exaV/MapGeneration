@@ -34,9 +34,9 @@ import java.util.function.Supplier;
 import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.render.gl.Program;
-import ch.fhnw.ether.scene.attribute.IAttribute;
+import ch.fhnw.ether.scene.attribute.ITypedAttribute;
 
-public interface IUniformAttribute extends IAttribute {
+public interface IUniformAttribute<T> extends ITypedAttribute<T> {
 	boolean hasSupplier();
 
 	void setSupplier(Supplier<?> supplier);

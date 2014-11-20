@@ -35,9 +35,9 @@ import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.render.gl.FloatArrayBuffer;
 import ch.fhnw.ether.render.gl.Program;
-import ch.fhnw.ether.scene.attribute.IAttribute;
+import ch.fhnw.ether.scene.attribute.ITypedAttribute;
 
-public interface IArrayAttribute extends IAttribute {
+public interface IArrayAttribute<T> extends ITypedAttribute<T> {
 	enum NumComponents {
 		ONE(1), TWO(2), THREE(3), FOUR(4);
 

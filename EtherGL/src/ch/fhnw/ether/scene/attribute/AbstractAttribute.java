@@ -1,10 +1,10 @@
 package ch.fhnw.ether.scene.attribute;
 
 
-public abstract class AbstractAttribute implements IAttribute {
+public abstract class AbstractAttribute<T> implements ITypedAttribute<T> {
 	private final String id;
 	
-	protected AbstractAttribute(IAttribute attribute) {
+	protected AbstractAttribute(ITypedAttribute<T> attribute) {
 		this.id = attribute.id();
 	}
 

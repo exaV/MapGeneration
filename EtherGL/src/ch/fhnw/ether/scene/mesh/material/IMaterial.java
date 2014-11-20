@@ -32,39 +32,42 @@ package ch.fhnw.ether.scene.mesh.material;
 import ch.fhnw.ether.scene.attribute.AbstractAttribute;
 import ch.fhnw.ether.scene.attribute.IAttributeProvider;
 import ch.fhnw.util.IUpdateRequester;
+import ch.fhnw.util.math.Vec3;
+import ch.fhnw.util.math.Vec4;
 
 public interface IMaterial extends IAttributeProvider, IUpdateRequester {
-	final class MaterialAttribute extends AbstractAttribute {
+	final class MaterialAttribute<T> extends AbstractAttribute<T> {
 		public MaterialAttribute(String id) {
 			super(id);
 		}
 	}
 
 	// position array (note that this attribute is mandatory)
-	MaterialAttribute POSITION_ARRAY = new MaterialAttribute("builtin.material.position_array");
+	MaterialAttribute<float[]> POSITION_ARRAY = new MaterialAttribute<>("builtin.material.position_array");
 
 	// non-shaded objects
-	MaterialAttribute COLOR_ARRAY = new MaterialAttribute("builtin.material.color_array");
-	MaterialAttribute COLOR = new MaterialAttribute("builtin.material.color");
+	MaterialAttribute<float[]> COLOR_ARRAY = new MaterialAttribute<>("builtin.material.color_array");
+	MaterialAttribute<Vec4> COLOR = new MaterialAttribute<>("builtin.material.color");
 
 	// texture
-	MaterialAttribute COLOR_MAP_ARRAY = new MaterialAttribute("builtin.material.color_map_array");
-	MaterialAttribute COLOR_MAP = new MaterialAttribute("builtin.material.color_map");
+	MaterialAttribute<float[]> COLOR_MAP_ARRAY = new MaterialAttribute<>("builtin.material.color_map_array");
+	MaterialAttribute<Texture> COLOR_MAP = new MaterialAttribute<>("builtin.material.color_map");
 
 	// triangles only: normals & shading
-	MaterialAttribute NORMAL_ARRAY = new MaterialAttribute("builtin.material.normal_array");
-	MaterialAttribute EMISSION = new MaterialAttribute("builtin.material.shading.emission");
-	MaterialAttribute AMBIENT = new MaterialAttribute("builtin.material.shading.ambient");
-	MaterialAttribute DIFFUSE = new MaterialAttribute("builtin.material.shading.diffuse");
-	MaterialAttribute SPECULAR = new MaterialAttribute("builtin.material.shading.specular");
-	MaterialAttribute SHININESS = new MaterialAttribute("builtin.material.shading.shininess");
-	MaterialAttribute STRENGTH = new MaterialAttribute("builtin.material.shading.strength");
+	MaterialAttribute<float[]> NORMAL_ARRAY = new MaterialAttribute<>("builtin.material.normal_array");
+	MaterialAttribute<Vec3> EMISSION = new MaterialAttribute<>("builtin.material.shading.emission");
+	MaterialAttribute<Vec3> AMBIENT = new MaterialAttribute<>("builtin.material.shading.ambient");
+	MaterialAttribute<Vec3> DIFFUSE = new MaterialAttribute<>("builtin.material.shading.diffuse");
+	MaterialAttribute<Vec3> SPECULAR = new MaterialAttribute<>("builtin.material.shading.specular");
+	MaterialAttribute<Float> SHININESS = new MaterialAttribute<>("builtin.material.shading.shininess");
+	MaterialAttribute<Float> STRENGTH = new MaterialAttribute<>("builtin.material.shading.strength");
+	MaterialAttribute<Float> ALPHA = new MaterialAttribute<>("builtin.material.shading.alpha");
 
 	// lines only: line width
-	MaterialAttribute LINE_WIDTH_ARRAY = new MaterialAttribute("builtin.material.line_width_array");
-	MaterialAttribute LINE_WIDTH = new MaterialAttribute("builtin.material.line_width");
+	MaterialAttribute<float[]> LINE_WIDTH_ARRAY = new MaterialAttribute<>("builtin.material.line_width_array");
+	MaterialAttribute<Float> LINE_WIDTH = new MaterialAttribute<>("builtin.material.line_width");
 
 	// points only: point size
-	MaterialAttribute POINT_SIZE_ARRAY = new MaterialAttribute("builtin.material.point_size_array");
-	MaterialAttribute POINT_SIZE = new MaterialAttribute("builtin.material.point_size");
+	MaterialAttribute<float[]> POINT_SIZE_ARRAY = new MaterialAttribute<>("builtin.material.point_size_array");
+	MaterialAttribute<Float> POINT_SIZE = new MaterialAttribute<>("builtin.material.point_size");
 }

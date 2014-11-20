@@ -51,8 +51,8 @@ public abstract class AbstractShader implements IShader {
 	private Primitive type;
 	private Program program;
 
-	private List<IUniformAttribute> uniforms = new ArrayList<>();
-	private List<IArrayAttribute> arrays = new ArrayList<>();
+	private List<IUniformAttribute<?>> uniforms = new ArrayList<>();
+	private List<IArrayAttribute<?>> arrays = new ArrayList<>();
 
 	protected AbstractShader(Class<?> root, String name, String source, Primitive type) {
 		this.root = root;
@@ -105,16 +105,16 @@ public abstract class AbstractShader implements IShader {
 	}
 
 	@Override
-	public final void getAttributes(List<IUniformAttribute> uniforms, List<IArrayAttribute> arrays) {
+	public final void getAttributes(List<IUniformAttribute<?>> uniforms, List<IArrayAttribute<?>> arrays) {
 		uniforms.addAll(this.uniforms);
 		arrays.addAll(this.arrays);
 	}
 
-	protected final void addUniform(IUniformAttribute uniform) {
+	protected final void addUniform(IUniformAttribute<?> uniform) {
 		uniforms.add(uniform);
 	}
 
-	protected final void addArray(IArrayAttribute array) {
+	protected final void addArray(IArrayAttribute<?> array) {
 		arrays.add(array);
 	}
 

@@ -27,29 +27,13 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.render.attribute.builtin;
+package ch.fhnw.ether.scene.attribute;
 
-import java.util.function.Supplier;
-
-import ch.fhnw.ether.render.attribute.base.Vec3FloatUniformAttribute;
-
-public final class EyeDirectionUniform extends Vec3FloatUniformAttribute {
-	public static final String ID = "builtin.eye_direction";
-	private static final String DEFAULT_SHADER_NAME = "eyeDirection";
-
-	public EyeDirectionUniform() {
-		super(ID, DEFAULT_SHADER_NAME);
-	}
-
-	public EyeDirectionUniform(String shaderName) {
-		super(ID, shaderName);
-	}
-
-	public EyeDirectionUniform(Supplier<float[]> supplier) {
-		super(ID, DEFAULT_SHADER_NAME, supplier);
-	}
-
-	public EyeDirectionUniform(String shaderName, Supplier<float[]> supplier) {
-		super(ID, shaderName, supplier);
-	}
+/**
+ * Abstraction of typed attribute. Sub-classes on material as well as shader side implement specific attributes.
+ * 
+ * @author radar
+ *
+ */
+public interface ITypedAttribute<T> extends IAttribute {
 }

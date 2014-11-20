@@ -35,12 +35,12 @@ import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.render.attribute.IUniformAttribute;
 import ch.fhnw.ether.render.gl.Program;
-import ch.fhnw.ether.scene.attribute.IAttribute;
+import ch.fhnw.ether.scene.attribute.ITypedAttribute;
 
-public abstract class AbstractUniformAttribute<T> extends AbstractShaderAttribute implements IUniformAttribute {
+public abstract class AbstractUniformAttribute<T> extends AbstractShaderAttribute<T> implements IUniformAttribute<T> {
 	private Supplier<T> supplier;
 
-	protected AbstractUniformAttribute(IAttribute attribute, String shaderName) {
+	protected AbstractUniformAttribute(ITypedAttribute<T> attribute, String shaderName) {
 		super(attribute, shaderName);
 	}
 
@@ -48,7 +48,7 @@ public abstract class AbstractUniformAttribute<T> extends AbstractShaderAttribut
 		super(id, shaderName);
 	}
 
-	protected AbstractUniformAttribute(IAttribute attribute, String shaderName, Supplier<T> supplier) {
+	protected AbstractUniformAttribute(ITypedAttribute<T> attribute, String shaderName, Supplier<T> supplier) {
 		this(attribute, shaderName);
 		this.supplier = supplier;
 	}
@@ -70,7 +70,7 @@ public abstract class AbstractUniformAttribute<T> extends AbstractShaderAttribut
 	@SuppressWarnings("unchecked")
 	@Override
 	public final void setSupplier(Supplier<?> supplier) {
-		this.supplier = (Supplier<T>) supplier;
+		this.supplier = (Supplier<T>)supplier;
 	}
 
 	@Override

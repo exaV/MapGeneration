@@ -33,13 +33,13 @@ import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.render.gl.Program;
 import ch.fhnw.ether.scene.attribute.AbstractAttribute;
-import ch.fhnw.ether.scene.attribute.IAttribute;
+import ch.fhnw.ether.scene.attribute.ITypedAttribute;
 
-public abstract class AbstractShaderAttribute extends AbstractAttribute {
+public abstract class AbstractShaderAttribute<T> extends AbstractAttribute<T> {
 	private final String shaderName;
 	private int shaderIndex = -1;
 
-	protected AbstractShaderAttribute(IAttribute attribute, String shaderName) {
+	protected AbstractShaderAttribute(ITypedAttribute<T> attribute, String shaderName) {
 		this(attribute.id(), shaderName);
 	}
 

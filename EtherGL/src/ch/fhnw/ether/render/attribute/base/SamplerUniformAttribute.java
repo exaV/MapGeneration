@@ -40,7 +40,7 @@ import ch.fhnw.ether.image.Grey16Frame;
 import ch.fhnw.ether.image.RGB8Frame;
 import ch.fhnw.ether.image.RGBA8Frame;
 import ch.fhnw.ether.render.gl.Program;
-import ch.fhnw.ether.scene.attribute.IAttribute;
+import ch.fhnw.ether.scene.attribute.ITypedAttribute;
 import ch.fhnw.ether.scene.mesh.material.Texture;
 
 public class SamplerUniformAttribute extends AbstractUniformAttribute<Texture> {
@@ -49,19 +49,19 @@ public class SamplerUniformAttribute extends AbstractUniformAttribute<Texture> {
 
 	private int[] tex;
 
-	public SamplerUniformAttribute(IAttribute attribute, String shaderName, int unit, int target) {
-		this(attribute.id(), shaderName, null, unit, target);
+	public SamplerUniformAttribute(ITypedAttribute<Texture> attribute, String shaderName, int unit, int target) {
+		this(attribute.id(), shaderName, unit, target, null);
 	}
 
 	public SamplerUniformAttribute(String id, String shaderName, int unit, int target) {
-		this(id, shaderName, null, unit, target);
+		this(id, shaderName, unit, target, null);
 	}
 
-	public SamplerUniformAttribute(IAttribute attribute, String shaderName, Supplier<Texture> supplier, int unit, int target) {
-		this(attribute.id(), shaderName, supplier, unit, target);
+	public SamplerUniformAttribute(ITypedAttribute<Texture> attribute, String shaderName, int unit, int target, Supplier<Texture> supplier) {
+		this(attribute.id(), shaderName, unit, target, supplier);
 	}
 
-	public SamplerUniformAttribute(String id, String shaderName, Supplier<Texture> supplier, int unit, int target) {
+	public SamplerUniformAttribute(String id, String shaderName, int unit, int target, Supplier<Texture> supplier) {
 		super(id, shaderName, supplier);
 		this.unit = unit;
 		this.target = target;

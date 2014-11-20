@@ -7,7 +7,8 @@ uniform mat3 normalMatrix;
 uniform bool useVertexColors;
 uniform bool useTexture;
 
-uniform vec4 materialDiffuseColor;
+uniform vec3 materialDiffuseColor;
+uniform float materialAlpha;
 
 uniform vec4 lightPosition;
 uniform vec3 lightSpotDirection;
@@ -32,7 +33,7 @@ void main() {
 
 	vsNormal = normalize(normalMatrix * vertexNormal.xyz);
 
-	vsDiffuseColor = materialDiffuseColor;
+	vsDiffuseColor = vec4(materialDiffuseColor, materialAlpha);
 	if (useVertexColors)
 		vsDiffuseColor *= vertexColor;
 

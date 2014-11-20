@@ -34,7 +34,7 @@ import ch.fhnw.ether.scene.attribute.AbstractAttribute;
 import ch.fhnw.ether.scene.attribute.IAttributeProvider;
 
 public interface ILight extends I3DObject, IAttributeProvider {
-	final class LightAttribute extends AbstractAttribute {
+	final class LightAttribute<T> extends AbstractAttribute<T> {
 		public LightAttribute(String id) {
 			super(id);
 		}

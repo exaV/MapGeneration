@@ -53,8 +53,8 @@ import ch.fhnw.ether.render.shader.builtin.LineShader;
 import ch.fhnw.ether.render.shader.builtin.PointShader;
 import ch.fhnw.ether.render.shader.builtin.ShadedTriangleShader;
 import ch.fhnw.ether.render.shader.builtin.UnshadedTriangleShader;
-import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.attribute.IAttributeProvider;
+import ch.fhnw.ether.scene.attribute.ITypedAttribute;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.scene.mesh.material.CustomMaterial;
@@ -68,8 +68,8 @@ public final class Renderable {
 	private IMesh mesh;
 	private IShader shader;
 
-	private List<IUniformAttribute> uniformAttributes = new ArrayList<>();
-	private List<IArrayAttribute> arrayAttributes = new ArrayList<>();
+	private List<IUniformAttribute<?>> uniformAttributes = new ArrayList<>();
+	private List<IArrayAttribute<?>> arrayAttributes = new ArrayList<>();
 	private FloatArrayBuffer buffer = new FloatArrayBuffer();
 
 	private int[] sizes;
@@ -115,7 +115,7 @@ public final class Renderable {
 
 		// 2. for each uniform attribute
 		// 2.1. set uniform (shader index, value), enable textures, set gl state
-		for (IUniformAttribute attr : uniformAttributes) {
+		for (IUniformAttribute<?> attr : uniformAttributes) {
 			attr.enable(gl, program);
 		}
 
@@ -126,7 +126,7 @@ public final class Renderable {
 		// 3.2.1 enable vertex attrib array (shader index)
 		// 3.2.2 set vertex attrib pointer (shader index, size, stride, offset)
 		buffer.bind(gl);
-		for (IArrayAttribute attr : arrayAttributes) {
+		for (IArrayAttribute<?> attr : arrayAttributes) {
 			attr.enable(gl, program, buffer);
 		}
 
@@ -138,13 +138,13 @@ public final class Renderable {
 		// 5.2. for each array attribute
 		// 5.2.1 disable vertex attrib array (shader index)
 		buffer.bind(gl);
-		for (IArrayAttribute attr : arrayAttributes) {
+		for (IArrayAttribute<?> attr : arrayAttributes) {
 			attr.disable(gl, program, buffer);
 		}
 
 		// 6. for each uniform attribute
 		// 6.1. disable textures, restore gl state
-		for (IUniformAttribute attr : uniformAttributes) {
+		for (IUniformAttribute<?> attr : uniformAttributes) {
 			attr.disable(gl, program);
 		}
 
@@ -173,7 +173,7 @@ public final class Renderable {
 			private final Set<String> requiredAttibutes = new HashSet<>();
 
 			@Override
-			public void provide(IAttribute attribute, Supplier<?> supplier) {
+			public <T> void provide(ITypedAttribute<T> attribute, Supplier<T> supplier) {
 				provide(attribute.id(), supplier);
 			}
 
@@ -184,7 +184,7 @@ public final class Renderable {
 			}
 
 			@Override
-			public void require(IAttribute attribute) {
+			public <T> void require(ITypedAttribute<T> attribute) {
 				require(attribute.id());
 			}
 
@@ -193,10 +193,10 @@ public final class Renderable {
 				requiredAttibutes.add(id);
 			}
 
-			Supplier<?> get(String id) {
-				Supplier<?> supplier = providedAttributes.get(id);
+			Supplier<?> get(ITypedAttribute<?> attr) {
+				Supplier<?> supplier = providedAttributes.get(attr.id());
 				if (supplier == null)
-					throw new IllegalArgumentException("attribute not provided: " + id);
+					throw new IllegalArgumentException("attribute not provided: " + attr.id());
 				return supplier;
 			}
 
@@ -240,9 +240,9 @@ public final class Renderable {
 
 		// 2.1. handle uniform attributes
 
-		for (IUniformAttribute attr : uniformAttributes) {
+		for (IUniformAttribute<?> attr : uniformAttributes) {
 			if (!attr.hasSupplier()) {
-				attr.setSupplier(suppliers.get(attr.id()));
+				attr.setSupplier(suppliers.get(attr));
 			}
 		}
 
@@ -256,12 +256,12 @@ public final class Renderable {
 			stride = 0;
 			sizes = new int[arrayAttributes.size()];
 			int i = 0;
-			for (IArrayAttribute attr : arrayAttributes) {
+			for (IArrayAttribute<?> attr : arrayAttributes) {
 				stride += sizes[i++] = attr.getNumComponents().get();
 			}
 			i = 0;
 			int offset = 0;
-			for (IArrayAttribute attr : arrayAttributes) {
+			for (IArrayAttribute<?> attr : arrayAttributes) {
 				attr.setup(stride, offset);
 				offset += sizes[i++];
 			}
@@ -270,8 +270,8 @@ public final class Renderable {
 			for (IAttributeProvider provider : arrayAttributeProviders) {
 				suppliers.clear();
 				provider.getAttributeSuppliers(suppliers);
-				for (IArrayAttribute attr : arrayAttributes) {
-					attr.addSupplier(suppliers.get(attr.id()));
+				for (IArrayAttribute<?> attr : arrayAttributes) {
+					attr.addSupplier(suppliers.get(attr));
 				}
 			}
 		}

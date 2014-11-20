@@ -38,11 +38,11 @@ import java.util.function.Supplier;
  */
 public interface IAttributeProvider {
 	interface ISuppliers {
-		void provide(IAttribute attribute, Supplier<?> supplier);
+		<T> void provide(ITypedAttribute<T> attribute, Supplier<T> supplier);
 
 		void provide(String id, Supplier<?> supplier);
 
-		void require(IAttribute attribute);
+		<T> void require(ITypedAttribute<T> attribute);
 
 		void require(String id);
 	}

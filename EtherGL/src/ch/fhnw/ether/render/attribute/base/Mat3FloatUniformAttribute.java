@@ -34,11 +34,11 @@ import java.util.function.Supplier;
 import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.render.gl.Program;
-import ch.fhnw.ether.scene.attribute.IAttribute;
+import ch.fhnw.ether.scene.attribute.ITypedAttribute;
 import ch.fhnw.util.math.Mat3;
 
 public class Mat3FloatUniformAttribute extends AbstractUniformAttribute<Mat3> {
-	public Mat3FloatUniformAttribute(IAttribute attribute, String shaderName) {
+	public Mat3FloatUniformAttribute(ITypedAttribute<Mat3> attribute, String shaderName) {
 		super(attribute, shaderName);
 	}
 
@@ -46,7 +46,7 @@ public class Mat3FloatUniformAttribute extends AbstractUniformAttribute<Mat3> {
 		super(id, shaderName);
 	}
 
-	public Mat3FloatUniformAttribute(IAttribute attribute, String shaderName, Supplier<Mat3> supplier) {
+	public Mat3FloatUniformAttribute(ITypedAttribute<Mat3> attribute, String shaderName, Supplier<Mat3> supplier) {
 		super(attribute, shaderName, supplier);
 	}
 

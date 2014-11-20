@@ -32,14 +32,14 @@ package ch.fhnw.ether.render.attribute.base;
 import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.render.attribute.IArrayAttribute;
-import ch.fhnw.ether.scene.attribute.IAttribute;
+import ch.fhnw.ether.scene.attribute.ITypedAttribute;
 
-public abstract class AbstractArrayAttribute extends AbstractShaderAttribute implements IArrayAttribute {
+public abstract class AbstractArrayAttribute<T> extends AbstractShaderAttribute<T> implements IArrayAttribute<T> {
 	private final NumComponents numComponents;
 	private int stride;
 	private int offset;
 
-	protected AbstractArrayAttribute(IAttribute attribute, String shaderName, NumComponents numComponents) {
+	protected AbstractArrayAttribute(ITypedAttribute<T> attribute, String shaderName, NumComponents numComponents) {
 		super(attribute, shaderName);
 		this.numComponents = numComponents;
 	}

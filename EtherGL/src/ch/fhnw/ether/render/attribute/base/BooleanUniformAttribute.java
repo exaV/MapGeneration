@@ -34,17 +34,18 @@ import java.util.function.Supplier;
 import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.render.gl.Program;
-import ch.fhnw.ether.scene.attribute.IAttribute;
+import ch.fhnw.ether.scene.attribute.ITypedAttribute;
 
 public class BooleanUniformAttribute extends AbstractUniformAttribute<Boolean> {
-	public BooleanUniformAttribute(IAttribute attribute, String shaderName) {
+	public BooleanUniformAttribute(ITypedAttribute<Boolean> attribute, String shaderName) {
 		super(attribute, shaderName);
 	}
+
 	public BooleanUniformAttribute(String id, String shaderName) {
 		super(id, shaderName);
 	}
 
-	public BooleanUniformAttribute(IAttribute attribute, String shaderName, Supplier<Boolean> supplier) {
+	public BooleanUniformAttribute(ITypedAttribute<Boolean> attribute, String shaderName, Supplier<Boolean> supplier) {
 		super(attribute, shaderName, supplier);
 	}
 

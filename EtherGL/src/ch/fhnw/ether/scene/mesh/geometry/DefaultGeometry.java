@@ -253,7 +253,6 @@ public class DefaultGeometry extends AbstractGeometry {
 	public static DefaultGeometry createVNC(Primitive type, float[] vertices, float[] normals, float[] colors) {
 		IAttribute[] attributes = { IMaterial.POSITION_ARRAY, IMaterial.NORMAL_ARRAY, IMaterial.COLOR_ARRAY };
 		float[][] data = { vertices, normals, colors };
-		System.out.println(vertices.length + " " + normals.length + " " + colors.length);
 		return new DefaultGeometry(type, attributes, data);
 	}
 

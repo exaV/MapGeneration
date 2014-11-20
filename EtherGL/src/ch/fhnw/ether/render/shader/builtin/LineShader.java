@@ -55,7 +55,7 @@ public class LineShader extends AbstractShader {
 		addUniform(new BooleanUniformAttribute("shader.vertex_colors_flag", "useVertexColors", () -> useVertexColors));
 		addUniform(new BooleanUniformAttribute("shader.texture_flag", "useTexture", () -> false));
 
-		addUniform(new ColorUniform(attributes.contains(IMaterial.COLOR) ? null : () -> RGBA.WHITE.toArray()));
+		addUniform(new ColorUniform(attributes.contains(IMaterial.COLOR) ? null : () -> RGBA.WHITE));
 		
 		addUniform(new ProjMatrixUniform());
 		addUniform(new ViewMatrixUniform());

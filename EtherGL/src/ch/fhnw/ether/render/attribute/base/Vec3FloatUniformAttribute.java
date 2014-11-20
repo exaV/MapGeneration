@@ -34,10 +34,11 @@ import java.util.function.Supplier;
 import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.render.gl.Program;
-import ch.fhnw.ether.scene.attribute.IAttribute;
+import ch.fhnw.ether.scene.attribute.ITypedAttribute;
+import ch.fhnw.util.math.Vec3;
 
-public class Vec3FloatUniformAttribute extends AbstractUniformAttribute<float[]> {
-	public Vec3FloatUniformAttribute(IAttribute attribute, String shaderName) {
+public class Vec3FloatUniformAttribute extends AbstractUniformAttribute<Vec3> {
+	public Vec3FloatUniformAttribute(ITypedAttribute<Vec3> attribute, String shaderName) {
 		super(attribute, shaderName);
 	}
 
@@ -45,16 +46,16 @@ public class Vec3FloatUniformAttribute extends AbstractUniformAttribute<float[]>
 		super(id, shaderName);
 	}
 
-	public Vec3FloatUniformAttribute(IAttribute attribute, String shaderName, Supplier<float[]> supplier) {
+	public Vec3FloatUniformAttribute(ITypedAttribute<Vec3> attribute, String shaderName, Supplier<Vec3> supplier) {
 		super(attribute, shaderName, supplier);
 	}
 
-	public Vec3FloatUniformAttribute(String id, String shaderName, Supplier<float[]> supplier) {
+	public Vec3FloatUniformAttribute(String id, String shaderName, Supplier<Vec3> supplier) {
 		super(id, shaderName, supplier);
 	}
 
 	@Override
 	public void enable(GL3 gl, Program program) {
-		program.setUniformVec3(gl, getShaderIndex(gl, program), get());
+		program.setUniformVec3(gl, getShaderIndex(gl, program), get().toArray());
 	}
 }

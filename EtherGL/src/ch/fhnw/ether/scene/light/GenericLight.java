@@ -3,20 +3,21 @@ package ch.fhnw.ether.scene.light;
 import ch.fhnw.util.UpdateRequest;
 import ch.fhnw.util.color.RGB;
 import ch.fhnw.util.math.Vec3;
+import ch.fhnw.util.math.Vec4;
 import ch.fhnw.util.math.geometry.BoundingBox;
 
 public class GenericLight implements ILight {
-	public static LightAttribute GENERIC_LIGHT = new LightAttribute("builtin.light.generic_light");
+	public static LightAttribute<LightSource> GENERIC_LIGHT = new LightAttribute<>("builtin.light.generic_light");
 
 	public static class LightSource {
 		private final boolean isLocal;
 		private final boolean isSpot;
 
-		private final float[] position;
-		private final float[] ambient;
-		private final float[] color;
+		private final Vec4 position;
+		private final RGB ambient;
+		private final RGB color;
 
-		private final float[] spotDirection;
+		private final Vec3 spotDirection;
 		private final float spotCosCutoff;
 		private final float spotExponent;
 
@@ -29,9 +30,9 @@ public class GenericLight implements ILight {
 			this.isLocal = isLocal;
 			this.isSpot = isSpot;
 			this.position = makePosition(isLocal, position);
-			this.ambient = ambient.toArray();
-			this.color = color.toArray();
-			this.spotDirection = spotDirection != null ? spotDirection.toArray() : null;
+			this.ambient = ambient;
+			this.color = color;
+			this.spotDirection = spotDirection != null ? spotDirection : Vec3.Z_NEG;
 			this.spotCosCutoff = spotCosCutoff;
 			this.spotExponent = spotExponent;
 			this.constantAttenuation = constantAttenuation;
@@ -53,12 +54,12 @@ public class GenericLight implements ILight {
 			this.quadraticAttenuation = parameters.quadraticAttenuation;
 		}
 		
-		private static float[] makePosition(boolean isLocal, Vec3 position) {
+		private static Vec4 makePosition(boolean isLocal, Vec3 position) {
 			if (isLocal)
-				return new float[] { position.x, position.y, position.z, 1 };
+				return new Vec4(position.x, position.y, position.z, 1);
 			else {
 				position = position.normalize();
-				return new float[] { position.x, position.y, position.z, 0 };
+				return new Vec4(position.x, position.y, position.z, 0);
 			}
 		}
 
@@ -85,19 +86,19 @@ public class GenericLight implements ILight {
 			return isSpot;
 		}
 
-		public float[] getPosition() {
+		public Vec4 getPosition() {
 			return position;
 		}
 
-		public float[] getAmbient() {
+		public RGB getAmbient() {
 			return ambient;
 		}
 
-		public float[] getColor() {
+		public RGB getColor() {
 			return color;
 		}
 
-		public float[] getSpotDirection() {
+		public Vec3 getSpotDirection() {
 			return spotDirection;
 		}
 

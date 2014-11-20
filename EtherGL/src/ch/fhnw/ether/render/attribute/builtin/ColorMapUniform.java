@@ -53,6 +53,6 @@ public final class ColorMapUniform extends SamplerUniformAttribute {
 	}
 
 	public ColorMapUniform(String shaderName, Supplier<Texture> supplier) {
-		super(IMaterial.COLOR_MAP, shaderName, supplier, 0, GL.GL_TEXTURE_2D);
+		super(IMaterial.COLOR_MAP, shaderName, 0, GL.GL_TEXTURE_2D, supplier);
 	}
 }

@@ -33,6 +33,7 @@ import java.util.function.Supplier;
 
 import ch.fhnw.ether.render.attribute.base.Vec4FloatUniformAttribute;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
+import ch.fhnw.util.math.Vec4;
 
 public class ColorUniform extends Vec4FloatUniformAttribute {
 	private static final String DEFAULT_SHADER_NAME = "materialColor";
@@ -41,7 +42,7 @@ public class ColorUniform extends Vec4FloatUniformAttribute {
 		super(IMaterial.COLOR, DEFAULT_SHADER_NAME);
 	}
 
-	public ColorUniform(Supplier<float[]> supplier) {
+	public ColorUniform(Supplier<Vec4> supplier) {
 		super(IMaterial.COLOR, DEFAULT_SHADER_NAME, supplier);
 	}
 }

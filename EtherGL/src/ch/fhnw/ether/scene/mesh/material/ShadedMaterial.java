@@ -32,22 +32,24 @@ package ch.fhnw.ether.scene.mesh.material;
 import ch.fhnw.util.color.RGB;
 
 public class ShadedMaterial extends AbstractMaterial {
-	private final float[] emission;
-	private final float[] ambient;
-	private final float[] diffuse;
-	private final float[] specular;
+	private final RGB emission;
+	private final RGB ambient;
+	private final RGB diffuse;
+	private final RGB specular;
 	private final float shininess;
 	private final float strength;
+	private final float alpha;
 	
 	private Texture colorMap;
 
 	public ShadedMaterial(RGB emission, RGB ambient, RGB diffuse, RGB specular, float shininess, float strength, float alpha) {
-		this.emission = emission.toArray();
-		this.ambient = ambient.toArray();
-		this.diffuse = new float[] { diffuse.x, diffuse.y, diffuse.z, alpha };
-		this.specular = specular.toArray();
+		this.emission = emission;
+		this.ambient = ambient;
+		this.diffuse = diffuse;
+		this.specular = specular;
 		this.shininess = shininess;
 		this.strength = strength;
+		this.alpha = alpha;
 	}
 
 	public ShadedMaterial(RGB emission, RGB ambient, RGB diffuse, RGB specular, float shininess, float strength, float alpha, Texture colorMap) {
@@ -63,6 +65,7 @@ public class ShadedMaterial extends AbstractMaterial {
 		suppliers.provide(IMaterial.SPECULAR, () -> specular);
 		suppliers.provide(IMaterial.SHININESS, () -> shininess);
 		suppliers.provide(IMaterial.STRENGTH, () -> strength);
+		suppliers.provide(IMaterial.ALPHA, () -> alpha);
 
 		if (colorMap != null) {
 			suppliers.provide(IMaterial.COLOR_MAP, () -> colorMap);

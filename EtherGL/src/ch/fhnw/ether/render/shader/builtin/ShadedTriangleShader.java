@@ -32,11 +32,9 @@ package ch.fhnw.ether.render.shader.builtin;
 import ch.fhnw.ether.render.attribute.base.BooleanUniformAttribute;
 import ch.fhnw.ether.render.attribute.base.FloatUniformAttribute;
 import ch.fhnw.ether.render.attribute.base.Vec3FloatUniformAttribute;
-import ch.fhnw.ether.render.attribute.base.Vec4FloatUniformAttribute;
 import ch.fhnw.ether.render.attribute.builtin.ColorArray;
 import ch.fhnw.ether.render.attribute.builtin.ColorMapArray;
 import ch.fhnw.ether.render.attribute.builtin.ColorMapUniform;
-import ch.fhnw.ether.render.attribute.builtin.EyeDirectionUniform;
 import ch.fhnw.ether.render.attribute.builtin.LightUniforms;
 import ch.fhnw.ether.render.attribute.builtin.NormalArray;
 import ch.fhnw.ether.render.attribute.builtin.NormalMatrixUniform;
@@ -69,10 +67,11 @@ public class ShadedTriangleShader extends AbstractShader {
 
 		addUniform(new Vec3FloatUniformAttribute(IMaterial.EMISSION, "materialEmissionColor"));
 		addUniform(new Vec3FloatUniformAttribute(IMaterial.AMBIENT, "materialAmbientColor"));
-		addUniform(new Vec4FloatUniformAttribute(IMaterial.DIFFUSE, "materialDiffuseColor"));
+		addUniform(new Vec3FloatUniformAttribute(IMaterial.DIFFUSE, "materialDiffuseColor"));
 		addUniform(new Vec3FloatUniformAttribute(IMaterial.SPECULAR, "materialSpecularColor"));
 		addUniform(new FloatUniformAttribute(IMaterial.SHININESS, "materialShininess"));
 		addUniform(new FloatUniformAttribute(IMaterial.STRENGTH, "materialStrength"));
+		addUniform(new FloatUniformAttribute(IMaterial.ALPHA, "materialAlpha"));
 		
 		addUniform(new LightUniforms());
 
@@ -82,6 +81,5 @@ public class ShadedTriangleShader extends AbstractShader {
 		addUniform(new ProjMatrixUniform());
 		addUniform(new ViewMatrixUniform());
 		addUniform(new NormalMatrixUniform());
-		addUniform(new EyeDirectionUniform());
 	}
 }
