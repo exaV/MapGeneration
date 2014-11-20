@@ -82,7 +82,7 @@ public abstract class AbstractRenderer implements IRenderer {
 		light = DEFAULT_LIGHT;
 	}
 
-	public void addAttributeProvider(IAttributeProvider provider) {
+	protected void addAttributeProvider(IAttributeProvider provider) {
 		attributes.addProvider(provider);
 	}
 

@@ -12,6 +12,7 @@ import ch.fhnw.util.math.Vec3;
 
 // FIXME: we still create too many points when correspondance is not set
 
+// TODO: we could generalize this to use other polyhedrons (tetrahedron, cube, octahedron) for sphere generation.
 public class GeodesicSphere {
 	private static final float SCALE = 0.5f;
 
