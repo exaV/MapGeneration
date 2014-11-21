@@ -63,15 +63,15 @@ public class ShadedTriangleShader extends AbstractShader {
 			addArray(new ColorMapArray());
 
 		addUniform(new BooleanUniformAttribute("shader.vertex_colors_flag", "useVertexColors", () -> useVertexColors));
-		addUniform(new BooleanUniformAttribute("shader.texture_flag", "useTexture", () -> useTexture));
+		addUniform(new BooleanUniformAttribute("shader.color_map_flag", "useColorMap", () -> useTexture));
 
-		addUniform(new Vec3FloatUniformAttribute(IMaterial.EMISSION, "materialEmissionColor"));
-		addUniform(new Vec3FloatUniformAttribute(IMaterial.AMBIENT, "materialAmbientColor"));
-		addUniform(new Vec3FloatUniformAttribute(IMaterial.DIFFUSE, "materialDiffuseColor"));
-		addUniform(new Vec3FloatUniformAttribute(IMaterial.SPECULAR, "materialSpecularColor"));
-		addUniform(new FloatUniformAttribute(IMaterial.SHININESS, "materialShininess"));
-		addUniform(new FloatUniformAttribute(IMaterial.STRENGTH, "materialStrength"));
-		addUniform(new FloatUniformAttribute(IMaterial.ALPHA, "materialAlpha"));
+		addUniform(new Vec3FloatUniformAttribute(IMaterial.EMISSION, "material.emissionColor"));
+		addUniform(new Vec3FloatUniformAttribute(IMaterial.AMBIENT, "material.ambientColor"));
+		addUniform(new Vec3FloatUniformAttribute(IMaterial.DIFFUSE, "material.diffuseColor"));
+		addUniform(new Vec3FloatUniformAttribute(IMaterial.SPECULAR, "material.specularColor"));
+		addUniform(new FloatUniformAttribute(IMaterial.SHININESS, "material.shininess"));
+		addUniform(new FloatUniformAttribute(IMaterial.STRENGTH, "material.strength"));
+		addUniform(new FloatUniformAttribute(IMaterial.ALPHA, "material.alpha"));
 		
 		addUniform(new LightUniforms());
 

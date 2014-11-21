@@ -59,20 +59,20 @@ public class LightUniforms extends AbstractUniformAttribute<LightSource> {
 	
 	public LightUniforms() {
 		super(GenericLight.GENERIC_LIGHT, "void");
-		isLocal = new BooleanUniformAttribute("light.is_local", "lightIsLocal", () -> get().isLocal());	
-		isSpot = new BooleanUniformAttribute("light.is_spot", "lightIsSpot", () -> get().isSpot());	
+		isLocal = new BooleanUniformAttribute("light.is_local", "light.isLocal", () -> get().isLocal());	
+		isSpot = new BooleanUniformAttribute("light.is_spot", "light.isSpot", () -> get().isSpot());	
 
-		position = new Vec4FloatUniformAttribute("light.position", "lightPosition", () -> get().getPosition());
-		ambient = new Vec3FloatUniformAttribute("light.ambient", "lightAmbientColor", () -> get().getAmbient());
-		color = new Vec3FloatUniformAttribute("light.color", "lightColor", () -> get().getColor());
+		position = new Vec4FloatUniformAttribute("light.position", "light.position", () -> get().getPosition());
+		ambient = new Vec3FloatUniformAttribute("light.ambient", "light.ambientColor", () -> get().getAmbient());
+		color = new Vec3FloatUniformAttribute("light.color", "light.color", () -> get().getColor());
 
-		spotDirection = new Vec3FloatUniformAttribute("light.spot_direction", "lightSpotDirection", () -> get().getSpotDirection());
-		spotCosCutoff = new FloatUniformAttribute("light.spot_cos_cutoff", "lightSpotCosCutoff", () -> get().getSpotCosCutoff());
-		spotExponent = new FloatUniformAttribute("light.spot_exponent", "lightSpotExponent", () -> get().getSpotExponent());
+		spotDirection = new Vec3FloatUniformAttribute("light.spot_direction", "light.spotDirection", () -> get().getSpotDirection());
+		spotCosCutoff = new FloatUniformAttribute("light.spot_cos_cutoff", "light.spotCosCutoff", () -> get().getSpotCosCutoff());
+		spotExponent = new FloatUniformAttribute("light.spot_exponent", "light.spotExponent", () -> get().getSpotExponent());
 
-		constantAttenuation = new FloatUniformAttribute("light.constant_attenuation", "lightConstantAttenuation", () -> get().getConstantAttenuation());
-		linearAttenuation = new FloatUniformAttribute("light.linear_attenuation", "lightLinearAttenuation", () -> get().getLinearAttenuation());
-		quadraticAttenuation = new FloatUniformAttribute("light.quadratic_attenuation", "lightQuadraticAttenuation", () -> get().getQuadraticAttenuation());
+		constantAttenuation = new FloatUniformAttribute("light.constant_attenuation", "light.constantAttenuation", () -> get().getConstantAttenuation());
+		linearAttenuation = new FloatUniformAttribute("light.linear_attenuation", "light.linearAttenuation", () -> get().getLinearAttenuation());
+		quadraticAttenuation = new FloatUniformAttribute("light.quadratic_attenuation", "light.quadraticAttenuation", () -> get().getQuadraticAttenuation());
 	}
 
 	@Override

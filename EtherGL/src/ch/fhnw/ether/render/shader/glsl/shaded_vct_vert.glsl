@@ -1,47 +1,56 @@
 #version 330
 
+struct Light {
+	bool isLocal;
+	bool isSpot;
+	vec4 position;
+	vec3 ambientColor;
+	vec3 color;
+	vec3 spotDirection;
+	float spotCosCutoff;
+	float spotExponent;
+	float constantAttenuation; 
+	float linearAttenuation;
+	float quadraticAttenuation;
+};
+
+struct VertexData {
+	vec4 position;				// vertex position in eye space
+	vec3 normal;				// vertex normal in eye space
+	vec4 color;					// vertex diffuse color
+	vec2 texCoord;				// texture coordinate of color map
+
+	vec3 lightPosition;			// hack until we transform light pos/dir on cpu
+	vec3 lightSpotDirection;
+};
+
+
 uniform mat4 projMatrix;
 uniform mat4 viewMatrix;
 uniform mat3 normalMatrix;
 
 uniform bool useVertexColors;
-uniform bool useTexture;
+uniform bool useColorMap;
 
-uniform vec3 materialDiffuseColor;
-uniform float materialAlpha;
-
-uniform vec4 lightPosition;
-uniform vec3 lightSpotDirection;
+uniform Light light;
 
 in vec4 vertexPosition;
 in vec4 vertexNormal;
 in vec4 vertexColor;
 in vec2 vertexTexCoord;
 
-out vec4 vsPosition;		// vertex position in eye space
-out vec3 vsNormal;			// vertex normal in eye space
-out vec4 vsDiffuseColor;	// vertex diffuse color
-out vec2 vsTexCoord;		// texture coordinate of color map
-
-// light position and spot direction in eye space 
-// XXX this can be precomputed and passed as uniform
-out vec3 vsLightPosition;	
-out vec3 vsLightSpotDirection;
+out VertexData vd;
 
 void main() {
-	vsPosition = viewMatrix * vertexPosition;
+	vd.position = viewMatrix * vertexPosition;
+	vd.normal = normalize(normalMatrix * vertexNormal.xyz);
+	vd.color = useVertexColors ? vertexColor : vec4(1);
 
-	vsNormal = normalize(normalMatrix * vertexNormal.xyz);
+	if (useColorMap)
+		vd.texCoord = vertexTexCoord;
 
-	vsDiffuseColor = vec4(materialDiffuseColor, materialAlpha);
-	if (useVertexColors)
-		vsDiffuseColor *= vertexColor;
-
-	if (useTexture)
-		vsTexCoord = vertexTexCoord;
-
-	vsLightPosition = (viewMatrix * lightPosition).xyz;
-	vsLightSpotDirection = normalMatrix * lightSpotDirection;
+	vd.lightPosition = (viewMatrix * light.position).xyz;
+	vd.lightSpotDirection = normalMatrix * light.spotDirection;
 
 	gl_Position = projMatrix * viewMatrix * vertexPosition;
 }
