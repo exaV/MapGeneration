@@ -37,6 +37,7 @@ import ch.fhnw.ether.render.attribute.builtin.NormalMatrixUniform;
 import ch.fhnw.ether.render.attribute.builtin.ProjMatrixUniform;
 import ch.fhnw.ether.render.attribute.builtin.ViewMatrixUniform;
 import ch.fhnw.ether.scene.attribute.IAttributeProvider;
+import ch.fhnw.ether.scene.camera.CameraMatrices;
 import ch.fhnw.ether.scene.mesh.IMesh.Pass;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.util.math.Mat3;
@@ -112,9 +113,11 @@ public class ForwardRenderer extends AbstractRenderer {
 
 	@Override
 	public void render(GL3 gl, IView view) {
+		CameraMatrices cameraMatrices = view.getCameraMatrices();
 		boolean interactive = view.getConfig().getViewType() == IView.ViewType.INTERACTIVE_VIEW;
 		
-		update(gl);
+		
+		update(gl, cameraMatrices);
 
 		state.setCameraSpace(view);
 

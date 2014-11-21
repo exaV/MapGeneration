@@ -92,12 +92,19 @@ void main() {
 
 	// accumulate all the lights' effects
 	vec3 diffuseColor = material.diffuseColor * vd.color.rgb;
+	float alpha = material.alpha;
+	
+	if (useColorMap) {
+		vec4 t = texture(colorMap, vd.texCoord);
+		diffuseColor += t.rgb;
+		alpha *= t.a;
+	}
 
 	vec3 emittedLight = material.emissionColor;
 	vec3 scatteredLight = material.ambientColor * light.ambientColor * attenuation + diffuseColor * light.color * diffuseFactor * attenuation;
     vec3 reflectedLight = material.specularColor * light.color * specularFactor * attenuation;
 
-	vec4 rgba = vec4(min(emittedLight + scatteredLight + reflectedLight, vec3(1.0)), material.alpha);
+	vec4 rgba = vec4(min(emittedLight + scatteredLight + reflectedLight, vec3(1.0)), alpha);
 
-	fragColor = useColorMap ? rgba * texture(colorMap, vd.texCoord) : rgba;
+	fragColor = rgba;
 }

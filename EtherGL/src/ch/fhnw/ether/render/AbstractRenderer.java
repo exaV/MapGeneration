@@ -32,30 +32,18 @@ package ch.fhnw.ether.render;
 import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.scene.attribute.IAttributeProvider;
-import ch.fhnw.ether.scene.light.DirectionalLight;
-import ch.fhnw.ether.scene.light.GenericLight;
+import ch.fhnw.ether.scene.camera.CameraMatrices;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.IMesh.Pass;
-import ch.fhnw.util.color.RGB;
-import ch.fhnw.util.math.Vec3;
 
 public abstract class AbstractRenderer implements IRenderer {
-	private static final GenericLight DEFAULT_LIGHT = new DirectionalLight(Vec3.Z, RGB.BLACK, RGB.WHITE);
-
-	private final Renderables renderables = new Renderables();
-
 	private final AttributeProviders attributes = new AttributeProviders();
 
-	private GenericLight light = DEFAULT_LIGHT;
+	private final Lights lights = new Lights(this);
+	private final Renderables renderables = new Renderables();
 
 	public AbstractRenderer() {
-		addAttributeProvider(new IAttributeProvider() {
-			@Override
-			public void getAttributeSuppliers(ISuppliers suppliers) {
-				suppliers.provide(GenericLight.GENERIC_LIGHT, () -> light.getLightSource());
-			}
-		});
 	}
 
 	@Override
@@ -70,27 +58,24 @@ public abstract class AbstractRenderer implements IRenderer {
 
 	@Override
 	public void addLight(ILight light) {
-		if (light instanceof GenericLight) {
-			this.light = (GenericLight)light;
-		} else {
-			throw new IllegalArgumentException("can only handle GenericLight");
-		}
+		lights.addLight(light);
 	}
 
 	@Override
 	public void removeLight(ILight light) {
-		light = DEFAULT_LIGHT;
+		lights.removeLight(light);
 	}
 
 	protected void addAttributeProvider(IAttributeProvider provider) {
 		attributes.addProvider(provider);
 	}
 
-	protected void update(GL3 gl) {
-		this.renderables.update(gl);
+	protected void update(GL3 gl, CameraMatrices cameraMatrices) {
+		lights.update(gl, cameraMatrices);
+		renderables.update(gl);
 	}
 
 	protected void renderPass(GL3 gl, Pass pass, boolean interactive) {
-		this.renderables.render(gl, pass, interactive);
+		renderables.render(gl, pass, interactive);
 	}
 }
