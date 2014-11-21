@@ -38,90 +38,72 @@ import javax.media.opengl.GL3;
 import com.jogamp.common.nio.Buffers;
 
 /**
- * Basic float buffer attribute wrapper.
+ * Basic uniform buffer object wrapper.
  *
  * @author radar
  */
-public class FloatArrayBuffer implements IArrayBuffer {
+public class UniformBuffer {
 	private static final int BYTES_PER_FLOAT = Float.SIZE / Byte.SIZE;
 
 	private static final FloatBuffer EMPTY_BUFFER = Buffers.newDirectFloatBuffer(0);
 
-	private int[] vbo;
+	private final int bindingPoint;
+	private int[] ubo;
 	private int size;
 
-	public FloatArrayBuffer() {
+	public UniformBuffer(int bindingPoint) {
+		this.bindingPoint = bindingPoint;
 	}
 
-	@Override
-	public void dispose(GL gl) {
-		if (vbo != null) {
-			gl.glDeleteBuffers(1, vbo, 0);
-			vbo = null;
+	public void dispose(GL3 gl) {
+		if (ubo != null) {
+			gl.glDeleteBuffers(1, ubo, 0);
+			ubo = null;
 		}
 		size = 0;
 	}
 
-	@Override
-	public void load(GL gl, Buffer data) {
-		if (vbo == null) {
-			vbo = new int[1];
-			gl.glGenBuffers(1, vbo, 0);
+	public void load(GL3 gl, Buffer data) {
+		if (ubo == null) {
+			ubo = new int[1];
+			gl.glGenBuffers(1, ubo, 0);
 		}
 
-		gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vbo[0]);
+		gl.glBindBuffer(GL3.GL_UNIFORM_BUFFER, ubo[0]);
 		if (data != null && data.limit() != 0) {
 			size = data.limit();
 			data.rewind();
 
 			// transfer data to VBO
 			int numBytes = size * BYTES_PER_FLOAT;
-			gl.glBufferData(GL.GL_ARRAY_BUFFER, numBytes, data, GL.GL_STATIC_DRAW);
+			gl.glBufferData(GL3.GL_UNIFORM_BUFFER, numBytes, data, GL.GL_STATIC_DRAW);
 		} else {
 			size = 0;
-			gl.glBufferData(GL.GL_ARRAY_BUFFER, 0, EMPTY_BUFFER, GL.GL_STATIC_DRAW);
+			gl.glBufferData(GL3.GL_UNIFORM_BUFFER, 0, EMPTY_BUFFER, GL.GL_STATIC_DRAW);
 		}
 		gl.glBindBuffer(GL.GL_ARRAY_BUFFER, 0);
 	}
 
-	@Override
-	public void clear(GL gl) {
+	public void clear(GL3 gl) {
 		load(gl, null);
 	}
 
-	@Override
-	public void bind(GL gl) {
-		if (size > 0) {
-			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vbo[0]);
-		}
+	public void bind(GL3 gl) {
+		gl.glBindBufferBase(GL3.GL_UNIFORM_BUFFER, bindingPoint, ubo[0]);
 	}
 
-	@Override
-	public void enableAttribute(GL3 gl, int index, int numComponents, int stride, int offset) {
-		if (size > 0) {
-			gl.glEnableVertexAttribArray(index);
-			gl.glVertexAttribPointer(index, numComponents, GL.GL_FLOAT, false, stride * BYTES_PER_FLOAT, offset * BYTES_PER_FLOAT);
-		}
+	public void bind(GL3 gl, int offset, int size) {
+		gl.glBindBufferRange(GL3.GL_UNIFORM_BUFFER, bindingPoint, ubo[0], offset, size);
 	}
 
-	@Override
-	public void enableAttribute(GL3 gl, int index, int numComponents) {
-		enableAttribute(gl, index, numComponents, 0, 0);
+	public int getBindingPoint() {
+		return bindingPoint;
 	}
 
-	@Override
-	public void disableAttribute(GL3 gl, int index) {
-		if (size > 0) {
-			gl.glDisableVertexAttribArray(index);
-		}
-	}
-
-	@Override
 	public int size() {
 		return size;
 	}
 
-	@Override
 	public boolean isEmpty() {
 		return size == 0;
 	}

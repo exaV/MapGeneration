@@ -9,8 +9,11 @@ import ch.fhnw.util.math.geometry.BoundingBox;
 public class GenericLight implements ILight {
 
 	public static final class LightSource {
-		private final boolean isLocal;
-		private final boolean isSpot;
+		public enum Type {
+			OFF, DIRECTIONAL_LIGHT, POINT_LIGHT, SPOT_LIGHT
+		}
+
+		private final Type type;
 
 		private final Vec4 position;
 		private final RGB ambient;
@@ -24,11 +27,10 @@ public class GenericLight implements ILight {
 		private final float linearAttenuation;
 		private final float quadraticAttenuation;
 
-		public LightSource(boolean isLocal, boolean isSpot, Vec3 position, RGB ambient, RGB color, Vec3 spotDirection, float spotCosCutoff, float spotExponent,
+		public LightSource(Type type, Vec3 position, RGB ambient, RGB color, Vec3 spotDirection, float spotCosCutoff, float spotExponent,
 				float constantAttenuation, float linearAttenuation, float quadraticAttenuation) {
-			this.isLocal = isLocal;
-			this.isSpot = isSpot;
-			this.position = makePosition(isLocal, position);
+			this.type = type;
+			this.position = makePosition(type, position);
 			this.ambient = ambient;
 			this.color = color;
 			this.spotDirection = spotDirection != null ? spotDirection : Vec3.Z_NEG;
@@ -39,50 +41,45 @@ public class GenericLight implements ILight {
 			this.quadraticAttenuation = quadraticAttenuation;
 		}
 
-		public LightSource(LightSource parameters, Vec3 position) {
-			this.isLocal = parameters.isLocal;
-			this.isSpot = parameters.isSpot;
-			this.position = makePosition(parameters.isLocal, position);
-			this.ambient = parameters.ambient;
-			this.color = parameters.color;
-			this.spotDirection = parameters.spotDirection;
-			this.spotCosCutoff = parameters.spotCosCutoff;
-			this.spotExponent = parameters.spotExponent;
-			this.constantAttenuation = parameters.constantAttenuation;
-			this.linearAttenuation = parameters.linearAttenuation;
-			this.quadraticAttenuation = parameters.quadraticAttenuation;
+		public LightSource(LightSource source, Vec3 position) {
+			this.type = source.type;
+			this.position = makePosition(source.type, position);
+			this.ambient = source.ambient;
+			this.color = source.color;
+			this.spotDirection = source.spotDirection;
+			this.spotCosCutoff = source.spotCosCutoff;
+			this.spotExponent = source.spotExponent;
+			this.constantAttenuation = source.constantAttenuation;
+			this.linearAttenuation = source.linearAttenuation;
+			this.quadraticAttenuation = source.quadraticAttenuation;
 		}
-		
-		private static Vec4 makePosition(boolean isLocal, Vec3 position) {
-			if (isLocal)
-				return new Vec4(position.x, position.y, position.z, 1);
-			else {
+
+		private static Vec4 makePosition(Type type, Vec3 position) {
+			if (type == Type.DIRECTIONAL_LIGHT) {
 				position = position.normalize();
 				return new Vec4(position.x, position.y, position.z, 0);
+			} else {
+				return new Vec4(position.x, position.y, position.z, 1);
 			}
 		}
 
 		public static LightSource directionalSource(Vec3 direction, RGB ambient, RGB color) {
-			return new LightSource(false, false, direction, ambient, color, null, 0, 0, 0, 0, 0);
+			return new LightSource(Type.DIRECTIONAL_LIGHT, direction, ambient, color, null, 0, 0, 0, 0, 0);
 		}
 
 		public static LightSource pointSource(Vec3 position, RGB ambient, RGB color, float constantAttenuation, float linearAttenuation,
 				float quadraticAttenuation) {
-			return new LightSource(true, false, position, ambient, color, null, 0, 0, constantAttenuation, linearAttenuation, quadraticAttenuation);
+			return new LightSource(Type.POINT_LIGHT, position, ambient, color, null, 0, 0, constantAttenuation, linearAttenuation, quadraticAttenuation);
 		}
 
 		public static LightSource spotSource(Vec3 position, RGB ambient, RGB color, Vec3 spotDirection, float spotCutoff, float spotExponent,
 				float constantAttenuation, float linearAttenuation, float quadraticAttenuation) {
-			return new LightSource(true, true, position, ambient, color, spotDirection, (float)Math.cos(Math.toRadians(spotCutoff)), spotExponent, constantAttenuation, linearAttenuation,
-					quadraticAttenuation);
+			return new LightSource(Type.SPOT_LIGHT, position, ambient, color, spotDirection, (float) Math.cos(Math.toRadians(spotCutoff)), spotExponent,
+					constantAttenuation, linearAttenuation, quadraticAttenuation);
 		}
 
-		public boolean isLocal() {
-			return isLocal;
-		}
-
-		public boolean isSpot() {
-			return isSpot;
+		public Type getType() {
+			return type;
 		}
 
 		public Vec4 getPosition() {

@@ -29,26 +29,16 @@
 
 package ch.fhnw.ether.render.attribute.base;
 
-import java.util.function.BiConsumer;
-import java.util.function.Supplier;
-
 import javax.media.opengl.GL3;
 
-import ch.fhnw.ether.render.attribute.IUniformAttribute;
 import ch.fhnw.ether.render.gl.Program;
 
-public final class StateInjectAttribute extends AbstractShaderAttribute<GL3> implements IUniformAttribute<GL3> {
-	private final BiConsumer<GL3, Program> enable;
-	private final BiConsumer<GL3, Program> disable;
+public final class UniformBlockAttribute extends AbstractUniformAttribute<Integer> {
+	private boolean canBind = true;
+	private boolean isBound = false;
 
-	public StateInjectAttribute(String id, BiConsumer<GL3, Program> enable) {
-		this(id, enable, null);
-	}
-
-	public StateInjectAttribute(String id, BiConsumer<GL3, Program> enable, BiConsumer<GL3, Program> disable) {
-		super(id, null);
-		this.enable = enable;
-		this.disable = disable;
+	public UniformBlockAttribute(String id, String shaderName) {
+		super(id, shaderName);
 	}
 
 	@Override
@@ -56,33 +46,20 @@ public final class StateInjectAttribute extends AbstractShaderAttribute<GL3> imp
 	}
 
 	@Override
-	public boolean hasSupplier() {
-		return true;
-	}
-
-	@Override
-	public void setSupplier(Supplier<?> supplier) {
-	}
-
-	@Override
 	public void enable(GL3 gl, Program program) {
-		if (enable != null)
-			enable.accept(gl, program);
-	}
-
-	@Override
-	public void disable(GL3 gl, Program program) {
-		if (disable != null)
-			disable.accept(gl, program);
-	}
-
-	@Override
-	protected int resolveShaderIndex(GL3 gl, Program program, String shaderName) {
-		return -1;
+		if (canBind && !isBound) {
+			int index = program.getUniformBlockIndex(gl, getShaderName());
+			if (index == -1) {
+				canBind = false;
+			} else {
+				program.bindUniformBlock(gl, index, get());
+				isBound = true;
+			}
+		}
 	}
 
 	@Override
 	public String toString() {
-		return super.toString() + "[" + enable + ", " + disable + "]";
+		return super.toString() + "[" + isBound + "]";
 	}
 }

@@ -11,17 +11,20 @@ struct Material {
 };
 
 struct Light {
-	bool isLocal;
-	bool isSpot;
 	vec3 position;
+	float pad0;
 	vec3 ambientColor;
+	float pad1;
 	vec3 color;
+	float pad2;
 	vec3 spotDirection;
+	float pad3;
 	float spotCosCutoff;
 	float spotExponent;
 	float constantAttenuation; 
 	float linearAttenuation;
 	float quadraticAttenuation;
+	float type; // 0 = off, 1 = directional, 2 = point, 3 = spot
 };
 
 struct VertexData {
@@ -35,7 +38,10 @@ struct VertexData {
 uniform sampler2D colorMap;
 uniform bool useColorMap;
 
-uniform Light light;
+//uniform Light light;
+layout (std140) uniform lightBlock {
+	Light light;
+};
 
 uniform Material material;
 
@@ -64,14 +70,14 @@ void main() {
 	float attenuation;
 
     // for local lights, compute per-fragment direction, and attenuation
-	if (light.isLocal) {
+	if (light.type > 1.0) {
 		lightDirection = -(vd.position.xyz - light.position);
 		float lightDistance = length(lightDirection);
 		
 		lightDirection = lightDirection / lightDistance;
     	attenuation = 1.0 / (light.constantAttenuation + light.linearAttenuation * lightDistance + light.quadraticAttenuation * lightDistance  * lightDistance);
 
-		if (light.isSpot) {
+		if (light.type > 2.0) {
 			float spotCos = dot(lightDirection, -normalize(light.spotDirection)); 
 			if (spotCos < light.spotCosCutoff)
             	attenuation = 0.0;

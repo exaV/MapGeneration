@@ -48,6 +48,10 @@ public abstract class AbstractShaderAttribute<T> extends AbstractAttribute<T> {
 		this.shaderName = shaderName;
 	}
 
+	protected final String getShaderName() {
+		return shaderName;
+	}
+
 	protected final int getShaderIndex(GL3 gl, Program program) {
 		if (shaderIndex == -1)
 			shaderIndex = resolveShaderIndex(gl, program, shaderName);

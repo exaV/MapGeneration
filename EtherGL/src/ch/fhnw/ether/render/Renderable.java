@@ -46,6 +46,7 @@ import ch.fhnw.ether.render.attribute.IArrayAttribute;
 import ch.fhnw.ether.render.attribute.IUniformAttribute;
 import ch.fhnw.ether.render.attribute.base.FloatArrayAttribute;
 import ch.fhnw.ether.render.gl.FloatArrayBuffer;
+import ch.fhnw.ether.render.gl.IArrayBuffer;
 import ch.fhnw.ether.render.gl.Program;
 import ch.fhnw.ether.render.shader.IShader;
 import ch.fhnw.ether.render.shader.IShader.Attributes;
@@ -151,7 +152,7 @@ public final class Renderable {
 		// 7. disable program and clear buffer binding
 		shader.disable(gl);
 
-		FloatArrayBuffer.unbind(gl);
+		IArrayBuffer.unbind(gl);
 	}
 
 	public IMesh.Pass getPass() {

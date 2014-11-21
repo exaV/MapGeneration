@@ -29,13 +29,14 @@
 
 package ch.fhnw.ether.render.shader.builtin;
 
+import ch.fhnw.ether.render.Lights;
 import ch.fhnw.ether.render.attribute.base.BooleanUniformAttribute;
 import ch.fhnw.ether.render.attribute.base.FloatUniformAttribute;
+import ch.fhnw.ether.render.attribute.base.UniformBlockAttribute;
 import ch.fhnw.ether.render.attribute.base.Vec3FloatUniformAttribute;
 import ch.fhnw.ether.render.attribute.builtin.ColorArray;
 import ch.fhnw.ether.render.attribute.builtin.ColorMapArray;
 import ch.fhnw.ether.render.attribute.builtin.ColorMapUniform;
-import ch.fhnw.ether.render.attribute.builtin.LightUniforms;
 import ch.fhnw.ether.render.attribute.builtin.NormalArray;
 import ch.fhnw.ether.render.attribute.builtin.NormalMatrixUniform;
 import ch.fhnw.ether.render.attribute.builtin.PositionArray;
@@ -73,13 +74,12 @@ public class ShadedTriangleShader extends AbstractShader {
 		addUniform(new FloatUniformAttribute(IMaterial.STRENGTH, "material.strength"));
 		addUniform(new FloatUniformAttribute(IMaterial.ALPHA, "material.alpha"));
 		
-		addUniform(new LightUniforms());
-
 		if (useTexture)
 			addUniform(new ColorMapUniform());
 
 		addUniform(new ProjMatrixUniform());
 		addUniform(new ViewMatrixUniform());
 		addUniform(new NormalMatrixUniform());
+		addUniform(new UniformBlockAttribute(Lights.LIGHT_UNIFORM_BLOCK, "lightBlock"));
 	}
 }

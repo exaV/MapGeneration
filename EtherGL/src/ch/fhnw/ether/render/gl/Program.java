@@ -196,6 +196,14 @@ public final class Program {
 	public int getUniformLocation(GL3 gl, String name) {
 		return gl.glGetUniformLocation(program.program(), name);
 	}
+	
+	public int getUniformBlockIndex(GL3 gl, String name) {
+		return gl.glGetUniformBlockIndex(program.program(), name);
+	}
+
+	public void bindUniformBlock(GL3 gl, int index, int bindingPoint) {
+		gl.glUniformBlockBinding(program.program(), index, bindingPoint);
+	}
 
 	@Override
 	public String toString() {
@@ -217,4 +225,5 @@ public final class Program {
 	private static String key(Class<?> root, String path0, String path1) {
 		return root.getName() + "/" + path0 + ":" + path1;
 	}
+
 }
