@@ -7,9 +7,8 @@ import ch.fhnw.util.math.Vec4;
 import ch.fhnw.util.math.geometry.BoundingBox;
 
 public class GenericLight implements ILight {
-	public static LightAttribute<LightSource> GENERIC_LIGHT = new LightAttribute<>("builtin.light.generic_light");
 
-	public static class LightSource {
+	public static final class LightSource {
 		private final boolean isLocal;
 		private final boolean isSpot;
 
@@ -159,11 +158,6 @@ public class GenericLight implements ILight {
 	public void setName(String name) {
 		this.name = name;
 		requestUpdate();
-	}
-
-	@Override
-	public void getAttributeSuppliers(ISuppliers suppliers) {
-		suppliers.provide(GENERIC_LIGHT, () -> lightParameters);
 	}
 
 	@Override

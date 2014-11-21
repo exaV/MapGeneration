@@ -30,16 +30,8 @@
 package ch.fhnw.ether.scene.light;
 
 import ch.fhnw.ether.scene.I3DObject;
-import ch.fhnw.ether.scene.attribute.AbstractAttribute;
-import ch.fhnw.ether.scene.attribute.IAttributeProvider;
 
-public interface ILight extends I3DObject, IAttributeProvider {
-	final class LightAttribute<T> extends AbstractAttribute<T> {
-		public LightAttribute(String id) {
-			super(id);
-		}
-	}
-
+public interface ILight extends I3DObject {
 	/**
 	 * @return true if light was modified since last call to this method.
 	 */

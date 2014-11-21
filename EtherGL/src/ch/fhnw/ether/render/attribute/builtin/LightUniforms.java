@@ -31,21 +31,20 @@ package ch.fhnw.ether.render.attribute.builtin;
 
 import javax.media.opengl.GL3;
 
+import ch.fhnw.ether.render.Lights;
+import ch.fhnw.ether.render.Lights.LightParameters;
 import ch.fhnw.ether.render.attribute.base.AbstractUniformAttribute;
 import ch.fhnw.ether.render.attribute.base.BooleanUniformAttribute;
 import ch.fhnw.ether.render.attribute.base.FloatUniformAttribute;
 import ch.fhnw.ether.render.attribute.base.Vec3FloatUniformAttribute;
-import ch.fhnw.ether.render.attribute.base.Vec4FloatUniformAttribute;
 import ch.fhnw.ether.render.gl.Program;
-import ch.fhnw.ether.scene.light.GenericLight;
-import ch.fhnw.ether.scene.light.GenericLight.LightSource;
 
-public class LightUniforms extends AbstractUniformAttribute<LightSource> {
+public class LightUniforms extends AbstractUniformAttribute<LightParameters> {
 
 	private final BooleanUniformAttribute isLocal;
 	private final BooleanUniformAttribute isSpot;
 	
-	private final Vec4FloatUniformAttribute position;
+	private final Vec3FloatUniformAttribute position;
 	private final Vec3FloatUniformAttribute ambient;
 	private final Vec3FloatUniformAttribute color;
 
@@ -58,21 +57,21 @@ public class LightUniforms extends AbstractUniformAttribute<LightSource> {
 	private final FloatUniformAttribute quadraticAttenuation;
 	
 	public LightUniforms() {
-		super(GenericLight.GENERIC_LIGHT, "void");
-		isLocal = new BooleanUniformAttribute("light.is_local", "light.isLocal", () -> get().isLocal());	
-		isSpot = new BooleanUniformAttribute("light.is_spot", "light.isSpot", () -> get().isSpot());	
+		super(Lights.LIGHT_PARAMETERS, "void");
+		isLocal = new BooleanUniformAttribute("light.is_local", "light.isLocal", () -> get().getSource().isLocal());	
+		isSpot = new BooleanUniformAttribute("light.is_spot", "light.isSpot", () -> get().getSource().isSpot());	
 
-		position = new Vec4FloatUniformAttribute("light.position", "light.position", () -> get().getPosition());
-		ambient = new Vec3FloatUniformAttribute("light.ambient", "light.ambientColor", () -> get().getAmbient());
-		color = new Vec3FloatUniformAttribute("light.color", "light.color", () -> get().getColor());
+		position = new Vec3FloatUniformAttribute("light.position", "light.position", () -> get().getPositionEyeSpace());
+		ambient = new Vec3FloatUniformAttribute("light.ambient", "light.ambientColor", () -> get().getSource().getAmbient());
+		color = new Vec3FloatUniformAttribute("light.color", "light.color", () -> get().getSource().getColor());
 
-		spotDirection = new Vec3FloatUniformAttribute("light.spot_direction", "light.spotDirection", () -> get().getSpotDirection());
-		spotCosCutoff = new FloatUniformAttribute("light.spot_cos_cutoff", "light.spotCosCutoff", () -> get().getSpotCosCutoff());
-		spotExponent = new FloatUniformAttribute("light.spot_exponent", "light.spotExponent", () -> get().getSpotExponent());
+		spotDirection = new Vec3FloatUniformAttribute("light.spot_direction", "light.spotDirection", () -> get().getSpotDirectionEyeSpace());
+		spotCosCutoff = new FloatUniformAttribute("light.spot_cos_cutoff", "light.spotCosCutoff", () -> get().getSource().getSpotCosCutoff());
+		spotExponent = new FloatUniformAttribute("light.spot_exponent", "light.spotExponent", () -> get().getSource().getSpotExponent());
 
-		constantAttenuation = new FloatUniformAttribute("light.constant_attenuation", "light.constantAttenuation", () -> get().getConstantAttenuation());
-		linearAttenuation = new FloatUniformAttribute("light.linear_attenuation", "light.linearAttenuation", () -> get().getLinearAttenuation());
-		quadraticAttenuation = new FloatUniformAttribute("light.quadratic_attenuation", "light.quadraticAttenuation", () -> get().getQuadraticAttenuation());
+		constantAttenuation = new FloatUniformAttribute("light.constant_attenuation", "light.constantAttenuation", () -> get().getSource().getConstantAttenuation());
+		linearAttenuation = new FloatUniformAttribute("light.linear_attenuation", "light.linearAttenuation", () -> get().getSource().getLinearAttenuation());
+		quadraticAttenuation = new FloatUniformAttribute("light.quadratic_attenuation", "light.quadraticAttenuation", () -> get().getSource().getQuadraticAttenuation());
 	}
 
 	@Override

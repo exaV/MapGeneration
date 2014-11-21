@@ -13,7 +13,7 @@ struct Material {
 struct Light {
 	bool isLocal;
 	bool isSpot;
-	vec4 position;
+	vec3 position;
 	vec3 ambientColor;
 	vec3 color;
 	vec3 spotDirection;
@@ -29,9 +29,6 @@ struct VertexData {
 	vec3 normal;				// vertex normal in eye space
 	vec4 color;					// vertex diffuse color
 	vec2 texCoord;				// texture coordinate of color map
-
-	vec3 lightPosition;			// hack until we transform light pos/dir on cpu
-	vec3 lightSpotDirection;
 };
 
 
@@ -68,21 +65,21 @@ void main() {
 
     // for local lights, compute per-fragment direction, and attenuation
 	if (light.isLocal) {
-		lightDirection = -(vd.position.xyz - vd.lightPosition);
+		lightDirection = -(vd.position.xyz - light.position);
 		float lightDistance = length(lightDirection);
 		
 		lightDirection = lightDirection / lightDistance;
     	attenuation = 1.0 / (light.constantAttenuation + light.linearAttenuation * lightDistance + light.quadraticAttenuation * lightDistance  * lightDistance);
 
 		if (light.isSpot) {
-			float spotCos = dot(lightDirection, -normalize(vd.lightSpotDirection)); 
+			float spotCos = dot(lightDirection, -normalize(light.spotDirection)); 
 			if (spotCos < light.spotCosCutoff)
             	attenuation = 0.0;
 			else
 				attenuation *= pow(spotCos, light.spotExponent);
 		}
 	} else {
-		lightDirection = vd.lightPosition;
+		lightDirection = light.position;
 		attenuation = 1.0;
 	}
 
