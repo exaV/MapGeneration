@@ -19,26 +19,22 @@ public class GenericLight implements ILight {
 		private final RGB ambient;
 		private final RGB color;
 
+		private final float range;
+
 		private final Vec3 spotDirection;
 		private final float spotCosCutoff;
 		private final float spotExponent;
 
-		private final float constantAttenuation;
-		private final float linearAttenuation;
-		private final float quadraticAttenuation;
 
-		public LightSource(Type type, Vec3 position, RGB ambient, RGB color, Vec3 spotDirection, float spotCosCutoff, float spotExponent,
-				float constantAttenuation, float linearAttenuation, float quadraticAttenuation) {
+		public LightSource(Type type, Vec3 position, RGB ambient, RGB color, float range, Vec3 spotDirection, float spotCosCutoff, float spotExponent) {
 			this.type = type;
 			this.position = makePosition(type, position);
 			this.ambient = ambient;
 			this.color = color;
+			this.range = range;
 			this.spotDirection = spotDirection != null ? spotDirection : Vec3.Z_NEG;
 			this.spotCosCutoff = spotCosCutoff;
 			this.spotExponent = spotExponent;
-			this.constantAttenuation = constantAttenuation;
-			this.linearAttenuation = linearAttenuation;
-			this.quadraticAttenuation = quadraticAttenuation;
 		}
 
 		public LightSource(LightSource source, Vec3 position) {
@@ -46,12 +42,10 @@ public class GenericLight implements ILight {
 			this.position = makePosition(source.type, position);
 			this.ambient = source.ambient;
 			this.color = source.color;
+			this.range = source.range;
 			this.spotDirection = source.spotDirection;
 			this.spotCosCutoff = source.spotCosCutoff;
 			this.spotExponent = source.spotExponent;
-			this.constantAttenuation = source.constantAttenuation;
-			this.linearAttenuation = source.linearAttenuation;
-			this.quadraticAttenuation = source.quadraticAttenuation;
 		}
 
 		private static Vec4 makePosition(Type type, Vec3 position) {
@@ -64,18 +58,15 @@ public class GenericLight implements ILight {
 		}
 
 		public static LightSource directionalSource(Vec3 direction, RGB ambient, RGB color) {
-			return new LightSource(Type.DIRECTIONAL_LIGHT, direction, ambient, color, null, 0, 0, 0, 0, 0);
+			return new LightSource(Type.DIRECTIONAL_LIGHT, direction, ambient, color, 0, null, 0, 0);
 		}
 
-		public static LightSource pointSource(Vec3 position, RGB ambient, RGB color, float constantAttenuation, float linearAttenuation,
-				float quadraticAttenuation) {
-			return new LightSource(Type.POINT_LIGHT, position, ambient, color, null, 0, 0, constantAttenuation, linearAttenuation, quadraticAttenuation);
+		public static LightSource pointSource(Vec3 position, RGB ambient, RGB color, float range) {
+			return new LightSource(Type.POINT_LIGHT, position, ambient, color, range, null, 0, 0);
 		}
 
-		public static LightSource spotSource(Vec3 position, RGB ambient, RGB color, Vec3 spotDirection, float spotCutoff, float spotExponent,
-				float constantAttenuation, float linearAttenuation, float quadraticAttenuation) {
-			return new LightSource(Type.SPOT_LIGHT, position, ambient, color, spotDirection, (float) Math.cos(Math.toRadians(spotCutoff)), spotExponent,
-					constantAttenuation, linearAttenuation, quadraticAttenuation);
+		public static LightSource spotSource(Vec3 position, RGB ambient, RGB color, float range, Vec3 direction, float angle, float softness) {
+			return new LightSource(Type.SPOT_LIGHT, position, ambient, color, range, direction, (float) Math.cos(Math.toRadians(angle)), 100 * softness);
 		}
 
 		public Type getType() {
@@ -93,6 +84,10 @@ public class GenericLight implements ILight {
 		public RGB getColor() {
 			return color;
 		}
+		
+		public float getRange() {
+			return range;
+		}
 
 		public Vec3 getSpotDirection() {
 			return spotDirection;
@@ -104,18 +99,6 @@ public class GenericLight implements ILight {
 
 		public float getSpotExponent() {
 			return spotExponent;
-		}
-
-		public float getConstantAttenuation() {
-			return constantAttenuation;
-		}
-
-		public float getLinearAttenuation() {
-			return linearAttenuation;
-		}
-
-		public float getQuadraticAttenuation() {
-			return quadraticAttenuation;
 		}
 	}
 

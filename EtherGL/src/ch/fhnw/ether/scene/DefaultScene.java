@@ -58,6 +58,7 @@ public class DefaultScene implements IScene {
 		objects.addAll(meshes);
 	}
 	
+	// FIXME: handling if objects are already added (use sets, or throw exceptions or etc... similar to renderer)
 	@Override
 	public final void add3DObject(I3DObject object) {
 		IRenderer renderer = controller.getRenderer();
@@ -68,15 +69,8 @@ public class DefaultScene implements IScene {
 		if (object instanceof ICamera)
 			cameras.add((ICamera)object);
 		if (object instanceof ILight) {
-			ILight newLight = (ILight)object;
-			if (lights.isEmpty()) {
-				lights.add(newLight);		
-			} else {
-				ILight oldLight = lights.get(0);
-				renderer.removeLight(oldLight);
-				lights.set(0, newLight);
-			}
-			renderer.addLight(newLight);
+			lights.add((ILight)object);		
+			renderer.addLight((ILight)object);
 		}
 		objects.add(object);
 	}

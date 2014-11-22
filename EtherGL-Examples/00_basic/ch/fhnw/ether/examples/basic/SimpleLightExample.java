@@ -40,6 +40,7 @@ import ch.fhnw.ether.scene.light.SpotLight;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.IMesh.Pass;
+import ch.fhnw.ether.scene.mesh.MeshLibrary;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
@@ -90,15 +91,18 @@ public final class SimpleLightExample {
 			public void keyPressed(KeyEvent e, IView view) {
 				switch (e.getKeyCode()) {
 				case KeyEvent.VK_1:
+					scene.remove3DObject(light);
 					light = new DirectionalLight(light.getPosition(), AMBIENT, COLOR);
 					scene.add3DObject(light);
 					break;
 				case KeyEvent.VK_2:
-					light = new PointLight(light.getPosition(), AMBIENT, COLOR);
+					scene.remove3DObject(light);
+					light = new PointLight(light.getPosition(), AMBIENT, COLOR, 5);
 					scene.add3DObject(light);
 					break;
 				case KeyEvent.VK_3:
-					light = new SpotLight(light.getPosition(), AMBIENT, COLOR, Vec3.Z_NEG);
+					scene.remove3DObject(light);
+					light = new SpotLight(light.getPosition(), AMBIENT, COLOR, 5, Vec3.Z_NEG, 15, 0);
 					scene.add3DObject(light);
 					break;
 				case KeyEvent.VK_UP:
@@ -159,13 +163,19 @@ public final class SimpleLightExample {
 				s.getTexCoords()), Pass.DEPTH);
 		texturedMeshT.getGeometry().setTranslation(Vec3.X);
 
+		IMesh solidCubeT = MeshLibrary.createCube(solidMaterial);
+		solidCubeT.getGeometry().setScale(Vec3.ONE.scale(0.8f));
+
 		lightMesh = new DefaultMesh(new ColorMaterial(RGBA.YELLOW), DefaultGeometry.createV(Primitive.TRIANGLES, s.getTriangles()));
 		lightMesh.getGeometry().setScale(new Vec3(0.1, 0.1, 0.1));
 		lightMesh.setPosition(Vec3.Z.scale(2));
 		light.setPosition(lightMesh.getPosition());
 		
-		scene.add3DObjects(solidMeshT, solidMeshL, texturedMeshT, lightMesh, light);
+		scene.add3DObjects(solidMeshT, solidMeshL, texturedMeshT, solidCubeT, lightMesh, light);
 
+		// Add a second light (now that we have multiple light support...)
+		scene.add3DObject(new PointLight(new Vec3(2, 0, 2), RGB.BLACK, RGB.BLUE));
+		
 		// Add an exit button
 		controller.getUI().addWidget(new Button(0, 0, "Quit", "Quit", KeyEvent.VK_ESCAPE, (button, v) -> System.exit(0)));
 	}

@@ -104,8 +104,8 @@ public class MeshLibrary {
 	};
 	//@formatter:on
 
-	private final static IAttribute[] ATTRIBUTES = { IMaterial.POSITION_ARRAY };
-	private final static float[][] DATA = { UNIT_CUBE_TRIANGLES };
+	private final static IAttribute[] ATTRIBUTES = { IMaterial.POSITION_ARRAY, IMaterial.NORMAL_ARRAY };
+	private final static float[][] DATA = { UNIT_CUBE_TRIANGLES, UNIT_CUBE_NORMALS };
 	private final static DefaultGeometry CUBE_GEOMETRY = new DefaultGeometry(Primitive.TRIANGLES, ATTRIBUTES, DATA);
 
 	public static IMesh createCube() {
