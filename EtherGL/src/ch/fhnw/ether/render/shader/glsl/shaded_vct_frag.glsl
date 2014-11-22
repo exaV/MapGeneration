@@ -120,7 +120,7 @@ void main() {
 
 		vec3 normal = normalize(vd.normal);
 		float diffuseFactor = calculateDiffuseFactor(normal, lightDirection);
-		float specularFactor = calculateSpecularFactor(vd.position.xyz, normal, lightDirection, material.shininess, material.strength);
+		float specularFactor = diffuseFactor > 0.0 ? calculateSpecularFactor(vd.position.xyz, normal, lightDirection, material.shininess, material.strength) : 0.0;
 
 		scatteredLight += material.ambientColor * lights[i].ambientColor * attenuation + material.diffuseColor * lights[i].color * diffuseFactor * attenuation;
 		reflectedLight += material.specularColor * lights[i].color * specularFactor * attenuation;
