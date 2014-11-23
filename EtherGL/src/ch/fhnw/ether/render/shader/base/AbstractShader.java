@@ -63,6 +63,9 @@ public abstract class AbstractShader implements IShader {
 
 	@Override
 	public void dispose(GL3 gl) {
+		uniforms.forEach((t) -> t.dispose(gl));
+		arrays.forEach((t) -> t.dispose(gl));
+
 		name = name + " (disposed)";
 		source = null;
 		type = null;
@@ -111,9 +114,13 @@ public abstract class AbstractShader implements IShader {
 	}
 
 	@Override
-	public final void getAttributes(List<IUniformAttribute<?>> uniforms, List<IArrayAttribute<?>> arrays) {
-		uniforms.addAll(this.uniforms);
-		arrays.addAll(this.arrays);
+	public List<IUniformAttribute<?>> getUniforms() {
+		return uniforms;
+	}
+
+	@Override
+	public List<IArrayAttribute<?>> getArrays() {
+		return arrays;
 	}
 
 	protected final void addUniform(IUniformAttribute<?> uniform) {

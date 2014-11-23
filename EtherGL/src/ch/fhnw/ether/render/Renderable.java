@@ -30,7 +30,6 @@
 package ch.fhnw.ether.render;
 
 import java.nio.FloatBuffer;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -45,24 +44,22 @@ import ch.fhnw.ether.render.gl.Program;
 import ch.fhnw.ether.render.shader.IShader;
 import ch.fhnw.ether.scene.mesh.IMesh;
 
-// FIXME: deal with max vbo size & multiple vbos, handle non-float arrays
+// FIXME: deal with max vbo size & multiple vbos, memory optimization, handle non-float arrays
 
 public final class Renderable {
 	private IMesh mesh;
+
 	private IShader shader;
 
-	private List<IUniformAttribute<?>> uniforms = new ArrayList<>();
-	private List<IArrayAttribute<?>> arrays = new ArrayList<>();
 	private FloatArrayBuffer buffer = new FloatArrayBuffer();
-
 	private int[] sizes;
 	private int stride;
 
 	public Renderable(IMesh mesh, AttributeProviders providers) {
 		this.mesh = mesh;
 
-		shader = ShaderBuilder.buildShader(mesh, providers, uniforms, arrays);
-		
+		shader = ShaderBuilder.buildShader(mesh, providers);
+
 		setupBuffers();
 
 		// make sure update flag is set, so everything get initialized on the next render cycle
@@ -71,17 +68,14 @@ public final class Renderable {
 
 	public void dispose(GL3 gl) {
 		shader.dispose(gl);
-		uniforms.forEach((t) -> t.dispose(gl));
-		arrays.forEach((t) -> t.dispose(gl));
 		buffer.dispose(gl);
 
 		mesh = null;
+
 		shader = null;
 
-		uniforms = null;
-
-		arrays = null;
 		buffer = null;
+		sizes = null;
 		stride = 0;
 	}
 
@@ -96,6 +90,8 @@ public final class Renderable {
 		// 1. enable program
 		shader.enable(gl);
 		Program program = shader.getProgram();
+		List<IUniformAttribute<?>> uniforms = shader.getUniforms();
+		List<IArrayAttribute<?>> arrays = shader.getArrays();
 
 		// 2. for each uniform attribute
 		// 2.1. set uniform (shader index, value), enable textures, set gl state
@@ -150,8 +146,9 @@ public final class Renderable {
 	public String toString() {
 		return "renderable[pass=" + mesh.getPass() + " shader=" + shader + " stride=" + stride + "]";
 	}
-	
+
 	private void setupBuffers() {
+		List<IArrayAttribute<?>> arrays = shader.getArrays();
 		stride = 0;
 		sizes = new int[arrays.size()];
 		int i = 0;
@@ -166,8 +163,9 @@ public final class Renderable {
 		}
 	}
 
+	// FIXME: fix memory management/allocation throughout (+ thread safe)
 	private void loadBuffer(GL3 gl) {
-		// FIXME: fix memory management/allocation throughout (+ thread safe)
+		List<IArrayAttribute<?>> arrays = shader.getArrays();
 		int size = 0;
 		FloatArrayAttribute attr = (FloatArrayAttribute) arrays.get(0);
 		for (Supplier<float[]> supplier : attr.getSuppliers()) {

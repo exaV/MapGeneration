@@ -43,15 +43,15 @@ import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 public interface IShader {
 	public static final class Attributes {
 		private final Set<String> attributes;
-		
+
 		public Attributes(Set<String> attributes) {
 			this.attributes = attributes;
 		}
-		
+
 		public boolean contains(IAttribute attribute) {
 			return contains(attribute.id());
 		}
-		
+
 		public boolean contains(String id) {
 			return attributes.contains(id);
 		}
@@ -71,5 +71,7 @@ public interface IShader {
 
 	Primitive getPrimitiveType();
 
-	void getAttributes(List<IUniformAttribute<?>> uniforms, List<IArrayAttribute<?>> arrays);
+	List<IUniformAttribute<?>> getUniforms();
+
+	List<IArrayAttribute<?>> getArrays();
 }

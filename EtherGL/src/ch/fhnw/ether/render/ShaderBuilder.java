@@ -72,7 +72,7 @@ public final class ShaderBuilder {
 		}
 	}
 
-	public static IShader buildShader(IMesh mesh, AttributeProviders providers, List<IUniformAttribute<?>> uniforms, List<IArrayAttribute<?>> arrays) {
+	public static IShader buildShader(IMesh mesh, AttributeProviders providers) {
 		Suppliers suppliers = new Suppliers();
 
 		// FIXME: here's a bug - only those arrays required by material should be used, but currently all arrays that a
@@ -93,7 +93,9 @@ public final class ShaderBuilder {
 
 		IShader shader = createShader(mesh, new Attributes(suppliers.providedAttributes.keySet()));
 
-		shader.getAttributes(uniforms, arrays);
+		List<IUniformAttribute<?>> uniforms = shader.getUniforms();
+		List<IArrayAttribute<?>> arrays = shader.getArrays();
+
 
 		// 2. bind shader attributes to provided global attributes (matrices, lights), material and geometry
 
