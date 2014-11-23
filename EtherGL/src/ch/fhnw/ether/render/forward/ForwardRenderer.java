@@ -120,30 +120,32 @@ public class ForwardRenderer extends AbstractRenderer {
 		update(gl, cameraMatrices);
 
 		state.setCameraSpace(view);
-
+		
 		// ---- 1. DEPTH PASS (DEPTH WRITE&TEST ENABLED, BLEND OFF)
 		gl.glEnable(GL.GL_DEPTH_TEST);
 		gl.glEnable(GL.GL_POLYGON_OFFSET_FILL);
 		gl.glPolygonOffset(1, 3);
-		renderPass(gl, Pass.DEPTH, interactive);
+		renderObjects(gl, Pass.DEPTH, interactive);
 		gl.glDisable(GL.GL_POLYGON_OFFSET_FILL);
+		
+		//renderShadowVolumes(gl, Pass.DEPTH, interactive);
 
 		// ---- 2. TRANSPARENCY PASS (DEPTH WRITE DISABLED, DEPTH TEST ENABLED, BLEND ON)
 		gl.glEnable(GL.GL_BLEND);
 		gl.glDepthMask(false);
-		renderPass(gl, Pass.TRANSPARENCY, interactive);
+		renderObjects(gl, Pass.TRANSPARENCY, interactive);
 
 		// ---- 3. OVERLAY PASS (DEPTH WRITE&TEST DISABLED, BLEND ON)
 		gl.glDisable(GL.GL_DEPTH_TEST);
-		renderPass(gl, Pass.OVERLAY, interactive);
+		renderObjects(gl, Pass.OVERLAY, interactive);
 
 		// ---- 4. DEVICE SPACE OVERLAY (DEPTH WRITE&TEST DISABLED, BLEND ON)
 		state.setOrthoDeviceSpace(view);
-		renderPass(gl, Pass.DEVICE_SPACE_OVERLAY, interactive);
+		renderObjects(gl, Pass.DEVICE_SPACE_OVERLAY, interactive);
 
 		// ---- 5. SCREEN SPACE OVERLAY (DEPTH WRITE&TEST DISABLED, BLEND ON)
 		state.setOrthoScreenSpace(view);
-		renderPass(gl, Pass.SCREEN_SPACE_OVERLAY, interactive);
+		renderObjects(gl, Pass.SCREEN_SPACE_OVERLAY, interactive);
 
 		// ---- 6. CLEANUP: RETURN TO DEFAULTS
 		gl.glDisable(GL.GL_BLEND);

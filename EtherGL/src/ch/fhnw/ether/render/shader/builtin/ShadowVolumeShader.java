@@ -27,61 +27,22 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.render;
+package ch.fhnw.ether.render.shader.builtin;
 
-import javax.media.opengl.GL3;
+import ch.fhnw.ether.render.attribute.builtin.PositionArray;
+import ch.fhnw.ether.render.attribute.builtin.ProjMatrixUniform;
+import ch.fhnw.ether.render.attribute.builtin.ViewMatrixUniform;
+import ch.fhnw.ether.render.shader.IShader;
+import ch.fhnw.ether.render.shader.base.AbstractShader;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 
-import ch.fhnw.ether.scene.attribute.IAttributeProvider;
-import ch.fhnw.ether.scene.camera.CameraMatrices;
-import ch.fhnw.ether.scene.light.ILight;
-import ch.fhnw.ether.scene.mesh.IMesh;
-import ch.fhnw.ether.scene.mesh.IMesh.Pass;
+public class ShadowVolumeShader extends AbstractShader {
+	public ShadowVolumeShader(Attributes attributes) {
+		super(IShader.class, "builtin.shader.shadow_volumes", "shadow_volumes", Primitive.TRIANGLES);
 
-public abstract class AbstractRenderer implements IRenderer {
-	private final AttributeProviders attributes = new AttributeProviders();
+		addArray(new PositionArray());
 
-	private final Lights lights = new Lights(this);
-	private final Renderables renderables = new Renderables();
-	
-	private final ShadowVolumes shadowVolumes = new ShadowVolumes();
-
-	public AbstractRenderer() {
-	}
-
-	@Override
-	public void addMesh(IMesh mesh) {
-		renderables.addMesh(mesh, attributes);
-	}
-
-	@Override
-	public void removeMesh(IMesh mesh) {
-		renderables.removeMesh(mesh);
-	}
-
-	@Override
-	public void addLight(ILight light) {
-		lights.addLight(light);
-	}
-
-	@Override
-	public void removeLight(ILight light) {
-		lights.removeLight(light);
-	}
-
-	protected void addAttributeProvider(IAttributeProvider provider) {
-		attributes.addProvider(provider);
-	}
-
-	protected void update(GL3 gl, CameraMatrices cameraMatrices) {
-		lights.update(gl, cameraMatrices);
-		renderables.update(gl);
-	}
-
-	protected void renderObjects(GL3 gl, Pass pass, boolean interactive) {
-		renderables.renderObjects(gl, pass, interactive);
-	}
-
-	protected void renderShadowVolumes(GL3 gl, Pass pass, boolean interactive) {
-		renderables.renderShadowVolumes(gl, pass, interactive, shadowVolumes);
+		addUniform(new ProjMatrixUniform());
+		addUniform(new ViewMatrixUniform());
 	}
 }

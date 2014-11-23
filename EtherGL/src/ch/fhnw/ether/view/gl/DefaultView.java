@@ -204,14 +204,17 @@ public class DefaultView implements IView {
 			try {
 				GL gl = drawable.getGL();
 
+				// FIXME: need to make this configurable and move to renderer
+				
 				gl.glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
 				gl.glClearDepth(1.0f);
 
-				// FIXME: this makes things just uglier on an retina display...
 				gl.glEnable(GL.GL_LINE_SMOOTH);
 				gl.glHint(GL.GL_LINE_SMOOTH_HINT, GL.GL_NICEST);
 				
 				gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+
+				gl.glEnable(GL.GL_CULL_FACE);			
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

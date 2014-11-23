@@ -30,6 +30,7 @@
 package ch.fhnw.ether.render;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,25 +38,22 @@ import java.util.Map;
 import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.scene.mesh.IMesh;
-import ch.fhnw.util.FloatList;
 import ch.fhnw.util.UpdateRequest;
 
+// FIXME: the api needs to be revised in terms of synchronization, consistency etc.
 final class Renderables {
 	private final UpdateRequest updater = new UpdateRequest();
 
-	private final Map<IMesh, Renderable> renderables = new IdentityHashMap<>();
-
-	private final List<Renderable> disposed = new ArrayList<>();
-
-	private final FloatList data = new FloatList();
+	private final Map<IMesh, Renderable> sceneRenderables = new IdentityHashMap<>();
+	private final List<Renderable> rendererRenderables = new ArrayList<>();
 
 	public Renderables() {
 	}
 
 	public void addMesh(IMesh mesh, AttributeProviders providers) {
 		Renderable renderable = new Renderable(mesh, providers);
-		synchronized (renderables) {
-			if (renderables.putIfAbsent(mesh, renderable) != null)
+		synchronized (sceneRenderables) {
+			if (sceneRenderables.putIfAbsent(mesh, renderable) != null)
 				throw new IllegalArgumentException("mesh already in renderer: " + mesh);
 		}
 		updater.requestUpdate();
@@ -63,41 +61,52 @@ final class Renderables {
 
 	public void removeMesh(IMesh mesh) {
 		Renderable renderable;
-		synchronized (renderables) {
-			renderable = renderables.remove(mesh);
+		synchronized (sceneRenderables) {
+			renderable = sceneRenderables.remove(mesh);
 			if (renderable == null)
 				throw new IllegalArgumentException("mesh not in renderer: " + mesh);
-		}
-		synchronized (disposed) {
-			disposed.add(renderable);
 		}
 		updater.requestUpdate();
 	}
 
 	void update(GL3 gl) {
 		if (updater.needsUpdate()) {
-			// update added / removed groups
-			synchronized (disposed) {
-				for (Renderable renderable : disposed) {
+			// update added / removed renderables (TODO not optimized...)
+			synchronized (sceneRenderables) {
+				Collection<Renderable> r = sceneRenderables.values();
+				rendererRenderables.removeAll(r);
+				for (Renderable renderable : rendererRenderables) {
 					renderable.dispose(gl);
 				}
-				disposed.clear();
+				rendererRenderables.clear();
+				rendererRenderables.addAll(r);
+			}
+		}
+		for (Renderable renderable : rendererRenderables) {
+			renderable.update(gl);
+		}
+	}
+
+	void renderObjects(GL3 gl, IMesh.Pass pass, boolean interactive) {
+		for (Renderable renderable : rendererRenderables) {
+			if (renderable.containsFlag(IMesh.Flags.INTERACTIVE_VIEWS_ONLY) && !interactive)
+				continue;
+			if (renderable.getPass() == pass) {
+				renderable.render(gl);
 			}
 		}
 	}
 
-	void render(GL3 gl, IMesh.Pass pass, boolean interactive) {
-		// FIXME: i'm not sure if this is good (long lock). probably better to use queues
-		synchronized (renderables) {
-			for (Renderable renderable : renderables.values()) {
-				if (renderable.containsFlag(IMesh.Flags.INTERACTIVE_VIEWS_ONLY) && !interactive)
-					continue;
-				if (renderable.getPass() == pass) {
-					renderable.update(gl, data);
-					renderable.render(gl);
-				}
+	void renderShadowVolumes(GL3 gl, IMesh.Pass pass, boolean interactive, ShadowVolumes shadowVolumes) {
+		shadowVolumes.enable(gl);
+		for (Renderable renderable : rendererRenderables) {
+			if (renderable.containsFlag(IMesh.Flags.INTERACTIVE_VIEWS_ONLY) && !interactive)
+				continue;
+			if (renderable.getPass() == pass) {
+				shadowVolumes.renderVolumes(gl, renderable);
 			}
 		}
+		shadowVolumes.renderShadows(gl);
+		shadowVolumes.disable(gl);
 	}
-
 }

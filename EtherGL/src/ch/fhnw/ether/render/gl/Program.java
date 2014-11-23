@@ -123,6 +123,8 @@ public final class Program {
 
 	public Program(GL3 gl, PrintStream out, Shader... shaders) {
 		for (Shader shader : shaders) {
+			if (shader == null)
+				continue;
 			program.add(gl, shader.code, out);
 			id += shader.path + " ";
 		}
@@ -210,20 +212,28 @@ public final class Program {
 		return id;
 	}
 
-	public static Program create(GL3 gl, Class<?> root, String vertexShader, String fragmentShader, PrintStream out) {
-		String key = key(root, vertexShader, fragmentShader);
+	public static Program create(GL3 gl, Class<?> root, String vertShader, String fragShader, String geomShader, PrintStream out) {
+		String key = key(root, vertShader, fragShader, geomShader);
 		Program program = PROGRAMS.get(key);
 		if (program == null) {
-			Shader vert = Shader.create(gl, root, vertexShader, ShaderType.VERTEX, out);
-			Shader frag = Shader.create(gl, root, fragmentShader, ShaderType.FRAGMENT, out);
-			program = new Program(gl, out, vert, frag);
+			Shader vert = Shader.create(gl, root, vertShader, ShaderType.VERTEX, out);
+			Shader frag = Shader.create(gl, root, fragShader, ShaderType.FRAGMENT, out);
+			Shader geom = null;
+			if (geomShader != null) {
+				geom = Shader.create(gl, root, geomShader, ShaderType.GEOMETRY, out);
+			}
+			program = new Program(gl, out, vert, frag, geom);
 			PROGRAMS.put(key, program);
 		}
 		return program;
 	}
 
-	private static String key(Class<?> root, String path0, String path1) {
-		return root.getName() + "/" + path0 + ":" + path1;
+	private static String key(Class<?> root, String... paths) {
+		String key = root.getName();
+		for (String path : paths) {
+			if (path != null)
+				key += ":" + path;
+		}
+		return key;
 	}
-
 }
