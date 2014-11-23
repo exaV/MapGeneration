@@ -141,7 +141,7 @@ public final class SimpleLightExample {
 		IView view = new DefaultView(controller, 100, 100, 500, 500, IView.INTERACTIVE_VIEW, "Simple Sphere", camera);
 		controller.addView(view);
 
-		// Create scene and add a cube
+		// Create scene and add some content
 		scene = new DefaultScene(controller);
 		controller.setScene(scene);
 
@@ -156,15 +156,16 @@ public final class SimpleLightExample {
 		IMesh solidMeshT = new DefaultMesh(solidMaterial, DefaultGeometry.createVN(Primitive.TRIANGLES, s.getTriangles(), s.getNormals()), Pass.DEPTH);
 		IMesh solidMeshL = new DefaultMesh(lineMaterial, DefaultGeometry.createV(Primitive.LINES, s.getLines()), Pass.TRANSPARENCY);
 
-		solidMeshT.getGeometry().setTranslation(Vec3.X_NEG);
-		solidMeshL.getGeometry().setTranslation(Vec3.X_NEG);
+		solidMeshT.getGeometry().setTranslation(new Vec3(-1, 0, 0.5));
+		solidMeshL.getGeometry().setTranslation(new Vec3(-1, 0, 0.5));
 
 		IMesh texturedMeshT = new DefaultMesh(textureMaterial, DefaultGeometry.createVNM(Primitive.TRIANGLES, s.getTriangles(), s.getNormals(),
 				s.getTexCoords()), Pass.DEPTH);
-		texturedMeshT.getGeometry().setTranslation(Vec3.X);
+		texturedMeshT.getGeometry().setTranslation(new Vec3(1, 0, 0.5));
 
 		IMesh solidCubeT = MeshLibrary.createCube(solidMaterial);
 		solidCubeT.getGeometry().setScale(Vec3.ONE.scale(0.8f));
+		solidCubeT.getGeometry().setTranslation(new Vec3(0, 0, 0.5));
 
 		lightMesh = new DefaultMesh(new ColorMaterial(RGBA.YELLOW), DefaultGeometry.createV(Primitive.TRIANGLES, s.getTriangles()));
 		lightMesh.getGeometry().setScale(new Vec3(0.1, 0.1, 0.1));
@@ -175,6 +176,9 @@ public final class SimpleLightExample {
 
 		// Add a second light (now that we have multiple light support...)
 		scene.add3DObject(new PointLight(new Vec3(2, 0, 2), RGB.BLACK, RGB.BLUE));
+		
+		// Add a ground plane
+		scene.add3DObject(MeshLibrary.createGroundPlane());
 		
 		// Add an exit button
 		controller.getUI().addWidget(new Button(0, 0, "Quit", "Quit", KeyEvent.VK_ESCAPE, (button, v) -> System.exit(0)));

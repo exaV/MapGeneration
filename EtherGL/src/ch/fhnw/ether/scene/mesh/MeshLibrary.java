@@ -36,6 +36,8 @@ import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
+import ch.fhnw.ether.scene.mesh.material.ShadedMaterial;
+import ch.fhnw.util.color.RGB;
 import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.GeometryUtil;
@@ -114,6 +116,18 @@ public class MeshLibrary {
 	
 	public static IMesh createCube(IMaterial material) {
 		return new DefaultMesh(material, CUBE_GEOMETRY.copy());
+	}
+	
+	public static IMesh createGroundPlane() {
+		return createGroundPlane(new ShadedMaterial(RGB.GRAY));
+	}
+	
+	public static IMesh createGroundPlane(IMaterial material) {
+		float e = 1000;
+		float z = 0;
+		float[] v = { -e, -e, z, e, -e, z, e, e, z, -e, -e, z, e, e, z, -e, e, z };
+		float[] n = { 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1 };
+		return new DefaultMesh(material, DefaultGeometry.createVN(Primitive.TRIANGLES, v, n));
 	}
 
 	// TODO: this needs some revision / organization

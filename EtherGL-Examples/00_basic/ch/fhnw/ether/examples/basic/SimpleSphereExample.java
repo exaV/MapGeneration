@@ -67,7 +67,7 @@ public final class SimpleSphereExample {
 		IView view = new DefaultView(controller, 100, 100, 500, 500, IView.INTERACTIVE_VIEW, "Simple Sphere", camera);
 		controller.addView(view);
 
-		// Create scene and add a cube
+		// Create scene and add some content
 		IScene scene = new DefaultScene(controller);
 		controller.setScene(scene);
 
