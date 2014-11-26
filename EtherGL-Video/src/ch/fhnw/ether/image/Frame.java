@@ -30,7 +30,14 @@
 package ch.fhnw.ether.image;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URL;
 import java.nio.ByteBuffer;
+
+import javax.imageio.ImageIO;
 
 import org.jcodec.common.model.ColorSpace;
 import org.jcodec.common.model.Picture;
@@ -40,8 +47,10 @@ import org.jcodec.scale.Transform;
 import ch.fhnw.util.BufferUtil;
 
 public abstract class Frame {
-	protected static final byte B0 = 0;
-	protected static final byte B255 = (byte) 255;
+	public enum FileFormat {PNG,JPEG}
+	
+	protected static final byte     B0    = 0;
+	protected static final byte     B255  = (byte) 255;
 	private static final ByteBuffer EMPTY = BufferUtil.allocateDirect(0);
 
 	public ByteBuffer pixels = EMPTY;
@@ -191,6 +200,18 @@ public abstract class Frame {
 		return result;
 	}
 	
+	public static Frame newFrmae(File file) throws IOException {
+		return newFrame(ImageIO.read(file));
+	}
+
+	public static Frame newFrmae(URL url) throws IOException {
+		return newFrame(ImageIO.read(url));
+	}
+
+	public static Frame newFrmae(InputStream in) throws IOException {
+		return newFrame(ImageIO.read(in));
+	}
+
 	public final void setPixels(int i, int j, int width, int height, BufferedImage img) {
 		setPixels(i, j, width, height, img, 0);
 	}
@@ -415,5 +436,13 @@ public abstract class Frame {
 
 	protected static final float linearInterpolate(float low, float high, float weight) {
 		return low + ((high - low) * weight);
+	}
+	
+	public void write(File file, FileFormat format) throws IOException {
+		ImageIO.write(toBufferedImage(), format.toString(), file);
+	}
+	
+	public void write(OutputStream out, FileFormat format) throws IOException {
+		ImageIO.write(toBufferedImage(), format.toString(), out);
 	}
 }
