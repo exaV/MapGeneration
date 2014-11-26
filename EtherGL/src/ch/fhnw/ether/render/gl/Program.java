@@ -216,10 +216,13 @@ public final class Program {
 		String key = key(root, vertShader, fragShader, geomShader);
 		Program program = PROGRAMS.get(key);
 		if (program == null) {
+			out.println("creating: " + vertShader);
 			Shader vert = Shader.create(gl, root, vertShader, ShaderType.VERTEX, out);
+			out.println("creating: " + fragShader);
 			Shader frag = Shader.create(gl, root, fragShader, ShaderType.FRAGMENT, out);
 			Shader geom = null;
-			if (geomShader != null) {
+			if (geomShader != null && root.getResource(geomShader) != null) {
+				out.println("creating: " + geomShader);
 				geom = Shader.create(gl, root, geomShader, ShaderType.GEOMETRY, out);
 			}
 			program = new Program(gl, out, vert, frag, geom);

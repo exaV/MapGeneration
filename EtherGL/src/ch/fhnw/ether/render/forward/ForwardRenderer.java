@@ -128,7 +128,7 @@ public class ForwardRenderer extends AbstractRenderer {
 		renderObjects(gl, Pass.DEPTH, interactive);
 		gl.glDisable(GL.GL_POLYGON_OFFSET_FILL);
 		
-		//renderShadowVolumes(gl, Pass.DEPTH, interactive);
+		renderShadowVolumes(gl, Pass.DEPTH, interactive);
 
 		// ---- 2. TRANSPARENCY PASS (DEPTH WRITE DISABLED, DEPTH TEST ENABLED, BLEND ON)
 		gl.glEnable(GL.GL_BLEND);
