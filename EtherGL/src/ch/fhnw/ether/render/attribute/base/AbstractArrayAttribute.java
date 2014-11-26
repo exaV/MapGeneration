@@ -50,6 +50,10 @@ public abstract class AbstractArrayAttribute<T> extends AbstractShaderAttribute<
 	}
 
 	@Override
+	public void dispose(GL3 gl) {
+	}
+
+	@Override
 	public final NumComponents getNumComponents() {
 		return numComponents;
 	}
@@ -58,10 +62,6 @@ public abstract class AbstractArrayAttribute<T> extends AbstractShaderAttribute<
 	public final void setup(int stride, int offset) {
 		this.stride = stride;
 		this.offset = offset;
-	}
-	
-	@Override
-	public void dispose(GL3 gl) {
 	}
 
 	protected final int getStride() {

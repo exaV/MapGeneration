@@ -51,16 +51,6 @@ public final class ShaderBuilder {
 		}
 
 		@Override
-		public <T> void require(ITypedAttribute<T> attribute) {
-			require(attribute.id());
-		}
-
-		@Override
-		public void require(String id) {
-			requiredAttibutes.add(id);
-		}
-
-		@Override
 		public <T> boolean isRequired(ITypedAttribute<T> attribute) {
 			return isRequired(attribute.id());
 		}
@@ -70,7 +60,17 @@ public final class ShaderBuilder {
 			return requiredAttibutes.contains(id);
 		}
 
-		Supplier<?> get(ITypedAttribute<?> attr) {
+		@Override
+		public <T> void require(ITypedAttribute<T> attribute) {
+			require(attribute.id());
+		}
+
+		@Override
+		public void require(String id) {
+			requiredAttibutes.add(id);
+		}
+
+		Supplier<?> getSupplier(ITypedAttribute<?> attr) {
 			Supplier<?> supplier = providedAttributes.get(attr.id());
 			if (supplier == null)
 				throw new IllegalArgumentException("attribute not provided: " + attr.id());
@@ -124,7 +124,7 @@ public final class ShaderBuilder {
 		// attach uniform attributes to shader
 		for (IUniformAttribute<?> attr : shader.getUniforms()) {
 			if (!attr.hasSupplier()) {
-				attr.setSupplier(attributes.get(attr));
+				attr.setSupplier(attributes.getSupplier(attr));
 			}
 		}
 
@@ -135,7 +135,7 @@ public final class ShaderBuilder {
 				attributes.clear();
 				provider.getAttributes(attributes);
 				for (IArrayAttribute<?> attr : shader.getArrays()) {
-					attr.addSupplier(attributes.get(attr));
+					attr.addSupplier(attributes.getSupplier(attr));
 				}
 			}
 		}

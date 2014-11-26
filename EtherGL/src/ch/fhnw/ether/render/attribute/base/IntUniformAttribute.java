@@ -27,36 +27,34 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.render.shader.builtin;
+package ch.fhnw.ether.render.attribute.base;
 
-import ch.fhnw.ether.render.Lights;
-import ch.fhnw.ether.render.attribute.base.IntUniformAttribute;
-import ch.fhnw.ether.render.attribute.base.UniformBlockAttribute;
-import ch.fhnw.ether.render.attribute.builtin.PositionArray;
-import ch.fhnw.ether.render.attribute.builtin.ProjMatrixUniform;
-import ch.fhnw.ether.render.attribute.builtin.ViewMatrixUniform;
-import ch.fhnw.ether.render.shader.IShader;
-import ch.fhnw.ether.render.shader.base.AbstractShader;
-import ch.fhnw.ether.scene.attribute.IAttributeProvider;
-import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
+import java.util.function.Supplier;
 
-public class ShadowVolumeShader extends AbstractShader {
-	private int lightIndex;
-	
-	public ShadowVolumeShader(IAttributeProvider.IAttributes attributes) {
-		super(IShader.class, "builtin.shader.shadow_volumes", "shadow_volumes", Primitive.TRIANGLES);
+import javax.media.opengl.GL3;
 
-		addArray(new PositionArray());
-		
-		addUniform(new IntUniformAttribute("shader.light_index", "lightIndex", () -> lightIndex));
+import ch.fhnw.ether.render.gl.Program;
+import ch.fhnw.ether.scene.attribute.ITypedAttribute;
 
-		addUniform(new ProjMatrixUniform());
-		addUniform(new ViewMatrixUniform());
-		// FIXME: create LightBlockAttribute, since this will be used in several places
-		addUniform(new UniformBlockAttribute(Lights.LIGHT_UNIFORM_BLOCK, "lightBlock"));
+public class IntUniformAttribute extends AbstractUniformAttribute<Integer> {
+	public IntUniformAttribute(ITypedAttribute<Integer> attribute, String shaderName) {
+		super(attribute, shaderName);
 	}
-	
-	public void setLightIndex(int index) {
-		lightIndex = index;
+
+	public IntUniformAttribute(String id, String shaderName) {
+		super(id, shaderName);
+	}
+
+	public IntUniformAttribute(ITypedAttribute<Integer> attribute, String shaderName, Supplier<Integer> supplier) {
+		super(attribute, shaderName, supplier);
+	}
+
+	public IntUniformAttribute(String id, String shaderName, Supplier<Integer> supplier) {
+		super(id, shaderName, supplier);
+	}
+
+	@Override
+	public void enable(GL3 gl, Program program) {
+		program.setUniform(gl, getShaderIndex(gl, program), get());
 	}
 }

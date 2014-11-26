@@ -132,17 +132,18 @@ public final class Renderable {
 		}
 	}
 
-	// FIXME: fix memory management/allocation throughout (+ thread safe)
+	// FIXME: thread safety
+	// FIXME: fix memory management/allocation
 	private void loadBuffer(GL3 gl) {
 		List<IArrayAttribute<?>> arrays = shader.getArrays();
-		int size = 0;
+		int length = 0;
 		FloatArrayAttribute attr = (FloatArrayAttribute) arrays.get(0);
 		for (Supplier<float[]> supplier : attr.getSuppliers()) {
-			size += supplier.get().length;
+			length += supplier.get().length;
 		}
-		size = size / attr.getNumComponents().get() * stride;
+		length = length / attr.getNumComponents().get() * stride;
 
-		final float[] interleavedData = new float[size];
+		final float[] interleavedData = new float[length];
 		final float[][] data = new float[arrays.size()][];
 
 		int index = 0;

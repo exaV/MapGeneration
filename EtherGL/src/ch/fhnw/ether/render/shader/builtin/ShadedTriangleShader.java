@@ -81,6 +81,7 @@ public class ShadedTriangleShader extends AbstractShader {
 		addUniform(new ProjMatrixUniform());
 		addUniform(new ViewMatrixUniform());
 		addUniform(new NormalMatrixUniform());
+		// FIXME: create LightBlockAttribute, since this will be used in several places
 		addUniform(new UniformBlockAttribute(Lights.LIGHT_UNIFORM_BLOCK, "lightBlock"));
 	}
 }

@@ -46,7 +46,7 @@ public abstract class AbstractRenderer implements IRenderer {
 	private final Lights lights = new Lights(this);
 	private final Renderables renderables = new Renderables();
 	
-	private final ShadowVolumes shadowVolumes = new ShadowVolumes(providers);
+	private ShadowVolumes shadowVolumes;
 
 	public AbstractRenderer() {
 		providers.add(lights.getAttributeProvider());
@@ -86,6 +86,9 @@ public abstract class AbstractRenderer implements IRenderer {
 	}
 
 	protected void renderShadowVolumes(GL3 gl, Pass pass, boolean interactive) {
+		if (shadowVolumes == null) {
+			shadowVolumes = new ShadowVolumes(providers);
+		}
 		renderables.renderShadowVolumes(gl, pass, interactive, shadowVolumes);
 	}
 }
