@@ -37,15 +37,16 @@ import ch.fhnw.ether.render.attribute.builtin.ProjMatrixUniform;
 import ch.fhnw.ether.render.attribute.builtin.ViewMatrixUniform;
 import ch.fhnw.ether.render.shader.IShader;
 import ch.fhnw.ether.render.shader.base.AbstractShader;
+import ch.fhnw.ether.scene.attribute.IAttributeProvider;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.util.color.RGBA;
 
 public class LineShader extends AbstractShader {
-	public LineShader(Attributes attributes) {
+	public LineShader(IAttributeProvider.IAttributes attributes) {
 		super(IShader.class, "builtin.shader.lines", "unshaded_vct", Primitive.LINES);
 
-		boolean useVertexColors = attributes.contains(IMaterial.COLOR_ARRAY);
+		boolean useVertexColors = attributes.isProvided(IMaterial.COLOR_ARRAY);
 		
 		addArray(new PositionArray());
 
@@ -55,7 +56,7 @@ public class LineShader extends AbstractShader {
 		addUniform(new BooleanUniformAttribute("shader.vertex_colors_flag", "useVertexColors", () -> useVertexColors));
 		addUniform(new BooleanUniformAttribute("shader.texture_flag", "useTexture", () -> false));
 
-		addUniform(new ColorUniform(attributes.contains(IMaterial.COLOR) ? null : () -> RGBA.WHITE));
+		addUniform(new ColorUniform(attributes.isProvided(IMaterial.COLOR) ? null : () -> RGBA.WHITE));
 		
 		addUniform(new ProjMatrixUniform());
 		addUniform(new ViewMatrixUniform());

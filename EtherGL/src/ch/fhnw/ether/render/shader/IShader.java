@@ -30,40 +30,23 @@
 package ch.fhnw.ether.render.shader;
 
 import java.util.List;
-import java.util.Set;
 
 import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.render.attribute.IArrayAttribute;
 import ch.fhnw.ether.render.attribute.IUniformAttribute;
+import ch.fhnw.ether.render.gl.IArrayBuffer;
 import ch.fhnw.ether.render.gl.Program;
-import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 
 public interface IShader {
-	public static final class Attributes {
-		private final Set<String> attributes;
-
-		public Attributes(Set<String> attributes) {
-			this.attributes = attributes;
-		}
-
-		public boolean contains(IAttribute attribute) {
-			return contains(attribute.id());
-		}
-
-		public boolean contains(String id) {
-			return attributes.contains(id);
-		}
-	}
-
 	void dispose(GL3 gl);
 
 	void update(GL3 gl);
 
 	void enable(GL3 gl);
 
-	void render(GL3 gl, int count);
+	void render(GL3 gl, int count, IArrayBuffer buffer);
 
 	void disable(GL3 gl);
 

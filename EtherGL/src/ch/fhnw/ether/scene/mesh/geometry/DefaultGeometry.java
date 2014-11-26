@@ -149,10 +149,10 @@ public class DefaultGeometry extends AbstractGeometry {
 	// ---- IArrayAttributeProvider implementation
 
 	@Override
-	public void getAttributeSuppliers(ISuppliers suppliers) {
+	public void getAttributes(IAttributes attributes) {
 		for (int i = 0; i < attributeTypes.length; ++i) {
 			final int a = i;
-			suppliers.provide(attributeTypes[a], () -> {
+			attributes.provide(attributeTypes[a], () -> {
 				validateCache();
 				return cache.data[a];
 			});

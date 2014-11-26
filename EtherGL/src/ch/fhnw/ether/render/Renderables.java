@@ -37,6 +37,7 @@ import java.util.Map;
 
 import javax.media.opengl.GL3;
 
+import ch.fhnw.ether.scene.attribute.IAttributeProvider;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.util.UpdateRequest;
 
@@ -50,7 +51,7 @@ final class Renderables {
 	public Renderables() {
 	}
 
-	public void addMesh(IMesh mesh, AttributeProviders providers) {
+	public void addMesh(IMesh mesh, List<IAttributeProvider> providers) {
 		Renderable renderable = new Renderable(mesh, providers);
 		synchronized (sceneRenderables) {
 			if (sceneRenderables.putIfAbsent(mesh, renderable) != null)

@@ -12,7 +12,6 @@ import java.util.function.Supplier;
 import ch.fhnw.ether.render.attribute.IArrayAttribute;
 import ch.fhnw.ether.render.attribute.IUniformAttribute;
 import ch.fhnw.ether.render.shader.IShader;
-import ch.fhnw.ether.render.shader.IShader.Attributes;
 import ch.fhnw.ether.render.shader.builtin.LineShader;
 import ch.fhnw.ether.render.shader.builtin.PointShader;
 import ch.fhnw.ether.render.shader.builtin.ShadedTriangleShader;
@@ -26,9 +25,19 @@ import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.ether.scene.mesh.material.ShadedMaterial;
 
 public final class ShaderBuilder {
-	private static class Suppliers implements IAttributeProvider.ISuppliers {
+	private static final class Attributes implements IAttributeProvider.IAttributes {
 		private final Map<String, Supplier<?>> providedAttributes = new HashMap<>();
 		private final Set<String> requiredAttibutes = new HashSet<>();
+
+		@Override
+		public <T> boolean isProvided(ITypedAttribute<T> attribute) {
+			return isProvided(attribute.id());
+		}
+
+		@Override
+		public boolean isProvided(String id) {
+			return providedAttributes.containsKey(id);
+		}
 
 		@Override
 		public <T> void provide(ITypedAttribute<T> attribute, Supplier<T> supplier) {
@@ -49,6 +58,16 @@ public final class ShaderBuilder {
 		@Override
 		public void require(String id) {
 			requiredAttibutes.add(id);
+		}
+
+		@Override
+		public <T> boolean isRequired(ITypedAttribute<T> attribute) {
+			return isRequired(attribute.id());
+		}
+
+		@Override
+		public boolean isRequired(String id) {
+			return requiredAttibutes.contains(id);
 		}
 
 		Supplier<?> get(ITypedAttribute<?> attr) {
@@ -72,58 +91,58 @@ public final class ShaderBuilder {
 		}
 	}
 
-	public static IShader buildShader(IMesh mesh, AttributeProviders providers) {
-		Suppliers suppliers = new Suppliers();
+	// FIXME: bug - only those arrays required by material should be used, but currently all arrays that a
+	// geometry provides are used
+	public static IShader buildShader(IMesh mesh, List<IAttributeProvider> providers) {
+		Attributes attributes = new Attributes();
 
-		// FIXME: here's a bug - only those arrays required by material should be used, but currently all arrays that a
-		// geometry provides are used
+		// get all attributes and check if all required attributes are present
+		providers.forEach((provider) -> provider.getAttributes(attributes));
+		mesh.getMaterial().getAttributes(attributes);
+		mesh.getGeometry().getAttributes(attributes);
 
-		// 0. get all attributes, and check if all required attributes are present
-
-		providers.getAttributeSuppliers(suppliers);
-		mesh.getMaterial().getAttributeSuppliers(suppliers);
-		mesh.getGeometry().getAttributeSuppliers(suppliers);
-
-		for (String id : suppliers.requiredAttibutes) {
-			if (!suppliers.providedAttributes.containsKey(id))
+		for (String id : attributes.requiredAttibutes) {
+			if (!attributes.isProvided(id))
 				throw new IllegalStateException("geometry does not provide required attribute " + id);
 		}
 
-		// 1. create shader and get all attributes this shader requires
+		// create shader and attach all attributes this shader requires
+		IShader shader = createShader(mesh, attributes);
+		attachAttributes(shader, attributes, mesh);
 
-		IShader shader = createShader(mesh, new Attributes(suppliers.providedAttributes.keySet()));
-
-		List<IUniformAttribute<?>> uniforms = shader.getUniforms();
-		List<IArrayAttribute<?>> arrays = shader.getArrays();
-
-
-		// 2. bind shader attributes to provided global attributes (matrices, lights), material and geometry
-
-		// 2.1. handle uniform attributes
-
-		for (IUniformAttribute<?> attr : uniforms) {
-			if (!attr.hasSupplier()) {
-				attr.setSupplier(suppliers.get(attr));
-			}
-		}
-
-		// 2.2. handle array attributes
-
-		// FIXME: currently mesh only contains one geometry
-		List<? extends IAttributeProvider> arrayAttributeProviders = Collections.singletonList(mesh.getGeometry());
-		for (IAttributeProvider provider : arrayAttributeProviders) {
-			suppliers.clear();
-			provider.getAttributeSuppliers(suppliers);
-			for (IArrayAttribute<?> attr : arrays) {
-				attr.addSupplier(suppliers.get(attr));
-			}
-		}
-		
 		return shader;
 	}
 
+	public static void attachAttributes(IShader shader, List<IAttributeProvider> providers) {
+		Attributes attributes = new Attributes();
+		providers.forEach((provider) -> provider.getAttributes(attributes));
+		attachAttributes(shader, attributes, null);
+	}
+
+	// FIXME: currently mesh only contains one geometry
+	public static void attachAttributes(IShader shader, Attributes attributes, IMesh mesh) {
+		// attach uniform attributes to shader
+		for (IUniformAttribute<?> attr : shader.getUniforms()) {
+			if (!attr.hasSupplier()) {
+				attr.setSupplier(attributes.get(attr));
+			}
+		}
+
+		// attach array attributes to shader
+		if (mesh != null) {
+			List<? extends IAttributeProvider> arrayAttributeProviders = Collections.singletonList(mesh.getGeometry());
+			for (IAttributeProvider provider : arrayAttributeProviders) {
+				attributes.clear();
+				provider.getAttributes(attributes);
+				for (IArrayAttribute<?> attr : shader.getArrays()) {
+					attr.addSupplier(attributes.get(attr));
+				}
+			}
+		}
+	}
+
 	// FIXME: make more flexible/dynamic (as soon as we have more builtin shaders): derive shader from attributes
-	private static IShader createShader(IMesh mesh, Attributes attributes) {
+	private static IShader createShader(IMesh mesh, IAttributeProvider.IAttributes attributes) {
 		IMaterial material = mesh.getMaterial();
 		if (material instanceof CustomMaterial) {
 			return ((CustomMaterial) mesh.getMaterial()).getShader();
@@ -145,5 +164,3 @@ public final class ShaderBuilder {
 		}
 	}
 }
-
-

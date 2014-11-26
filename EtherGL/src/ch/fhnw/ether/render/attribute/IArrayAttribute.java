@@ -33,7 +33,7 @@ import java.util.function.Supplier;
 
 import javax.media.opengl.GL3;
 
-import ch.fhnw.ether.render.gl.FloatArrayBuffer;
+import ch.fhnw.ether.render.gl.IArrayBuffer;
 import ch.fhnw.ether.render.gl.Program;
 import ch.fhnw.ether.scene.attribute.ITypedAttribute;
 
@@ -60,7 +60,7 @@ public interface IArrayAttribute<T> extends ITypedAttribute<T> {
 
 	void dispose(GL3 gl);
 
-	void enable(GL3 gl, Program program, FloatArrayBuffer buffer);
+	void enable(GL3 gl, Program program, IArrayBuffer buffer);
 
-	void disable(GL3 gl, Program program, FloatArrayBuffer buffer);
+	void disable(GL3 gl, Program program, IArrayBuffer buffer);
 }

@@ -35,7 +35,7 @@ import java.util.function.Supplier;
 
 import javax.media.opengl.GL3;
 
-import ch.fhnw.ether.render.gl.FloatArrayBuffer;
+import ch.fhnw.ether.render.gl.IArrayBuffer;
 import ch.fhnw.ether.render.gl.Program;
 import ch.fhnw.ether.scene.attribute.ITypedAttribute;
 
@@ -61,12 +61,12 @@ public class FloatArrayAttribute extends AbstractArrayAttribute<float[]> {
 	}
 
 	@Override
-	public void enable(GL3 gl, Program program, FloatArrayBuffer buffer) {
+	public void enable(GL3 gl, Program program, IArrayBuffer buffer) {
 		buffer.enableAttribute(gl, getShaderIndex(gl, program), getNumComponents().get(), getStride(), getOffset());
 	}
 
 	@Override
-	public void disable(GL3 gl, Program program, FloatArrayBuffer buffer) {
+	public void disable(GL3 gl, Program program, IArrayBuffer buffer) {
 		buffer.disableAttribute(gl, getShaderIndex(gl, program));
 	}
 

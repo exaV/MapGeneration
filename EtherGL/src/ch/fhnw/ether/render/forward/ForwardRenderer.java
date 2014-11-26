@@ -98,10 +98,10 @@ public class ForwardRenderer extends AbstractRenderer {
 		}
 		
 		@Override
-		public void getAttributeSuppliers(ISuppliers suppliers) {
-			suppliers.provide(ProjMatrixUniform.ID, () -> projMatrix);
-			suppliers.provide(ViewMatrixUniform.ID, () -> viewMatrix);
-			suppliers.provide(NormalMatrixUniform.ID, () -> normalMatrix);
+		public void getAttributes(IAttributes attributes) {
+			attributes.provide(ProjMatrixUniform.ID, () -> projMatrix);
+			attributes.provide(ViewMatrixUniform.ID, () -> viewMatrix);
+			attributes.provide(NormalMatrixUniform.ID, () -> normalMatrix);
 		}
 	}
 
@@ -110,7 +110,7 @@ public class ForwardRenderer extends AbstractRenderer {
 	public ForwardRenderer() {
 		addAttributeProvider(state);
 	}
-
+	
 	@Override
 	public void render(GL3 gl, IView view) {
 		CameraMatrices cameraMatrices = view.getCameraMatrices();
@@ -128,7 +128,7 @@ public class ForwardRenderer extends AbstractRenderer {
 		renderObjects(gl, Pass.DEPTH, interactive);
 		gl.glDisable(GL.GL_POLYGON_OFFSET_FILL);
 		
-		renderShadowVolumes(gl, Pass.DEPTH, interactive);
+		if (false) renderShadowVolumes(gl, Pass.DEPTH, interactive);
 
 		// ---- 2. TRANSPARENCY PASS (DEPTH WRITE DISABLED, DEPTH TEST ENABLED, BLEND ON)
 		gl.glEnable(GL.GL_BLEND);

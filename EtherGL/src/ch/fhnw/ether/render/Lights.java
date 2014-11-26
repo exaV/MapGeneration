@@ -32,12 +32,15 @@ public final class Lights {
 	private UniformBuffer uniformBuffer = new UniformBuffer(0);
 
 	public Lights(AbstractRenderer renderer) {
-		renderer.addAttributeProvider(new IAttributeProvider() {
+	}
+	
+	public IAttributeProvider getAttributeProvider() {
+		return new IAttributeProvider() {
 			@Override
-			public void getAttributeSuppliers(ISuppliers suppliers) {
-				suppliers.provide(LIGHT_UNIFORM_BLOCK, () -> 0);
+			public void getAttributes(IAttributes attributes) {
+				attributes.provide(LIGHT_UNIFORM_BLOCK, () -> 0);
 			}
-		});
+		};
 	}
 
 	public synchronized void addLight(ILight light) {

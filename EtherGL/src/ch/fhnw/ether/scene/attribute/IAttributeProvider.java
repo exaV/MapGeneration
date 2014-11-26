@@ -37,15 +37,24 @@ import java.util.function.Supplier;
  *
  */
 public interface IAttributeProvider {
-	interface ISuppliers {
+	interface IAttributes {
+		<T> boolean isProvided(ITypedAttribute<T> attribute);
+		
+		boolean isProvided(String id);
+		
 		<T> void provide(ITypedAttribute<T> attribute, Supplier<T> supplier);
 
 		void provide(String id, Supplier<?> supplier);
 
+		
+		<T> boolean isRequired(ITypedAttribute<T> attribute);
+		
+		boolean isRequired(String id);
+		
 		<T> void require(ITypedAttribute<T> attribute);
 
 		void require(String id);
 	}
 
-	void getAttributeSuppliers(ISuppliers suppliers);
+	void getAttributes(IAttributes attributes);
 }

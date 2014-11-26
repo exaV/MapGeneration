@@ -81,7 +81,11 @@ public final class Program {
 			this.code = ShaderCode.create(gl, type.getGLType(), 1, root, new String[] { path }, false);
 			if (code == null)
 				throw new IllegalArgumentException("could not create shader " + path);
-			code.compile(gl, out);
+			if (!code.compile(gl, out)) {
+				out.println("Failed to compile shader: " + path);
+				out.println("Exiting.");
+				System.exit(1);
+			}
 		}
 
 		public void dispose(GL3 gl) {
@@ -130,8 +134,9 @@ public final class Program {
 		}
 		program.link(gl, out);
 		program.validateProgram(gl, out);
-		
+
 		if (!program.linked()) {
+			out.println("Failed to link shader program: " + id);
 			out.println("Exiting.");
 			System.exit(1);
 		}
@@ -198,7 +203,7 @@ public final class Program {
 	public int getUniformLocation(GL3 gl, String name) {
 		return gl.glGetUniformLocation(program.program(), name);
 	}
-	
+
 	public int getUniformBlockIndex(GL3 gl, String name) {
 		return gl.glGetUniformBlockIndex(program.program(), name);
 	}
@@ -216,13 +221,10 @@ public final class Program {
 		String key = key(root, vertShader, fragShader, geomShader);
 		Program program = PROGRAMS.get(key);
 		if (program == null) {
-			out.println("creating: " + vertShader);
 			Shader vert = Shader.create(gl, root, vertShader, ShaderType.VERTEX, out);
-			out.println("creating: " + fragShader);
 			Shader frag = Shader.create(gl, root, fragShader, ShaderType.FRAGMENT, out);
 			Shader geom = null;
 			if (geomShader != null && root.getResource(geomShader) != null) {
-				out.println("creating: " + geomShader);
 				geom = Shader.create(gl, root, geomShader, ShaderType.GEOMETRY, out);
 			}
 			program = new Program(gl, out, vert, frag, geom);

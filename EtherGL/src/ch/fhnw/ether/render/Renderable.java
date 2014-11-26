@@ -36,12 +36,11 @@ import java.util.function.Supplier;
 import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.render.attribute.IArrayAttribute;
-import ch.fhnw.ether.render.attribute.IUniformAttribute;
 import ch.fhnw.ether.render.attribute.base.FloatArrayAttribute;
 import ch.fhnw.ether.render.gl.FloatArrayBuffer;
 import ch.fhnw.ether.render.gl.IArrayBuffer;
-import ch.fhnw.ether.render.gl.Program;
 import ch.fhnw.ether.render.shader.IShader;
+import ch.fhnw.ether.scene.attribute.IAttributeProvider;
 import ch.fhnw.ether.scene.mesh.IMesh;
 
 // FIXME: deal with max vbo size & multiple vbos, memory optimization, handle non-float arrays
@@ -55,7 +54,7 @@ public final class Renderable {
 	private int[] sizes;
 	private int stride;
 
-	public Renderable(IMesh mesh, AttributeProviders providers) {
+	public Renderable(IMesh mesh, List<IAttributeProvider> providers) {
 		this.mesh = mesh;
 
 		shader = ShaderBuilder.buildShader(mesh, providers);
@@ -87,51 +86,9 @@ public final class Renderable {
 	}
 
 	public void render(GL3 gl) {
-		// 1. enable program
 		shader.enable(gl);
-		Program program = shader.getProgram();
-		List<IUniformAttribute<?>> uniforms = shader.getUniforms();
-		List<IArrayAttribute<?>> arrays = shader.getArrays();
-
-		// 2. for each uniform attribute
-		// 2.1. set uniform (shader index, value), enable textures, set gl state
-		for (IUniformAttribute<?> attr : uniforms) {
-			attr.enable(gl, program);
-		}
-
-		// FIXME: use VAO here
-		// 3. for each parallel buffer
-		// 3.1. bind buffer
-		// 3.2. for each array attribute associated to the buffer
-		// 3.2.1 enable vertex attrib array (shader index)
-		// 3.2.2 set vertex attrib pointer (shader index, size, stride, offset)
-		buffer.bind(gl);
-		for (IArrayAttribute<?> attr : arrays) {
-			attr.enable(gl, program, buffer);
-		}
-
-		// 4. draw arrays (# elements = buffer size / stride)
-		shader.render(gl, buffer.size() / stride);
-
-		// 5. for each buffer
-		// 5.1. bind buffer
-		// 5.2. for each array attribute
-		// 5.2.1 disable vertex attrib array (shader index)
-		buffer.bind(gl);
-		for (IArrayAttribute<?> attr : arrays) {
-			attr.disable(gl, program, buffer);
-		}
-
-		// 6. for each uniform attribute
-		// 6.1. disable textures, restore gl state
-		for (IUniformAttribute<?> attr : uniforms) {
-			attr.disable(gl, program);
-		}
-
-		// 7. disable program and clear buffer binding
+		shader.render(gl, getCount(), getBuffer());
 		shader.disable(gl);
-
-		IArrayBuffer.unbind(gl);
 	}
 
 	public IMesh.Pass getPass() {
@@ -140,6 +97,18 @@ public final class Renderable {
 
 	public boolean containsFlag(IMesh.Flags flag) {
 		return mesh.getFlags().contains(flag);
+	}
+
+	public int getCount() {
+		return buffer.size() / stride;
+	}
+	
+	public int getStride() {
+		return stride;
+	}
+
+	public IArrayBuffer getBuffer() {
+		return buffer;
 	}
 
 	@Override

@@ -34,10 +34,11 @@ import ch.fhnw.ether.render.attribute.builtin.ProjMatrixUniform;
 import ch.fhnw.ether.render.attribute.builtin.ViewMatrixUniform;
 import ch.fhnw.ether.render.shader.IShader;
 import ch.fhnw.ether.render.shader.base.AbstractShader;
+import ch.fhnw.ether.scene.attribute.IAttributeProvider;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 
 public class ShadowVolumeShader extends AbstractShader {
-	public ShadowVolumeShader(Attributes attributes) {
+	public ShadowVolumeShader(IAttributeProvider.IAttributes attributes) {
 		super(IShader.class, "builtin.shader.shadow_volumes", "shadow_volumes", Primitive.TRIANGLES);
 
 		addArray(new PositionArray());

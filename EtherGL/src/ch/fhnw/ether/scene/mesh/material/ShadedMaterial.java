@@ -62,18 +62,18 @@ public class ShadedMaterial extends AbstractMaterial {
 	}
 	
 	@Override
-	public void getAttributeSuppliers(ISuppliers suppliers) {
-		suppliers.provide(IMaterial.EMISSION, () -> emission);
-		suppliers.provide(IMaterial.AMBIENT, () -> ambient);
-		suppliers.provide(IMaterial.DIFFUSE, () -> diffuse);
-		suppliers.provide(IMaterial.SPECULAR, () -> specular);
-		suppliers.provide(IMaterial.SHININESS, () -> shininess);
-		suppliers.provide(IMaterial.STRENGTH, () -> strength);
-		suppliers.provide(IMaterial.ALPHA, () -> alpha);
+	public void getAttributes(IAttributes attributes) {
+		attributes.provide(IMaterial.EMISSION, () -> emission);
+		attributes.provide(IMaterial.AMBIENT, () -> ambient);
+		attributes.provide(IMaterial.DIFFUSE, () -> diffuse);
+		attributes.provide(IMaterial.SPECULAR, () -> specular);
+		attributes.provide(IMaterial.SHININESS, () -> shininess);
+		attributes.provide(IMaterial.STRENGTH, () -> strength);
+		attributes.provide(IMaterial.ALPHA, () -> alpha);
 
 		if (colorMap != null) {
-			suppliers.provide(IMaterial.COLOR_MAP, () -> colorMap);
-			suppliers.require(IMaterial.COLOR_MAP_ARRAY);
+			attributes.provide(IMaterial.COLOR_MAP, () -> colorMap);
+			attributes.require(IMaterial.COLOR_MAP_ARRAY);
 		}
 	}
 }

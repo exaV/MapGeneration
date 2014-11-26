@@ -29,6 +29,9 @@
 
 package ch.fhnw.ether.render;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.scene.attribute.IAttributeProvider;
@@ -38,19 +41,24 @@ import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.IMesh.Pass;
 
 public abstract class AbstractRenderer implements IRenderer {
-	private final AttributeProviders attributes = new AttributeProviders();
+	private final List<IAttributeProvider> providers = new ArrayList<>();
 
 	private final Lights lights = new Lights(this);
 	private final Renderables renderables = new Renderables();
 	
-	private final ShadowVolumes shadowVolumes = new ShadowVolumes();
+	private final ShadowVolumes shadowVolumes = new ShadowVolumes(providers);
 
 	public AbstractRenderer() {
+		providers.add(lights.getAttributeProvider());
+	}
+	
+	protected void addAttributeProvider(IAttributeProvider provider) {
+		providers.add(provider);		
 	}
 
 	@Override
 	public void addMesh(IMesh mesh) {
-		renderables.addMesh(mesh, attributes);
+		renderables.addMesh(mesh, providers);
 	}
 
 	@Override
@@ -66,10 +74,6 @@ public abstract class AbstractRenderer implements IRenderer {
 	@Override
 	public void removeLight(ILight light) {
 		lights.removeLight(light);
-	}
-
-	protected void addAttributeProvider(IAttributeProvider provider) {
-		attributes.addProvider(provider);
 	}
 
 	protected void update(GL3 gl, CameraMatrices cameraMatrices) {

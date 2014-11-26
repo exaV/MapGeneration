@@ -14,6 +14,6 @@ public class CustomMaterial extends AbstractMaterial {
 	}
 	
 	@Override
-	public void getAttributeSuppliers(ISuppliers suppliers) {
+	public void getAttributes(IAttributes attributes) {
 	}
 }

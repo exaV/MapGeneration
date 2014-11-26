@@ -37,6 +37,7 @@ import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.render.attribute.IArrayAttribute;
 import ch.fhnw.ether.render.attribute.IUniformAttribute;
+import ch.fhnw.ether.render.gl.IArrayBuffer;
 import ch.fhnw.ether.render.gl.Program;
 import ch.fhnw.ether.render.shader.IShader;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
@@ -87,17 +88,27 @@ public abstract class AbstractShader implements IShader {
 
 	@Override
 	public void enable(GL3 gl) {
+		// enable program & uniforms (set uniforms, enable textures, change gl state)
 		program.enable(gl);
+		uniforms.forEach((attr) -> attr.enable(gl, program));
 	}
 
 	@Override
-	public void render(GL3 gl, int count) {
+	public void render(GL3 gl, int count, IArrayBuffer buffer) {
+		buffer.bind(gl);
+		arrays.forEach((attr) -> attr.enable(gl, program, buffer));
+		
 		int mode = MODE[type.ordinal()];
 		gl.glDrawArrays(mode, 0, count);
+		
+		arrays.forEach((attr) -> attr.disable(gl, program, buffer));
+		IArrayBuffer.unbind(gl);
 	}
 
 	@Override
 	public void disable(GL3 gl) {
+		// disable program and uniforms (disable textures, restore gl state)
+		uniforms.forEach((attr) -> attr.disable(gl, program));
 		program.disable(gl);
 	}
 
