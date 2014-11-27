@@ -49,6 +49,10 @@ public abstract class AbstractUniform<T> extends AbstractVariable<T> implements 
 		this.supplier = supplier;
 	}
 
+	protected AbstractUniform(String id, String shaderName) {
+		super(id, shaderName);
+	}
+
 	protected AbstractUniform(String id, String shaderName, Supplier<T> supplier) {
 		super(id, shaderName);
 		this.supplier = supplier;

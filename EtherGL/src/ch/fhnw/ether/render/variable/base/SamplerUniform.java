@@ -63,6 +63,10 @@ public class SamplerUniform extends AbstractUniform<Texture> {
 		this.target = target;
 	}
 
+	public SamplerUniform(String id, String shaderName, int unit, int target) {
+		this(id, shaderName, unit, target, null);
+	}
+
 	@Override
 	public void dispose(GL3 gl) {
 		if (tex != null) {

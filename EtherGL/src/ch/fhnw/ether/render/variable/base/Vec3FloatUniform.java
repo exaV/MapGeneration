@@ -50,6 +50,10 @@ public class Vec3FloatUniform extends AbstractUniform<Vec3> {
 		super(id, shaderName, supplier);
 	}
 
+	public Vec3FloatUniform(String id, String shaderName) {
+		super(id, shaderName);
+	}
+
 	@Override
 	public void enable(GL3 gl, Program program) {
 		program.setUniformVec3(gl, getShaderIndex(gl, program), get().toArray());

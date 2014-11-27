@@ -8,17 +8,17 @@ import ch.fhnw.ether.render.shader.builtin.ShadowVolumeShader;
 import ch.fhnw.ether.scene.attribute.IAttributeProvider;
 
 public final class ShadowVolumes {
-	ShadowVolumeShader shader;
-	
+	private ShadowVolumeShader shader;
+
 	public ShadowVolumes(List<IAttributeProvider> providers) {
 		shader = new ShadowVolumeShader(null);
 		ShaderBuilder.attachAttributes(shader, providers);
 	}
-	
+
 	public void enable(GL3 gl) {
 		shader.update(gl);
 		shader.enable(gl);
-		//shader.setLightIndex(lightIndex);
+		// shader.setLightIndex(lightIndex);
 	}
 
 	public void renderVolumes(GL3 gl, Renderable renderable) {

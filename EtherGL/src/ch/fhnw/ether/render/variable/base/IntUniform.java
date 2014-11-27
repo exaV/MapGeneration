@@ -45,6 +45,10 @@ public class IntUniform extends AbstractUniform<Integer> {
 		super(attribute, shaderName, supplier);
 	}
 
+	public IntUniform(String id, String shaderName) {
+		super(id, shaderName);
+	}
+
 	public IntUniform(String id, String shaderName, Supplier<Integer> supplier) {
 		super(id, shaderName, supplier);
 	}

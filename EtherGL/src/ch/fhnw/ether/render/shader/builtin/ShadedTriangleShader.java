@@ -29,6 +29,8 @@
 
 package ch.fhnw.ether.render.shader.builtin;
 
+import java.util.Collection;
+
 import ch.fhnw.ether.render.shader.IShader;
 import ch.fhnw.ether.render.shader.base.AbstractShader;
 import ch.fhnw.ether.render.variable.base.BooleanUniform;
@@ -43,17 +45,17 @@ import ch.fhnw.ether.render.variable.builtin.NormalMatrixUniform;
 import ch.fhnw.ether.render.variable.builtin.PositionArray;
 import ch.fhnw.ether.render.variable.builtin.ProjMatrixUniform;
 import ch.fhnw.ether.render.variable.builtin.ViewMatrixUniform;
-import ch.fhnw.ether.scene.attribute.IAttributeProvider;
+import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
 
 public class ShadedTriangleShader extends AbstractShader {
-	public ShadedTriangleShader(IAttributeProvider.IAttributes attributes) {
+	public ShadedTriangleShader(Collection<IAttribute> attributes) {
 		super(IShader.class, "builtin.shader.shaded_triangles", "shaded_vct", Primitive.TRIANGLES);
 
-		boolean useVertexColors = attributes.isProvided(IGeometry.COLOR_ARRAY);
-		boolean useTexture = attributes.isProvided(IGeometry.COLOR_MAP_ARRAY);
+		boolean useVertexColors = attributes.contains(IGeometry.COLOR_ARRAY);
+		boolean useTexture = attributes.contains(IGeometry.COLOR_MAP_ARRAY);
 
 		addArray(new PositionArray());
 		addArray(new NormalArray());

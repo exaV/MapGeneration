@@ -27,6 +27,7 @@ public final class Lights {
 
 	private final List<GenericLight> lights = new ArrayList<>(Collections.singletonList(DEFAULT_LIGHT));
 
+	// FIXME: binding point is hard coded to 0 for now
 	private UniformBuffer uniformBuffer = new UniformBuffer(0);
 
 	public Lights(AbstractRenderer renderer) {

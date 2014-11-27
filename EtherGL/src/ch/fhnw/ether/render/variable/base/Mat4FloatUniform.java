@@ -50,6 +50,10 @@ public class Mat4FloatUniform extends AbstractUniform<Mat4> {
 		super(id, shaderName, supplier);
 	}
 
+	public Mat4FloatUniform(String id, String shaderName) {
+		super(id, shaderName);
+	}
+
 	@Override
 	public void enable(GL3 gl, Program program) {
 		program.setUniformMat4(gl, getShaderIndex(gl, program), get().m);

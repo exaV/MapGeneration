@@ -49,6 +49,10 @@ public class FloatUniform extends AbstractUniform<Float> {
 		super(id, shaderName, supplier);
 	}
 
+	public FloatUniform(String id, String shaderName) {
+		super(id, shaderName);
+	}
+
 	@Override
 	public void enable(GL3 gl, Program program) {
 		program.setUniform(gl, getShaderIndex(gl, program), get());
