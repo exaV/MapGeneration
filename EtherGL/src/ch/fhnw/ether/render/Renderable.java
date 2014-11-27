@@ -35,11 +35,11 @@ import java.util.function.Supplier;
 
 import javax.media.opengl.GL3;
 
-import ch.fhnw.ether.render.attribute.IArrayAttribute;
-import ch.fhnw.ether.render.attribute.base.FloatArrayAttribute;
 import ch.fhnw.ether.render.gl.FloatArrayBuffer;
 import ch.fhnw.ether.render.gl.IArrayBuffer;
 import ch.fhnw.ether.render.shader.IShader;
+import ch.fhnw.ether.render.variable.IShaderArray;
+import ch.fhnw.ether.render.variable.base.FloatArray;
 import ch.fhnw.ether.scene.attribute.IAttributeProvider;
 import ch.fhnw.ether.scene.mesh.IMesh;
 
@@ -117,16 +117,16 @@ public final class Renderable {
 	}
 
 	private void setupBuffers() {
-		List<IArrayAttribute<?>> arrays = shader.getArrays();
+		List<IShaderArray<?>> arrays = shader.getArrays();
 		stride = 0;
 		sizes = new int[arrays.size()];
 		int i = 0;
-		for (IArrayAttribute<?> attr : arrays) {
+		for (IShaderArray<?> attr : arrays) {
 			stride += sizes[i++] = attr.getNumComponents().get();
 		}
 		i = 0;
 		int offset = 0;
-		for (IArrayAttribute<?> attr : arrays) {
+		for (IShaderArray<?> attr : arrays) {
 			attr.setup(stride, offset);
 			offset += sizes[i++];
 		}
@@ -135,9 +135,9 @@ public final class Renderable {
 	// FIXME: thread safety
 	// FIXME: fix memory management/allocation
 	private void loadBuffer(GL3 gl) {
-		List<IArrayAttribute<?>> arrays = shader.getArrays();
+		List<IShaderArray<?>> arrays = shader.getArrays();
 		int length = 0;
-		FloatArrayAttribute attr = (FloatArrayAttribute) arrays.get(0);
+		FloatArray attr = (FloatArray) arrays.get(0);
 		for (Supplier<float[]> supplier : attr.getSuppliers()) {
 			length += supplier.get().length;
 		}
@@ -149,7 +149,7 @@ public final class Renderable {
 		int index = 0;
 		for (int supplierIndex = 0; supplierIndex < attr.getSuppliers().size(); ++supplierIndex) {
 			for (int attributeIndex = 0; attributeIndex < arrays.size(); ++attributeIndex) {
-				data[attributeIndex] = ((FloatArrayAttribute) (arrays.get(attributeIndex))).getSuppliers().get(supplierIndex).get();
+				data[attributeIndex] = ((FloatArray) (arrays.get(attributeIndex))).getSuppliers().get(supplierIndex).get();
 			}
 			index = interleave(interleavedData, index, data, sizes);
 		}

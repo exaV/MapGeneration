@@ -27,7 +27,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.render.attribute.base;
+package ch.fhnw.ether.render.variable.base;
 
 import java.util.function.Supplier;
 
@@ -43,25 +43,25 @@ import ch.fhnw.ether.render.gl.Program;
 import ch.fhnw.ether.scene.attribute.ITypedAttribute;
 import ch.fhnw.ether.scene.mesh.material.Texture;
 
-public class SamplerUniformAttribute extends AbstractUniformAttribute<Texture> {
+public class SamplerUniform extends AbstractUniform<Texture> {
 	private final int unit;
 	private final int target;
 
 	private int[] tex;
 
-	public SamplerUniformAttribute(ITypedAttribute<Texture> attribute, String shaderName, int unit, int target) {
+	public SamplerUniform(ITypedAttribute<Texture> attribute, String shaderName, int unit, int target) {
 		this(attribute.id(), shaderName, unit, target, null);
 	}
 
-	public SamplerUniformAttribute(String id, String shaderName, int unit, int target) {
+	public SamplerUniform(String id, String shaderName, int unit, int target) {
 		this(id, shaderName, unit, target, null);
 	}
 
-	public SamplerUniformAttribute(ITypedAttribute<Texture> attribute, String shaderName, int unit, int target, Supplier<Texture> supplier) {
+	public SamplerUniform(ITypedAttribute<Texture> attribute, String shaderName, int unit, int target, Supplier<Texture> supplier) {
 		this(attribute.id(), shaderName, unit, target, supplier);
 	}
 
-	public SamplerUniformAttribute(String id, String shaderName, int unit, int target, Supplier<Texture> supplier) {
+	public SamplerUniform(String id, String shaderName, int unit, int target, Supplier<Texture> supplier) {
 		super(id, shaderName, supplier);
 		this.unit = unit;
 		this.target = target;

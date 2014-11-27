@@ -27,19 +27,19 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.render.attribute.builtin;
+package ch.fhnw.ether.render.variable.builtin;
 
-import ch.fhnw.ether.render.attribute.base.FloatArrayAttribute;
+import ch.fhnw.ether.render.variable.base.FloatArray;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 
-public final class ColorMapArray extends FloatArrayAttribute {
-	private static final String DEFAULT_SHADER_NAME = "vertexTexCoord";
+public final class PointSizeArray extends FloatArray {
+	private static final String DEFAULT_SHADER_NAME = "vertexPointSize";
 
-	public ColorMapArray() {
-		super(IGeometry.COLOR_MAP_ARRAY, DEFAULT_SHADER_NAME, NumComponents.TWO);
+	public PointSizeArray() {
+		super(IGeometry.POINT_SIZE_ARRAY, DEFAULT_SHADER_NAME, NumComponents.ONE);
 	}
 
-	public ColorMapArray(String shaderName) {
-		super(IGeometry.COLOR_MAP_ARRAY, shaderName, NumComponents.TWO);
+	public PointSizeArray(String shaderName) {
+		super(IGeometry.POINT_SIZE_ARRAY, shaderName, NumComponents.ONE);
 	}
 }

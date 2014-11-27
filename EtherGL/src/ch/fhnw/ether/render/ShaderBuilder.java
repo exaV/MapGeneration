@@ -9,13 +9,14 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import ch.fhnw.ether.render.attribute.IArrayAttribute;
-import ch.fhnw.ether.render.attribute.IUniformAttribute;
 import ch.fhnw.ether.render.shader.IShader;
 import ch.fhnw.ether.render.shader.builtin.LineShader;
 import ch.fhnw.ether.render.shader.builtin.PointShader;
 import ch.fhnw.ether.render.shader.builtin.ShadedTriangleShader;
 import ch.fhnw.ether.render.shader.builtin.UnshadedTriangleShader;
+import ch.fhnw.ether.render.variable.IShaderArray;
+import ch.fhnw.ether.render.variable.IShaderVariable;
+import ch.fhnw.ether.render.variable.IShaderUniform;
 import ch.fhnw.ether.scene.attribute.IAttributeProvider;
 import ch.fhnw.ether.scene.attribute.ITypedAttribute;
 import ch.fhnw.ether.scene.mesh.IMesh;
@@ -70,10 +71,10 @@ public final class ShaderBuilder {
 			requiredAttibutes.add(id);
 		}
 
-		Supplier<?> getSupplier(ITypedAttribute<?> attr) {
-			Supplier<?> supplier = providedAttributes.get(attr.id());
+		Supplier<?> getSupplier(IShaderVariable<?> variable) {
+			Supplier<?> supplier = providedAttributes.get(variable.id());
 			if (supplier == null)
-				throw new IllegalArgumentException("attribute not provided: " + attr.id());
+				throw new IllegalArgumentException("attribute not provided: " + variable.id());
 			return supplier;
 		}
 
@@ -122,7 +123,7 @@ public final class ShaderBuilder {
 	// FIXME: currently mesh only contains one geometry
 	public static void attachAttributes(IShader shader, Attributes attributes, IMesh mesh) {
 		// attach uniform attributes to shader
-		for (IUniformAttribute<?> attr : shader.getUniforms()) {
+		for (IShaderUniform<?> attr : shader.getUniforms()) {
 			if (!attr.hasSupplier()) {
 				attr.setSupplier(attributes.getSupplier(attr));
 			}
@@ -134,7 +135,7 @@ public final class ShaderBuilder {
 			for (IAttributeProvider provider : arrayAttributeProviders) {
 				attributes.clear();
 				provider.getAttributes(attributes);
-				for (IArrayAttribute<?> attr : shader.getArrays()) {
+				for (IShaderArray<?> attr : shader.getArrays()) {
 					attr.addSupplier(attributes.getSupplier(attr));
 				}
 			}

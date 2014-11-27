@@ -27,19 +27,35 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.render.attribute.builtin;
+package ch.fhnw.ether.render.variable.base;
 
-import ch.fhnw.ether.render.attribute.base.FloatArrayAttribute;
-import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
+import java.util.function.Supplier;
 
-public final class PositionArray extends FloatArrayAttribute {
-	private static final String DEFAULT_SHADER_NAME = "vertexPosition";
+import javax.media.opengl.GL3;
 
-	public PositionArray() {
-		super(IGeometry.POSITION_ARRAY, DEFAULT_SHADER_NAME, NumComponents.THREE);
+import ch.fhnw.ether.render.gl.Program;
+import ch.fhnw.ether.scene.attribute.ITypedAttribute;
+import ch.fhnw.util.math.Mat3;
+
+public class Mat3FloatUniform extends AbstractUniform<Mat3> {
+	public Mat3FloatUniform(ITypedAttribute<Mat3> attribute, String shaderName) {
+		super(attribute, shaderName);
 	}
 
-	public PositionArray(String shaderName) {
-		super(IGeometry.POSITION_ARRAY, shaderName, NumComponents.THREE);
+	public Mat3FloatUniform(String id, String shaderName) {
+		super(id, shaderName);
+	}
+
+	public Mat3FloatUniform(ITypedAttribute<Mat3> attribute, String shaderName, Supplier<Mat3> supplier) {
+		super(attribute, shaderName, supplier);
+	}
+
+	public Mat3FloatUniform(String id, String shaderName, Supplier<Mat3> supplier) {
+		super(id, shaderName, supplier);
+	}
+
+	@Override
+	public void enable(GL3 gl, Program program) {
+		program.setUniformMat3(gl, getShaderIndex(gl, program), get().m);
 	}
 }

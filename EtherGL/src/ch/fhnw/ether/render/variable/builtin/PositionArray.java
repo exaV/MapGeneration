@@ -27,30 +27,19 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.render.attribute.builtin;
+package ch.fhnw.ether.render.variable.builtin;
 
-import java.util.function.Supplier;
+import ch.fhnw.ether.render.variable.base.FloatArray;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 
-import ch.fhnw.ether.render.attribute.base.Mat3FloatUniformAttribute;
-import ch.fhnw.util.math.Mat3;
+public final class PositionArray extends FloatArray {
+	private static final String DEFAULT_SHADER_NAME = "vertexPosition";
 
-public final class NormalMatrixUniform extends Mat3FloatUniformAttribute {
-	public static final String ID = "builtin.normal_matrix";
-	private static final String DEFAULT_SHADER_NAME = "normalMatrix";
-
-	public NormalMatrixUniform() {
-		super(ID, DEFAULT_SHADER_NAME);
+	public PositionArray() {
+		super(IGeometry.POSITION_ARRAY, DEFAULT_SHADER_NAME, NumComponents.THREE);
 	}
 
-	public NormalMatrixUniform(String shaderName) {
-		super(ID, shaderName);
-	}
-
-	public NormalMatrixUniform(Supplier<Mat3> supplier) {
-		super(ID, DEFAULT_SHADER_NAME, supplier);
-	}
-
-	public NormalMatrixUniform(String shaderName, Supplier<Mat3> supplier) {
-		super(ID, shaderName, supplier);
+	public PositionArray(String shaderName) {
+		super(IGeometry.POSITION_ARRAY, shaderName, NumComponents.THREE);
 	}
 }

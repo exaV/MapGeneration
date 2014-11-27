@@ -35,11 +35,11 @@ import java.util.List;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL3;
 
-import ch.fhnw.ether.render.attribute.IArrayAttribute;
-import ch.fhnw.ether.render.attribute.IUniformAttribute;
 import ch.fhnw.ether.render.gl.IArrayBuffer;
 import ch.fhnw.ether.render.gl.Program;
 import ch.fhnw.ether.render.shader.IShader;
+import ch.fhnw.ether.render.variable.IShaderArray;
+import ch.fhnw.ether.render.variable.IShaderUniform;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 
 public abstract class AbstractShader implements IShader {
@@ -52,8 +52,8 @@ public abstract class AbstractShader implements IShader {
 	private Primitive type;
 	private Program program;
 
-	private List<IUniformAttribute<?>> uniforms = new ArrayList<>();
-	private List<IArrayAttribute<?>> arrays = new ArrayList<>();
+	private List<IShaderUniform<?>> uniforms = new ArrayList<>();
+	private List<IShaderArray<?>> arrays = new ArrayList<>();
 
 	protected AbstractShader(Class<?> root, String name, String source, Primitive type) {
 		this.root = root;
@@ -123,20 +123,20 @@ public abstract class AbstractShader implements IShader {
 	}
 
 	@Override
-	public List<IUniformAttribute<?>> getUniforms() {
+	public List<IShaderUniform<?>> getUniforms() {
 		return uniforms;
 	}
 
 	@Override
-	public List<IArrayAttribute<?>> getArrays() {
+	public List<IShaderArray<?>> getArrays() {
 		return arrays;
 	}
 
-	protected final void addUniform(IUniformAttribute<?> uniform) {
+	protected final void addUniform(IShaderUniform<?> uniform) {
 		uniforms.add(uniform);
 	}
 
-	protected final void addArray(IArrayAttribute<?> array) {
+	protected final void addArray(IShaderArray<?> array) {
 		arrays.add(array);
 	}
 

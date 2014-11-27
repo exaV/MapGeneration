@@ -27,36 +27,19 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.render.attribute.base;
+package ch.fhnw.ether.render.variable.builtin;
 
-import javax.media.opengl.GL3;
+import ch.fhnw.ether.render.variable.base.FloatArray;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 
-import ch.fhnw.ether.render.gl.Program;
-import ch.fhnw.ether.scene.attribute.AbstractAttribute;
-import ch.fhnw.ether.scene.attribute.ITypedAttribute;
+public final class ColorMapArray extends FloatArray {
+	private static final String DEFAULT_SHADER_NAME = "vertexTexCoord";
 
-public abstract class AbstractShaderAttribute<T> extends AbstractAttribute<T> {
-	private final String shaderName;
-	private int shaderIndex = -1;
-
-	protected AbstractShaderAttribute(ITypedAttribute<T> attribute, String shaderName) {
-		this(attribute.id(), shaderName);
+	public ColorMapArray() {
+		super(IGeometry.COLOR_MAP_ARRAY, DEFAULT_SHADER_NAME, NumComponents.TWO);
 	}
 
-	protected AbstractShaderAttribute(String id, String shaderName) {
-		super(id);
-		this.shaderName = shaderName;
+	public ColorMapArray(String shaderName) {
+		super(IGeometry.COLOR_MAP_ARRAY, shaderName, NumComponents.TWO);
 	}
-
-	protected final String getShaderName() {
-		return shaderName;
-	}
-
-	protected final int getShaderIndex(GL3 gl, Program program) {
-		if (shaderIndex == -1)
-			shaderIndex = resolveShaderIndex(gl, program, shaderName);
-		return shaderIndex;
-	}
-
-	protected abstract int resolveShaderIndex(GL3 gl, Program program, String shaderName);
 }

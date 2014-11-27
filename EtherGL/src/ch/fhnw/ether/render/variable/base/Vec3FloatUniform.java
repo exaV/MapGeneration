@@ -27,22 +27,35 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.render.attribute.builtin;
+package ch.fhnw.ether.render.variable.base;
 
 import java.util.function.Supplier;
 
-import ch.fhnw.ether.render.attribute.base.Vec4FloatUniformAttribute;
-import ch.fhnw.ether.scene.mesh.material.IMaterial;
-import ch.fhnw.util.math.Vec4;
+import javax.media.opengl.GL3;
 
-public class ColorUniform extends Vec4FloatUniformAttribute {
-	private static final String DEFAULT_SHADER_NAME = "materialColor";
+import ch.fhnw.ether.render.gl.Program;
+import ch.fhnw.ether.scene.attribute.ITypedAttribute;
+import ch.fhnw.util.math.Vec3;
 
-	public ColorUniform() {
-		super(IMaterial.COLOR, DEFAULT_SHADER_NAME);
+public class Vec3FloatUniform extends AbstractUniform<Vec3> {
+	public Vec3FloatUniform(ITypedAttribute<Vec3> attribute, String shaderName) {
+		super(attribute, shaderName);
 	}
 
-	public ColorUniform(Supplier<Vec4> supplier) {
-		super(IMaterial.COLOR, DEFAULT_SHADER_NAME, supplier);
+	public Vec3FloatUniform(String id, String shaderName) {
+		super(id, shaderName);
+	}
+
+	public Vec3FloatUniform(ITypedAttribute<Vec3> attribute, String shaderName, Supplier<Vec3> supplier) {
+		super(attribute, shaderName, supplier);
+	}
+
+	public Vec3FloatUniform(String id, String shaderName, Supplier<Vec3> supplier) {
+		super(id, shaderName, supplier);
+	}
+
+	@Override
+	public void enable(GL3 gl, Program program) {
+		program.setUniformVec3(gl, getShaderIndex(gl, program), get().toArray());
 	}
 }

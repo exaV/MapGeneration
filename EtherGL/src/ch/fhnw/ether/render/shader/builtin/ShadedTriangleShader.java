@@ -30,20 +30,20 @@
 package ch.fhnw.ether.render.shader.builtin;
 
 import ch.fhnw.ether.render.Lights;
-import ch.fhnw.ether.render.attribute.base.BooleanUniformAttribute;
-import ch.fhnw.ether.render.attribute.base.FloatUniformAttribute;
-import ch.fhnw.ether.render.attribute.base.UniformBlockAttribute;
-import ch.fhnw.ether.render.attribute.base.Vec3FloatUniformAttribute;
-import ch.fhnw.ether.render.attribute.builtin.ColorArray;
-import ch.fhnw.ether.render.attribute.builtin.ColorMapArray;
-import ch.fhnw.ether.render.attribute.builtin.ColorMapUniform;
-import ch.fhnw.ether.render.attribute.builtin.NormalArray;
-import ch.fhnw.ether.render.attribute.builtin.NormalMatrixUniform;
-import ch.fhnw.ether.render.attribute.builtin.PositionArray;
-import ch.fhnw.ether.render.attribute.builtin.ProjMatrixUniform;
-import ch.fhnw.ether.render.attribute.builtin.ViewMatrixUniform;
 import ch.fhnw.ether.render.shader.IShader;
 import ch.fhnw.ether.render.shader.base.AbstractShader;
+import ch.fhnw.ether.render.variable.base.BooleanUniform;
+import ch.fhnw.ether.render.variable.base.FloatUniform;
+import ch.fhnw.ether.render.variable.base.UniformBlock;
+import ch.fhnw.ether.render.variable.base.Vec3FloatUniform;
+import ch.fhnw.ether.render.variable.builtin.ColorArray;
+import ch.fhnw.ether.render.variable.builtin.ColorMapArray;
+import ch.fhnw.ether.render.variable.builtin.ColorMapUniform;
+import ch.fhnw.ether.render.variable.builtin.NormalArray;
+import ch.fhnw.ether.render.variable.builtin.NormalMatrixUniform;
+import ch.fhnw.ether.render.variable.builtin.PositionArray;
+import ch.fhnw.ether.render.variable.builtin.ProjMatrixUniform;
+import ch.fhnw.ether.render.variable.builtin.ViewMatrixUniform;
 import ch.fhnw.ether.scene.attribute.IAttributeProvider;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
@@ -65,16 +65,16 @@ public class ShadedTriangleShader extends AbstractShader {
 		if (useTexture)
 			addArray(new ColorMapArray());
 
-		addUniform(new BooleanUniformAttribute("shader.vertex_colors_flag", "useVertexColors", () -> useVertexColors));
-		addUniform(new BooleanUniformAttribute("shader.color_map_flag", "useColorMap", () -> useTexture));
+		addUniform(new BooleanUniform("shader.vertex_colors_flag", "useVertexColors", () -> useVertexColors));
+		addUniform(new BooleanUniform("shader.color_map_flag", "useColorMap", () -> useTexture));
 
-		addUniform(new Vec3FloatUniformAttribute(IMaterial.EMISSION, "material.emissionColor"));
-		addUniform(new Vec3FloatUniformAttribute(IMaterial.AMBIENT, "material.ambientColor"));
-		addUniform(new Vec3FloatUniformAttribute(IMaterial.DIFFUSE, "material.diffuseColor"));
-		addUniform(new Vec3FloatUniformAttribute(IMaterial.SPECULAR, "material.specularColor"));
-		addUniform(new FloatUniformAttribute(IMaterial.SHININESS, "material.shininess"));
-		addUniform(new FloatUniformAttribute(IMaterial.STRENGTH, "material.strength"));
-		addUniform(new FloatUniformAttribute(IMaterial.ALPHA, "material.alpha"));
+		addUniform(new Vec3FloatUniform(IMaterial.EMISSION, "material.emissionColor"));
+		addUniform(new Vec3FloatUniform(IMaterial.AMBIENT, "material.ambientColor"));
+		addUniform(new Vec3FloatUniform(IMaterial.DIFFUSE, "material.diffuseColor"));
+		addUniform(new Vec3FloatUniform(IMaterial.SPECULAR, "material.specularColor"));
+		addUniform(new FloatUniform(IMaterial.SHININESS, "material.shininess"));
+		addUniform(new FloatUniform(IMaterial.STRENGTH, "material.strength"));
+		addUniform(new FloatUniform(IMaterial.ALPHA, "material.alpha"));
 		
 		if (useTexture)
 			addUniform(new ColorMapUniform());
@@ -83,6 +83,6 @@ public class ShadedTriangleShader extends AbstractShader {
 		addUniform(new ViewMatrixUniform());
 		addUniform(new NormalMatrixUniform());
 		// FIXME: create LightBlockAttribute, since this will be used in several places
-		addUniform(new UniformBlockAttribute(Lights.LIGHT_UNIFORM_BLOCK, "lightBlock"));
+		addUniform(new UniformBlock(Lights.LIGHT_UNIFORM_BLOCK, "lightBlock"));
 	}
 }

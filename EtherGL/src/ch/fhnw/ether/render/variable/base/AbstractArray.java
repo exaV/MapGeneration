@@ -27,34 +27,48 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.render.attribute.base;
-
-import java.util.function.Supplier;
+package ch.fhnw.ether.render.variable.base;
 
 import javax.media.opengl.GL3;
 
-import ch.fhnw.ether.render.gl.Program;
+import ch.fhnw.ether.render.variable.IShaderArray;
 import ch.fhnw.ether.scene.attribute.ITypedAttribute;
 
-public class FloatUniformAttribute extends AbstractUniformAttribute<Float> {
-	public FloatUniformAttribute(ITypedAttribute<Float> attribute, String shaderName) {
+public abstract class AbstractArray<T> extends AbstractVariable<T> implements IShaderArray<T> {
+	private final NumComponents numComponents;
+	private int stride;
+	private int offset;
+
+	protected AbstractArray(ITypedAttribute<T> attribute, String shaderName, NumComponents numComponents) {
 		super(attribute, shaderName);
+		this.numComponents = numComponents;
 	}
 
-	public FloatUniformAttribute(String id, String shaderName) {
+	protected AbstractArray(String id, String shaderName, NumComponents numComponents) {
 		super(id, shaderName);
-	}
-
-	public FloatUniformAttribute(ITypedAttribute<Float> attribute, String shaderName, Supplier<Float> supplier) {
-		super(attribute, shaderName, supplier);
-	}
-
-	public FloatUniformAttribute(String id, String shaderName, Supplier<Float> supplier) {
-		super(id, shaderName, supplier);
+		this.numComponents = numComponents;
 	}
 
 	@Override
-	public void enable(GL3 gl, Program program) {
-		program.setUniform(gl, getShaderIndex(gl, program), get());
+	public void dispose(GL3 gl) {
+	}
+
+	@Override
+	public final NumComponents getNumComponents() {
+		return numComponents;
+	}
+
+	@Override
+	public final void setup(int stride, int offset) {
+		this.stride = stride;
+		this.offset = offset;
+	}
+
+	protected final int getStride() {
+		return stride;
+	}
+
+	protected final int getOffset() {
+		return offset;
 	}
 }

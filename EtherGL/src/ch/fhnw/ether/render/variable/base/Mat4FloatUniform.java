@@ -27,7 +27,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.render.attribute.base;
+package ch.fhnw.ether.render.variable.base;
 
 import java.util.function.Supplier;
 
@@ -35,27 +35,27 @@ import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.render.gl.Program;
 import ch.fhnw.ether.scene.attribute.ITypedAttribute;
-import ch.fhnw.util.math.Vec4;
+import ch.fhnw.util.math.Mat4;
 
-public class Vec4FloatUniformAttribute extends AbstractUniformAttribute<Vec4> {
-	public Vec4FloatUniformAttribute(ITypedAttribute<Vec4> attribute, String shaderName) {
+public class Mat4FloatUniform extends AbstractUniform<Mat4> {
+	public Mat4FloatUniform(ITypedAttribute<Mat4> attribute, String shaderName) {
 		super(attribute, shaderName);
 	}
 
-	public Vec4FloatUniformAttribute(String id, String shaderName) {
+	public Mat4FloatUniform(String id, String shaderName) {
 		super(id, shaderName);
 	}
 
-	public Vec4FloatUniformAttribute(ITypedAttribute<Vec4> attribute, String shaderName, Supplier<Vec4> supplier) {
+	public Mat4FloatUniform(ITypedAttribute<Mat4> attribute, String shaderName, Supplier<Mat4> supplier) {
 		super(attribute, shaderName, supplier);
 	}
 
-	public Vec4FloatUniformAttribute(String id, String shaderName, Supplier<Vec4> supplier) {
+	public Mat4FloatUniform(String id, String shaderName, Supplier<Mat4> supplier) {
 		super(id, shaderName, supplier);
 	}
 
 	@Override
 	public void enable(GL3 gl, Program program) {
-		program.setUniformVec4(gl, getShaderIndex(gl, program), get().toArray());
+		program.setUniformMat4(gl, getShaderIndex(gl, program), get().m);
 	}
 }

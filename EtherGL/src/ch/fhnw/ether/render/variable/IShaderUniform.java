@@ -27,34 +27,20 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.render.attribute.base;
+package ch.fhnw.ether.render.variable;
 
 import java.util.function.Supplier;
 
 import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.render.gl.Program;
-import ch.fhnw.ether.scene.attribute.ITypedAttribute;
 
-public class BooleanUniformAttribute extends AbstractUniformAttribute<Boolean> {
-	public BooleanUniformAttribute(ITypedAttribute<Boolean> attribute, String shaderName) {
-		super(attribute, shaderName);
-	}
+public interface IShaderUniform<T> extends IShaderVariable<T> {
+	boolean hasSupplier();
 
-	public BooleanUniformAttribute(String id, String shaderName) {
-		super(id, shaderName);
-	}
+	void setSupplier(Supplier<?> supplier);
+	
+	void enable(GL3 gl, Program program);
 
-	public BooleanUniformAttribute(ITypedAttribute<Boolean> attribute, String shaderName, Supplier<Boolean> supplier) {
-		super(attribute, shaderName, supplier);
-	}
-
-	public BooleanUniformAttribute(String id, String shaderName, Supplier<Boolean> supplier) {
-		super(id, shaderName, supplier);
-	}
-
-	@Override
-	public void enable(GL3 gl, Program program) {
-		program.setUniform(gl, getShaderIndex(gl, program), get());
-	}
+	void disable(GL3 gl, Program program);
 }

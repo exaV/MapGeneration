@@ -33,9 +33,9 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.render.AbstractRenderer;
-import ch.fhnw.ether.render.attribute.builtin.NormalMatrixUniform;
-import ch.fhnw.ether.render.attribute.builtin.ProjMatrixUniform;
-import ch.fhnw.ether.render.attribute.builtin.ViewMatrixUniform;
+import ch.fhnw.ether.render.variable.builtin.NormalMatrixUniform;
+import ch.fhnw.ether.render.variable.builtin.ProjMatrixUniform;
+import ch.fhnw.ether.render.variable.builtin.ViewMatrixUniform;
 import ch.fhnw.ether.scene.attribute.IAttributeProvider;
 import ch.fhnw.ether.scene.camera.CameraMatrices;
 import ch.fhnw.ether.scene.mesh.IMesh.Pass;

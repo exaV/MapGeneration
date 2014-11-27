@@ -33,10 +33,10 @@ import java.util.List;
 
 import javax.media.opengl.GL3;
 
-import ch.fhnw.ether.render.attribute.IArrayAttribute;
-import ch.fhnw.ether.render.attribute.IUniformAttribute;
 import ch.fhnw.ether.render.gl.IArrayBuffer;
 import ch.fhnw.ether.render.gl.Program;
+import ch.fhnw.ether.render.variable.IShaderArray;
+import ch.fhnw.ether.render.variable.IShaderUniform;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 
 public interface IShader {
@@ -54,7 +54,7 @@ public interface IShader {
 
 	Primitive getPrimitiveType();
 
-	List<IUniformAttribute<?>> getUniforms();
+	List<IShaderUniform<?>> getUniforms();
 
-	List<IArrayAttribute<?>> getArrays();
+	List<IShaderArray<?>> getArrays();
 }

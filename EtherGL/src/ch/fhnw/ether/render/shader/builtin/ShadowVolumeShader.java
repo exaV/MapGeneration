@@ -30,13 +30,13 @@
 package ch.fhnw.ether.render.shader.builtin;
 
 import ch.fhnw.ether.render.Lights;
-import ch.fhnw.ether.render.attribute.base.IntUniformAttribute;
-import ch.fhnw.ether.render.attribute.base.UniformBlockAttribute;
-import ch.fhnw.ether.render.attribute.builtin.PositionArray;
-import ch.fhnw.ether.render.attribute.builtin.ProjMatrixUniform;
-import ch.fhnw.ether.render.attribute.builtin.ViewMatrixUniform;
 import ch.fhnw.ether.render.shader.IShader;
 import ch.fhnw.ether.render.shader.base.AbstractShader;
+import ch.fhnw.ether.render.variable.base.IntUniform;
+import ch.fhnw.ether.render.variable.base.UniformBlock;
+import ch.fhnw.ether.render.variable.builtin.PositionArray;
+import ch.fhnw.ether.render.variable.builtin.ProjMatrixUniform;
+import ch.fhnw.ether.render.variable.builtin.ViewMatrixUniform;
 import ch.fhnw.ether.scene.attribute.IAttributeProvider;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 
@@ -48,12 +48,12 @@ public class ShadowVolumeShader extends AbstractShader {
 
 		addArray(new PositionArray());
 		
-		addUniform(new IntUniformAttribute("shader.light_index", "lightIndex", () -> lightIndex));
+		addUniform(new IntUniform("shader.light_index", "lightIndex", () -> lightIndex));
 
 		addUniform(new ProjMatrixUniform());
 		addUniform(new ViewMatrixUniform());
 		// FIXME: create LightBlockAttribute, since this will be used in several places
-		addUniform(new UniformBlockAttribute(Lights.LIGHT_UNIFORM_BLOCK, "lightBlock"));
+		addUniform(new UniformBlock(Lights.LIGHT_UNIFORM_BLOCK, "lightBlock"));
 	}
 	
 	public void setLightIndex(int index) {

@@ -29,14 +29,14 @@
 
 package ch.fhnw.ether.render.shader.builtin;
 
-import ch.fhnw.ether.render.attribute.base.BooleanUniformAttribute;
-import ch.fhnw.ether.render.attribute.builtin.ColorArray;
-import ch.fhnw.ether.render.attribute.builtin.ColorUniform;
-import ch.fhnw.ether.render.attribute.builtin.PositionArray;
-import ch.fhnw.ether.render.attribute.builtin.ProjMatrixUniform;
-import ch.fhnw.ether.render.attribute.builtin.ViewMatrixUniform;
 import ch.fhnw.ether.render.shader.IShader;
 import ch.fhnw.ether.render.shader.base.AbstractShader;
+import ch.fhnw.ether.render.variable.base.BooleanUniform;
+import ch.fhnw.ether.render.variable.builtin.ColorArray;
+import ch.fhnw.ether.render.variable.builtin.ColorUniform;
+import ch.fhnw.ether.render.variable.builtin.PositionArray;
+import ch.fhnw.ether.render.variable.builtin.ProjMatrixUniform;
+import ch.fhnw.ether.render.variable.builtin.ViewMatrixUniform;
 import ch.fhnw.ether.scene.attribute.IAttributeProvider;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
@@ -54,8 +54,8 @@ public class LineShader extends AbstractShader {
 		if (useVertexColors)
 			addArray(new ColorArray());
 
-		addUniform(new BooleanUniformAttribute("shader.vertex_colors_flag", "useVertexColors", () -> useVertexColors));
-		addUniform(new BooleanUniformAttribute("shader.texture_flag", "useTexture", () -> false));
+		addUniform(new BooleanUniform("shader.vertex_colors_flag", "useVertexColors", () -> useVertexColors));
+		addUniform(new BooleanUniform("shader.texture_flag", "useTexture", () -> false));
 
 		addUniform(new ColorUniform(attributes.isProvided(IMaterial.COLOR) ? null : () -> RGBA.WHITE));
 		

@@ -27,62 +27,37 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.render.attribute.base;
+package ch.fhnw.ether.render.variable;
 
-import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 import javax.media.opengl.GL3;
 
-import ch.fhnw.ether.render.attribute.IUniformAttribute;
+import ch.fhnw.ether.render.gl.IArrayBuffer;
 import ch.fhnw.ether.render.gl.Program;
 
-public final class StateInjectAttribute extends AbstractShaderAttribute<GL3> implements IUniformAttribute<GL3> {
-	private final BiConsumer<GL3, Program> enable;
-	private final BiConsumer<GL3, Program> disable;
+public interface IShaderArray<T> extends IShaderVariable<T> {
+	enum NumComponents {
+		ONE(1), TWO(2), THREE(3), FOUR(4);
 
-	public StateInjectAttribute(String id, BiConsumer<GL3, Program> enable) {
-		this(id, enable, null);
+		private final int numComponents;
+
+		NumComponents(int numComponents) {
+			this.numComponents = numComponents;
+		}
+
+		public int get() {
+			return numComponents;
+		}
 	}
 
-	public StateInjectAttribute(String id, BiConsumer<GL3, Program> enable, BiConsumer<GL3, Program> disable) {
-		super(id, null);
-		this.enable = enable;
-		this.disable = disable;
-	}
+	NumComponents getNumComponents();
 
-	@Override
-	public void dispose(GL3 gl) {
-	}
+	void addSupplier(Supplier<?> supplier);
 
-	@Override
-	public boolean hasSupplier() {
-		return true;
-	}
+	void setup(int stride, int offset);
 
-	@Override
-	public void setSupplier(Supplier<?> supplier) {
-	}
+	void enable(GL3 gl, Program program, IArrayBuffer buffer);
 
-	@Override
-	public void enable(GL3 gl, Program program) {
-		if (enable != null)
-			enable.accept(gl, program);
-	}
-
-	@Override
-	public void disable(GL3 gl, Program program) {
-		if (disable != null)
-			disable.accept(gl, program);
-	}
-
-	@Override
-	protected int resolveShaderIndex(GL3 gl, Program program, String shaderName) {
-		return -1;
-	}
-
-	@Override
-	public String toString() {
-		return super.toString() + "[" + enable + ", " + disable + "]";
-	}
+	void disable(GL3 gl, Program program, IArrayBuffer buffer);
 }

@@ -31,17 +31,17 @@ package ch.fhnw.ether.render.shader.builtin;
 
 import javax.media.opengl.GL3;
 
-import ch.fhnw.ether.render.attribute.base.BooleanUniformAttribute;
-import ch.fhnw.ether.render.attribute.base.FloatUniformAttribute;
-import ch.fhnw.ether.render.attribute.base.StateInjectAttribute;
-import ch.fhnw.ether.render.attribute.builtin.ColorArray;
-import ch.fhnw.ether.render.attribute.builtin.ColorUniform;
-import ch.fhnw.ether.render.attribute.builtin.PointSizeArray;
-import ch.fhnw.ether.render.attribute.builtin.PositionArray;
-import ch.fhnw.ether.render.attribute.builtin.ProjMatrixUniform;
-import ch.fhnw.ether.render.attribute.builtin.ViewMatrixUniform;
 import ch.fhnw.ether.render.shader.IShader;
 import ch.fhnw.ether.render.shader.base.AbstractShader;
+import ch.fhnw.ether.render.variable.base.BooleanUniform;
+import ch.fhnw.ether.render.variable.base.FloatUniform;
+import ch.fhnw.ether.render.variable.base.StateInject;
+import ch.fhnw.ether.render.variable.builtin.ColorArray;
+import ch.fhnw.ether.render.variable.builtin.ColorUniform;
+import ch.fhnw.ether.render.variable.builtin.PointSizeArray;
+import ch.fhnw.ether.render.variable.builtin.PositionArray;
+import ch.fhnw.ether.render.variable.builtin.ProjMatrixUniform;
+import ch.fhnw.ether.render.variable.builtin.ViewMatrixUniform;
 import ch.fhnw.ether.scene.attribute.IAttributeProvider;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
@@ -63,13 +63,13 @@ public class PointShader extends AbstractShader {
 		if (useVertexPointSize)
 			addArray(new PointSizeArray());
 
-		addUniform(new BooleanUniformAttribute("shader.vertex_colors_flag", "useVertexColors", () -> useVertexColors));
-		addUniform(new BooleanUniformAttribute("shader.texture_flag", "useTexture", () -> false));
+		addUniform(new BooleanUniform("shader.vertex_colors_flag", "useVertexColors", () -> useVertexColors));
+		addUniform(new BooleanUniform("shader.texture_flag", "useTexture", () -> false));
 
 		addUniform(new ColorUniform(attributes.isProvided(IMaterial.COLOR) ? null : () -> RGBA.WHITE));
-		addUniform(new FloatUniformAttribute(IMaterial.POINT_SIZE, "pointSize", attributes.isProvided(IMaterial.POINT_SIZE) ? null : () -> 1f));
+		addUniform(new FloatUniform(IMaterial.POINT_SIZE, "pointSize", attributes.isProvided(IMaterial.POINT_SIZE) ? null : () -> 1f));
 
-		addUniform(new StateInjectAttribute("shader.point_size_program", (gl, p) -> gl.glEnable(GL3.GL_PROGRAM_POINT_SIZE),
+		addUniform(new StateInject("shader.point_size_program", (gl, p) -> gl.glEnable(GL3.GL_PROGRAM_POINT_SIZE),
 				(gl, p) -> gl.glDisable(GL3.GL_PROGRAM_POINT_SIZE)));
 
 		addUniform(new ProjMatrixUniform());

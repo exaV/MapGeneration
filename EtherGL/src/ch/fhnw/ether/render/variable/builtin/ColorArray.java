@@ -27,48 +27,19 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.render.attribute.base;
+package ch.fhnw.ether.render.variable.builtin;
 
-import javax.media.opengl.GL3;
+import ch.fhnw.ether.render.variable.base.FloatArray;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 
-import ch.fhnw.ether.render.attribute.IArrayAttribute;
-import ch.fhnw.ether.scene.attribute.ITypedAttribute;
+public final class ColorArray extends FloatArray {
+	private static final String DEFAULT_SHADER_NAME = "vertexColor";
 
-public abstract class AbstractArrayAttribute<T> extends AbstractShaderAttribute<T> implements IArrayAttribute<T> {
-	private final NumComponents numComponents;
-	private int stride;
-	private int offset;
-
-	protected AbstractArrayAttribute(ITypedAttribute<T> attribute, String shaderName, NumComponents numComponents) {
-		super(attribute, shaderName);
-		this.numComponents = numComponents;
+	public ColorArray() {
+		super(IGeometry.COLOR_ARRAY, DEFAULT_SHADER_NAME, NumComponents.FOUR);
 	}
 
-	protected AbstractArrayAttribute(String id, String shaderName, NumComponents numComponents) {
-		super(id, shaderName);
-		this.numComponents = numComponents;
-	}
-
-	@Override
-	public void dispose(GL3 gl) {
-	}
-
-	@Override
-	public final NumComponents getNumComponents() {
-		return numComponents;
-	}
-
-	@Override
-	public final void setup(int stride, int offset) {
-		this.stride = stride;
-		this.offset = offset;
-	}
-
-	protected final int getStride() {
-		return stride;
-	}
-
-	protected final int getOffset() {
-		return offset;
+	public ColorArray(String shaderName) {
+		super(IGeometry.COLOR_ARRAY, shaderName, NumComponents.FOUR);
 	}
 }

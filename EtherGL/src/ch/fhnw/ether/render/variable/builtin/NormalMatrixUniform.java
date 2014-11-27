@@ -27,30 +27,30 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.render.attribute.builtin;
+package ch.fhnw.ether.render.variable.builtin;
 
 import java.util.function.Supplier;
 
-import ch.fhnw.ether.render.attribute.base.Mat4FloatUniformAttribute;
-import ch.fhnw.util.math.Mat4;
+import ch.fhnw.ether.render.variable.base.Mat3FloatUniform;
+import ch.fhnw.util.math.Mat3;
 
-public final class ViewMatrixUniform extends Mat4FloatUniformAttribute {
-	public static final String ID = "builtin.view_matrix";
-	private static final String DEFAULT_SHADER_NAME = "viewMatrix";
+public final class NormalMatrixUniform extends Mat3FloatUniform {
+	public static final String ID = "builtin.normal_matrix";
+	private static final String DEFAULT_SHADER_NAME = "normalMatrix";
 
-	public ViewMatrixUniform() {
+	public NormalMatrixUniform() {
 		super(ID, DEFAULT_SHADER_NAME);
 	}
 
-	public ViewMatrixUniform(String shaderName) {
+	public NormalMatrixUniform(String shaderName) {
 		super(ID, shaderName);
 	}
 
-	public ViewMatrixUniform(Supplier<Mat4> supplier) {
+	public NormalMatrixUniform(Supplier<Mat3> supplier) {
 		super(ID, DEFAULT_SHADER_NAME, supplier);
 	}
 
-	public ViewMatrixUniform(String shaderName, Supplier<Mat4> supplier) {
+	public NormalMatrixUniform(String shaderName, Supplier<Mat3> supplier) {
 		super(ID, shaderName, supplier);
 	}
 }

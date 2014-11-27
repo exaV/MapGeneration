@@ -27,35 +27,30 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.render.attribute.base;
+package ch.fhnw.ether.render.variable.builtin;
 
 import java.util.function.Supplier;
 
-import javax.media.opengl.GL3;
+import ch.fhnw.ether.render.variable.base.Mat4FloatUniform;
+import ch.fhnw.util.math.Mat4;
 
-import ch.fhnw.ether.render.gl.Program;
-import ch.fhnw.ether.scene.attribute.ITypedAttribute;
-import ch.fhnw.util.math.Vec3;
+public final class ViewMatrixUniform extends Mat4FloatUniform {
+	public static final String ID = "builtin.view_matrix";
+	private static final String DEFAULT_SHADER_NAME = "viewMatrix";
 
-public class Vec3FloatUniformAttribute extends AbstractUniformAttribute<Vec3> {
-	public Vec3FloatUniformAttribute(ITypedAttribute<Vec3> attribute, String shaderName) {
-		super(attribute, shaderName);
+	public ViewMatrixUniform() {
+		super(ID, DEFAULT_SHADER_NAME);
 	}
 
-	public Vec3FloatUniformAttribute(String id, String shaderName) {
-		super(id, shaderName);
+	public ViewMatrixUniform(String shaderName) {
+		super(ID, shaderName);
 	}
 
-	public Vec3FloatUniformAttribute(ITypedAttribute<Vec3> attribute, String shaderName, Supplier<Vec3> supplier) {
-		super(attribute, shaderName, supplier);
+	public ViewMatrixUniform(Supplier<Mat4> supplier) {
+		super(ID, DEFAULT_SHADER_NAME, supplier);
 	}
 
-	public Vec3FloatUniformAttribute(String id, String shaderName, Supplier<Vec3> supplier) {
-		super(id, shaderName, supplier);
-	}
-
-	@Override
-	public void enable(GL3 gl, Program program) {
-		program.setUniformVec3(gl, getShaderIndex(gl, program), get().toArray());
+	public ViewMatrixUniform(String shaderName, Supplier<Mat4> supplier) {
+		super(ID, shaderName, supplier);
 	}
 }

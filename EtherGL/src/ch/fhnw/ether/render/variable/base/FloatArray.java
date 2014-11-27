@@ -27,30 +27,63 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.render.attribute.builtin;
+package ch.fhnw.ether.render.variable.base;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 
-import ch.fhnw.ether.render.attribute.base.Mat4FloatUniformAttribute;
-import ch.fhnw.util.math.Mat4;
+import javax.media.opengl.GL3;
 
-public final class ProjMatrixUniform extends Mat4FloatUniformAttribute {
-	public static final String ID = "builtin.proj_matrix";
-	private static final String DEFAULT_SHADER_NAME = "projMatrix";
+import ch.fhnw.ether.render.gl.IArrayBuffer;
+import ch.fhnw.ether.render.gl.Program;
+import ch.fhnw.ether.scene.attribute.ITypedAttribute;
 
-	public ProjMatrixUniform() {
-		super(ID, DEFAULT_SHADER_NAME);
+public class FloatArray extends AbstractArray<float[]> {
+	private final List<Supplier<float[]>> suppliers = new ArrayList<>();
+
+	public FloatArray(ITypedAttribute<float[]> attribute, String shaderName, NumComponents numComponents) {
+		super(attribute, shaderName, numComponents);
 	}
 
-	public ProjMatrixUniform(String shaderName) {
-		super(ID, shaderName);
+	public FloatArray(String id, String shaderName, NumComponents numComponents) {
+		super(id, shaderName, numComponents);
 	}
 
-	public ProjMatrixUniform(Supplier<Mat4> supplier) {
-		super(ID, DEFAULT_SHADER_NAME, supplier);
+	public List<Supplier<float[]>> getSuppliers() {
+		return suppliers;
 	}
 
-	public ProjMatrixUniform(String shaderName, Supplier<Mat4> supplier) {
-		super(ID, shaderName, supplier);
+	@SuppressWarnings("unchecked")
+	@Override
+	public void addSupplier(Supplier<?> supplier) {
+		suppliers.add((Supplier<float[]>) supplier);
+	}
+
+	@Override
+	public void enable(GL3 gl, Program program, IArrayBuffer buffer) {
+		buffer.enableAttribute(gl, getShaderIndex(gl, program), getNumComponents().get(), getStride(), getOffset());
+	}
+
+	@Override
+	public void disable(GL3 gl, Program program, IArrayBuffer buffer) {
+		buffer.disableAttribute(gl, getShaderIndex(gl, program));
+	}
+
+	@Override
+	protected int resolveShaderIndex(GL3 gl, Program program, String shaderName) {
+		return program.getAttributeLocation(gl, shaderName);
+	}
+
+	@Override
+	public String toString() {
+		String s = super.toString() + "[components=" + getNumComponents() + " stride=" + getStride() + " offset=" + getOffset() + " suppliers=[";
+		for (int i = 0; i < suppliers.size(); ++i) {
+			s += suppliers.get(i);
+			if (i < suppliers.size() - 1)
+				s += ", ";
+		}
+		s += "]]";
+		return s;
 	}
 }

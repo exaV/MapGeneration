@@ -27,67 +27,30 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.render.attribute.base;
+package ch.fhnw.ether.render.variable.builtin;
 
 import java.util.function.Supplier;
 
-import javax.media.opengl.GL3;
+import ch.fhnw.ether.render.variable.base.Mat4FloatUniform;
+import ch.fhnw.util.math.Mat4;
 
-import ch.fhnw.ether.render.attribute.IUniformAttribute;
-import ch.fhnw.ether.render.gl.Program;
-import ch.fhnw.ether.scene.attribute.ITypedAttribute;
+public final class ProjMatrixUniform extends Mat4FloatUniform {
+	public static final String ID = "builtin.proj_matrix";
+	private static final String DEFAULT_SHADER_NAME = "projMatrix";
 
-public abstract class AbstractUniformAttribute<T> extends AbstractShaderAttribute<T> implements IUniformAttribute<T> {
-	private Supplier<T> supplier;
-
-	protected AbstractUniformAttribute(ITypedAttribute<T> attribute, String shaderName) {
-		super(attribute, shaderName);
+	public ProjMatrixUniform() {
+		super(ID, DEFAULT_SHADER_NAME);
 	}
 
-	protected AbstractUniformAttribute(String id, String shaderName) {
-		super(id, shaderName);
+	public ProjMatrixUniform(String shaderName) {
+		super(ID, shaderName);
 	}
 
-	protected AbstractUniformAttribute(ITypedAttribute<T> attribute, String shaderName, Supplier<T> supplier) {
-		this(attribute, shaderName);
-		this.supplier = supplier;
+	public ProjMatrixUniform(Supplier<Mat4> supplier) {
+		super(ID, DEFAULT_SHADER_NAME, supplier);
 	}
 
-	protected AbstractUniformAttribute(String id, String shaderName, Supplier<T> supplier) {
-		this(id, shaderName);
-		this.supplier = supplier;
-	}
-
-	protected T get() {
-		return supplier.get();
-	}
-
-	@Override
-	public final boolean hasSupplier() {
-		return supplier != null;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public final void setSupplier(Supplier<?> supplier) {
-		this.supplier = (Supplier<T>)supplier;
-	}
-
-	@Override
-	public void dispose(GL3 gl) {
-	}
-
-	@Override
-	public void disable(GL3 gl, Program program) {
-	}
-
-	@Override
-	protected final int resolveShaderIndex(GL3 gl, Program program, String shaderName) {
-		return program.getUniformLocation(gl, shaderName);
-	}
-
-	@Override
-	public String toString() {
-		return super.toString() + "[" + supplier + "]";
+	public ProjMatrixUniform(String shaderName, Supplier<Mat4> supplier) {
+		super(ID, shaderName, supplier);
 	}
 }

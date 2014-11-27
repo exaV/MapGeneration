@@ -27,20 +27,19 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.render.attribute;
+package ch.fhnw.ether.render.variable.builtin;
 
-import java.util.function.Supplier;
+import ch.fhnw.ether.render.variable.base.FloatArray;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 
-import javax.media.opengl.GL3;
+public final class NormalArray extends FloatArray {
+	private static final String DEFAULT_SHADER_NAME = "vertexNormal";
 
-import ch.fhnw.ether.render.gl.Program;
+	public NormalArray() {
+		super(IGeometry.NORMAL_ARRAY, DEFAULT_SHADER_NAME, NumComponents.THREE);
+	}
 
-public interface IUniformAttribute<T> extends IShaderAttribute<T> {
-	boolean hasSupplier();
-
-	void setSupplier(Supplier<?> supplier);
-	
-	void enable(GL3 gl, Program program);
-
-	void disable(GL3 gl, Program program);
+	public NormalArray(String shaderName) {
+		super(IGeometry.NORMAL_ARRAY, shaderName, NumComponents.THREE);
+	}
 }

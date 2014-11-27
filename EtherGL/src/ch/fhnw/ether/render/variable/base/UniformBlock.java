@@ -27,37 +27,39 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.render.attribute;
-
-import java.util.function.Supplier;
+package ch.fhnw.ether.render.variable.base;
 
 import javax.media.opengl.GL3;
 
-import ch.fhnw.ether.render.gl.IArrayBuffer;
 import ch.fhnw.ether.render.gl.Program;
 
-public interface IArrayAttribute<T> extends IShaderAttribute<T> {
-	enum NumComponents {
-		ONE(1), TWO(2), THREE(3), FOUR(4);
+public final class UniformBlock extends AbstractUniform<Integer> {
+	private boolean canBind = true;
+	private boolean isBound = false;
 
-		private final int numComponents;
+	public UniformBlock(String id, String shaderName) {
+		super(id, shaderName);
+	}
 
-		NumComponents(int numComponents) {
-			this.numComponents = numComponents;
-		}
+	@Override
+	public void dispose(GL3 gl) {
+	}
 
-		public int get() {
-			return numComponents;
+	@Override
+	public void enable(GL3 gl, Program program) {
+		if (canBind && !isBound) {
+			int index = program.getUniformBlockIndex(gl, getShaderName());
+			if (index == -1) {
+				canBind = false;
+			} else {
+				program.bindUniformBlock(gl, index, get());
+				isBound = true;
+			}
 		}
 	}
 
-	NumComponents getNumComponents();
-
-	void addSupplier(Supplier<?> supplier);
-
-	void setup(int stride, int offset);
-
-	void enable(GL3 gl, Program program, IArrayBuffer buffer);
-
-	void disable(GL3 gl, Program program, IArrayBuffer buffer);
+	@Override
+	public String toString() {
+		return super.toString() + "[" + isBound + "]";
+	}
 }

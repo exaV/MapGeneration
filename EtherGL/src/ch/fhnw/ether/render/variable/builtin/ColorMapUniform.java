@@ -27,19 +27,32 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.render.attribute.builtin;
+package ch.fhnw.ether.render.variable.builtin;
 
-import ch.fhnw.ether.render.attribute.base.FloatArrayAttribute;
-import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
+import java.util.function.Supplier;
 
-public final class PointSizeArray extends FloatArrayAttribute {
-	private static final String DEFAULT_SHADER_NAME = "vertexPointSize";
+import javax.media.opengl.GL;
 
-	public PointSizeArray() {
-		super(IGeometry.POINT_SIZE_ARRAY, DEFAULT_SHADER_NAME, NumComponents.ONE);
+import ch.fhnw.ether.render.variable.base.SamplerUniform;
+import ch.fhnw.ether.scene.mesh.material.IMaterial;
+import ch.fhnw.ether.scene.mesh.material.Texture;
+
+public final class ColorMapUniform extends SamplerUniform {
+	private static final String DEFAULT_SHADER_NAME = "colorMap";
+
+	public ColorMapUniform() {
+		this(DEFAULT_SHADER_NAME);
 	}
 
-	public PointSizeArray(String shaderName) {
-		super(IGeometry.POINT_SIZE_ARRAY, shaderName, NumComponents.ONE);
+	public ColorMapUniform(String shaderName) {
+		this(shaderName, null);
+	}
+
+	public ColorMapUniform(Supplier<Texture> supplier) {
+		this(DEFAULT_SHADER_NAME, supplier);
+	}
+
+	public ColorMapUniform(String shaderName, Supplier<Texture> supplier) {
+		super(IMaterial.COLOR_MAP, shaderName, 0, GL.GL_TEXTURE_2D, supplier);
 	}
 }

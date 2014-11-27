@@ -27,7 +27,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.render.attribute.base;
+package ch.fhnw.ether.render.variable.base;
 
 import java.util.function.Supplier;
 
@@ -35,27 +35,26 @@ import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.render.gl.Program;
 import ch.fhnw.ether.scene.attribute.ITypedAttribute;
-import ch.fhnw.util.math.Mat4;
 
-public class Mat4FloatUniformAttribute extends AbstractUniformAttribute<Mat4> {
-	public Mat4FloatUniformAttribute(ITypedAttribute<Mat4> attribute, String shaderName) {
+public class IntUniform extends AbstractUniform<Integer> {
+	public IntUniform(ITypedAttribute<Integer> attribute, String shaderName) {
 		super(attribute, shaderName);
 	}
 
-	public Mat4FloatUniformAttribute(String id, String shaderName) {
+	public IntUniform(String id, String shaderName) {
 		super(id, shaderName);
 	}
 
-	public Mat4FloatUniformAttribute(ITypedAttribute<Mat4> attribute, String shaderName, Supplier<Mat4> supplier) {
+	public IntUniform(ITypedAttribute<Integer> attribute, String shaderName, Supplier<Integer> supplier) {
 		super(attribute, shaderName, supplier);
 	}
 
-	public Mat4FloatUniformAttribute(String id, String shaderName, Supplier<Mat4> supplier) {
+	public IntUniform(String id, String shaderName, Supplier<Integer> supplier) {
 		super(id, shaderName, supplier);
 	}
 
 	@Override
 	public void enable(GL3 gl, Program program) {
-		program.setUniformMat4(gl, getShaderIndex(gl, program), get().m);
+		program.setUniform(gl, getShaderIndex(gl, program), get());
 	}
 }

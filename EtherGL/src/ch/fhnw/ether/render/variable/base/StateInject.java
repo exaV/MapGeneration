@@ -27,35 +27,62 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.render.attribute.base;
+package ch.fhnw.ether.render.variable.base;
 
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.render.gl.Program;
-import ch.fhnw.ether.scene.attribute.ITypedAttribute;
-import ch.fhnw.util.math.Mat3;
+import ch.fhnw.ether.render.variable.IShaderUniform;
 
-public class Mat3FloatUniformAttribute extends AbstractUniformAttribute<Mat3> {
-	public Mat3FloatUniformAttribute(ITypedAttribute<Mat3> attribute, String shaderName) {
-		super(attribute, shaderName);
+public final class StateInject extends AbstractVariable<GL3> implements IShaderUniform<GL3> {
+	private final BiConsumer<GL3, Program> enable;
+	private final BiConsumer<GL3, Program> disable;
+
+	public StateInject(String id, BiConsumer<GL3, Program> enable) {
+		this(id, enable, null);
 	}
 
-	public Mat3FloatUniformAttribute(String id, String shaderName) {
-		super(id, shaderName);
+	public StateInject(String id, BiConsumer<GL3, Program> enable, BiConsumer<GL3, Program> disable) {
+		super(id, null);
+		this.enable = enable;
+		this.disable = disable;
 	}
 
-	public Mat3FloatUniformAttribute(ITypedAttribute<Mat3> attribute, String shaderName, Supplier<Mat3> supplier) {
-		super(attribute, shaderName, supplier);
+	@Override
+	public void dispose(GL3 gl) {
 	}
 
-	public Mat3FloatUniformAttribute(String id, String shaderName, Supplier<Mat3> supplier) {
-		super(id, shaderName, supplier);
+	@Override
+	public boolean hasSupplier() {
+		return true;
+	}
+
+	@Override
+	public void setSupplier(Supplier<?> supplier) {
 	}
 
 	@Override
 	public void enable(GL3 gl, Program program) {
-		program.setUniformMat3(gl, getShaderIndex(gl, program), get().m);
+		if (enable != null)
+			enable.accept(gl, program);
+	}
+
+	@Override
+	public void disable(GL3 gl, Program program) {
+		if (disable != null)
+			disable.accept(gl, program);
+	}
+
+	@Override
+	protected int resolveShaderIndex(GL3 gl, Program program, String shaderName) {
+		return -1;
+	}
+
+	@Override
+	public String toString() {
+		return super.toString() + "[" + enable + ", " + disable + "]";
 	}
 }

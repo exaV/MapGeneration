@@ -27,39 +27,34 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.render.attribute.base;
+package ch.fhnw.ether.render.variable.base;
+
+import java.util.function.Supplier;
 
 import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.render.gl.Program;
+import ch.fhnw.ether.scene.attribute.ITypedAttribute;
 
-public final class UniformBlockAttribute extends AbstractUniformAttribute<Integer> {
-	private boolean canBind = true;
-	private boolean isBound = false;
+public class FloatUniform extends AbstractUniform<Float> {
+	public FloatUniform(ITypedAttribute<Float> attribute, String shaderName) {
+		super(attribute, shaderName);
+	}
 
-	public UniformBlockAttribute(String id, String shaderName) {
+	public FloatUniform(String id, String shaderName) {
 		super(id, shaderName);
 	}
 
-	@Override
-	public void dispose(GL3 gl) {
+	public FloatUniform(ITypedAttribute<Float> attribute, String shaderName, Supplier<Float> supplier) {
+		super(attribute, shaderName, supplier);
+	}
+
+	public FloatUniform(String id, String shaderName, Supplier<Float> supplier) {
+		super(id, shaderName, supplier);
 	}
 
 	@Override
 	public void enable(GL3 gl, Program program) {
-		if (canBind && !isBound) {
-			int index = program.getUniformBlockIndex(gl, getShaderName());
-			if (index == -1) {
-				canBind = false;
-			} else {
-				program.bindUniformBlock(gl, index, get());
-				isBound = true;
-			}
-		}
-	}
-
-	@Override
-	public String toString() {
-		return super.toString() + "[" + isBound + "]";
+		program.setUniform(gl, getShaderIndex(gl, program), get());
 	}
 }

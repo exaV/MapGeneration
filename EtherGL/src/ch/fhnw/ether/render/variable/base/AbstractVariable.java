@@ -27,63 +27,36 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.render.attribute.base;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Supplier;
+package ch.fhnw.ether.render.variable.base;
 
 import javax.media.opengl.GL3;
 
-import ch.fhnw.ether.render.gl.IArrayBuffer;
 import ch.fhnw.ether.render.gl.Program;
+import ch.fhnw.ether.scene.attribute.AbstractAttribute;
 import ch.fhnw.ether.scene.attribute.ITypedAttribute;
 
-public class FloatArrayAttribute extends AbstractArrayAttribute<float[]> {
-	private final List<Supplier<float[]>> suppliers = new ArrayList<>();
+public abstract class AbstractVariable<T> extends AbstractAttribute<T> {
+	private final String shaderName;
+	private int shaderIndex = -1;
 
-	public FloatArrayAttribute(ITypedAttribute<float[]> attribute, String shaderName, NumComponents numComponents) {
-		super(attribute, shaderName, numComponents);
+	protected AbstractVariable(ITypedAttribute<T> attribute, String shaderName) {
+		this(attribute.id(), shaderName);
 	}
 
-	public FloatArrayAttribute(String id, String shaderName, NumComponents numComponents) {
-		super(id, shaderName, numComponents);
+	protected AbstractVariable(String id, String shaderName) {
+		super(id);
+		this.shaderName = shaderName;
 	}
 
-	public List<Supplier<float[]>> getSuppliers() {
-		return suppliers;
+	protected final String getShaderName() {
+		return shaderName;
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public void addSupplier(Supplier<?> supplier) {
-		suppliers.add((Supplier<float[]>) supplier);
+	protected final int getShaderIndex(GL3 gl, Program program) {
+		if (shaderIndex == -1)
+			shaderIndex = resolveShaderIndex(gl, program, shaderName);
+		return shaderIndex;
 	}
 
-	@Override
-	public void enable(GL3 gl, Program program, IArrayBuffer buffer) {
-		buffer.enableAttribute(gl, getShaderIndex(gl, program), getNumComponents().get(), getStride(), getOffset());
-	}
-
-	@Override
-	public void disable(GL3 gl, Program program, IArrayBuffer buffer) {
-		buffer.disableAttribute(gl, getShaderIndex(gl, program));
-	}
-
-	@Override
-	protected int resolveShaderIndex(GL3 gl, Program program, String shaderName) {
-		return program.getAttributeLocation(gl, shaderName);
-	}
-
-	@Override
-	public String toString() {
-		String s = super.toString() + "[components=" + getNumComponents() + " stride=" + getStride() + " offset=" + getOffset() + " suppliers=[";
-		for (int i = 0; i < suppliers.size(); ++i) {
-			s += suppliers.get(i);
-			if (i < suppliers.size() - 1)
-				s += ", ";
-		}
-		s += "]]";
-		return s;
-	}
+	protected abstract int resolveShaderIndex(GL3 gl, Program program, String shaderName);
 }

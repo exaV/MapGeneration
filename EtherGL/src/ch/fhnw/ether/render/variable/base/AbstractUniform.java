@@ -27,19 +27,67 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.render.attribute.builtin;
+package ch.fhnw.ether.render.variable.base;
 
-import ch.fhnw.ether.render.attribute.base.FloatArrayAttribute;
-import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
+import java.util.function.Supplier;
 
-public final class NormalArray extends FloatArrayAttribute {
-	private static final String DEFAULT_SHADER_NAME = "vertexNormal";
+import javax.media.opengl.GL3;
 
-	public NormalArray() {
-		super(IGeometry.NORMAL_ARRAY, DEFAULT_SHADER_NAME, NumComponents.THREE);
+import ch.fhnw.ether.render.gl.Program;
+import ch.fhnw.ether.render.variable.IShaderUniform;
+import ch.fhnw.ether.scene.attribute.ITypedAttribute;
+
+public abstract class AbstractUniform<T> extends AbstractVariable<T> implements IShaderUniform<T> {
+	private Supplier<T> supplier;
+
+	protected AbstractUniform(ITypedAttribute<T> attribute, String shaderName) {
+		super(attribute, shaderName);
 	}
 
-	public NormalArray(String shaderName) {
-		super(IGeometry.NORMAL_ARRAY, shaderName, NumComponents.THREE);
+	protected AbstractUniform(String id, String shaderName) {
+		super(id, shaderName);
+	}
+
+	protected AbstractUniform(ITypedAttribute<T> attribute, String shaderName, Supplier<T> supplier) {
+		this(attribute, shaderName);
+		this.supplier = supplier;
+	}
+
+	protected AbstractUniform(String id, String shaderName, Supplier<T> supplier) {
+		this(id, shaderName);
+		this.supplier = supplier;
+	}
+
+	protected T get() {
+		return supplier.get();
+	}
+
+	@Override
+	public final boolean hasSupplier() {
+		return supplier != null;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public final void setSupplier(Supplier<?> supplier) {
+		this.supplier = (Supplier<T>)supplier;
+	}
+
+	@Override
+	public void dispose(GL3 gl) {
+	}
+
+	@Override
+	public void disable(GL3 gl, Program program) {
+	}
+
+	@Override
+	protected final int resolveShaderIndex(GL3 gl, Program program, String shaderName) {
+		return program.getUniformLocation(gl, shaderName);
+	}
+
+	@Override
+	public String toString() {
+		return super.toString() + "[" + supplier + "]";
 	}
 }
