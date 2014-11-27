@@ -100,6 +100,11 @@ public class MeshLibrary {
 		-0.5f, +0.5f, +0.5f, -0.5f, -0.5f, +0.5f, 
 	};
 
+	public static final float[] DEFAULT_QUAD_VERTICES = { 
+		-1, -1, 0,   1, -1, 0,    1, 1, 0,
+		-1, -1, 0,   1,  1, 0,   -1, 1, 0 
+	};
+
 	public static final float[] DEFAULT_QUAD_TEX_COORDS = { 
 		0, 0, 1, 0, 1, 1,
 		0, 0, 1, 1, 0, 1 
