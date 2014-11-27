@@ -31,7 +31,6 @@ package ch.fhnw.ether.examples.basic;
 
 import ch.fhnw.ether.controller.DefaultController;
 import ch.fhnw.ether.controller.IController;
-import ch.fhnw.ether.examples.basic.CustomShaderExample.CustomShader;
 import ch.fhnw.ether.scene.DefaultScene;
 import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.scene.camera.Camera;
@@ -40,9 +39,10 @@ import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
-import ch.fhnw.ether.scene.mesh.material.CustomMaterial;
+import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.gl.DefaultView;
+import ch.fhnw.util.color.RGBA;
 
 public final class CustomGeometryExample {
 	public static void main(String[] args) {
@@ -54,7 +54,7 @@ public final class CustomGeometryExample {
 		float[] colors = { 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1 };
 
 		DefaultGeometry g = DefaultGeometry.createVC(Primitive.TRIANGLES, vertices, colors);
-		return new DefaultMesh(new CustomMaterial(new CustomShader()), g);
+		return new DefaultMesh(new ColorMaterial(RGBA.WHITE), g);
 	}
 
 	// Setup the whole thing

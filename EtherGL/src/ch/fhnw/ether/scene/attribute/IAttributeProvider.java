@@ -38,22 +38,13 @@ import java.util.function.Supplier;
  */
 public interface IAttributeProvider {
 	interface IAttributes {
-		<T> boolean isProvided(ITypedAttribute<T> attribute);
-		
-		boolean isProvided(String id);
-		
+		boolean isProvided(IAttribute attribute);
+
 		<T> void provide(ITypedAttribute<T> attribute, Supplier<T> supplier);
 
-		void provide(String id, Supplier<?> supplier);
+		boolean isRequired(IAttribute attribute);
 
-		
-		<T> boolean isRequired(ITypedAttribute<T> attribute);
-		
-		boolean isRequired(String id);
-		
-		<T> void require(ITypedAttribute<T> attribute);
-
-		void require(String id);
+		void require(IAttribute attribute);
 	}
 
 	void getAttributes(IAttributes attributes);

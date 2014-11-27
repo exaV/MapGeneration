@@ -53,10 +53,6 @@ public class SamplerUniform extends AbstractUniform<Texture> {
 		this(attribute.id(), shaderName, unit, target, null);
 	}
 
-	public SamplerUniform(String id, String shaderName, int unit, int target) {
-		this(id, shaderName, unit, target, null);
-	}
-
 	public SamplerUniform(ITypedAttribute<Texture> attribute, String shaderName, int unit, int target, Supplier<Texture> supplier) {
 		this(attribute.id(), shaderName, unit, target, supplier);
 	}

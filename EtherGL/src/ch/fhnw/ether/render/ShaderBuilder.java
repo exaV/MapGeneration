@@ -15,8 +15,9 @@ import ch.fhnw.ether.render.shader.builtin.PointShader;
 import ch.fhnw.ether.render.shader.builtin.ShadedTriangleShader;
 import ch.fhnw.ether.render.shader.builtin.UnshadedTriangleShader;
 import ch.fhnw.ether.render.variable.IShaderArray;
-import ch.fhnw.ether.render.variable.IShaderVariable;
 import ch.fhnw.ether.render.variable.IShaderUniform;
+import ch.fhnw.ether.render.variable.IShaderVariable;
+import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.attribute.IAttributeProvider;
 import ch.fhnw.ether.scene.attribute.ITypedAttribute;
 import ch.fhnw.ether.scene.mesh.IMesh;
@@ -31,44 +32,28 @@ public final class ShaderBuilder {
 		private final Set<String> requiredAttibutes = new HashSet<>();
 
 		@Override
-		public <T> boolean isProvided(ITypedAttribute<T> attribute) {
+		public boolean isProvided(IAttribute attribute) {
 			return isProvided(attribute.id());
 		}
-
-		@Override
-		public boolean isProvided(String id) {
-			return providedAttributes.containsKey(id);
-		}
-
+		
 		@Override
 		public <T> void provide(ITypedAttribute<T> attribute, Supplier<T> supplier) {
-			provide(attribute.id(), supplier);
+			if (providedAttributes.put(attribute.id(), supplier) != null)
+				throw new IllegalArgumentException("duplicate attribute: " + attribute);
 		}
 
 		@Override
-		public void provide(String id, Supplier<?> supplier) {
-			if (providedAttributes.put(id, supplier) != null)
-				throw new IllegalArgumentException("duplicate attribute: " + id);
+		public boolean isRequired(IAttribute attribute) {
+			return requiredAttibutes.contains(attribute.id());
 		}
 
 		@Override
-		public <T> boolean isRequired(ITypedAttribute<T> attribute) {
-			return isRequired(attribute.id());
+		public void require(IAttribute attribute) {
+			requiredAttibutes.add(attribute.id());
 		}
 
-		@Override
-		public boolean isRequired(String id) {
-			return requiredAttibutes.contains(id);
-		}
-
-		@Override
-		public <T> void require(ITypedAttribute<T> attribute) {
-			require(attribute.id());
-		}
-
-		@Override
-		public void require(String id) {
-			requiredAttibutes.add(id);
+		boolean isProvided(String id) {
+			return providedAttributes.containsKey(id);			
 		}
 
 		Supplier<?> getSupplier(IShaderVariable<?> variable) {
@@ -123,9 +108,9 @@ public final class ShaderBuilder {
 	// FIXME: currently mesh only contains one geometry
 	public static void attachAttributes(IShader shader, Attributes attributes, IMesh mesh) {
 		// attach uniform attributes to shader
-		for (IShaderUniform<?> attr : shader.getUniforms()) {
-			if (!attr.hasSupplier()) {
-				attr.setSupplier(attributes.getSupplier(attr));
+		for (IShaderUniform<?> uniform : shader.getUniforms()) {
+			if (!uniform.hasSupplier()) {
+				uniform.setSupplier(attributes.getSupplier(uniform));
 			}
 		}
 
@@ -135,8 +120,8 @@ public final class ShaderBuilder {
 			for (IAttributeProvider provider : arrayAttributeProviders) {
 				attributes.clear();
 				provider.getAttributes(attributes);
-				for (IShaderArray<?> attr : shader.getArrays()) {
-					attr.addSupplier(attributes.getSupplier(attr));
+				for (IShaderArray<?> array : shader.getArrays()) {
+					array.addSupplier(attributes.getSupplier(array));
 				}
 			}
 		}

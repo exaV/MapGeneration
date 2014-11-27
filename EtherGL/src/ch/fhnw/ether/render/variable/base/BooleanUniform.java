@@ -41,10 +41,6 @@ public class BooleanUniform extends AbstractUniform<Boolean> {
 		super(attribute, shaderName);
 	}
 
-	public BooleanUniform(String id, String shaderName) {
-		super(id, shaderName);
-	}
-
 	public BooleanUniform(ITypedAttribute<Boolean> attribute, String shaderName, Supplier<Boolean> supplier) {
 		super(attribute, shaderName, supplier);
 	}

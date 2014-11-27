@@ -31,26 +31,28 @@ package ch.fhnw.ether.render.variable.builtin;
 
 import java.util.function.Supplier;
 
+import ch.fhnw.ether.render.IRenderer.RendererAttribute;
 import ch.fhnw.ether.render.variable.base.Mat3FloatUniform;
 import ch.fhnw.util.math.Mat3;
 
 public final class NormalMatrixUniform extends Mat3FloatUniform {
-	public static final String ID = "builtin.normal_matrix";
+	public static final RendererAttribute<Mat3> ATTRIBUTE = new RendererAttribute<>("builtin.normal_matrix");
+
 	private static final String DEFAULT_SHADER_NAME = "normalMatrix";
 
 	public NormalMatrixUniform() {
-		super(ID, DEFAULT_SHADER_NAME);
+		super(ATTRIBUTE, DEFAULT_SHADER_NAME);
 	}
 
 	public NormalMatrixUniform(String shaderName) {
-		super(ID, shaderName);
+		super(ATTRIBUTE, shaderName);
 	}
 
 	public NormalMatrixUniform(Supplier<Mat3> supplier) {
-		super(ID, DEFAULT_SHADER_NAME, supplier);
+		super(ATTRIBUTE, DEFAULT_SHADER_NAME, supplier);
 	}
 
 	public NormalMatrixUniform(String shaderName, Supplier<Mat3> supplier) {
-		super(ID, shaderName, supplier);
+		super(ATTRIBUTE, shaderName, supplier);
 	}
 }

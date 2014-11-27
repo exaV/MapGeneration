@@ -29,11 +29,10 @@
 
 package ch.fhnw.ether.render.shader.builtin;
 
-import ch.fhnw.ether.render.Lights;
 import ch.fhnw.ether.render.shader.IShader;
 import ch.fhnw.ether.render.shader.base.AbstractShader;
 import ch.fhnw.ether.render.variable.base.IntUniform;
-import ch.fhnw.ether.render.variable.base.UniformBlock;
+import ch.fhnw.ether.render.variable.builtin.LightUniformBlock;
 import ch.fhnw.ether.render.variable.builtin.PositionArray;
 import ch.fhnw.ether.render.variable.builtin.ProjMatrixUniform;
 import ch.fhnw.ether.render.variable.builtin.ViewMatrixUniform;
@@ -52,8 +51,7 @@ public class ShadowVolumeShader extends AbstractShader {
 
 		addUniform(new ProjMatrixUniform());
 		addUniform(new ViewMatrixUniform());
-		// FIXME: create LightBlockAttribute, since this will be used in several places
-		addUniform(new UniformBlock(Lights.LIGHT_UNIFORM_BLOCK, "lightBlock"));
+		addUniform(new LightUniformBlock());
 	}
 	
 	public void setLightIndex(int index) {

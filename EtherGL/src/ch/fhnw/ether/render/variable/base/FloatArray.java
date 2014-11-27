@@ -46,10 +46,6 @@ public class FloatArray extends AbstractArray<float[]> {
 		super(attribute, shaderName, numComponents);
 	}
 
-	public FloatArray(String id, String shaderName, NumComponents numComponents) {
-		super(id, shaderName, numComponents);
-	}
-
 	public List<Supplier<float[]>> getSuppliers() {
 		return suppliers;
 	}

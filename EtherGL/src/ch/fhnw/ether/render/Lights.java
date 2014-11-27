@@ -8,6 +8,7 @@ import java.util.List;
 import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.render.gl.UniformBuffer;
+import ch.fhnw.ether.render.variable.builtin.LightUniformBlock;
 import ch.fhnw.ether.scene.attribute.IAttributeProvider;
 import ch.fhnw.ether.scene.camera.CameraMatrices;
 import ch.fhnw.ether.scene.light.DirectionalLight;
@@ -18,9 +19,6 @@ import ch.fhnw.util.color.RGB;
 import ch.fhnw.util.math.Vec3;
 
 public final class Lights {
-
-	public static final String LIGHT_UNIFORM_BLOCK = "builtin.light.light_uniform_block";
-
 	private static final int MAX_LIGHTS = 8;
 	private static final int BLOCK_SIZE = 20;
 
@@ -38,7 +36,7 @@ public final class Lights {
 		return new IAttributeProvider() {
 			@Override
 			public void getAttributes(IAttributes attributes) {
-				attributes.provide(LIGHT_UNIFORM_BLOCK, () -> 0);
+				attributes.provide(LightUniformBlock.ATTRIBUTE, () -> 0);
 			}
 		};
 	}

@@ -42,10 +42,6 @@ public class Vec4FloatUniform extends AbstractUniform<Vec4> {
 		super(attribute, shaderName);
 	}
 
-	public Vec4FloatUniform(String id, String shaderName) {
-		super(id, shaderName);
-	}
-
 	public Vec4FloatUniform(ITypedAttribute<Vec4> attribute, String shaderName, Supplier<Vec4> supplier) {
 		super(attribute, shaderName, supplier);
 	}

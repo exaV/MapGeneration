@@ -42,6 +42,7 @@ import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry.IGeometryAttribute;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.ColorMapMaterial;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
@@ -106,7 +107,7 @@ public final class SimpleTextureExample {
 
 				// apply changes to geometry
 				mesh.getGeometry().setScale(new Vec3(f, f, f));
-				mesh.getGeometry().modify(1, (String id, float[] colors) -> {
+				mesh.getGeometry().modify(1, (IGeometryAttribute id, float[] colors) -> {
 					for (int i = 0; i < colors.length; ++i) {
 						if (i % 4 == 3)
 							continue;

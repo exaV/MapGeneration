@@ -32,10 +32,11 @@ package ch.fhnw.ether.render.variable.base;
 import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.render.gl.Program;
-import ch.fhnw.ether.scene.attribute.AbstractAttribute;
+import ch.fhnw.ether.render.variable.IShaderVariable;
 import ch.fhnw.ether.scene.attribute.ITypedAttribute;
 
-public abstract class AbstractVariable<T> extends AbstractAttribute<T> {
+public abstract class AbstractVariable<T> implements IShaderVariable<T> {
+	private final String id;
 	private final String shaderName;
 	private int shaderIndex = -1;
 
@@ -44,8 +45,13 @@ public abstract class AbstractVariable<T> extends AbstractAttribute<T> {
 	}
 
 	protected AbstractVariable(String id, String shaderName) {
-		super(id);
+		this.id = id;
 		this.shaderName = shaderName;
+	}
+	
+	@Override
+	public String id() {
+		return id;
 	}
 
 	protected final String getShaderName() {

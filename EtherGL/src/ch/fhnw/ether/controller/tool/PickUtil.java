@@ -35,6 +35,7 @@ import java.util.TreeMap;
 import ch.fhnw.ether.scene.I3DObject;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry.IGeometryAttribute;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.ProjectionUtil;
 import ch.fhnw.util.math.Vec3;
@@ -69,7 +70,7 @@ public final class PickUtil {
 			}
 
 			IGeometry geometry = ((IMesh) object).getGeometry();
-			geometry.inspect(0, (String attribute, float[] data) -> {
+			geometry.inspect(0, (IGeometryAttribute attribute, float[] data) -> {
 				float dd = Float.POSITIVE_INFINITY;
 				switch (geometry.getType()) {
 				case LINES:

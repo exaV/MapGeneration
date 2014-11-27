@@ -31,26 +31,28 @@ package ch.fhnw.ether.render.variable.builtin;
 
 import java.util.function.Supplier;
 
+import ch.fhnw.ether.render.IRenderer.RendererAttribute;
 import ch.fhnw.ether.render.variable.base.Mat4FloatUniform;
 import ch.fhnw.util.math.Mat4;
 
 public final class ProjMatrixUniform extends Mat4FloatUniform {
-	public static final String ID = "builtin.proj_matrix";
+	public static final RendererAttribute<Mat4> ATTRIBUTE = new RendererAttribute<>("builtin.proj_matrix");
+
 	private static final String DEFAULT_SHADER_NAME = "projMatrix";
 
 	public ProjMatrixUniform() {
-		super(ID, DEFAULT_SHADER_NAME);
+		super(ATTRIBUTE, DEFAULT_SHADER_NAME);
 	}
 
 	public ProjMatrixUniform(String shaderName) {
-		super(ID, shaderName);
+		super(ATTRIBUTE, shaderName);
 	}
 
 	public ProjMatrixUniform(Supplier<Mat4> supplier) {
-		super(ID, DEFAULT_SHADER_NAME, supplier);
+		super(ATTRIBUTE, DEFAULT_SHADER_NAME, supplier);
 	}
 
 	public ProjMatrixUniform(String shaderName, Supplier<Mat4> supplier) {
-		super(ID, shaderName, supplier);
+		super(ATTRIBUTE, shaderName, supplier);
 	}
 }

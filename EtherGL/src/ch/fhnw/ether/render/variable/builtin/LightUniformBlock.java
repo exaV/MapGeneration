@@ -27,30 +27,21 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.render.variable.base;
+package ch.fhnw.ether.render.variable.builtin;
 
-import java.util.function.Supplier;
+import ch.fhnw.ether.render.IRenderer.RendererAttribute;
+import ch.fhnw.ether.render.variable.base.UniformBlock;
 
-import javax.media.opengl.GL3;
+public final class LightUniformBlock extends UniformBlock {
+	public static final RendererAttribute<Integer> ATTRIBUTE = new RendererAttribute<>("builtin.light.light_uniform_block");
 
-import ch.fhnw.ether.render.gl.Program;
-import ch.fhnw.ether.scene.attribute.ITypedAttribute;
+	private static final String DEFAULT_SHADER_NAME = "lightBlock";
 
-public class FloatUniform extends AbstractUniform<Float> {
-	public FloatUniform(ITypedAttribute<Float> attribute, String shaderName) {
-		super(attribute, shaderName);
+	public LightUniformBlock() {
+		super(ATTRIBUTE, DEFAULT_SHADER_NAME);
 	}
 
-	public FloatUniform(ITypedAttribute<Float> attribute, String shaderName, Supplier<Float> supplier) {
-		super(attribute, shaderName, supplier);
-	}
-
-	public FloatUniform(String id, String shaderName, Supplier<Float> supplier) {
-		super(id, shaderName, supplier);
-	}
-
-	@Override
-	public void enable(GL3 gl, Program program) {
-		program.setUniform(gl, getShaderIndex(gl, program), get());
+	public LightUniformBlock(String shaderName) {
+		super(ATTRIBUTE, shaderName);
 	}
 }

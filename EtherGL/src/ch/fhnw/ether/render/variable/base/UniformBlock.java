@@ -32,13 +32,14 @@ package ch.fhnw.ether.render.variable.base;
 import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.render.gl.Program;
+import ch.fhnw.ether.render.IRenderer.RendererAttribute;
 
-public final class UniformBlock extends AbstractUniform<Integer> {
+public class UniformBlock extends AbstractUniform<Integer> {
 	private boolean canBind = true;
 	private boolean isBound = false;
 
-	public UniformBlock(String id, String shaderName) {
-		super(id, shaderName);
+	public UniformBlock(RendererAttribute<Integer> attribute, String shaderName) {
+		super(attribute, shaderName);
 	}
 
 	@Override

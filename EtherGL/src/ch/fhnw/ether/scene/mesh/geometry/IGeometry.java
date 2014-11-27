@@ -37,10 +37,10 @@ import ch.fhnw.util.math.ITransformable;
 import ch.fhnw.util.math.geometry.BoundingBox;
 
 public interface IGeometry extends IAttributeProvider, ITransformable, IUpdateRequester {
-	interface IGeometryAttribute<T> extends ITypedAttribute<T> {
+	interface IGeometryAttribute extends ITypedAttribute<float[]> {
 	}
 
-	final class GeometryAttribute<T> extends AbstractAttribute<T> implements IGeometryAttribute<T> {
+	final class GeometryAttribute extends AbstractAttribute<float[]> implements IGeometryAttribute {
 		public GeometryAttribute(String id) {
 			super(id);
 		}
@@ -51,7 +51,7 @@ public interface IGeometry extends IAttributeProvider, ITransformable, IUpdateRe
 		/**
 		 * Inspect or modify a specific attribute of a geometry.
 		 */
-		void visit(String attribute, float[] data);
+		void visit(IGeometryAttribute attribute, float[] data);
 	}
 
 	@FunctionalInterface
@@ -61,7 +61,7 @@ public interface IGeometry extends IAttributeProvider, ITransformable, IUpdateRe
 		 * attributes must not be changed, otherwise the mesh will result in an undefined state. It is however ok, to
 		 * replace all attribute data arrays with new arrays, e.g. of different size.
 		 */
-		void visit(String[] attributes, float[][] data);
+		void visit(IGeometryAttribute[] attributes, float[][] data);
 	}
 
 	enum Primitive {
@@ -71,22 +71,22 @@ public interface IGeometry extends IAttributeProvider, ITransformable, IUpdateRe
 	// default geometry attributes
 	
 	// position array (note that this attribute is mandatory)
-	GeometryAttribute<float[]> POSITION_ARRAY = new GeometryAttribute<>("builtin.material.position_array");
+	IGeometryAttribute POSITION_ARRAY = new GeometryAttribute("builtin.material.position_array");
 
 	// non-shaded objects
-	GeometryAttribute<float[]> COLOR_ARRAY = new GeometryAttribute<>("builtin.material.color_array");
+	IGeometryAttribute COLOR_ARRAY = new GeometryAttribute("builtin.material.color_array");
 
 	// texture maps
-	GeometryAttribute<float[]> COLOR_MAP_ARRAY = new GeometryAttribute<>("builtin.material.color_map_array");
+	IGeometryAttribute COLOR_MAP_ARRAY = new GeometryAttribute("builtin.material.color_map_array");
 
 	// triangles only: normals & shading
-	GeometryAttribute<float[]> NORMAL_ARRAY = new GeometryAttribute<>("builtin.material.normal_array");
+	IGeometryAttribute NORMAL_ARRAY = new GeometryAttribute("builtin.material.normal_array");
 
 	// lines only: line width
-	GeometryAttribute<float[]> LINE_WIDTH_ARRAY = new GeometryAttribute<>("builtin.material.line_width_array");
+	IGeometryAttribute LINE_WIDTH_ARRAY = new GeometryAttribute("builtin.material.line_width_array");
 
 	// points only: point size
-	GeometryAttribute<float[]> POINT_SIZE_ARRAY = new GeometryAttribute<>("builtin.material.point_size_array");
+	IGeometryAttribute POINT_SIZE_ARRAY = new GeometryAttribute("builtin.material.point_size_array");
 	
 
 	/**

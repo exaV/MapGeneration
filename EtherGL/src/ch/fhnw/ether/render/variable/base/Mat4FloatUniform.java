@@ -42,10 +42,6 @@ public class Mat4FloatUniform extends AbstractUniform<Mat4> {
 		super(attribute, shaderName);
 	}
 
-	public Mat4FloatUniform(String id, String shaderName) {
-		super(id, shaderName);
-	}
-
 	public Mat4FloatUniform(ITypedAttribute<Mat4> attribute, String shaderName, Supplier<Mat4> supplier) {
 		super(attribute, shaderName, supplier);
 	}

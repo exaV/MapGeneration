@@ -42,10 +42,6 @@ public class Mat3FloatUniform extends AbstractUniform<Mat3> {
 		super(attribute, shaderName);
 	}
 
-	public Mat3FloatUniform(String id, String shaderName) {
-		super(id, shaderName);
-	}
-
 	public Mat3FloatUniform(ITypedAttribute<Mat3> attribute, String shaderName, Supplier<Mat3> supplier) {
 		super(attribute, shaderName, supplier);
 	}
