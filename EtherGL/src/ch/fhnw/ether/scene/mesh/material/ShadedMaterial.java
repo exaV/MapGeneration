@@ -29,6 +29,7 @@
 
 package ch.fhnw.ether.scene.mesh.material;
 
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.util.color.RGB;
 
 public class ShadedMaterial extends AbstractMaterial {
@@ -73,7 +74,7 @@ public class ShadedMaterial extends AbstractMaterial {
 
 		if (colorMap != null) {
 			attributes.provide(IMaterial.COLOR_MAP, () -> colorMap);
-			attributes.require(IMaterial.COLOR_MAP_ARRAY);
+			attributes.require(IGeometry.COLOR_MAP_ARRAY);
 		}
 	}
 }

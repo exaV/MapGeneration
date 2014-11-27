@@ -29,14 +29,21 @@
 
 package ch.fhnw.ether.scene.mesh.geometry;
 
+import ch.fhnw.ether.scene.attribute.AbstractAttribute;
 import ch.fhnw.ether.scene.attribute.IAttributeProvider;
+import ch.fhnw.ether.scene.attribute.ITypedAttribute;
 import ch.fhnw.util.IUpdateRequester;
 import ch.fhnw.util.math.ITransformable;
 import ch.fhnw.util.math.geometry.BoundingBox;
 
 public interface IGeometry extends IAttributeProvider, ITransformable, IUpdateRequester {
-	enum Primitive {
-		POINTS, LINES, TRIANGLES;
+	interface IGeometryAttribute<T> extends ITypedAttribute<T> {
+	}
+
+	final class GeometryAttribute<T> extends AbstractAttribute<T> implements IGeometryAttribute<T> {
+		public GeometryAttribute(String id) {
+			super(id);
+		}
 	}
 
 	@FunctionalInterface
@@ -56,6 +63,31 @@ public interface IGeometry extends IAttributeProvider, ITransformable, IUpdateRe
 		 */
 		void visit(String[] attributes, float[][] data);
 	}
+
+	enum Primitive {
+		POINTS, LINES, TRIANGLES;
+	}
+	
+	// default geometry attributes
+	
+	// position array (note that this attribute is mandatory)
+	GeometryAttribute<float[]> POSITION_ARRAY = new GeometryAttribute<>("builtin.material.position_array");
+
+	// non-shaded objects
+	GeometryAttribute<float[]> COLOR_ARRAY = new GeometryAttribute<>("builtin.material.color_array");
+
+	// texture maps
+	GeometryAttribute<float[]> COLOR_MAP_ARRAY = new GeometryAttribute<>("builtin.material.color_map_array");
+
+	// triangles only: normals & shading
+	GeometryAttribute<float[]> NORMAL_ARRAY = new GeometryAttribute<>("builtin.material.normal_array");
+
+	// lines only: line width
+	GeometryAttribute<float[]> LINE_WIDTH_ARRAY = new GeometryAttribute<>("builtin.material.line_width_array");
+
+	// points only: point size
+	GeometryAttribute<float[]> POINT_SIZE_ARRAY = new GeometryAttribute<>("builtin.material.point_size_array");
+	
 
 	/**
 	 * @return primitive type of this geometry

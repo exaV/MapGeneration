@@ -30,16 +30,16 @@
 package ch.fhnw.ether.render.attribute.builtin;
 
 import ch.fhnw.ether.render.attribute.base.FloatArrayAttribute;
-import ch.fhnw.ether.scene.mesh.material.IMaterial;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 
 public final class ColorMapArray extends FloatArrayAttribute {
 	private static final String DEFAULT_SHADER_NAME = "vertexTexCoord";
 
 	public ColorMapArray() {
-		super(IMaterial.COLOR_MAP_ARRAY, DEFAULT_SHADER_NAME, NumComponents.TWO);
+		super(IGeometry.COLOR_MAP_ARRAY, DEFAULT_SHADER_NAME, NumComponents.TWO);
 	}
 
 	public ColorMapArray(String shaderName) {
-		super(IMaterial.COLOR_MAP_ARRAY, shaderName, NumComponents.TWO);
+		super(IGeometry.COLOR_MAP_ARRAY, shaderName, NumComponents.TWO);
 	}
 }

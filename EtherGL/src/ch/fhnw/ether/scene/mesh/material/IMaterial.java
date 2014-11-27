@@ -31,30 +31,30 @@ package ch.fhnw.ether.scene.mesh.material;
 
 import ch.fhnw.ether.scene.attribute.AbstractAttribute;
 import ch.fhnw.ether.scene.attribute.IAttributeProvider;
+import ch.fhnw.ether.scene.attribute.ITypedAttribute;
 import ch.fhnw.util.IUpdateRequester;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.Vec4;
 
 public interface IMaterial extends IAttributeProvider, IUpdateRequester {
-	final class MaterialAttribute<T> extends AbstractAttribute<T> {
+	interface IMaterialAttribute<T> extends ITypedAttribute<T> {
+	}
+	
+	final class MaterialAttribute<T> extends AbstractAttribute<T> implements IMaterialAttribute<T> {
 		public MaterialAttribute(String id) {
 			super(id);
 		}
 	}
 
-	// position array (note that this attribute is mandatory)
-	MaterialAttribute<float[]> POSITION_ARRAY = new MaterialAttribute<>("builtin.material.position_array");
-
+	// default material attributes
+	
 	// non-shaded objects
-	MaterialAttribute<float[]> COLOR_ARRAY = new MaterialAttribute<>("builtin.material.color_array");
 	MaterialAttribute<Vec4> COLOR = new MaterialAttribute<>("builtin.material.color");
 
-	// texture
-	MaterialAttribute<float[]> COLOR_MAP_ARRAY = new MaterialAttribute<>("builtin.material.color_map_array");
+	// texture maps
 	MaterialAttribute<Texture> COLOR_MAP = new MaterialAttribute<>("builtin.material.color_map");
 
 	// triangles only: normals & shading
-	MaterialAttribute<float[]> NORMAL_ARRAY = new MaterialAttribute<>("builtin.material.normal_array");
 	MaterialAttribute<Vec3> EMISSION = new MaterialAttribute<>("builtin.material.shading.emission");
 	MaterialAttribute<Vec3> AMBIENT = new MaterialAttribute<>("builtin.material.shading.ambient");
 	MaterialAttribute<Vec3> DIFFUSE = new MaterialAttribute<>("builtin.material.shading.diffuse");
@@ -64,10 +64,8 @@ public interface IMaterial extends IAttributeProvider, IUpdateRequester {
 	MaterialAttribute<Float> ALPHA = new MaterialAttribute<>("builtin.material.shading.alpha");
 
 	// lines only: line width
-	MaterialAttribute<float[]> LINE_WIDTH_ARRAY = new MaterialAttribute<>("builtin.material.line_width_array");
 	MaterialAttribute<Float> LINE_WIDTH = new MaterialAttribute<>("builtin.material.line_width");
 
 	// points only: point size
-	MaterialAttribute<float[]> POINT_SIZE_ARRAY = new MaterialAttribute<>("builtin.material.point_size_array");
 	MaterialAttribute<Float> POINT_SIZE = new MaterialAttribute<>("builtin.material.point_size");
 }

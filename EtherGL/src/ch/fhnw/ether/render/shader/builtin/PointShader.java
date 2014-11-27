@@ -43,6 +43,7 @@ import ch.fhnw.ether.render.attribute.builtin.ViewMatrixUniform;
 import ch.fhnw.ether.render.shader.IShader;
 import ch.fhnw.ether.render.shader.base.AbstractShader;
 import ch.fhnw.ether.scene.attribute.IAttributeProvider;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.util.color.RGBA;
@@ -51,8 +52,8 @@ public class PointShader extends AbstractShader {
 	public PointShader(IAttributeProvider.IAttributes attributes) {
 		super(IShader.class, "builtin.shader.points", "point_vc", Primitive.POINTS);
 
-		boolean useVertexColors = attributes.isProvided(IMaterial.COLOR_ARRAY);
-		boolean useVertexPointSize = attributes.isProvided(IMaterial.POINT_SIZE_ARRAY);
+		boolean useVertexColors = attributes.isProvided(IGeometry.COLOR_ARRAY);
+		boolean useVertexPointSize = attributes.isProvided(IGeometry.POINT_SIZE_ARRAY);
 
 		addArray(new PositionArray());
 

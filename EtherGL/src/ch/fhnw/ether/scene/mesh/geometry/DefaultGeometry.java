@@ -32,7 +32,6 @@ package ch.fhnw.ether.scene.mesh.geometry;
 import java.util.Arrays;
 
 import ch.fhnw.ether.scene.attribute.IAttribute;
-import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.util.math.Transform;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.BoundingBox;
@@ -43,9 +42,9 @@ public class DefaultGeometry extends AbstractGeometry {
 		TransformCache() {
 			data = new float[attributeTypes.length][];
 			for (int i = 0; i < attributeTypes.length; ++i) {
-				if (attributeTypes[i].equals(IMaterial.POSITION_ARRAY.id())) {
+				if (attributeTypes[i].equals(POSITION_ARRAY.id())) {
 					data[i] = transform.transformVertices(DefaultGeometry.this.attributeData[i]);
-				} else if (attributeTypes[i].equals(IMaterial.NORMAL_ARRAY.id())) {
+				} else if (attributeTypes[i].equals(NORMAL_ARRAY.id())) {
 					data[i] = transform.transformNormals(DefaultGeometry.this.attributeData[i]);
 				} else {
 					data[i] = DefaultGeometry.this.attributeData[i];
@@ -81,7 +80,7 @@ public class DefaultGeometry extends AbstractGeometry {
 	public DefaultGeometry(Primitive type, String[] attributes, float[][] data) {
 		super(type);
 
-		if (!attributes[0].equals(IMaterial.POSITION_ARRAY.id()))
+		if (!attributes[0].equals(POSITION_ARRAY.id()))
 			throw new IllegalArgumentException("First attribute must be position");
 		if (attributes.length != data.length)
 			throw new IllegalArgumentException("# attribute type != # attribute data");
@@ -134,7 +133,7 @@ public class DefaultGeometry extends AbstractGeometry {
 	@Override
 	public void modify(int index, IAttributeVisitor visitor) {
 		visitor.visit(attributeTypes[index], attributeData[index]);
-		if (attributeTypes[index].equals(IMaterial.POSITION_ARRAY.id()) || attributeTypes[index].equals(IMaterial.NORMAL_ARRAY.id()))
+		if (attributeTypes[index].equals(POSITION_ARRAY.id()) || attributeTypes[index].equals(NORMAL_ARRAY.id()))
 			invalidateCache();
 		else
 			requestUpdate();
@@ -227,49 +226,49 @@ public class DefaultGeometry extends AbstractGeometry {
 	// ---- static helpers for simple geometry creation from arrays
 
 	public static DefaultGeometry createV(Primitive type, float[] vertices) {
-		IAttribute[] attributes = { IMaterial.POSITION_ARRAY };
+		IAttribute[] attributes = { POSITION_ARRAY };
 		float[][] data = { vertices };
 		return new DefaultGeometry(type, attributes, data);
 	}
 
 	public static DefaultGeometry createVN(Primitive type, float[] vertices, float[] normals) {
-		IAttribute[] attributes = { IMaterial.POSITION_ARRAY, IMaterial.NORMAL_ARRAY };
+		IAttribute[] attributes = { POSITION_ARRAY, NORMAL_ARRAY };
 		float[][] data = { vertices, normals };
 		return new DefaultGeometry(type, attributes, data);
 	}
 
 	public static DefaultGeometry createVC(Primitive type, float[] vertices, float[] colors) {
-		IAttribute[] attributes = { IMaterial.POSITION_ARRAY, IMaterial.COLOR_ARRAY };
+		IAttribute[] attributes = { POSITION_ARRAY, COLOR_ARRAY };
 		float[][] data = { vertices, colors };
 		return new DefaultGeometry(type, attributes, data);
 	}
 
 	public static DefaultGeometry createVM(Primitive type, float[] vertices, float[] texCoords) {
-		IAttribute[] attributes = { IMaterial.POSITION_ARRAY, IMaterial.COLOR_MAP_ARRAY };
+		IAttribute[] attributes = { POSITION_ARRAY, COLOR_MAP_ARRAY };
 		float[][] data = { vertices, texCoords };
 		return new DefaultGeometry(type, attributes, data);
 	}
 	
 	public static DefaultGeometry createVNC(Primitive type, float[] vertices, float[] normals, float[] colors) {
-		IAttribute[] attributes = { IMaterial.POSITION_ARRAY, IMaterial.NORMAL_ARRAY, IMaterial.COLOR_ARRAY };
+		IAttribute[] attributes = { POSITION_ARRAY, NORMAL_ARRAY, COLOR_ARRAY };
 		float[][] data = { vertices, normals, colors };
 		return new DefaultGeometry(type, attributes, data);
 	}
 
 	public static DefaultGeometry createVNM(Primitive type, float[] vertices, float[] normals, float[] texCoords) {
-		IAttribute[] attributes = { IMaterial.POSITION_ARRAY, IMaterial.NORMAL_ARRAY, IMaterial.COLOR_MAP_ARRAY };
+		IAttribute[] attributes = { POSITION_ARRAY, NORMAL_ARRAY, COLOR_MAP_ARRAY };
 		float[][] data = { vertices, normals, texCoords };
 		return new DefaultGeometry(type, attributes, data);
 	}
 
 	public static DefaultGeometry createVCM(Primitive type, float[] vertices, float[] colors, float[] texCoords) {
-		IAttribute[] attributes = { IMaterial.POSITION_ARRAY, IMaterial.COLOR_ARRAY, IMaterial.COLOR_MAP_ARRAY };
+		IAttribute[] attributes = { POSITION_ARRAY, COLOR_ARRAY, COLOR_MAP_ARRAY };
 		float[][] data = { vertices, colors, texCoords };
 		return new DefaultGeometry(type, attributes, data);
 	}
 
 	public static DefaultGeometry createVNCM(Primitive type, float[] vertices, float[] normals, float[] colors, float[] texCoords) {
-		IAttribute[] attributes = { IMaterial.POSITION_ARRAY, IMaterial.NORMAL_ARRAY, IMaterial.COLOR_ARRAY, IMaterial.COLOR_MAP_ARRAY };
+		IAttribute[] attributes = { POSITION_ARRAY, NORMAL_ARRAY, COLOR_ARRAY, COLOR_MAP_ARRAY };
 		float[][] data = { vertices, normals, colors, texCoords };
 		return new DefaultGeometry(type, attributes, data);
 	}

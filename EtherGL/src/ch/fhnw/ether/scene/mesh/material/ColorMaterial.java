@@ -29,6 +29,7 @@
 
 package ch.fhnw.ether.scene.mesh.material;
 
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.util.color.RGBA;
 
 public class ColorMaterial extends AbstractMaterial {
@@ -52,6 +53,6 @@ public class ColorMaterial extends AbstractMaterial {
 	public void getAttributes(IAttributes suppliers) {
 		suppliers.provide(IMaterial.COLOR, () -> color);
 		if (perVertexColor)
-			suppliers.require(IMaterial.COLOR_ARRAY);
+			suppliers.require(IGeometry.COLOR_ARRAY);
 	}
 }

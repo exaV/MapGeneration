@@ -29,6 +29,7 @@
 
 package ch.fhnw.ether.scene.mesh.material;
 
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.util.color.RGBA;
 
 public class ColorMapMaterial extends ColorMaterial {
@@ -50,7 +51,7 @@ public class ColorMapMaterial extends ColorMaterial {
 	@Override
 	public void getAttributes(IAttributes attributes) {
 		attributes.provide(IMaterial.COLOR_MAP, () -> colorMap);
-		attributes.require(IMaterial.COLOR_MAP_ARRAY);
+		attributes.require(IGeometry.COLOR_MAP_ARRAY);
 		super.getAttributes(attributes);
 	}
 }

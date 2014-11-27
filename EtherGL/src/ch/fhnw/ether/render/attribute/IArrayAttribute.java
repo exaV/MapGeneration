@@ -35,9 +35,8 @@ import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.render.gl.IArrayBuffer;
 import ch.fhnw.ether.render.gl.Program;
-import ch.fhnw.ether.scene.attribute.ITypedAttribute;
 
-public interface IArrayAttribute<T> extends ITypedAttribute<T> {
+public interface IArrayAttribute<T> extends IShaderAttribute<T> {
 	enum NumComponents {
 		ONE(1), TWO(2), THREE(3), FOUR(4);
 
@@ -57,8 +56,6 @@ public interface IArrayAttribute<T> extends ITypedAttribute<T> {
 	void addSupplier(Supplier<?> supplier);
 
 	void setup(int stride, int offset);
-
-	void dispose(GL3 gl);
 
 	void enable(GL3 gl, Program program, IArrayBuffer buffer);
 

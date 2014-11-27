@@ -37,7 +37,6 @@ import java.awt.image.BufferedImage;
 import java.util.EnumSet;
 
 import ch.fhnw.ether.image.Frame;
-import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.IMesh.Flags;
@@ -79,10 +78,8 @@ class GraphicsPlane {
 		this.w = w;
 		this.h = h;
 
-		IAttribute[] attribs = { IMaterial.POSITION_ARRAY, IMaterial.COLOR_MAP_ARRAY };
-		float[] position = { x, y, 0, x + w, y, 0, x + w, y + h, 0, x, y, 0, x + w, y + h, 0, x, y + h, 0 };
-		float[] texCoords = MeshLibrary.DEFAULT_QUAD_TEX_COORDS;
-		IGeometry geometry = new DefaultGeometry(Primitive.TRIANGLES, attribs, new float[][] { position, texCoords });
+		float[] vertices = { x, y, 0, x + w, y, 0, x + w, y + h, 0, x, y, 0, x + w, y + h, 0, x, y + h, 0 };
+		IGeometry geometry = DefaultGeometry.createVM(Primitive.TRIANGLES, vertices, MeshLibrary.DEFAULT_QUAD_TEX_COORDS);
 		IMaterial material = new ColorMapMaterial(texture);
 
 		mesh = new DefaultMesh(material, geometry, Pass.SCREEN_SPACE_OVERLAY, EnumSet.of(Flags.INTERACTIVE_VIEWS_ONLY));

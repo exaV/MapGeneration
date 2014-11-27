@@ -29,6 +29,7 @@
 
 package ch.fhnw.ether.scene.mesh.material;
 
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.util.color.RGBA;
 
 public class PointMaterial extends ColorMaterial {
@@ -54,7 +55,7 @@ public class PointMaterial extends ColorMaterial {
 	public void getAttributes(IAttributes attributes) {
 		attributes.provide(IMaterial.POINT_SIZE, () -> size);
 		if (perVertexSize)
-			attributes.require(IMaterial.POINT_SIZE_ARRAY);
+			attributes.require(IGeometry.POINT_SIZE_ARRAY);
 		super.getAttributes(attributes);
 	}
 }

@@ -30,16 +30,16 @@
 package ch.fhnw.ether.render.attribute.builtin;
 
 import ch.fhnw.ether.render.attribute.base.FloatArrayAttribute;
-import ch.fhnw.ether.scene.mesh.material.IMaterial;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 
 public final class NormalArray extends FloatArrayAttribute {
 	private static final String DEFAULT_SHADER_NAME = "vertexNormal";
 
 	public NormalArray() {
-		super(IMaterial.NORMAL_ARRAY, DEFAULT_SHADER_NAME, NumComponents.THREE);
+		super(IGeometry.NORMAL_ARRAY, DEFAULT_SHADER_NAME, NumComponents.THREE);
 	}
 
 	public NormalArray(String shaderName) {
-		super(IMaterial.NORMAL_ARRAY, shaderName, NumComponents.THREE);
+		super(IGeometry.NORMAL_ARRAY, shaderName, NumComponents.THREE);
 	}
 }

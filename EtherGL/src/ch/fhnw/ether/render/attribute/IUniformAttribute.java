@@ -34,15 +34,12 @@ import java.util.function.Supplier;
 import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.render.gl.Program;
-import ch.fhnw.ether.scene.attribute.ITypedAttribute;
 
-public interface IUniformAttribute<T> extends ITypedAttribute<T> {
+public interface IUniformAttribute<T> extends IShaderAttribute<T> {
 	boolean hasSupplier();
 
 	void setSupplier(Supplier<?> supplier);
 	
-	void dispose(GL3 gl);
-
 	void enable(GL3 gl, Program program);
 
 	void disable(GL3 gl, Program program);

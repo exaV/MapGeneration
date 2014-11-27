@@ -75,7 +75,9 @@ public class DefaultView implements IView {
 	private boolean enabled = true;
 
 	public DefaultView(IController controller, int x, int y, int w, int h, Config viewConfig, String title, ICamera camera) {
+		this.controller = controller;
 		this.viewConfig = viewConfig;
+		setCamera(camera);
 
 		window = new NEWTWindow(w, h, title, viewConfig);
 		window.getWindow().addGLEventListener(glEventListener);
@@ -89,10 +91,6 @@ public class DefaultView implements IView {
 		if (y != -1)
 			p.setY(y);
 		window.setPosition(p);
-
-		this.controller = controller;
-
-		setCamera(camera);
 	}
 
 	@Override

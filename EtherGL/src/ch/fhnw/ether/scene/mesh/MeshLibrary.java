@@ -31,7 +31,6 @@ package ch.fhnw.ether.scene.mesh;
 
 import java.util.List;
 
-import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
@@ -106,9 +105,7 @@ public class MeshLibrary {
 	};
 	//@formatter:on
 
-	private final static IAttribute[] ATTRIBUTES = { IMaterial.POSITION_ARRAY, IMaterial.NORMAL_ARRAY };
-	private final static float[][] DATA = { UNIT_CUBE_TRIANGLES, UNIT_CUBE_NORMALS };
-	private final static DefaultGeometry CUBE_GEOMETRY = new DefaultGeometry(Primitive.TRIANGLES, ATTRIBUTES, DATA);
+	private final static DefaultGeometry CUBE_GEOMETRY = DefaultGeometry.createVN(Primitive.TRIANGLES, UNIT_CUBE_TRIANGLES, UNIT_CUBE_NORMALS);
 
 	public static IMesh createCube() {
 		return createCube(new ColorMaterial(RGBA.WHITE));
