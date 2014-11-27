@@ -88,8 +88,8 @@ public class ForwardRenderer extends AbstractRenderer {
 		
 		void setOrthoScreenSpace(IView view) {
 			viewMatrix = ID_4X4;
+			projMatrix = Mat4.ortho(0, view.getViewport().w, view.getViewport().h, 0, -1, 1);
 			normalMatrix = ID_3X3;
-			projMatrix = Mat4.ortho(0, view.getViewport().w, view.getViewport().h, 0, -1, 1);			
 		}
 
 		void setOrthoDeviceSpace(IView view) {
@@ -122,11 +122,13 @@ public class ForwardRenderer extends AbstractRenderer {
 		state.setCameraSpace(view);
 		
 		// ---- 1. DEPTH PASS (DEPTH WRITE&TEST ENABLED, BLEND OFF)
+		gl.glEnable(GL.GL_CULL_FACE);			
 		gl.glEnable(GL.GL_DEPTH_TEST);
 		gl.glEnable(GL.GL_POLYGON_OFFSET_FILL);
 		gl.glPolygonOffset(1, 3);
 		renderObjects(gl, Pass.DEPTH, interactive);
 		gl.glDisable(GL.GL_POLYGON_OFFSET_FILL);
+		gl.glDisable(GL.GL_CULL_FACE);			
 		
 		if (false) renderShadowVolumes(gl, Pass.DEPTH, interactive);
 
