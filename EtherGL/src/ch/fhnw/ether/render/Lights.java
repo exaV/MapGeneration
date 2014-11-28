@@ -33,6 +33,10 @@ public final class Lights {
 	public Lights(AbstractRenderer renderer) {
 	}
 	
+	public List<GenericLight> getLights() {
+		return lights;
+	}
+	
 	public IAttributeProvider getAttributeProvider() {
 		return new IAttributeProvider() {
 			@Override

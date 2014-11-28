@@ -37,6 +37,7 @@ import ch.fhnw.util.UpdateRequest;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.BoundingBox;
 
+// FIXME: we need some good mesh factory, this here is a mess
 public final class DefaultMesh implements IMesh {
 	private final IMaterial material;
 	private final IGeometry geometry;
@@ -46,17 +47,33 @@ public final class DefaultMesh implements IMesh {
 	private String name = "unnamed_mesh";
 
 	private final UpdateRequest updater = new UpdateRequest(true);
-	
+
 	public DefaultMesh(IMaterial material, IGeometry geometry) {
 		this(material, geometry, Pass.DEPTH);
 	}
-	
+
 	public DefaultMesh(IMaterial material, IGeometry geometry, Pass pass) {
 		this(material, geometry, pass, NO_FLAGS);
 	}
 
+	public DefaultMesh(IMaterial material, IGeometry geometry, Flags flag, Flags... flags) {
+		this(material, geometry, Pass.DEPTH, EnumSet.of(flag, flags));
+	}
+
+	public DefaultMesh(IMaterial material, IGeometry geometry, Flags flag) {
+		this(material, geometry, Pass.DEPTH, EnumSet.of(flag));
+	}
+
 	public DefaultMesh(IMaterial material, IGeometry geometry, EnumSet<Flags> flags) {
 		this(material, geometry, Pass.DEPTH, flags);
+	}
+
+	public DefaultMesh(IMaterial material, IGeometry geometry, Pass pass, Flags flag) {
+		this(material, geometry, pass, EnumSet.of(flag));
+	}
+
+	public DefaultMesh(IMaterial material, IGeometry geometry, Pass pass, Flags flag, Flags... flags) {
+		this(material, geometry, pass, EnumSet.of(flag, flags));
 	}
 
 	public DefaultMesh(IMaterial material, IGeometry geometry, Pass pass, EnumSet<Flags> flags) {
@@ -67,7 +84,7 @@ public final class DefaultMesh implements IMesh {
 		this.pass = pass;
 		this.flags = flags;
 	}
-	
+
 	// I3DObject implementation
 
 	@Override
@@ -103,7 +120,7 @@ public final class DefaultMesh implements IMesh {
 	public Pass getPass() {
 		return pass;
 	}
-	
+
 	@Override
 	public EnumSet<Flags> getFlags() {
 		return flags;
@@ -123,7 +140,7 @@ public final class DefaultMesh implements IMesh {
 	public boolean needsUpdate() {
 		return updater.needsUpdate();
 	}
-	
+
 	@Override
 	public void requestUpdate(Object source) {
 		requestUpdate();

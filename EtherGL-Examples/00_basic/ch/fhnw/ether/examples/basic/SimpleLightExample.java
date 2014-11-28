@@ -39,6 +39,7 @@ import ch.fhnw.ether.scene.light.PointLight;
 import ch.fhnw.ether.scene.light.SpotLight;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
+import ch.fhnw.ether.scene.mesh.IMesh.Flags;
 import ch.fhnw.ether.scene.mesh.IMesh.Pass;
 import ch.fhnw.ether.scene.mesh.MeshLibrary;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
@@ -97,12 +98,12 @@ public final class SimpleLightExample {
 					break;
 				case KeyEvent.VK_2:
 					scene.remove3DObject(light);
-					light = new PointLight(light.getPosition(), AMBIENT, COLOR, 5);
+					light = new PointLight(light.getPosition(), AMBIENT, COLOR, 10);
 					scene.add3DObject(light);
 					break;
 				case KeyEvent.VK_3:
 					scene.remove3DObject(light);
-					light = new SpotLight(light.getPosition(), AMBIENT, COLOR, 5, Vec3.Z_NEG, 15, 0);
+					light = new SpotLight(light.getPosition(), AMBIENT, COLOR, 10, Vec3.Z_NEG, 15, 0);
 					scene.add3DObject(light);
 					break;
 				case KeyEvent.VK_UP:
@@ -129,6 +130,7 @@ public final class SimpleLightExample {
 				default:
 					super.keyPressed(e, view);
 				}
+				controller.getUI().setMessage("light position: " + lightMesh.getPosition());
 				light.setPosition(lightMesh.getPosition());
 				repaintViews();
 			};
@@ -153,33 +155,37 @@ public final class SimpleLightExample {
 		Texture t = new Texture(SimpleLightExample.class.getResource("assets/earth_nasa.jpg"));
 		IMaterial textureMaterial = new ShadedMaterial(RGB.BLACK, RGB.BLUE, RGB.GRAY, RGB.RED, 10, 1, 1f, t);
 
-		IMesh solidMeshT = new DefaultMesh(solidMaterial, DefaultGeometry.createVN(Primitive.TRIANGLES, s.getTriangles(), s.getNormals()), Pass.DEPTH);
+		IMesh solidMeshT = new DefaultMesh(solidMaterial, DefaultGeometry.createVN(Primitive.TRIANGLES, s.getTriangles(), s.getNormals()));
 		IMesh solidMeshL = new DefaultMesh(lineMaterial, DefaultGeometry.createV(Primitive.LINES, s.getLines()), Pass.TRANSPARENCY);
 
 		solidMeshT.getGeometry().setTranslation(new Vec3(-1, 0, 0.5));
 		solidMeshL.getGeometry().setTranslation(new Vec3(-1, 0, 0.5));
 
 		IMesh texturedMeshT = new DefaultMesh(textureMaterial, DefaultGeometry.createVNM(Primitive.TRIANGLES, s.getTriangles(), s.getNormals(),
-				s.getTexCoords()), Pass.DEPTH);
+				s.getTexCoords()));
 		texturedMeshT.getGeometry().setTranslation(new Vec3(1, 0, 0.5));
 
 		IMesh solidCubeT = MeshLibrary.createCube(solidMaterial);
 		solidCubeT.getGeometry().setScale(Vec3.ONE.scale(0.8f));
 		solidCubeT.getGeometry().setTranslation(new Vec3(0, 0, 0.5));
 
-		lightMesh = new DefaultMesh(new ColorMaterial(RGBA.YELLOW), DefaultGeometry.createV(Primitive.TRIANGLES, s.getTriangles()));
+		lightMesh = new DefaultMesh(new ColorMaterial(RGBA.YELLOW), DefaultGeometry.createV(Primitive.TRIANGLES, s.getTriangles()), Flags.DONT_CAST_SHADOW);
 		lightMesh.getGeometry().setScale(new Vec3(0.1, 0.1, 0.1));
 		lightMesh.setPosition(Vec3.Z.scale(2));
 		light.setPosition(lightMesh.getPosition());
-		
-		scene.add3DObjects(solidMeshT, solidMeshL, texturedMeshT, solidCubeT, lightMesh, light);
+
+		scene.add3DObjects(solidMeshT, solidMeshL, texturedMeshT, solidCubeT);
+
+		// Add first light and light geometry
+		scene.add3DObjects(light);
+		scene.add3DObjects(lightMesh);
 
 		// Add a second light (now that we have multiple light support...)
 		scene.add3DObject(new PointLight(new Vec3(2, 0, 2), RGB.BLACK, RGB.BLUE));
-		
+
 		// Add a ground plane
 		scene.add3DObject(MeshLibrary.createGroundPlane());
-		
+
 		// Add an exit button
 		controller.getUI().addWidget(new Button(0, 0, "Quit", "Quit", KeyEvent.VK_ESCAPE, (button, v) -> System.exit(0)));
 	}

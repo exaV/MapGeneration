@@ -27,34 +27,14 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.render.shader.builtin;
+package ch.fhnw.ether.scene.mesh.material;
 
-import java.util.function.Supplier;
 
-import ch.fhnw.ether.render.shader.IShader;
-import ch.fhnw.ether.render.shader.base.AbstractShader;
-import ch.fhnw.ether.render.variable.base.FloatUniform;
-import ch.fhnw.ether.render.variable.base.IntUniform;
-import ch.fhnw.ether.render.variable.base.Vec4FloatUniform;
-import ch.fhnw.ether.render.variable.builtin.LightUniformBlock;
-import ch.fhnw.ether.render.variable.builtin.PositionArray;
-import ch.fhnw.ether.render.variable.builtin.ProjMatrixUniform;
-import ch.fhnw.ether.render.variable.builtin.ViewMatrixUniform;
-import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
-import ch.fhnw.util.math.Vec4;
+public class EmptyMaterial extends AbstractMaterial {
+	public EmptyMaterial() {
+	}
 
-public class ShadowVolumeShader extends AbstractShader {
-	public ShadowVolumeShader(Supplier<Integer> lightIndex, Supplier<Float> extrudeDistance, Supplier<Vec4> volumeColor) {
-		super(IShader.class, "builtin.shader.shadow_volumes", "shadow_volumes", Primitive.TRIANGLES);
-
-		addArray(new PositionArray());
-
-		addUniform(new IntUniform("shader.light_index", "lightIndex", lightIndex));
-		addUniform(new FloatUniform("shader.extrude_distance", "extrudeDistance", extrudeDistance));
-		addUniform(new Vec4FloatUniform("shader.volume_color", "color", volumeColor));
-
-		addUniform(new ProjMatrixUniform());
-		addUniform(new ViewMatrixUniform());
-		addUniform(new LightUniformBlock());
+	@Override
+	public void getAttributes(IAttributes suppliers) {
 	}
 }

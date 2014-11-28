@@ -33,28 +33,17 @@ import java.util.function.Supplier;
 
 import ch.fhnw.ether.render.shader.IShader;
 import ch.fhnw.ether.render.shader.base.AbstractShader;
-import ch.fhnw.ether.render.variable.base.FloatUniform;
-import ch.fhnw.ether.render.variable.base.IntUniform;
 import ch.fhnw.ether.render.variable.base.Vec4FloatUniform;
-import ch.fhnw.ether.render.variable.builtin.LightUniformBlock;
 import ch.fhnw.ether.render.variable.builtin.PositionArray;
-import ch.fhnw.ether.render.variable.builtin.ProjMatrixUniform;
-import ch.fhnw.ether.render.variable.builtin.ViewMatrixUniform;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.util.math.Vec4;
 
-public class ShadowVolumeShader extends AbstractShader {
-	public ShadowVolumeShader(Supplier<Integer> lightIndex, Supplier<Float> extrudeDistance, Supplier<Vec4> volumeColor) {
-		super(IShader.class, "builtin.shader.shadow_volumes", "shadow_volumes", Primitive.TRIANGLES);
+public class TrivialDeviceSpaceShader extends AbstractShader {
+	public TrivialDeviceSpaceShader(Supplier<Vec4> color) {
+		super(IShader.class, "builtin.shader.trivial_device_space", "device_space", Primitive.TRIANGLES);
 
 		addArray(new PositionArray());
 
-		addUniform(new IntUniform("shader.light_index", "lightIndex", lightIndex));
-		addUniform(new FloatUniform("shader.extrude_distance", "extrudeDistance", extrudeDistance));
-		addUniform(new Vec4FloatUniform("shader.volume_color", "color", volumeColor));
-
-		addUniform(new ProjMatrixUniform());
-		addUniform(new ViewMatrixUniform());
-		addUniform(new LightUniformBlock());
+		addUniform(new Vec4FloatUniform("shader.color", "color", color));
 	}
 }

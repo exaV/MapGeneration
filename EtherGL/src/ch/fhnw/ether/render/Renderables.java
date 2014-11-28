@@ -38,7 +38,9 @@ import java.util.Map;
 import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.scene.attribute.IAttributeProvider;
+import ch.fhnw.ether.scene.light.GenericLight;
 import ch.fhnw.ether.scene.mesh.IMesh;
+import ch.fhnw.ether.scene.mesh.IMesh.Flags;
 import ch.fhnw.util.UpdateRequest;
 
 // FIXME: the api needs to be revised in terms of synchronization, consistency etc.
@@ -90,7 +92,7 @@ final class Renderables {
 
 	void renderObjects(GL3 gl, IMesh.Pass pass, boolean interactive) {
 		for (Renderable renderable : rendererRenderables) {
-			if (renderable.containsFlag(IMesh.Flags.INTERACTIVE_VIEWS_ONLY) && !interactive)
+			if (renderable.containsFlag(Flags.INTERACTIVE_VIEWS_ONLY) && !interactive)
 				continue;
 			if (renderable.getPass() == pass) {
 				renderable.render(gl);
@@ -98,16 +100,8 @@ final class Renderables {
 		}
 	}
 
-	void renderShadowVolumes(GL3 gl, IMesh.Pass pass, boolean interactive, ShadowVolumes shadowVolumes) {
-		shadowVolumes.enable(gl);
-		for (Renderable renderable : rendererRenderables) {
-			if (renderable.containsFlag(IMesh.Flags.INTERACTIVE_VIEWS_ONLY) && !interactive)
-				continue;
-			if (renderable.getPass() == pass) {
-				shadowVolumes.renderVolumes(gl, renderable);
-			}
-		}
-		shadowVolumes.renderShadows(gl);
-		shadowVolumes.disable(gl);
+	void renderShadowVolumes(GL3 gl, IMesh.Pass pass, boolean interactive, ShadowVolumes shadowVolumes, List<GenericLight> lights) {
+		shadowVolumes.render(gl, pass, interactive, rendererRenderables, lights);
 	}
+	
 }

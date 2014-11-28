@@ -58,18 +58,49 @@ public final class ShaderBuilder {
 		}
 	}
 
-	public static IShader buildShader(IMesh mesh, List<IAttributeProvider> providers) {
-		// get attributes from renderer and material
+	/*
+	public static IShader create(IShader shader, IMesh mesh, List<IAttributeProvider> providers) {
 		Attributes attributes = new Attributes();
-		providers.forEach((provider) -> provider.getAttributes(attributes));
-		mesh.getMaterial().getAttributes(attributes);
+
+		// get attributes from mesh and from renderer)
+		if (mesh != null)
+			mesh.getMaterial().getAttributes(attributes);
+		if (providers != null)
+			providers.forEach((provider) -> provider.getAttributes(attributes));
 
 		// create shader and attach all attributes this shader requires
-		IShader shader = createShader(mesh, Collections.unmodifiableSet(attributes.attributes.keySet()));
+		if (shader == null)
+			shader = createShader(mesh, Collections.unmodifiableSet(attributes.attributes.keySet()));
+
 		attachUniforms(shader, attributes);
-		attachArrays(shader, mesh);
+
+		if (mesh != null)
+			attachArrays(shader, mesh);
 
 		return shader;
+	}
+	*/
+	
+	@SuppressWarnings("unchecked")
+	public static <S extends IShader> S create(S shader, IMesh mesh, List<IAttributeProvider> providers) {
+		Attributes attributes = new Attributes();
+
+		// get attributes from mesh and from renderer)
+		if (mesh != null)
+			mesh.getMaterial().getAttributes(attributes);
+		if (providers != null)
+			providers.forEach((provider) -> provider.getAttributes(attributes));
+
+		// create shader and attach all attributes this shader requires
+		if (shader == null)
+			shader = (S)createShader(mesh, Collections.unmodifiableSet(attributes.attributes.keySet()));
+
+		attachUniforms(shader, attributes);
+
+		if (mesh != null)
+			attachArrays(shader, mesh);
+
+		return shader;		
 	}
 
 	// FIXME: make more flexible/dynamic (as soon as we have more builtin shaders): derive shader from attributes
@@ -93,12 +124,6 @@ public final class ShaderBuilder {
 		default:
 			throw new UnsupportedOperationException("material type not supported: " + material);
 		}
-	}
-
-	public static void attachAttributes(IShader shader, List<IAttributeProvider> providers) {
-		Attributes attributes = new Attributes();
-		providers.forEach((provider) -> provider.getAttributes(attributes));
-		attachUniforms(shader, attributes);
 	}
 
 	private static void attachUniforms(IShader shader, Attributes attributes) {
