@@ -27,8 +27,7 @@ public final class Lights {
 
 	private final List<GenericLight> lights = new ArrayList<>(Collections.singletonList(DEFAULT_LIGHT));
 
-	// FIXME: binding point is hard coded to 0 for now
-	private UniformBuffer uniformBuffer = new UniformBuffer(0);
+	private UniformBuffer uniformBuffer = new UniformBuffer(UniformBuffer.getNewBindingPoint());
 
 	public Lights(AbstractRenderer renderer) {
 	}
@@ -72,6 +71,7 @@ public final class Lights {
 		}
 	}
 
+	// FIXME: move some of this to LightUniformBlock (so it's all in one place)
 	public synchronized void update(GL3 gl, CameraMatrices cameraMatrices) {
 		FloatBuffer buffer = FloatBuffer.allocate(MAX_LIGHTS * BLOCK_SIZE);
 

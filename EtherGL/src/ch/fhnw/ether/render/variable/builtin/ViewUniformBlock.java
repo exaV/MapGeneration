@@ -32,16 +32,17 @@ package ch.fhnw.ether.render.variable.builtin;
 import ch.fhnw.ether.render.IRenderer.RendererAttribute;
 import ch.fhnw.ether.render.variable.base.UniformBlock;
 
-public final class LightUniformBlock extends UniformBlock {
-	public static final RendererAttribute<Integer> ATTRIBUTE = new RendererAttribute<>("builtin.light_uniform_block");
+// FIXME: not used yet. uniform block for view related variables, such as matrices, viewport size etc
+public final class ViewUniformBlock extends UniformBlock {
+	public static final RendererAttribute<Integer> ATTRIBUTE = new RendererAttribute<>("builtin.view_uniform_block");
 
-	private static final String DEFAULT_SHADER_NAME = "lightBlock";
+	private static final String DEFAULT_SHADER_NAME = "viewBlock";
 
-	public LightUniformBlock() {
+	public ViewUniformBlock() {
 		super(ATTRIBUTE, DEFAULT_SHADER_NAME);
 	}
 
-	public LightUniformBlock(String shaderName) {
+	public ViewUniformBlock(String shaderName) {
 		super(ATTRIBUTE, shaderName);
 	}
 }

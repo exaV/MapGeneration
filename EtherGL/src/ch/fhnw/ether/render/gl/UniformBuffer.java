@@ -31,6 +31,7 @@ package ch.fhnw.ether.render.gl;
 
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL3;
@@ -43,6 +44,8 @@ import com.jogamp.common.nio.Buffers;
  * @author radar
  */
 public class UniformBuffer {
+	private static final AtomicInteger BINDING_POINT_COUNTER = new AtomicInteger();
+	
 	private static final int BYTES_PER_FLOAT = Float.SIZE / Byte.SIZE;
 
 	private static final FloatBuffer EMPTY_BUFFER = Buffers.newDirectFloatBuffer(0);
@@ -106,5 +109,9 @@ public class UniformBuffer {
 
 	public boolean isEmpty() {
 		return size == 0;
+	}
+	
+	public static int getNewBindingPoint() {
+		return BINDING_POINT_COUNTER.getAndIncrement();
 	}
 }

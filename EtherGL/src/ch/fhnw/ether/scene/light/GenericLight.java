@@ -114,7 +114,7 @@ public class GenericLight implements ILight {
 
 	@Override
 	public BoundingBox getBounds() {
-		// TODO
+		// TODO: return correct bounding box (whatever that is/means)
 		return null;
 	}
 

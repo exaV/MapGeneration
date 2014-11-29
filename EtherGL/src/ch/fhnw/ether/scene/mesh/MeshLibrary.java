@@ -133,7 +133,7 @@ public class MeshLibrary {
 		return new DefaultMesh(material, DefaultGeometry.createVN(Primitive.TRIANGLES, v, n), Flags.DONT_CAST_SHADOW);
 	}
 
-	// TODO: this needs some revision / organization
+	// FIXME: this needs some revision / organization
 	
 	public static void addLine(List<Vec3> dst, float x0, float y0, float x1, float y1) {
 		dst.add(new Vec3(x0, y0, 0));
