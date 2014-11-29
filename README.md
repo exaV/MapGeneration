@@ -14,6 +14,8 @@ The goal of ether-gl is to create a versatile, modular graphics library, which b
 
 * We aim at perfecting the APIs, without compromise to legacy.
 
+* Yes, we mainly use Java, excepted for some native code where appropriate (e.g. native movie/video support). We mainly focus on convenience and concepts that could be applied / ported to any language.
+
 We will add further modules while working on the core library. The video library (part of which will go into the core library) is quite usable. Animation and physics will follow quickly.
 
 
