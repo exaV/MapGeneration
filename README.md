@@ -1,12 +1,20 @@
 Ether-GL
 ========
 
-General-purpose Java / OpenGL framework for 3D object editing, visualization and projection mapping.
+A versatile, modular Java framework for 3D rendering, object editing, visualization and projection mapping. Primarily targeted at OpenGL 3.3+.
 
-Overview
---------
+Manifesto
+-------------
 
-Soon...
+The goal of ether-gl is to create a versatile, modular graphics library, which builds on modern graphics hardware APIs (primarily OpenGL, but it is open enough to use different target engines, as our very simple ray tracing examples show). 
+
+* We aim at keeping the library slim, and do not support legacy hardware / drivers (OpenGL 3.3 is required for GL targets). 
+
+* We aim at high performance, but since we use the library for teaching, we keep the code design and style to a certain degree academic and didactic, which sometimes leads to small compromises. 
+
+* We aim at perfecting the APIs, without compromise to legacy.
+
+We will add further modules while working on the core library. The video library (part of which will go into the core library) is quite usable. Animation and physics will follow quickly.
 
 
 Repository
