@@ -82,7 +82,13 @@ public abstract class AbstractShader implements IShader {
 			String vertShader = "glsl/" + source + "_vert.glsl";
 			String fragShader = "glsl/" + source + "_frag.glsl";
 			String geomShader = "glsl/" + source + "_geom.glsl";
-			program = Program.create(gl, root, vertShader, fragShader, geomShader, System.err);
+			try {
+				program = Program.create(gl, root, vertShader, fragShader, geomShader, System.err);
+			} catch (Exception e) {
+				e.printStackTrace(System.err);
+				System.err.println("exiting.");
+				System.exit(1);
+			}
 		}
 	}
 

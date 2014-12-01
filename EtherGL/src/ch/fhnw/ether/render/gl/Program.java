@@ -29,15 +29,14 @@
 
 package ch.fhnw.ether.render.gl;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.media.opengl.GL3;
 import javax.media.opengl.GL4;
-
-import com.jogamp.opengl.util.glsl.ShaderCode;
-import com.jogamp.opengl.util.glsl.ShaderProgram;
 
 /**
  * GLSL shader program abstraction.
@@ -62,50 +61,51 @@ public final class Program {
 		int getGLType() {
 			return glType;
 		}
-
+		
 		private final int glType;
 	}
 
-	public static final class Shader {
-		private static final Map<String, Shader> SHADERS = new HashMap<>();
+	private static final class Shader {
+		static final Map<String, Shader> SHADERS = new HashMap<>();
 
-		private final Class<?> root;
-		private final String path;
-		private final ShaderType type;
-		private final ShaderCode code;
+		final Class<?> root;
+		final String path;
+		final ShaderType type;
+		int shaderObject;
 
-		private Shader(GL3 gl, Class<?> root, String path, ShaderType type, PrintStream out) {
+		Shader(GL3 gl, Class<?> root, String path, ShaderType type, PrintStream out) {
 			this.root = root;
 			this.path = path;
 			this.type = type;
-			this.code = ShaderCode.create(gl, type.getGLType(), 1, root, new String[] { path }, false);
-			if (code == null)
-				throw new IllegalArgumentException("could not create shader " + path);
-			if (!code.compile(gl, out)) {
-				out.println("Failed to compile shader: " + path);
-				out.println("Exiting.");
-				System.exit(1);
+
+			String content = "";
+			try (BufferedReader in = new BufferedReader(new InputStreamReader(root.getResourceAsStream(path)))) {
+				String line;
+				while ((line = in.readLine()) != null)
+					content += line + "\n";
+			} catch (Exception e) {
+				e.printStackTrace(out);
+				out.println("Failed to read shader: " + this);
+				throw new IllegalArgumentException(toString());
+			}
+
+			shaderObject = gl.glCreateShader(type.glType);
+
+			gl.glShaderSource(shaderObject, 1, new String[] { content }, new int[] { content.length() }, 0);			
+			gl.glCompileShader(shaderObject);
+
+			if (!checkStatus(gl, shaderObject, GL3.GL_COMPILE_STATUS, out)) {
+				out.println("Failed to compile shader: " + this);
+				throw new IllegalArgumentException(toString());
 			}
 		}
-
-		public void dispose(GL3 gl) {
-			code.destroy(gl);
-			SHADERS.remove(key(root, path));
+		
+		@Override
+		public String toString() {
+			return root + "/" + path + " " + type;
 		}
 
-		public Class<?> getRoot() {
-			return root;
-		}
-
-		public String getPath() {
-			return path;
-		}
-
-		public ShaderType getType() {
-			return type;
-		}
-
-		public static Shader create(GL3 gl, Class<?> root, String path, ShaderType type, PrintStream out) {
+		static Shader create(GL3 gl, Class<?> root, String path, ShaderType type, PrintStream out) {
 			String key = key(root, path);
 			Shader shader = SHADERS.get(key);
 			if (shader == null) {
@@ -115,44 +115,51 @@ public final class Program {
 			return shader;
 		}
 
-		private static String key(Class<?> root, String path) {
+		static String key(Class<?> root, String path) {
 			return root.getName() + "/" + path;
 		}
 	}
 
 	private static final Map<String, Program> PROGRAMS = new HashMap<>();
 
-	private final ShaderProgram program = new ShaderProgram();
-	private String id;
+	private final String id;
+	private final int programObject;
 
-	public Program(GL3 gl, PrintStream out, Shader... shaders) {
+	private Program(GL3 gl, PrintStream out, Shader... shaders) {
+		programObject = gl.glCreateProgram();
+
+		String id = "";
 		for (Shader shader : shaders) {
-			if (shader == null)
-				continue;
-			program.add(gl, shader.code, out);
-			id += shader.path + " ";
+			if (shader != null) {
+				gl.glAttachShader(programObject, shader.shaderObject);
+				id += shader.path + " ";
+			}
 		}
-		program.link(gl, out);
-		program.validateProgram(gl, out);
+		this.id = id;
 
-		if (!program.linked()) {
-			out.println("Failed to link shader program: " + id);
-			out.println("Exiting.");
-			System.exit(1);
+		gl.glLinkProgram(programObject);
+		if (!checkStatus(gl, programObject, GL3.GL_LINK_STATUS, out)) {
+			out.println("Failed to link program: " + this);
+			throw new IllegalArgumentException(toString());
 		}
+
+		gl.glValidateProgram(programObject);
+		if (!checkStatus(gl, programObject,  GL3.GL_VALIDATE_STATUS, out)) {
+			out.println("Failed to validate program: " + this);
+			throw new IllegalArgumentException(toString());		}
 	}
 
-	// NOTE: currently we do not plan to destroy / release programs
+	// NOTE: currently we do not plan to dispose programs
 	// public void dispose(GL3 gl) {
-	// program.release(gl);
+	//   dispose each shader & delete program
 	// }
 
 	public void enable(GL3 gl) {
-		program.useProgram(gl, true);
+		gl.glUseProgram(programObject);
 	}
 
 	public void disable(GL3 gl) {
-		program.useProgram(gl, false);
+		gl.glUseProgram(0);
 	}
 
 	public void setUniform(GL3 gl, int index, boolean value) {
@@ -197,19 +204,19 @@ public final class Program {
 	}
 
 	public int getAttributeLocation(GL3 gl, String name) {
-		return gl.glGetAttribLocation(program.program(), name);
+		return gl.glGetAttribLocation(programObject, name);
 	}
 
 	public int getUniformLocation(GL3 gl, String name) {
-		return gl.glGetUniformLocation(program.program(), name);
+		return gl.glGetUniformLocation(programObject, name);
 	}
 
 	public int getUniformBlockIndex(GL3 gl, String name) {
-		return gl.glGetUniformBlockIndex(program.program(), name);
+		return gl.glGetUniformBlockIndex(programObject, name);
 	}
 
 	public void bindUniformBlock(GL3 gl, int index, int bindingPoint) {
-		gl.glUniformBlockBinding(program.program(), index, bindingPoint);
+		gl.glUniformBlockBinding(programObject, index, bindingPoint);
 	}
 
 	@Override
@@ -240,5 +247,27 @@ public final class Program {
 				key += ":" + path;
 		}
 		return key;
+	}
+
+	private static boolean checkStatus(GL3 gl3, int object, int statusType, PrintStream out) {
+		int[] status = { 0 };
+
+		if (statusType == GL3.GL_COMPILE_STATUS)
+			gl3.glGetShaderiv(object, statusType, status, 0);
+		else if (statusType == GL3.GL_LINK_STATUS || statusType == GL3.GL_VALIDATE_STATUS)
+			gl3.glGetProgramiv(object, statusType, status, 0);
+
+		if (status[0] != 1) {
+			out.println("status: " + status[0]);
+			gl3.glGetShaderiv(object, GL3.GL_INFO_LOG_LENGTH, status, 0);
+			byte[] infoLog = new byte[status[0]];
+			if (statusType == GL3.GL_COMPILE_STATUS)
+				gl3.glGetShaderInfoLog(object, status[0], status, 0, infoLog, 0);
+			else if (statusType == GL3.GL_LINK_STATUS)
+				gl3.glGetProgramInfoLog(object, status[0], status, 0, infoLog, 0);
+			out.println(new String(infoLog));
+			return false;
+		}
+		return true;
 	}
 }
