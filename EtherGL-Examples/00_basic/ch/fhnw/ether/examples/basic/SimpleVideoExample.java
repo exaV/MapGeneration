@@ -25,7 +25,7 @@ import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.gl.DefaultView;
 
 public class SimpleVideoExample {
-	private static final int PRELOAD_FRAMES = 300;
+	private static final int PRELOAD_FRAMES = 0;
 
 	public static void main(String[] args) {
 		new SimpleVideoExample(args[0]);
@@ -64,11 +64,12 @@ public class SimpleVideoExample {
 					Frame f = track.getNextFrame();
 					if (f == null)
 						System.exit(0);
-					frames.add(f.flipJ());
+					frames.add(f);
 				}
 				System.out.println("done.");
 				new Timer().schedule(new TimerTask() {
 					int frame = 0;
+
 					@Override
 					public void run() {
 						texture.setData(frames.get(frame));
@@ -83,7 +84,7 @@ public class SimpleVideoExample {
 						Frame frame = track.getNextFrame();
 						if (frame == null)
 							System.exit(0);
-						texture.setData(frame.flipJ());
+						texture.setData(frame);
 						view.repaint();
 					}
 				}, 1000, delay);
