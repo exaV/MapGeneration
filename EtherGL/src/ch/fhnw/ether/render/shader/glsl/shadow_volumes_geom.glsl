@@ -2,28 +2,12 @@
 
 #define MAX_LIGHTS 8
 
-struct Light {
-	vec3 position;
-	float pad0;
-	vec3 ambientColor;
-	float pad1;
-	vec3 color;
-	float pad2;
-	vec3 spotDirection;
-	float pad3;
-	float spotCosCutoff;
-	float spotExponent;
-	float range;
-	float type; // 0 = off, 1 = directional, 2 = point, 3 = spot
-};
+#include <light_struct.glsl>
+#include <light_block.glsl>
+
 
 struct VertexData {
 	vec4 position;				// vertex position in eye space
-};
-
-
-layout (std140) uniform lightBlock {
-	Light lights[MAX_LIGHTS];
 };
 
 uniform mat4 projMatrix;
@@ -35,8 +19,6 @@ in VertexData vd[3];
 
 layout(triangles) in;
 layout (triangle_strip, max_vertices=14) out;
-
-const float EPSILON = 0.0001;
 
 void main() {
 	Light light = lights[lightIndex];

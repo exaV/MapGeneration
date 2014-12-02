@@ -29,21 +29,24 @@
 
 package ch.fhnw.ether.render.gl;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintStream;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.media.opengl.GL3;
 import javax.media.opengl.GL4;
 
+import ch.fhnw.ether.render.shader.IShader;
+
 /**
  * GLSL shader program abstraction.
  *
  * @author radar
  */
-// TODO we currently just wrap around JOGLs GLSL helpers. should get rid non-GL code dependencies though...
+// NOTE: currently we do not plan to dispose programs
 public final class Program {
 	public enum ShaderType {
 		//@formatter:off
@@ -61,51 +64,49 @@ public final class Program {
 		int getGLType() {
 			return glType;
 		}
-		
+
 		private final int glType;
 	}
+	
+	// FIXME: library is currently hardcoded
+	private final static URL LIBRARY = IShader.class.getResource("glsl/lib");
 
 	private static final class Shader {
 		static final Map<String, Shader> SHADERS = new HashMap<>();
 
 		final Class<?> root;
 		final String path;
-		final ShaderType type;
 		int shaderObject;
 
-		Shader(GL3 gl, Class<?> root, String path, ShaderType type, PrintStream out) {
+		Shader(GL3 gl, Class<?> root, String path, ShaderType type, PrintStream out) throws IOException {
 			this.root = root;
 			this.path = path;
-			this.type = type;
 
-			String content = "";
-			try (BufferedReader in = new BufferedReader(new InputStreamReader(root.getResourceAsStream(path)))) {
-				String line;
-				while ((line = in.readLine()) != null)
-					content += line + "\n";
-			} catch (Exception e) {
-				e.printStackTrace(out);
-				out.println("Failed to read shader: " + this);
-				throw new IllegalArgumentException(toString());
+			StringBuilder code = new StringBuilder();
+			URL url = root.getResource(path);
+			if (url == null) {
+				out.println("file not found: " + this);
+				throw new FileNotFoundException("file not found: " + this);
 			}
+			new GLSLReader(LIBRARY, url, code, out);
 
 			shaderObject = gl.glCreateShader(type.glType);
 
-			gl.glShaderSource(shaderObject, 1, new String[] { content }, new int[] { content.length() }, 0);			
+			gl.glShaderSource(shaderObject, 1, new String[] { code.toString() }, new int[] { code.length() }, 0);
 			gl.glCompileShader(shaderObject);
 
 			if (!checkStatus(gl, shaderObject, GL3.GL_COMPILE_STATUS, out)) {
-				out.println("Failed to compile shader: " + this);
-				throw new IllegalArgumentException(toString());
+				out.println("failed to compile shader: " + this);
+				throw new IllegalArgumentException("failed to compile shader: " + this);
 			}
 		}
-		
+
 		@Override
 		public String toString() {
-			return root + "/" + path + " " + type;
+			return root.getSimpleName() + ":" + path;
 		}
 
-		static Shader create(GL3 gl, Class<?> root, String path, ShaderType type, PrintStream out) {
+		static Shader create(GL3 gl, Class<?> root, String path, ShaderType type, PrintStream out) throws IOException {
 			String key = key(root, path);
 			Shader shader = SHADERS.get(key);
 			if (shader == null) {
@@ -116,7 +117,7 @@ public final class Program {
 		}
 
 		static String key(Class<?> root, String path) {
-			return root.getName() + "/" + path;
+			return root.hashCode() + "/" + path;
 		}
 	}
 
@@ -139,20 +140,16 @@ public final class Program {
 
 		gl.glLinkProgram(programObject);
 		if (!checkStatus(gl, programObject, GL3.GL_LINK_STATUS, out)) {
-			out.println("Failed to link program: " + this);
-			throw new IllegalArgumentException(toString());
+			out.println("failed to link program: " + this);
+			throw new IllegalArgumentException("failed to link program: " + this);
 		}
 
 		gl.glValidateProgram(programObject);
-		if (!checkStatus(gl, programObject,  GL3.GL_VALIDATE_STATUS, out)) {
-			out.println("Failed to validate program: " + this);
-			throw new IllegalArgumentException(toString());		}
+		if (!checkStatus(gl, programObject, GL3.GL_VALIDATE_STATUS, out)) {
+			out.println("failed to validate program: " + this);
+			throw new IllegalArgumentException("failed to validate program: " + this);
+		}
 	}
-
-	// NOTE: currently we do not plan to dispose programs
-	// public void dispose(GL3 gl) {
-	//   dispose each shader & delete program
-	// }
 
 	public void enable(GL3 gl) {
 		gl.glUseProgram(programObject);
@@ -224,7 +221,7 @@ public final class Program {
 		return id;
 	}
 
-	public static Program create(GL3 gl, Class<?> root, String vertShader, String fragShader, String geomShader, PrintStream out) {
+	public static Program create(GL3 gl, Class<?> root, String vertShader, String fragShader, String geomShader, PrintStream out) throws IOException {
 		String key = key(root, vertShader, fragShader, geomShader);
 		Program program = PROGRAMS.get(key);
 		if (program == null) {
@@ -241,7 +238,7 @@ public final class Program {
 	}
 
 	private static String key(Class<?> root, String... paths) {
-		String key = root.getName();
+		String key = "" + root.hashCode();
 		for (String path : paths) {
 			if (path != null)
 				key += ":" + path;
@@ -258,7 +255,6 @@ public final class Program {
 			gl3.glGetProgramiv(object, statusType, status, 0);
 
 		if (status[0] != 1) {
-			out.println("status: " + status[0]);
 			gl3.glGetShaderiv(object, GL3.GL_INFO_LOG_LENGTH, status, 0);
 			byte[] infoLog = new byte[status[0]];
 			if (statusType == GL3.GL_COMPILE_STATUS)
