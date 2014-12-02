@@ -69,14 +69,17 @@ public class DefaultCameraControl {
 	}
 
 	public void pan(float deltaX, float deltaY) {
+		// TODO: implement
 		throw new UnsupportedOperationException();
 	}
 	
 	public void dolly(float deltaZ) {
+		// TODO: implement
 		throw new UnsupportedOperationException();		
 	}
 
 	public void roll(float deltaZ) {
+		// TODO: implement
 		throw new UnsupportedOperationException();
 	}
 
@@ -84,7 +87,7 @@ public class DefaultCameraControl {
 
 	/**
 	 * Orbit around target with world-z axis
-	 * @param delta
+	 * @param delta relative angle in degrees
 	 */
 	public void addToAzimuth(float delta) {
 		Mat4 m = Mat4.identityMatrix().translate(camera.getTarget().negate()).rotate(delta, Vec3.Z).translate(camera.getTarget());
@@ -98,7 +101,7 @@ public class DefaultCameraControl {
 
 	/**
 	 * Orbit around target on camera-x axis
-	 * @param delta
+	 * @param delta relative angle in degrees
 	 */
 	public void addToElevation(float delta) {
 		Mat4 m = Mat4.identityMatrix().translate(camera.getTarget().negate()).rotate(delta, getCameraXAxis()).translate(camera.getTarget());

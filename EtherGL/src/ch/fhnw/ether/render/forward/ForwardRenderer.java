@@ -123,13 +123,13 @@ public class ForwardRenderer extends AbstractRenderer {
 		
 		// ---- 1. DEPTH PASS (DEPTH WRITE&TEST ENABLED, BLEND OFF)
 		// FIXME: where do we deal with two-sided vs one-sided? mesh options? shader dependent?
-		//gl.glEnable(GL.GL_CULL_FACE);			
+		gl.glEnable(GL.GL_CULL_FACE);			
 		gl.glEnable(GL.GL_DEPTH_TEST);
 		gl.glEnable(GL.GL_POLYGON_OFFSET_FILL);
 		gl.glPolygonOffset(1, 3);
 		renderObjects(gl, Pass.DEPTH, interactive);
 		gl.glDisable(GL.GL_POLYGON_OFFSET_FILL);
-		//gl.glDisable(GL.GL_CULL_FACE);			
+		gl.glDisable(GL.GL_CULL_FACE);			
 		
 		if (false) renderShadowVolumes(gl, Pass.DEPTH, interactive);
 

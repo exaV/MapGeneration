@@ -27,35 +27,22 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.render.variable.base;
+package ch.fhnw.ether.render.variable.builtin;
 
-import java.util.function.Supplier;
+import ch.fhnw.ether.render.IRenderer.RendererAttribute;
+import ch.fhnw.ether.render.variable.base.UniformBlock;
 
-import javax.media.opengl.GL3;
+// FIXME: not used yet. uniform block for view related variables, such as matrices, viewport size etc
+public final class ViewUniformBlock extends UniformBlock {
+	public static final RendererAttribute<Integer> ATTRIBUTE = new RendererAttribute<>("builtin.view_uniform_block");
 
-import ch.fhnw.ether.render.gl.Program;
-import ch.fhnw.ether.scene.attribute.ITypedAttribute;
-import ch.fhnw.util.math.Vec4;
+	private static final String DEFAULT_SHADER_NAME = "viewBlock";
 
-public class Vec4FloatUniform extends AbstractUniform<Vec4> {
-	public Vec4FloatUniform(ITypedAttribute<Vec4> attribute, String shaderName) {
-		super(attribute, shaderName);
+	public ViewUniformBlock() {
+		super(ATTRIBUTE, DEFAULT_SHADER_NAME);
 	}
 
-	public Vec4FloatUniform(ITypedAttribute<Vec4> attribute, String shaderName, Supplier<Vec4> supplier) {
-		super(attribute, shaderName, supplier);
-	}
-
-	public Vec4FloatUniform(String id, String shaderName, Supplier<Vec4> supplier) {
-		super(id, shaderName, supplier);
-	}
-
-	public Vec4FloatUniform(String id, String shaderName) {
-		super(id, shaderName);
-	}
-
-	@Override
-	public void enable(GL3 gl, Program program) {
-		program.setUniformVec4(gl, getShaderIndex(gl, program), get().toArray());
+	public ViewUniformBlock(String shaderName) {
+		super(ATTRIBUTE, shaderName);
 	}
 }

@@ -58,7 +58,7 @@ public interface IRenderer {
 	 */
 	void addMesh(IMesh mesh);
 
-	// TODO: we could use a special flag (or similar) to prevent deallocation of resources for cases where meshes are
+	// FIXME: we could use a special flag (or similar) to prevent deallocation of resources for cases where meshes are
 	// added and removed quickly.
 	/**
 	 * Remove mesh from renderer. Releases all renderer-dependent resources. Thread-safe.

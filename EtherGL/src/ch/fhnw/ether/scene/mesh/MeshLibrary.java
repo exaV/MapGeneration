@@ -31,6 +31,7 @@ package ch.fhnw.ether.scene.mesh;
 
 import java.util.List;
 
+import ch.fhnw.ether.scene.mesh.IMesh.Flags;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
@@ -121,7 +122,7 @@ public class MeshLibrary {
 	}
 	
 	public static IMesh createGroundPlane() {
-		return createGroundPlane(new ShadedMaterial(RGB.GRAY));
+		return createGroundPlane(new ShadedMaterial(RGB.WHITE));
 	}
 	
 	public static IMesh createGroundPlane(IMaterial material) {
@@ -129,10 +130,10 @@ public class MeshLibrary {
 		float z = 0;
 		float[] v = { -e, -e, z, e, -e, z, e, e, z, -e, -e, z, e, e, z, -e, e, z };
 		float[] n = { 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1 };
-		return new DefaultMesh(material, DefaultGeometry.createVN(Primitive.TRIANGLES, v, n));
+		return new DefaultMesh(material, DefaultGeometry.createVN(Primitive.TRIANGLES, v, n), Flags.DONT_CAST_SHADOW);
 	}
 
-	// TODO: this needs some revision / organization
+	// FIXME: this needs some revision / organization
 	
 	public static void addLine(List<Vec3> dst, float x0, float y0, float x1, float y1) {
 		dst.add(new Vec3(x0, y0, 0));

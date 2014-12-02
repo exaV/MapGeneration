@@ -33,7 +33,7 @@ import ch.fhnw.ether.render.IRenderer.RendererAttribute;
 import ch.fhnw.ether.render.variable.base.UniformBlock;
 
 public final class LightUniformBlock extends UniformBlock {
-	public static final RendererAttribute<Integer> ATTRIBUTE = new RendererAttribute<>("builtin.light.light_uniform_block");
+	public static final RendererAttribute<Integer> ATTRIBUTE = new RendererAttribute<>("builtin.light_uniform_block");
 
 	private static final String DEFAULT_SHADER_NAME = "lightBlock";
 

@@ -29,6 +29,8 @@
 
 package ch.fhnw.ether.render.shader.builtin;
 
+import java.util.Collection;
+
 import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.render.shader.IShader;
@@ -42,18 +44,18 @@ import ch.fhnw.ether.render.variable.builtin.PointSizeArray;
 import ch.fhnw.ether.render.variable.builtin.PositionArray;
 import ch.fhnw.ether.render.variable.builtin.ProjMatrixUniform;
 import ch.fhnw.ether.render.variable.builtin.ViewMatrixUniform;
-import ch.fhnw.ether.scene.attribute.IAttributeProvider;
+import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.util.color.RGBA;
 
 public class PointShader extends AbstractShader {
-	public PointShader(IAttributeProvider.IAttributes attributes) {
+	public PointShader(Collection<IAttribute> attributes) {
 		super(IShader.class, "builtin.shader.points", "point_vc", Primitive.POINTS);
 
-		boolean useVertexColors = attributes.isProvided(IGeometry.COLOR_ARRAY);
-		boolean useVertexPointSize = attributes.isProvided(IGeometry.POINT_SIZE_ARRAY);
+		boolean useVertexColors = attributes.contains(IGeometry.COLOR_ARRAY);
+		boolean useVertexPointSize = attributes.contains(IGeometry.POINT_SIZE_ARRAY);
 
 		addArray(new PositionArray());
 
@@ -66,8 +68,8 @@ public class PointShader extends AbstractShader {
 		addUniform(new BooleanUniform("shader.vertex_colors_flag", "useVertexColors", () -> useVertexColors));
 		addUniform(new BooleanUniform("shader.texture_flag", "useTexture", () -> false));
 
-		addUniform(new ColorUniform(attributes.isProvided(IMaterial.COLOR) ? null : () -> RGBA.WHITE));
-		addUniform(new FloatUniform(IMaterial.POINT_SIZE, "pointSize", attributes.isProvided(IMaterial.POINT_SIZE) ? null : () -> 1f));
+		addUniform(new ColorUniform(attributes.contains(IMaterial.COLOR) ? null : () -> RGBA.WHITE));
+		addUniform(new FloatUniform(IMaterial.POINT_SIZE, "pointSize", attributes.contains(IMaterial.POINT_SIZE) ? null : () -> 1f));
 
 		addUniform(new StateInject("shader.point_size_program", (gl, p) -> gl.glEnable(GL3.GL_PROGRAM_POINT_SIZE),
 				(gl, p) -> gl.glDisable(GL3.GL_PROGRAM_POINT_SIZE)));

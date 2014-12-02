@@ -52,7 +52,9 @@ public interface IMesh extends I3DObject, IUpdateListener {
 		DEPTH, TRANSPARENCY, OVERLAY, DEVICE_SPACE_OVERLAY, SCREEN_SPACE_OVERLAY
 	}
 
+	// FIXME: DONT_CAST_SHADOW should go to material, including CULL_FACE / DONT_CULL_FACE
 	enum Flags {
+		DONT_CAST_SHADOW,
 		INTERACTIVE_VIEWS_ONLY
 	}
 

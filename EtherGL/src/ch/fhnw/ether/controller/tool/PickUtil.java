@@ -48,7 +48,8 @@ import ch.fhnw.util.math.geometry.GeometryUtil;
 public final class PickUtil {
 	public enum PickMode {
 		POINT,
-		// INSIDE, // TODO UNSUPPORTED YET - TO BE IMPLEMENTED
+		// TODO: not implemented yet
+		// INSIDE, 
 		// INTERSECT
 	}
 

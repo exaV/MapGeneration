@@ -34,7 +34,7 @@ import ch.fhnw.util.color.RGBA;
 
 public class ColorMapMaterial extends ColorMaterial {
 	private Texture colorMap;
-	
+
 	public ColorMapMaterial(Texture colorMap) {
 		this(colorMap, RGBA.WHITE);
 	}

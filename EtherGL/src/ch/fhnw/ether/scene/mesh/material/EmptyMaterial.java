@@ -27,35 +27,14 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.render.variable.base;
+package ch.fhnw.ether.scene.mesh.material;
 
-import java.util.function.Supplier;
 
-import javax.media.opengl.GL3;
-
-import ch.fhnw.ether.render.gl.Program;
-import ch.fhnw.ether.scene.attribute.ITypedAttribute;
-import ch.fhnw.util.math.Vec4;
-
-public class Vec4FloatUniform extends AbstractUniform<Vec4> {
-	public Vec4FloatUniform(ITypedAttribute<Vec4> attribute, String shaderName) {
-		super(attribute, shaderName);
-	}
-
-	public Vec4FloatUniform(ITypedAttribute<Vec4> attribute, String shaderName, Supplier<Vec4> supplier) {
-		super(attribute, shaderName, supplier);
-	}
-
-	public Vec4FloatUniform(String id, String shaderName, Supplier<Vec4> supplier) {
-		super(id, shaderName, supplier);
-	}
-
-	public Vec4FloatUniform(String id, String shaderName) {
-		super(id, shaderName);
+public class EmptyMaterial extends AbstractMaterial {
+	public EmptyMaterial() {
 	}
 
 	@Override
-	public void enable(GL3 gl, Program program) {
-		program.setUniformVec4(gl, getShaderIndex(gl, program), get().toArray());
+	public void getAttributes(IAttributes suppliers) {
 	}
 }

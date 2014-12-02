@@ -46,23 +46,41 @@ import ch.fhnw.ether.scene.mesh.IMesh;
 // FIXME: deal with max vbo size & multiple vbos, memory optimization, handle non-float arrays
 
 public final class Renderable {
-	private IMesh mesh;
-
 	private IShader shader;
+
+	private IMesh mesh;
 
 	private FloatArrayBuffer buffer = new FloatArrayBuffer();
 	private int[] sizes;
 	private int stride;
 
+	// FIXME: let's get rid of this providers list somehow (an unmodifiable map of provided arrays would be fine)
 	public Renderable(IMesh mesh, List<IAttributeProvider> providers) {
+		this(null, mesh, providers);
+	}
+	
+	public Renderable(IShader shader, IMesh mesh, List<IAttributeProvider> providers) {
+		this.shader = ShaderBuilder.create(shader, mesh, providers);
 		this.mesh = mesh;
 
-		shader = ShaderBuilder.buildShader(mesh, providers);
-
-		setupBuffers();
+		// setup buffers
+		List<IShaderArray<?>> arrays = this.shader.getArrays();
+		stride = 0;
+		sizes = new int[arrays.size()];
+		int i = 0;
+		for (IShaderArray<?> attr : arrays) {
+			stride += sizes[i++] = attr.getNumComponents().get();
+		}
+		i = 0;
+		int offset = 0;
+		for (IShaderArray<?> attr : arrays) {
+			attr.setup(stride, offset);
+			offset += sizes[i++];
+		}
 
 		// make sure update flag is set, so everything get initialized on the next render cycle
 		mesh.requestUpdate(null);
+		
 	}
 
 	public void dispose(GL3 gl) {
@@ -114,22 +132,6 @@ public final class Renderable {
 	@Override
 	public String toString() {
 		return "renderable[pass=" + mesh.getPass() + " shader=" + shader + " stride=" + stride + "]";
-	}
-
-	private void setupBuffers() {
-		List<IShaderArray<?>> arrays = shader.getArrays();
-		stride = 0;
-		sizes = new int[arrays.size()];
-		int i = 0;
-		for (IShaderArray<?> attr : arrays) {
-			stride += sizes[i++] = attr.getNumComponents().get();
-		}
-		i = 0;
-		int offset = 0;
-		for (IShaderArray<?> attr : arrays) {
-			attr.setup(stride, offset);
-			offset += sizes[i++];
-		}
 	}
 
 	// FIXME: thread safety

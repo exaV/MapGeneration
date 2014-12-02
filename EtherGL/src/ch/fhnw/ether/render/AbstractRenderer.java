@@ -41,6 +41,7 @@ import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.IMesh.Pass;
 
 public abstract class AbstractRenderer implements IRenderer {
+	// FIXME: this needs cleanup, i don't think we need this here, maybe better in renderables
 	private final List<IAttributeProvider> providers = new ArrayList<>();
 
 	private final Lights lights = new Lights(this);
@@ -89,6 +90,6 @@ public abstract class AbstractRenderer implements IRenderer {
 		if (shadowVolumes == null) {
 			shadowVolumes = new ShadowVolumes(providers);
 		}
-		renderables.renderShadowVolumes(gl, pass, interactive, shadowVolumes);
+		renderables.renderShadowVolumes(gl, pass, interactive, shadowVolumes, lights.getLights());
 	}
 }

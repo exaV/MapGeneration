@@ -27,35 +27,23 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.render.variable.base;
+package ch.fhnw.ether.render.shader.builtin;
 
 import java.util.function.Supplier;
 
-import javax.media.opengl.GL3;
-
-import ch.fhnw.ether.render.gl.Program;
-import ch.fhnw.ether.scene.attribute.ITypedAttribute;
+import ch.fhnw.ether.render.shader.IShader;
+import ch.fhnw.ether.render.shader.base.AbstractShader;
+import ch.fhnw.ether.render.variable.base.Vec4FloatUniform;
+import ch.fhnw.ether.render.variable.builtin.PositionArray;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.util.math.Vec4;
 
-public class Vec4FloatUniform extends AbstractUniform<Vec4> {
-	public Vec4FloatUniform(ITypedAttribute<Vec4> attribute, String shaderName) {
-		super(attribute, shaderName);
-	}
+public class TrivialDeviceSpaceShader extends AbstractShader {
+	public TrivialDeviceSpaceShader(Supplier<Vec4> color) {
+		super(IShader.class, "builtin.shader.trivial_device_space", "device_space", Primitive.TRIANGLES);
 
-	public Vec4FloatUniform(ITypedAttribute<Vec4> attribute, String shaderName, Supplier<Vec4> supplier) {
-		super(attribute, shaderName, supplier);
-	}
+		addArray(new PositionArray());
 
-	public Vec4FloatUniform(String id, String shaderName, Supplier<Vec4> supplier) {
-		super(id, shaderName, supplier);
-	}
-
-	public Vec4FloatUniform(String id, String shaderName) {
-		super(id, shaderName);
-	}
-
-	@Override
-	public void enable(GL3 gl, Program program) {
-		program.setUniformVec4(gl, getShaderIndex(gl, program), get().toArray());
+		addUniform(new Vec4FloatUniform("shader.color", "color", color));
 	}
 }

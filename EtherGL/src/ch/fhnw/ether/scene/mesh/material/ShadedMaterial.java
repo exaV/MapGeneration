@@ -32,6 +32,7 @@ package ch.fhnw.ether.scene.mesh.material;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.util.color.RGB;
 
+// TODO: support for per vertex color (if that's ever needed)
 public class ShadedMaterial extends AbstractMaterial {
 	private final RGB emission;
 	private final RGB ambient;
