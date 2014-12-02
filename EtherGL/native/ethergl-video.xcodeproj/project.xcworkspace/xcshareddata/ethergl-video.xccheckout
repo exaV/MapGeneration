@@ -14,7 +14,7 @@
 		<string>https://bitbucket.org/arisona/ether-gl.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>EtherGL-Video/native/ethergl-video.xcodeproj</string>
+	<string>EtherGL/native/ethergl-video.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>A2E9B55E8A4DE8624C252F73E1CBAF7D86082611</key>
