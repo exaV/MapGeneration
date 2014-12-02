@@ -198,7 +198,7 @@ public class RayTracer implements ISequentialFrameSource {
 	}
 
 	public void setLights(List<ILight> lights) {
-		this.lights = new ArrayList<ILight>(lights);
+		this.lights = new ArrayList<>(lights);
 	}
 
 	public void addLigth(ILight light) {
