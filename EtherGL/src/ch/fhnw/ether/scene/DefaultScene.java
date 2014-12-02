@@ -105,17 +105,17 @@ public class DefaultScene implements IScene {
 
 
 	@Override
-	public final List<? extends I3DObject> get3DObjects() {
+	public final List<I3DObject> get3DObjects() {
 		return Collections.unmodifiableList(objects);
 	}
 
 	@Override
-	public final List<? extends IMesh> getMeshes() {
+	public final List<IMesh> getMeshes() {
 		return Collections.unmodifiableList(meshes);
 	}
 
 	@Override
-	public final List<? extends ICamera> getCameras() {
+	public final List<ICamera> getCameras() {
 		return Collections.unmodifiableList(cameras);
 	}
 

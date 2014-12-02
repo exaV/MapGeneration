@@ -38,13 +38,13 @@ import org.jcodec.api.JCodecException;
 import org.jcodec.common.NIOUtils;
 import org.jcodec.common.SeekableByteChannel;
 
-import ch.fhnw.ether.video.IVideoTrack;
+import ch.fhnw.ether.video.IFrameSource;
 
-abstract class AbstractVideoTrack implements IVideoTrack {
+abstract class AbstractVideoTrack implements IFrameSource {
 
-	private URL url;
-	private SeekableByteChannel channel;
-	protected FrameGrab grab;
+	private   URL                 url;
+	private   SeekableByteChannel channel;
+	protected FrameGrab           grab;
 
 	public AbstractVideoTrack(URL url) throws IOException, URISyntaxException, JCodecException {
 		this.url = url;

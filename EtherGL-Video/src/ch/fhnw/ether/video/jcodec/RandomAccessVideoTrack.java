@@ -36,9 +36,9 @@ import java.net.URL;
 import org.jcodec.api.JCodecException;
 
 import ch.fhnw.ether.image.Frame;
-import ch.fhnw.ether.video.IRandomAccessVideoTrack;
+import ch.fhnw.ether.video.IRandomAccessFrameSource;
 
-public final class RandomAccessVideoTrack extends AbstractVideoTrack implements IRandomAccessVideoTrack {
+public final class RandomAccessVideoTrack extends AbstractVideoTrack implements IRandomAccessFrameSource {
 	public RandomAccessVideoTrack(URL url) throws IOException, URISyntaxException, JCodecException {
 		super(url);
 	}

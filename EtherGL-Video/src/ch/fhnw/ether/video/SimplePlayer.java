@@ -20,12 +20,12 @@ public class SimplePlayer extends Canvas implements Runnable {
 
 	private static final double SEC2MS = 1000.0;
 	
-	private final ISequentialVideoTrack track;
+	private final ISequentialFrameSource track;
 	private final Queue<Frame>          frames = new ConcurrentLinkedQueue<>();
 	private long                        frameCount;
 	private long                        startTime;
 	
-	public SimplePlayer(ISequentialVideoTrack track) {
+	public SimplePlayer(ISequentialFrameSource track) {
 		this.track = track;
 	}
 
@@ -86,7 +86,7 @@ public class SimplePlayer extends Canvas implements Runnable {
 			System.exit(1);
 		}
 
-		ISequentialVideoTrack track = null;
+		ISequentialFrameSource track = null;
 		try {
 			track = VideoTrackFactory.createSequentialTrack(new URL(args[0]));
 		} catch(MalformedURLException e) {

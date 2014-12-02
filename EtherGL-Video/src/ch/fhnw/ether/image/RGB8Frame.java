@@ -38,6 +38,8 @@ import java.awt.image.DirectColorModel;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
+import javax.media.opengl.GL;
+
 import ch.fhnw.util.BufferUtil;
 
 public class RGB8Frame extends Frame {
@@ -215,10 +217,10 @@ public class RGB8Frame extends Frame {
 		val &= m;
 		if (shift > 0)
 			val >>= shift;
-		else
-			val <<= shift;
-		val |= val >> size;
-		return (byte) val;
+				else
+					val <<= shift;
+				val |= val >> size;
+				return (byte) val;
 	}
 
 	@Override
@@ -538,5 +540,10 @@ public class RGB8Frame extends Frame {
 		if (src.getClass() != getClass())
 			src = new RGB8Frame(src);
 		setSubframeImpl(i, j, src);
+	}
+
+	@Override
+	protected void loadInternal(GL gl, int target, int textureId) {
+		gl.glTexImage2D(target, 0, GL.GL_RGB, dimI, dimJ, 0, GL.GL_RGB, GL.GL_UNSIGNED_BYTE, pixels);
 	}
 }

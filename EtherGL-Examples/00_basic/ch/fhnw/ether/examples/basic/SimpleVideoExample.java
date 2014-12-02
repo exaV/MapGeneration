@@ -19,7 +19,7 @@ import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.ColorMapMaterial;
 import ch.fhnw.ether.scene.mesh.material.Texture;
-import ch.fhnw.ether.video.ISequentialVideoTrack;
+import ch.fhnw.ether.video.ISequentialFrameSource;
 import ch.fhnw.ether.video.VideoTrackFactory;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.gl.DefaultView;
@@ -53,7 +53,7 @@ public class SimpleVideoExample {
 
 		try {
 			URL url = new URL(path);
-			final ISequentialVideoTrack track = VideoTrackFactory.createSequentialTrack(url);
+			final ISequentialFrameSource track = VideoTrackFactory.createSequentialTrack(url);
 
 			long delay = (long) (1000 / track.getFrameRate());
 

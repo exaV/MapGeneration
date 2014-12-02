@@ -10,29 +10,29 @@
 	<string>ethergl-video</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
-		<key>64F96166-663B-4268-9A52-69B87DDC2BB0</key>
+		<key>A2E9B55E8A4DE8624C252F73E1CBAF7D86082611</key>
 		<string>https://bitbucket.org/arisona/ether-gl.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>EtherGL-Video/native/ethergl-video/ethergl-video.xcodeproj/project.xcworkspace</string>
+	<string>EtherGL-Video/native/ethergl-video.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
-		<key>64F96166-663B-4268-9A52-69B87DDC2BB0</key>
-		<string>../../../../..</string>
+		<key>A2E9B55E8A4DE8624C252F73E1CBAF7D86082611</key>
+		<string>../../../..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
 	<string>https://bitbucket.org/arisona/ether-gl.git</string>
 	<key>IDESourceControlProjectVersion</key>
-	<integer>110</integer>
+	<integer>111</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
-	<string>64F96166-663B-4268-9A52-69B87DDC2BB0</string>
+	<string>A2E9B55E8A4DE8624C252F73E1CBAF7D86082611</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>64F96166-663B-4268-9A52-69B87DDC2BB0</string>
+			<string>A2E9B55E8A4DE8624C252F73E1CBAF7D86082611</string>
 			<key>IDESourceControlWCCName</key>
 			<string>ether-gl</string>
 		</dict>

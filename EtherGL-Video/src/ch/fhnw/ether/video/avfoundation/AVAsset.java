@@ -33,10 +33,10 @@ import java.net.URL;
 
 import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.image.RGBA8Frame;
-import ch.fhnw.ether.video.IRandomAccessVideoTrack;
-import ch.fhnw.ether.video.ISequentialVideoTrack;
+import ch.fhnw.ether.video.IRandomAccessFrameSource;
+import ch.fhnw.ether.video.ISequentialFrameSource;
 
-public final class AVAsset implements ISequentialVideoTrack, IRandomAccessVideoTrack {
+public final class AVAsset implements ISequentialFrameSource, IRandomAccessFrameSource {
 	private static boolean READY = true;
 
 	static {
@@ -120,12 +120,16 @@ public final class AVAsset implements ISequentialVideoTrack, IRandomAccessVideoT
 
 	@Override
 	public Frame getFrame(double time) {
-		return new RGBA8Frame(getWidth(), getHeight(), nativeGetFrame(nativeHandle, time));
+		byte[] pixels = nativeGetFrame(nativeHandle, time);
+		if(pixels == null) return null;
+		return new RGBA8Frame(getWidth(), getHeight(), pixels);
 	}
 
 	@Override
 	public Frame getNextFrame() {
-		return new RGBA8Frame(getWidth(), getHeight(), nativeGetNextFrame(nativeHandle));
+		byte[] pixels = nativeGetNextFrame(nativeHandle);
+		if(pixels == null) return null;
+		return new RGBA8Frame(getWidth(), getHeight(), pixels);
 	}
 
 	@Override

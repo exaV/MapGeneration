@@ -29,21 +29,27 @@
 
 package ch.fhnw.ether.video;
 
-import java.net.URL;
+import javax.media.opengl.GL;
 
-public interface IVideoTrack {
+import ch.fhnw.ether.image.Frame;
 
-	void dispose();
-
-	URL getURL();
-
-	double getDuration();
-
-	double getFrameRate();
-
-	long getFrameCount();
-
-	int getWidth();
-
-	int getHeight();
+/**
+ * Interface for decoding frames from a frame source (e.g. video) in random-access mode. Note
+ * this might be slow and should mainly be used for obtaining individual frames,
+ * e.g. for film-strip images or previews.
+ * 
+ * @author radar
+ *
+ */
+public interface IRandomAccessFrameSource extends IFrameSource {
+	Frame getFrame(long frame);
+	Frame getFrame(double time);
+	
+	default void getFrame(GL gl, long frame, int textureId) {
+		loadFrames(gl, textureId, getFrame(frame));
+	}
+	
+	default void getFrame(GL gl, double time, int textureId) {
+		loadFrames(gl, textureId, getFrame(time));
+	}
 }
