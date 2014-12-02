@@ -36,6 +36,8 @@ import java.awt.image.DataBufferInt;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
+import javax.media.opengl.GL;
+
 import ch.fhnw.util.BufferUtil;
 
 public class RGBA8Frame extends RGB8Frame {
@@ -339,7 +341,7 @@ public class RGBA8Frame extends RGB8Frame {
 
 	@Override
 	public float getFloatComponent(int i, int j, int component) {
-		return (pixels.get(((dimI * dimJ) + (j * dimI) + i) * pixelSize + component) & 0xFF) / 255f;
+		return (pixels.get(((j * dimI) + i) * pixelSize + component) & 0xFF) / 255f;
 	}
 
 	@Override
@@ -381,5 +383,10 @@ public class RGBA8Frame extends RGB8Frame {
 		if (src.getClass() != getClass())
 			src = new RGBA8Frame(src);
 		setSubframeImpl(i, j, src);
+	}
+
+	@Override
+	protected void loadInternal(GL gl, int target, int textureId) {
+		gl.glTexImage2D(target, 0, GL.GL_RGBA, dimI, dimJ, 0, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, pixels);
 	}
 }

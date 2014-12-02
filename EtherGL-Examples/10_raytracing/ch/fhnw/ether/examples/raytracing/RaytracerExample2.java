@@ -55,7 +55,7 @@ public class RaytracerExample2 {
 
 	public RaytracerExample2() {
 		// create controller, camera, scene and view
-		IController controller = new DefaultController(new EventDrivenScheduler(), new RayTracingRenderer());
+		IController controller = new DefaultController(new EventDrivenScheduler(), new RayTracingRenderer(new RayTracer()));
 		
 		IScene scene = new DefaultScene(controller);
 		controller.setScene(scene);

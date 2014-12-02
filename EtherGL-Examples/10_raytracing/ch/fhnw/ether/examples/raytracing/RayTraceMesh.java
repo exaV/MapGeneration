@@ -42,8 +42,8 @@ import ch.fhnw.util.math.geometry.Line;
 
 public class RayTraceMesh implements IMesh {
 	private final IParametricSurface surface;
-	private Vec3 position = Vec3.ZERO;
-	private RGBA color = RGBA.WHITE;
+	private Vec3                     position = Vec3.ZERO;
+	private RGBA                     color    = RGBA.WHITE;
 	
 	private String name = "ray_trace_mesh";
 
@@ -95,7 +95,7 @@ public class RayTraceMesh implements IMesh {
 
 	@Override
 	public IMaterial getMaterial() {
-		return new ColorMaterial(color);
+		return new ColorMaterial(new RGBA(color));
 	}
 
 	@Override

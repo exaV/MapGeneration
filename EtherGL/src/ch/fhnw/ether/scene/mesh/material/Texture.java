@@ -31,7 +31,12 @@ package ch.fhnw.ether.scene.mesh.material;
 
 import java.net.URL;
 
+import javax.media.opengl.GL;
+
 import ch.fhnw.ether.image.Frame;
+import ch.fhnw.ether.video.IRandomAccessFrameSource;
+import ch.fhnw.ether.video.ISequentialFrameSource;
+import ch.fhnw.ether.video.IFrameSource;
 import ch.fhnw.ether.video.VideoTrackFactory;
 import ch.fhnw.util.UpdateRequest;
 
@@ -43,9 +48,15 @@ import ch.fhnw.util.UpdateRequest;
 public class Texture {
 	private final UpdateRequest updater = new UpdateRequest();
 
-	private Frame frame;
+	private IFrameSource track;
+	private long        frame = 0;
+	private double      time  = -1;
 
 	public Texture() {
+	}
+
+	public Texture(IFrameSource track) {
+		this.track = track;
 	}
 
 	public Texture(URL url) {
@@ -54,14 +65,14 @@ public class Texture {
 
 	public void setData(URL url) {
 		try {
-			setData(VideoTrackFactory.createSequentialTrack(url).getNextFrame());
+			setData(VideoTrackFactory.createSequentialTrack(url));
 		} catch (Throwable e) {
 			throw new IllegalArgumentException("can't load image " + url);
 		}
 	}
 
-	public void setData(Frame frame) {
-		this.frame  = frame;
+	public void setData(IFrameSource track) {
+		this.track = track;
 		updater.requestUpdate();
 	}
 
@@ -70,19 +81,58 @@ public class Texture {
 	}
 
 	public int getWidth() {
-		return frame.dimI;
+		return track.getWidth();
 	}
 
 	public int getHeight() {
-		return frame.dimJ;
+		return track.getHeight();
 	}
 
 	@Override
 	public String toString() {
-		return "texture[w=" + frame.dimI + " h=" + frame.dimJ + "]";
+		return "texture[w=" + getWidth() + " h=" + getHeight() + "]";
 	}
 
+	public IFrameSource getTrack() {
+		return track;
+	}
+
+	public void setTime(double time) {
+		this.time  = time;
+		this.frame = -1;
+		this.updater.requestUpdate();
+	}
+
+	public void setFrame(long frame) {
+		this.time  = -1;
+		this.frame = frame;
+		this.updater.requestUpdate();
+	}
+
+	public void update() {
+		updater.requestUpdate();
+	}
+	
+	public void load(GL gl, int target, int textureId) {
+		if(track instanceof ISequentialFrameSource)
+			((ISequentialFrameSource)track).getNextFrames(gl, 1, textureId);
+		else if(track instanceof IRandomAccessFrameSource) {
+			if(time >= 0)
+				((IRandomAccessFrameSource)track).getFrame(gl, time, textureId);
+			else
+				((IRandomAccessFrameSource)track).getFrame(gl, frame, textureId);
+		}
+	}
+	
 	public Frame getFrame() {
-		return frame;
+		if(track instanceof ISequentialFrameSource)
+			return ((ISequentialFrameSource)track).getNextFrame();
+		else if(track instanceof IRandomAccessFrameSource) {
+			if(time >= 0)
+				return ((IRandomAccessFrameSource)track).getFrame(time);
+			else
+				return ((IRandomAccessFrameSource)track).getFrame(frame);
+		}
+		return null;
 	}
 }

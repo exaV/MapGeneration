@@ -36,7 +36,7 @@ public class RGBA extends Vec4 implements IColor {
 	 * Special value to indicate per-vertex colors for materials.
 	 */
 	public static final RGBA PER_VERTEX_COLOR = new RGBA(0, 0, 0, 0);
-	
+
 	public static final RGBA BLACK = new RGBA(0, 0, 0, 1);
 	public static final RGBA WHITE = new RGBA(1, 1, 1, 1);
 
@@ -58,6 +58,13 @@ public class RGBA extends Vec4 implements IColor {
 
 	public RGBA(float[] rgba) {
 		this(rgba[0], rgba[1], rgba[2], rgba[3]);
+	}
+
+	public RGBA(int rgba) {
+		this(((rgba >> 24) & 0xFF) / 255f,
+				((rgba >> 16) & 0xFF) / 255f,
+				((rgba >> 8) & 0xFF) / 255f,
+				(rgba & 0xFF) / 255f);
 	}
 
 	public RGBA(Vec4 c) {
@@ -112,7 +119,7 @@ public class RGBA extends Vec4 implements IColor {
 		int a = (int) (w * 255);
 		return (a << 24 | b << 16 | g << 8 | r << 0);
 	}
-	
+
 	public int toRGBA() {
 		int r = (int) (x * 255);
 		int g = (int) (y * 255);

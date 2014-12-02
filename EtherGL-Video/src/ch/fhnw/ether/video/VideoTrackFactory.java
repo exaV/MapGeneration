@@ -39,7 +39,6 @@ import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
 
 import ch.fhnw.ether.image.Frame;
-import ch.fhnw.ether.image.ImageTrack;
 import ch.fhnw.ether.video.avfoundation.AVAsset;
 import ch.fhnw.ether.video.jcodec.RandomAccessVideoTrack;
 import ch.fhnw.ether.video.jcodec.SequentialVideoTrack;
@@ -47,9 +46,9 @@ import ch.fhnw.ether.video.jcodec.SequentialVideoTrack;
 public final class VideoTrackFactory {
 	private static final boolean USE_AV_FOUNDATION = true;
 
-	public static IRandomAccessVideoTrack createRandomAccessTrack(URL url) throws IOException {
+	public static IRandomAccessFrameSource createRandomAccessTrack(URL url) throws IOException {
 		if (isImage(url))
-			return new ImageTrack(url);
+			return Frame.newFrame(url);
 		else if (USE_AV_FOUNDATION && AVAsset.isReady())
 			return new AVAsset(url);
 		try {
@@ -59,9 +58,9 @@ public final class VideoTrackFactory {
 		}
 	}
 
-	public static ISequentialVideoTrack createSequentialTrack(URL url) throws IOException {
+	public static ISequentialFrameSource createSequentialTrack(URL url) throws IOException {
 		if (isImage(url))
-			return new ImageTrack(url);
+			return Frame.newFrame(url);
 		else if (USE_AV_FOUNDATION && AVAsset.isReady())
 			return new AVAsset(url);
 		try {
@@ -89,7 +88,7 @@ public final class VideoTrackFactory {
 
 	public static void testRandomAccess(URL url, double time) {
 		try {
-			IRandomAccessVideoTrack track = createRandomAccessTrack(url);
+			IRandomAccessFrameSource track = createRandomAccessTrack(url);
 			System.out.println("random access track: " + track);
 
 			Frame frame = track.getFrame(time);
@@ -111,7 +110,7 @@ public final class VideoTrackFactory {
 
 	public static void testSequential(URL url, double time) {
 		try {
-			ISequentialVideoTrack track = createSequentialTrack(url);
+			ISequentialFrameSource track = createSequentialTrack(url);
 			System.out.println("sequential track: " + track);
 
 			long numFrames = (long) (time * track.getFrameRate());

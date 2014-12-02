@@ -137,9 +137,9 @@ public:
         
         jbyteArray array = env->NewByteArray(length);
         uint8_t* arrayElements = (uint8_t*)env->GetByteArrayElements(array, nullptr);
-        uint8_t* src = (uint8_t*)[data bytes];
         uint8_t* dst = arrayElements;
-        for (int y = 0; y < height; ++y) {
+        for (int y = height; --y >= 0;) {
+            uint8_t* src = (uint8_t*)[data bytes] + y * bytesPerRow;
             for (int x = 0; x < width; ++x) {
                 uint8_t a = *src++;
                 uint8_t r = *src++;
@@ -192,9 +192,9 @@ public:
 
         jbyteArray array = env->NewByteArray((int)length);
         uint8_t* arrayElements = (uint8_t*)env->GetByteArrayElements(array, nullptr);
-        uint8_t* src = (uint8_t*)CVPixelBufferGetBaseAddress(imageBuffer);
         uint8_t* dst = arrayElements;
-        for (int y = 0; y < height; ++y) {
+        for (int y = height; --y >= 0;) {
+            uint8_t* src = (uint8_t*)CVPixelBufferGetBaseAddress(imageBuffer) + y * bytesPerRow;
             for (int x = 0; x < width; ++x) {
                 uint8_t b = *src++;
                 uint8_t g = *src++;

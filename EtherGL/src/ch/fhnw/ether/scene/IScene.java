@@ -43,11 +43,11 @@ public interface IScene {
 	
 	void remove3DObjects(I3DObject... objects);
 
-	List<? extends I3DObject> get3DObjects();
+	List<I3DObject> get3DObjects();
 
-	List<? extends IMesh> getMeshes();
+	List<IMesh> getMeshes();
 
-	List<? extends ICamera> getCameras();
+	List<ICamera> getCameras();
 
-	List<? extends ILight> getLights();
+	List<ILight> getLights();
 }

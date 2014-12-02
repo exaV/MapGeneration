@@ -36,19 +36,29 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import javax.imageio.ImageIO;
+import javax.media.opengl.GL;
+import javax.media.opengl.GL2;
+import javax.media.opengl.GL3;
 
 import org.jcodec.common.model.ColorSpace;
 import org.jcodec.common.model.Picture;
 import org.jcodec.scale.ColorUtil;
 import org.jcodec.scale.Transform;
 
+import ch.fhnw.ether.video.IRandomAccessFrameSource;
+import ch.fhnw.ether.video.ISequentialFrameSource;
 import ch.fhnw.util.BufferUtil;
 
-public abstract class Frame {
+public abstract class Frame implements ISequentialFrameSource, IRandomAccessFrameSource {
 	public enum FileFormat {PNG,JPEG}
-	
+
 	protected static final byte     B0    = 0;
 	protected static final byte     B255  = (byte) 255;
 	private static final ByteBuffer EMPTY = BufferUtil.allocateDirect(0);
@@ -188,28 +198,58 @@ public abstract class Frame {
 		final Frame      result  = new RGB8Frame(src.getWidth(), src.getHeight());
 		final ByteBuffer pixels  = result.pixels;
 		final int[]      srcData = src.getPlaneData(0);
-		final int        size    = result.dimI * result.dimJ * result.pixelSize;
-		
+		final int        line    = result.dimI * result.pixelSize;
+
 		pixels.clear();
-		for (int i = 0; i < size; i += 3) {
-			pixels.put((byte) srcData[i+2]);
-			pixels.put((byte) srcData[i+1]);
-			pixels.put((byte) srcData[i+0]);
+		for(int j = result.dimJ; --j >= 0;) {
+			int idx = j * line;
+			for (int i = result.dimI; --i >= 0;) {
+				pixels.put((byte) srcData[idx+2]);
+				pixels.put((byte) srcData[idx+1]);
+				pixels.put((byte) srcData[idx+0]);
+				idx += 3;
+			}
 		}
 
 		return result;
 	}
-	
-	public static Frame newFrmae(File file) throws IOException {
+
+	public static Frame newFrame(File file) throws IOException {
 		return newFrame(ImageIO.read(file));
 	}
 
-	public static Frame newFrmae(URL url) throws IOException {
+	public static Frame newFrame(URL url) throws IOException {
 		return newFrame(ImageIO.read(url));
 	}
 
-	public static Frame newFrmae(InputStream in) throws IOException {
+	public static Frame newFrame(InputStream in) throws IOException {
 		return newFrame(ImageIO.read(in));
+	}
+
+	public static Frame newFrame(GL gl, int target, int textureId) {
+		Frame result = null;
+		int[] tmpi   = new int[1];
+		int width;
+		int height;
+		int internalFormat;
+		gl.glBindTexture(target, textureId);
+		gl.glGetTexParameteriv(target, GL2.GL_TEXTURE_COMPONENTS, tmpi, 0); internalFormat = tmpi[0];
+		gl.glGetTexParameteriv(target, GL3.GL_TEXTURE_WIDTH,      tmpi, 0); width          = tmpi[0];
+		gl.glGetTexParameteriv(target, GL3.GL_TEXTURE_HEIGHT,     tmpi, 0); height         = tmpi[0];
+		switch(internalFormat) {
+		case GL.GL_RGB:
+			result = new RGB8Frame(width, height);
+			break;
+		case GL.GL_RGBA:
+			result = new RGBA8Frame(width, height);
+			break;
+		default:
+			throw new IllegalArgumentException("Unsupported format:" + internalFormat);
+		}
+		result.pixels.clear();
+		gl.glReadnPixels(0, 0, width, height, internalFormat, GL.GL_UNSIGNED_BYTE, result.pixels.capacity(), result.pixels);
+		gl.glBindTexture(target, 0);
+		return result;
 	}
 
 	public final void setPixels(int i, int j, int width, int height, BufferedImage img) {
@@ -437,12 +477,114 @@ public abstract class Frame {
 	protected static final float linearInterpolate(float low, float high, float weight) {
 		return low + ((high - low) * weight);
 	}
-	
+
 	public void write(File file, FileFormat format) throws IOException {
 		ImageIO.write(toBufferedImage(), format.toString(), file);
 	}
-	
+
 	public void write(OutputStream out, FileFormat format) throws IOException {
 		ImageIO.write(toBufferedImage(), format.toString(), out);
+	}
+
+	public void load(GL gl, int target, int textureId) {
+		gl.glBindTexture(target, textureId);
+		gl.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
+		pixels.rewind();
+		loadInternal(gl, target, textureId);
+		gl.glGenerateMipmap(target);
+		gl.glBindTexture(target, 0);
+	}
+
+	protected abstract void loadInternal(GL gl, int target, int textureId);
+
+	@Override
+	public Frame getFrame(double time) {
+		return this;
+	}
+
+	@Override
+	public Frame getFrame(long frame) {
+		return this;
+	}
+
+	@Override
+	public Frame getNextFrame() {
+		return this;
+	}
+
+	@Override
+	public double getDuration() {
+		return DURATION_UNKNOWN;
+	}
+
+	@Override
+	public long getFrameCount() {
+		return 1;
+	}
+
+	@Override
+	public double getFrameRate() {
+		return FRAMERATE_UNKNOWN;
+	}
+
+	@Override
+	public int getWidth() {
+		return dimI;
+	}
+
+	@Override
+	public int getHeight() {
+		return dimJ;
+	}
+
+	@Override
+	public void rewind() {}
+
+	@Override
+	public void dispose() {
+		pixels = null; // help gc
+	}
+
+	@Override
+	public URL getURL() {
+		return null;
+	}
+
+	static final ExecutorService POOL       = Executors.newCachedThreadPool();
+	static final int             NUM_CHUNKS = Runtime.getRuntime().availableProcessors(); 
+
+	class Chunk implements Runnable {
+		private final int            from;
+		private final int            to;
+		private final ByteBuffer     pixels;
+		private final ILineProcessor processor;
+
+		Chunk(int from, int to, ILineProcessor processor) {
+			this.from      = from;
+			this.to        = to;
+			this.pixels    = Frame.this.pixels.duplicate();
+			this.processor = processor;
+		}
+
+		@Override
+		public void run() {
+			for(int j = from; j < to; j++) {
+				pixels.position(j * dimI * pixelSize);
+				processor.process(pixels, j);
+			}
+		}
+	}
+
+	public void processByLine(ILineProcessor processor) {
+		List<Future<?>> result = new ArrayList<Future<?>>(NUM_CHUNKS + 1);
+		int inc  = Math.max(1, dimJ / NUM_CHUNKS);
+		for(int from = 0; from < dimJ; from += inc)
+			result.add(POOL.submit(new Chunk(from, Math.min(from + inc, dimJ), processor)));
+		try {
+			for(Future<?> f : result)
+				f.get();
+		} catch(Throwable t) {
+			t.printStackTrace();
+		}
 	}
 }

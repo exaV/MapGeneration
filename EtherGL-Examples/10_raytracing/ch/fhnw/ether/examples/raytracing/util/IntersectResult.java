@@ -35,9 +35,9 @@ import ch.fhnw.util.math.Vec3;
 
 public class IntersectResult {
 	public final IParametricSurface surface;
-	public final Vec3 position;
-	public final RGBA color;
-	public final float dist;
+	public final Vec3               position;
+	public final RGBA               color;
+	public final float              dist;
 
 	public IntersectResult(IParametricSurface surface, Vec3 position, RGBA color, float dist) {
 		this.position = position;

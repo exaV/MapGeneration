@@ -36,9 +36,9 @@ import java.net.URL;
 import org.jcodec.api.JCodecException;
 
 import ch.fhnw.ether.image.Frame;
-import ch.fhnw.ether.video.ISequentialVideoTrack;
+import ch.fhnw.ether.video.ISequentialFrameSource;
 
-public final class SequentialVideoTrack extends AbstractVideoTrack implements ISequentialVideoTrack {
+public final class SequentialVideoTrack extends AbstractVideoTrack implements ISequentialFrameSource {
 	public SequentialVideoTrack(URL url) throws IOException, URISyntaxException, JCodecException {
 		super(url);
 	}

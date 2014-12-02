@@ -29,17 +29,36 @@
 
 package ch.fhnw.ether.video;
 
+import java.util.Arrays;
+
+import javax.media.opengl.GL;
+
 import ch.fhnw.ether.image.Frame;
 
 /**
- * Interface for decoding frames from a video track in random-access mode. Note
- * this might be slow and should mainly be used for obtaining individual frames,
- * e.g. for film-strip images or previews.
+ * Interface for decoding frames from a frame source (e.g. video)) sequentially from the beginning. This will be very fast for most
+ * implementations (e.g. Mac OS X AVFoundation).
  * 
  * @author radar
  *
  */
-public interface IRandomAccessVideoTrack extends IVideoTrack {
-	Frame getFrame(long frame);
-	Frame getFrame(double time);
+public interface ISequentialFrameSource extends IFrameSource {
+	void rewind();
+
+	Frame getNextFrame();
+
+	default int getNextFrames(GL gl, int count, int textureId) {
+		int     result = 0;
+		Frame[] frames = new Frame[count];
+		for(int i = 0; i < count; i++) {
+			Frame frame  = getNextFrame();
+			if(frame == null) break;
+			frames[result++] = frame;
+		}
+		if(result == count)
+			result = loadFrames(gl, textureId, frames);
+		else
+			result = loadFrames(gl, textureId, Arrays.copyOf(frames, result));
+		return result;
+	}
 }

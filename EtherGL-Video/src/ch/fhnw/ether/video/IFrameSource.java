@@ -1,5 +1,3 @@
-package ch.fhnw.ether.image;
-
 /*
  * Copyright (c) 2013 - 2014 Stefan Muller Arisona, Simon Schubiger, Samuel von Stachelski
  * Copyright (c) 2013 - 2014 FHNW & ETH Zurich
@@ -29,73 +27,38 @@ package ch.fhnw.ether.image;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.io.IOException;
+package ch.fhnw.ether.video;
+
 import java.net.URL;
 
-import javax.imageio.ImageIO;
+import javax.media.opengl.GL;
 
-import ch.fhnw.ether.video.IRandomAccessVideoTrack;
-import ch.fhnw.ether.video.ISequentialVideoTrack;
+import ch.fhnw.ether.image.Frame;
 
-public class ImageTrack implements ISequentialVideoTrack, IRandomAccessVideoTrack {
-	private final URL   url;
-	private final Frame frame;
+public interface IFrameSource {
+	double DURATION_UNKNOWN   = -1;
+	long   FRAMECOUNT_UNKNOWN = -1;
+	long   FRAMERATE_UNKNOWN  = 0;
 
-	public ImageTrack(URL url) throws IOException {
-		this.url = url;
-		frame = Frame.newFrame(ImageIO.read(url));
-	}
+	void dispose();
 
-	@Override
-	public void dispose() {
-	}
+	URL getURL();
 
-	@Override
-	public URL getURL() {
-		return url;
-	}
+	double getDuration();
 
-	@Override
-	public double getDuration() {
-		return 0;
-	}
+	double getFrameRate();
 
-	@Override
-	public double getFrameRate() {
-		return 0;
-	}
+	long getFrameCount();
 
-	@Override
-	public long getFrameCount() {
-		return 1;
-	}
+	int getWidth();
 
-	@Override
-	public int getWidth() {
-		return frame.dimI;
-	}
-
-	@Override
-	public int getHeight() {
-		return frame.dimJ;
-	}
-
-	@Override
-	public Frame getFrame(long frame) {
-		return this.frame;
-	}
-
-	@Override
-	public Frame getFrame(double time) {
-		return this.frame;
-	}
-
-	@Override
-	public void rewind() {
-	}
-
-	@Override
-	public Frame getNextFrame() {
-		return this.frame;
+	int getHeight();
+	
+	default int loadFrames(GL gl, int textureId, Frame ... frames) {
+		if(frames.length == 1) {
+			frames[0].load(gl, GL.GL_TEXTURE_2D, textureId);
+			return frames.length;
+		}
+		throw new UnsupportedOperationException("only frames.length == 1 supported");
 	}
 }

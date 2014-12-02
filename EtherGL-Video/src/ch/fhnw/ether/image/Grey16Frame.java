@@ -42,6 +42,9 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.Arrays;
 
+import javax.media.opengl.GL;
+import javax.media.opengl.GL3;
+
 import ch.fhnw.util.BufferUtil;
 
 public final class Grey16Frame extends Frame {
@@ -482,5 +485,10 @@ public final class Grey16Frame extends Frame {
 		out.setPixels_(0, 0, dimI, dimJ, toBufferedImage(), ImageScaler.NORMALIZE, alphaValue);
 
 		return out;
+	}
+
+	@Override
+	protected void loadInternal(GL gl, int target, int textureId) {
+		gl.glTexImage2D(target, 0, GL3.GL_RED, dimI, dimJ, 0, GL3.GL_RED, GL.GL_UNSIGNED_SHORT, pixels);
 	}
 }
