@@ -59,28 +59,22 @@ public final class ShaderBuilder {
 	}
 
 	/*
-	public static IShader create(IShader shader, IMesh mesh, List<IAttributeProvider> providers) {
-		Attributes attributes = new Attributes();
+	 * public static IShader create(IShader shader, IMesh mesh, List<IAttributeProvider> providers) { Attributes
+	 * attributes = new Attributes();
+	 * 
+	 * // get attributes from mesh and from renderer) if (mesh != null) mesh.getMaterial().getAttributes(attributes); if
+	 * (providers != null) providers.forEach((provider) -> provider.getAttributes(attributes));
+	 * 
+	 * // create shader and attach all attributes this shader requires if (shader == null) shader = createShader(mesh,
+	 * Collections.unmodifiableSet(attributes.attributes.keySet()));
+	 * 
+	 * attachUniforms(shader, attributes);
+	 * 
+	 * if (mesh != null) attachArrays(shader, mesh);
+	 * 
+	 * return shader; }
+	 */
 
-		// get attributes from mesh and from renderer)
-		if (mesh != null)
-			mesh.getMaterial().getAttributes(attributes);
-		if (providers != null)
-			providers.forEach((provider) -> provider.getAttributes(attributes));
-
-		// create shader and attach all attributes this shader requires
-		if (shader == null)
-			shader = createShader(mesh, Collections.unmodifiableSet(attributes.attributes.keySet()));
-
-		attachUniforms(shader, attributes);
-
-		if (mesh != null)
-			attachArrays(shader, mesh);
-
-		return shader;
-	}
-	*/
-	
 	@SuppressWarnings("unchecked")
 	public static <S extends IShader> S create(S shader, IMesh mesh, List<IAttributeProvider> providers) {
 		Attributes attributes = new Attributes();
@@ -93,17 +87,18 @@ public final class ShaderBuilder {
 
 		// create shader and attach all attributes this shader requires
 		if (shader == null)
-			shader = (S)createShader(mesh, Collections.unmodifiableSet(attributes.attributes.keySet()));
+			shader = (S) createShader(mesh, Collections.unmodifiableSet(attributes.attributes.keySet()));
 
 		attachUniforms(shader, attributes);
 
 		if (mesh != null)
 			attachArrays(shader, mesh);
 
-		return shader;		
+		return shader;
 	}
 
-	// FIXME: make more flexible/dynamic (as soon as we have more builtin shaders): derive shader from attributes
+	// as soon as we have more builtin shaders we should move to a more flexible scheme, e.g. derive shader from
+	// provided attributes
 	private static IShader createShader(IMesh mesh, Collection<IAttribute> attributes) {
 		IMaterial material = mesh.getMaterial();
 		if (material instanceof CustomMaterial) {

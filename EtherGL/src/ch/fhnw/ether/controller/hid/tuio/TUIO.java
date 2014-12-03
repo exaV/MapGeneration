@@ -46,6 +46,7 @@ import ch.fhnw.util.math.geometry.BoundingBox;
 import ch.fhnw.util.net.osc.OSCHandler;
 import ch.fhnw.util.net.osc.OSCServer;
 
+// TODO: would be nice if we could use NEWT gestures here 
 // TODO: add support for multiple interactive views
 // TODO: check whether a cursor is actually within one of our views
 

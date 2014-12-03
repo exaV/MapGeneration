@@ -91,24 +91,4 @@ public final class ShadowVolumes {
 		gl.glDepthMask(true);
 		gl.glDisable(GL3.GL_DEPTH_CLAMP);
 	}
-
-	public void enableVolumeShader(GL3 gl) {
-		volumeShader.update(gl);
-		volumeShader.enable(gl);
-	}
-
-	public void renderVolumes(GL3 gl, Renderable renderable) {
-		// FIXME: this is quite hacky... need a cleaner solution to setup an array (offset/stride) on the fly
-		volumeShader.getArrays().get(0).setup(renderable.getStride(), 0);
-		volumeShader.render(gl, renderable.getCount(), renderable.getBuffer());
-	}
-
-	public void disableVolumeShader(GL3 gl) {
-		volumeShader.disable(gl);
-	}
-
-	public void renderOverlay(GL3 gl) {
-		overlay.update(gl);
-		overlay.render(gl);
-	}
 }

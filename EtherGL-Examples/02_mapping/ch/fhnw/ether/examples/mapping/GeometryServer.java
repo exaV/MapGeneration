@@ -39,14 +39,16 @@ import java.util.ArrayList;
 
 import javax.swing.Timer;
 
+import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.net.UDPServer;
 import ch.fhnw.util.net.osc.OSCHandler;
 import ch.fhnw.util.net.osc.OSCServer;
 
-// XXX experimental
+// XXX experimental and quite defunct at the moment
 @SuppressWarnings("unused")
 public class GeometryServer {
 	private MappingController controller;
+	private Vec3 sunPosition = Vec3.Z;
 
 	public GeometryServer(MappingController controller) {
 		this.controller = controller;
@@ -56,99 +58,84 @@ public class GeometryServer {
 		runUDP(7000);
 	}
 
-	private static OSCServer oscServerScan = null;
-
 	private void runOSCScan(int port) {
 		try {
-			if (oscServerScan == null) {
-				oscServerScan = new OSCServer(port, "224.0.1.0");
-				oscServerScan.installHandler("/", new OSCHandler() {
-					@Override
-					public Object[] handle(String[] address, int addrIdx, StringBuilder typeString, long timestamp, Object... args) {
-						try {
-							System.out.println("osc args: " + args.length);
-							// /address[1]/address[2]/...
-							// double someValue =
-							// ((Number)args[0]).doubleValue();
-							ArrayList<ArrayList<Number>> objects = new ArrayList<>();
-							ArrayList<Number> object = new ArrayList<>();
-							for (int i = 1; i < args.length;) {
-								if (args[i] instanceof String) {
-									objects.add(object);
-									object = new ArrayList<>();
-									i++;
-								} else {
-									object.add((Number) args[i]);
-									object.add((Number) args[i + 1]);
-									object.add((Number) args[i + 2]);
-									i += 3;
-								}
+			OSCServer oscServerScan = new OSCServer(port, "224.0.1.0");
+			oscServerScan.installHandler("/", new OSCHandler() {
+				@Override
+				public Object[] handle(String[] address, int addrIdx, StringBuilder typeString, long timestamp, Object... args) {
+					try {
+						System.out.println("osc args: " + args.length);
+						// /address[1]/address[2]/...
+						// double someValue =
+						// ((Number)args[0]).doubleValue();
+						ArrayList<ArrayList<Number>> objects = new ArrayList<>();
+						ArrayList<Number> object = new ArrayList<>();
+						for (int i = 1; i < args.length;) {
+							if (args[i] instanceof String) {
+								objects.add(object);
+								object = new ArrayList<>();
+								i++;
+							} else {
+								object.add((Number) args[i]);
+								object.add((Number) args[i + 1]);
+								object.add((Number) args[i + 2]);
+								i += 3;
 							}
-							createGeometry(objects);
-						} catch (Exception e) {
-							e.printStackTrace();
 						}
-						return null;
+						createGeometry(objects);
+					} catch (Exception e) {
+						e.printStackTrace();
 					}
+					return null;
+				}
 
-				});
-			}
+			});
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-
-	private static OSCServer oscServerSun = null;
 
 	private void runOSCSun(int port) {
-		final float[] sunPosition = new float[3];
-		sunPosition[0] = controller.getLightPosition()[0];
-		sunPosition[1] = controller.getLightPosition()[1];
+		sunPosition = controller.getLightPosition();
 		try {
-			if (oscServerSun == null) {
-				final Timer timer = new Timer(50, new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						float[] position = controller.getLightPosition();
-						position[0] += (sunPosition[0] - position[0]) / 10f;
-						position[1] += (sunPosition[1] - position[1]) / 10f;
-						// System.out.println(controller.getLightPosition()[0]+" "+controller.getLightPosition()[1]);
-						controller.setLightPosition(position);
-						controller.repaintViews();
-					}
-				});
+			final Timer timer = new Timer(50, new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					Vec3 p = controller.getLightPosition();
+					Vec3 q = new Vec3(sunPosition.x - p.x, sunPosition.y - p.y, 0).scale(0.1f);
+					controller.setLightPosition(q);
+					controller.repaintViews();
+				}
+			});
 
-				oscServerSun = new OSCServer(port, null);
-				// oscserver = new OSCServer(port, "224.0.1.0");
-				oscServerSun.installHandler("/", new OSCHandler() {
-					@Override
-					public Object[] handle(String[] address, int addrIdx, StringBuilder typeString, long timestamp, Object... args) {
-						try {
-							// /address[1]/address[2]/...
-							// double someValue =
-							if (args.length >= 2) {
-								sunPosition[0] = ((Number) args[0]).floatValue() / 100.0f * 5;
-								sunPosition[1] = ((Number) args[1]).floatValue() / 100.0f * 5;
-							}
-						} catch (Exception e) {
-							e.printStackTrace();
+			OSCServer oscServerSun = new OSCServer(port, null);
+			// oscserver = new OSCServer(port, "224.0.1.0");
+			oscServerSun.installHandler("/", new OSCHandler() {
+				@Override
+				public Object[] handle(String[] address, int addrIdx, StringBuilder typeString, long timestamp, Object... args) {
+					try {
+						// /address[1]/address[2]/...
+						// double someValue =
+						if (args.length >= 2) {
+							sunPosition = new Vec3(((Float) args[0]).floatValue() / 100.0f * 5, ((Float) args[1]).floatValue() / 100.0f * 5, 0);
 						}
-						return null;
+					} catch (Exception e) {
+						e.printStackTrace();
 					}
+					return null;
+				}
 
-				});
-				timer.start();
-			}
+			});
+			timer.start();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-
-	private static UDPServer udpserver = null;
 
 	private void runUDP(int port) {
 		try {
-			udpserver = new UDPServer(port, new UDPServer.UDPHandler() {
+			UDPServer udpserver = new UDPServer(port, new UDPServer.UDPHandler() {
 				@Override
 				public void handle(DatagramPacket packet) {
 					try {
@@ -183,7 +170,7 @@ public class GeometryServer {
 						}
 						if (vertices.length > 0) {
 							System.out.println("udp: model updated");
-							// TODO: send triangles (vertices) to scene
+							// ---> update scene
 							controller.modelChanged();
 						} else {
 							System.out.println("udp: no data received");
@@ -239,7 +226,7 @@ public class GeometryServer {
 			i += triangles.length;
 		}
 		if (allTriangles.length > 0) {
-			// TODO: send allTriangles to scene
+			// ---> send triangles / meshes to scene here
 		} else {
 			System.out.println("empty model");
 		}

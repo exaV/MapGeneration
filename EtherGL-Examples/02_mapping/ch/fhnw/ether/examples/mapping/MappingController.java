@@ -36,13 +36,11 @@ import ch.fhnw.ether.mapping.BoxCalibrationModel;
 import ch.fhnw.ether.mapping.tool.CalibrationTool;
 import ch.fhnw.ether.mapping.tool.FillTool;
 import ch.fhnw.ether.view.IView;
+import ch.fhnw.util.math.Vec3;
 
 import com.jogamp.newt.event.KeyEvent;
 
-// XXX light position currently not implemented
 public class MappingController extends DefaultController {
-	private float[] lightPosition = { 10.0f, 6.0f, 8.0f };
-
 	private static final String[] HELP = { "Simple Mapping Example (Without Content)", "", "[1] Default Tool / View", "[2] Mapping Calibration",
 			"[3] Projector Adjustment", "", "Use Mouse Buttons + Shift or Mouse Wheel to Navigate" };
 
@@ -53,8 +51,6 @@ public class MappingController extends DefaultController {
 	private final FillTool fillTool = new FillTool(this);
 
 	public MappingController() {
-		setLightPosition(lightPosition);
-		// setCurrentTool(defaultTool);
 	}
 
 	public void modelChanged() {
@@ -83,11 +79,11 @@ public class MappingController extends DefaultController {
 		repaintViews();
 	}
 
-	public float[] getLightPosition() {
-		return lightPosition.clone();
+	public Vec3 getLightPosition() {
+		return Vec3.Z;
 	}
 
-	public void setLightPosition(float[] position) {
-		lightPosition = position;
+	public void setLightPosition(Vec3 position) {
+		// unimplemented
 	}
 }

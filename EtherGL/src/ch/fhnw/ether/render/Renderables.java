@@ -74,7 +74,7 @@ final class Renderables {
 
 	void update(GL3 gl) {
 		if (updater.needsUpdate()) {
-			// update added / removed renderables (TODO not optimized...)
+			// update added / removed renderables - TODO: not optimized...
 			synchronized (sceneRenderables) {
 				Collection<Renderable> r = sceneRenderables.values();
 				rendererRenderables.removeAll(r);
