@@ -35,7 +35,7 @@ import java.net.URL;
 
 import org.jcodec.api.JCodecException;
 
-import ch.fhnw.ether.image.Frame;
+import ch.fhnw.ether.media.RFrameReq;
 import ch.fhnw.ether.video.IRandomAccessFrameSource;
 
 public final class RandomAccessVideoTrack extends AbstractVideoTrack implements IRandomAccessFrameSource {
@@ -44,24 +44,25 @@ public final class RandomAccessVideoTrack extends AbstractVideoTrack implements 
 	}
 
 	@Override
-	public Frame getFrame(long frame) {
-		try {
-			grab.seekToFramePrecise((int) frame);
-			return Frame.newFrame(grab.getNativeFrame());
-		} catch (Exception e) {
-			e.printStackTrace();
+	public RFrameReq getFrames(RFrameReq req) {
+		throw new UnsupportedOperationException();
+		/*
+		if(req.hasFrameNumber()) {
+			try {
+				grab.seekToFramePrecise((int) req.getFrameNumber());
+				return Frame.newFrame(grab.getNativeFrame());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} else {
+			try {
+				grab.seekToSecondPrecise(time);
+				return Frame.newFrame(grab.getNativeFrame());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		return null;
-	}
-
-	@Override
-	public Frame getFrame(double time) {
-		try {
-			grab.seekToSecondPrecise(time);
-			return Frame.newFrame(grab.getNativeFrame());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
+		*/
 	}
 }

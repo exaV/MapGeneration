@@ -33,10 +33,11 @@ import java.net.URL;
 
 import javax.media.opengl.GL;
 
-import ch.fhnw.ether.image.Frame;
+import ch.fhnw.ether.media.RFrameReq;
+import ch.fhnw.ether.media.SFrameReq;
+import ch.fhnw.ether.video.IFrameSource;
 import ch.fhnw.ether.video.IRandomAccessFrameSource;
 import ch.fhnw.ether.video.ISequentialFrameSource;
-import ch.fhnw.ether.video.IFrameSource;
 import ch.fhnw.ether.video.VideoTrackFactory;
 import ch.fhnw.util.UpdateRequest;
 
@@ -115,24 +116,12 @@ public class Texture {
 	
 	public void load(GL gl, int target, int textureId) {
 		if(track instanceof ISequentialFrameSource)
-			((ISequentialFrameSource)track).getNextFrames(gl, 1, textureId);
+			((ISequentialFrameSource)track).getFrames(new SFrameReq(gl, 1, textureId));
 		else if(track instanceof IRandomAccessFrameSource) {
 			if(time >= 0)
-				((IRandomAccessFrameSource)track).getFrame(gl, time, textureId);
+				((IRandomAccessFrameSource)track).getFrames(new RFrameReq(gl, time, textureId));
 			else
-				((IRandomAccessFrameSource)track).getFrame(gl, frame, textureId);
+				((IRandomAccessFrameSource)track).getFrames(new RFrameReq(gl, frame, textureId));
 		}
-	}
-	
-	public Frame getFrame() {
-		if(track instanceof ISequentialFrameSource)
-			return ((ISequentialFrameSource)track).getNextFrame();
-		else if(track instanceof IRandomAccessFrameSource) {
-			if(time >= 0)
-				return ((IRandomAccessFrameSource)track).getFrame(time);
-			else
-				return ((IRandomAccessFrameSource)track).getFrame(frame);
-		}
-		return null;
-	}
+	}	
 }

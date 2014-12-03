@@ -39,6 +39,8 @@ import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
 
 import ch.fhnw.ether.image.Frame;
+import ch.fhnw.ether.media.RFrameReq;
+import ch.fhnw.ether.media.SFrameReq;
 import ch.fhnw.ether.video.avfoundation.AVAsset;
 import ch.fhnw.ether.video.jcodec.RandomAccessVideoTrack;
 import ch.fhnw.ether.video.jcodec.SequentialVideoTrack;
@@ -91,7 +93,7 @@ public final class VideoTrackFactory {
 			IRandomAccessFrameSource track = createRandomAccessTrack(url);
 			System.out.println("random access track: " + track);
 
-			Frame frame = track.getFrame(time);
+			Frame frame = track.getFrames(new RFrameReq(time)).getFrame();
 
 			BufferedImage image = frame.toBufferedImage();
 			System.out.println("decoded image: " + image.getWidth() + " " + image.getHeight());
@@ -119,7 +121,7 @@ public final class VideoTrackFactory {
 			long millis = System.currentTimeMillis();
 			Frame frame = null;
 			for (int i = 0; i < time * track.getFrameRate(); ++i) {
-				frame = track.getNextFrame();
+				frame = track.getFrames(new SFrameReq()).getFrame();
 			}
 			double fps = numFrames / ((System.currentTimeMillis() - millis) / 1000.0);
 			System.out.println("decoded " + numFrames + " @ " + fps + " fps");

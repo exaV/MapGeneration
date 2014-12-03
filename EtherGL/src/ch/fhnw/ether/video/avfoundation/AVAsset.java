@@ -32,7 +32,11 @@ package ch.fhnw.ether.video.avfoundation;
 import java.net.URL;
 
 import ch.fhnw.ether.image.Frame;
+import ch.fhnw.ether.image.RGB8Frame;
 import ch.fhnw.ether.image.RGBA8Frame;
+import ch.fhnw.ether.media.FrameException;
+import ch.fhnw.ether.media.RFrameReq;
+import ch.fhnw.ether.media.SFrameReq;
 import ch.fhnw.ether.video.IRandomAccessFrameSource;
 import ch.fhnw.ether.video.ISequentialFrameSource;
 
@@ -114,6 +118,40 @@ public final class AVAsset implements ISequentialFrameSource, IRandomAccessFrame
 	}
 
 	@Override
+	public RFrameReq getFrames(RFrameReq req) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public SFrameReq getFrames(SFrameReq req) {
+		req.processFrames(RGBA8Frame.class, getWidth(), getHeight(), (Frame frame, int i)->{
+			if(!(frame instanceof RGB8Frame))
+				throw new FrameException("Type mismatch, use a type converter for " + frame.getClass().getName() + "->" + RGBA8Frame.class.getName());
+			if(frame.dimI != getWidth() || frame.dimJ != getHeight())
+				throw new FrameException("Size mismatch, use a scaler");
+			byte[] pixels = nativeGetNextFrame(nativeHandle);
+			if(pixels == null) 
+				throw new FrameException("End of trackreached.");
+			frame.pixels.clear();
+			if(frame.pixelSize == 3) {
+				byte[] tmp = new byte[3 * pixels.length / 4];
+				int dsti = 0;
+				int srci = 0;
+				for(int p = 0; p < pixels.length; p += 4) {
+					tmp[dsti++] = pixels[srci++];
+					tmp[dsti++] = pixels[srci++];
+					tmp[dsti++] = pixels[srci++];
+					srci++;
+				}
+				pixels = tmp;
+			}
+			frame.pixels.put(pixels);
+		});
+		return req;
+	}
+
+	/*
+	@Override
 	public Frame getFrame(long frame) {
 		return getFrame(frameToTime(frame));
 	}
@@ -127,10 +165,8 @@ public final class AVAsset implements ISequentialFrameSource, IRandomAccessFrame
 
 	@Override
 	public Frame getNextFrame() {
-		byte[] pixels = nativeGetNextFrame(nativeHandle);
-		if(pixels == null) return null;
-		return new RGBA8Frame(getWidth(), getHeight(), pixels);
 	}
+	 */
 
 	@Override
 	public String toString() {

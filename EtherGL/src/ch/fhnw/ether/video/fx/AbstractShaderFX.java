@@ -1,4 +1,4 @@
-package ch.fhnw.ether.video;
+package ch.fhnw.ether.video.fx;
 
 import javax.media.opengl.GL;
 

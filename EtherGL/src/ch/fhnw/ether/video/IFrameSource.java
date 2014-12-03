@@ -31,10 +31,6 @@ package ch.fhnw.ether.video;
 
 import java.net.URL;
 
-import javax.media.opengl.GL;
-
-import ch.fhnw.ether.image.Frame;
-
 public interface IFrameSource {
 	double DURATION_UNKNOWN   = -1;
 	long   FRAMECOUNT_UNKNOWN = -1;
@@ -53,12 +49,4 @@ public interface IFrameSource {
 	int getWidth();
 
 	int getHeight();
-	
-	default int loadFrames(GL gl, int textureId, Frame ... frames) {
-		if(frames.length == 1) {
-			frames[0].load(gl, GL.GL_TEXTURE_2D, textureId);
-			return frames.length;
-		}
-		throw new UnsupportedOperationException("only frames.length == 1 supported");
-	}
 }

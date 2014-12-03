@@ -14,6 +14,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.swing.SwingUtilities;
 
 import ch.fhnw.ether.image.Frame;
+import ch.fhnw.ether.media.SFrameReq;
 
 public class SimplePlayer extends Canvas implements Runnable {
 	private static final long serialVersionUID = 2155924568412744207L;
@@ -51,7 +52,7 @@ public class SimplePlayer extends Canvas implements Runnable {
 			for(;;) {
 				while(frames.size() > 5)
 					sleep((long) (1000 / track.getFrameRate()));
-				frames.add(track.getNextFrame());
+				frames.add(track.getFrames(new SFrameReq()).getFrame());
 				repaint();
 			}
 		}
@@ -76,7 +77,7 @@ public class SimplePlayer extends Canvas implements Runnable {
 		long elapsed = System.currentTimeMillis() - startTime;
 		Frame frame  = getFrame((long)(elapsed * track.getFrameRate() / SEC2MS));
 		if(frame != null)
-			g.drawImage(frame.toBufferedImage(), 0, 0, getWidth(), getHeight(), 0, frame.dimJ, frame.dimI, 0, this);
+			g.drawImage(frame.toBufferedImage(), 0, 0, getWidth(), getHeight(), 0, 0, frame.dimI, frame.dimJ, this);
 		repaint((long) (SEC2MS / (track.getFrameRate() * 2)));
 	}
 

@@ -37,10 +37,14 @@ import ch.fhnw.ether.examples.raytracing.surface.Plane;
 import ch.fhnw.ether.examples.raytracing.surface.Sphere;
 import ch.fhnw.ether.scene.DefaultScene;
 import ch.fhnw.ether.scene.IScene;
+import ch.fhnw.ether.scene.SyncGroup;
 import ch.fhnw.ether.scene.camera.Camera;
+import ch.fhnw.ether.scene.camera.CameraProxy;
 import ch.fhnw.ether.scene.camera.ICamera;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.light.PointLight;
+import ch.fhnw.ether.scene.mesh.IMesh;
+import ch.fhnw.ether.scene.mesh.MeshProxy;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.gl.DefaultView;
 import ch.fhnw.util.color.RGB;
@@ -54,30 +58,34 @@ public class RaytracerExample2 {
 	}
 
 	public RaytracerExample2() {
+		RayTracer rt = new RayTracer();
+		
+		long groupId = SyncGroup.newGroupId(rt);
+		
 		// create controller, camera, scene and view
-		IController controller = new DefaultController(new EventDrivenScheduler(), new RayTracingRenderer(new RayTracer()));
+		IController controller = new DefaultController(new EventDrivenScheduler(), new RayTracingRenderer(rt));
 		
 		IScene scene = new DefaultScene(controller);
 		controller.setScene(scene);
 
-		ICamera camera = new Camera(new Vec3(0, -2, 1), Vec3.ZERO, Vec3.Z, 2.5f, 0.5f, Float.POSITIVE_INFINITY);
+		ICamera camera = new CameraProxy(new Camera(new Vec3(0, -2, 1), Vec3.ZERO, Vec3.Z, 2.5f, 0.5f, Float.POSITIVE_INFINITY), groupId);
 		IView view = new DefaultView(controller, 100, 100, 100, 100, IView.INTERACTIVE_VIEW, "Raytracing", camera);
 		controller.addView(view);
 		
-	
 		// setup scene;
 		ILight light = new PointLight(new Vec3(-1, -1, 3), RGB.BLACK, RGB.WHITE);
 		scene.add3DObject(light);
-
+		
 		Sphere sphere = new Sphere(0.5f);
 		sphere.setPosition(new Vec3(0, 0, 0.5f));
-		RayTraceMesh chugeli = new RayTraceMesh(sphere);
-		RayTraceMesh bode = new RayTraceMesh(new Plane());
-		RayTraceMesh waendli = new RayTraceMesh(new Plane(Vec3.X_NEG, 4), RGBA.YELLOW);
-		RayTraceMesh anders_waendli = new RayTraceMesh(new Plane(Vec3.X, 4), RGBA.RED);
-		RayTraceMesh wand = new RayTraceMesh(new Plane(Vec3.Y_NEG, 4), RGBA.GREEN);
-		RayTraceMesh henderi_wand = new RayTraceMesh(new Plane(Vec3.Y, 4), RGBA.CYAN);
-		RayTraceMesh dach = new RayTraceMesh(new Plane(Vec3.Z_NEG, 4), RGBA.BLUE);
+		IMesh chugeli        = new MeshProxy(new RayTraceMesh(sphere), groupId);
+		IMesh bode           = new MeshProxy(new RayTraceMesh(new Plane()), groupId);
+		IMesh waendli        = new MeshProxy(new RayTraceMesh(new Plane(Vec3.X_NEG, 4), RGBA.YELLOW), groupId);
+		IMesh anders_waendli = new MeshProxy(new RayTraceMesh(new Plane(Vec3.X, 4), RGBA.RED), groupId);
+		IMesh wand           = new MeshProxy(new RayTraceMesh(new Plane(Vec3.Y_NEG, 4), RGBA.GREEN), groupId);
+		IMesh henderi_wand   = new MeshProxy(new RayTraceMesh(new Plane(Vec3.Y, 4), RGBA.CYAN), groupId);
+		IMesh dach           = new MeshProxy(new RayTraceMesh(new Plane(Vec3.Z_NEG, 4), RGBA.BLUE), groupId);
+		
 		scene.add3DObject(chugeli);
 		scene.add3DObject(bode);
 		scene.add3DObject(waendli);

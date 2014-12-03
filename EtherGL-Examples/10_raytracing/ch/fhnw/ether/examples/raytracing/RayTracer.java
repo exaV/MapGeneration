@@ -36,19 +36,25 @@ import java.util.List;
 
 import ch.fhnw.ether.examples.raytracing.util.IntersectResult;
 import ch.fhnw.ether.image.Frame;
+import ch.fhnw.ether.image.RGB8Frame;
 import ch.fhnw.ether.image.RGBA8Frame;
+import ch.fhnw.ether.media.FrameException;
+import ch.fhnw.ether.media.SFrameReq;
+import ch.fhnw.ether.scene.SyncGroup;
 import ch.fhnw.ether.scene.camera.Camera;
 import ch.fhnw.ether.scene.camera.ICamera;
 import ch.fhnw.ether.scene.light.GenericLight;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.IMesh;
+import ch.fhnw.ether.scene.mesh.MeshProxy;
+import ch.fhnw.ether.video.IScalingFrameSource;
 import ch.fhnw.ether.video.ISequentialFrameSource;
 import ch.fhnw.util.color.RGB;
 import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.Line;
 
-public class RayTracer implements ISequentialFrameSource {
+public class RayTracer implements ISequentialFrameSource, IScalingFrameSource {
 	private static final RGBA BACKGROUND_COLOR   = RGBA.WHITE;
 	private static final int  BACKGROUND_COLOR_I = RGBA.WHITE.toRGBA();
 
@@ -69,15 +75,19 @@ public class RayTracer implements ISequentialFrameSource {
 	}
 
 	public void addMesh(IMesh mesh) {
+		if(mesh instanceof MeshProxy)
+			mesh = ((MeshProxy)mesh).getDelegate();
 		if (mesh instanceof RayTraceMesh)
 			meshes.add((RayTraceMesh) mesh);
 	}
 
 	public void removeMesh(IMesh mesh) {
+		if(mesh instanceof MeshProxy)
+			mesh = ((MeshProxy)mesh).getDelegate();
 		meshes.remove(mesh);
 	}
 
-	private void intersection(final int x, final int y, final Line ray, final ILight light, final ByteBuffer pixels) {
+	private void intersection(final int x, final int y, final Line ray, final ILight light, final ByteBuffer pixels, boolean hasAlpha) {
 		// find nearest intersection point in scene
 		IntersectResult nearest = new IntersectResult(null, null, BACKGROUND_COLOR, Float.POSITIVE_INFINITY);
 		for (RayTraceMesh r : meshes) {
@@ -93,7 +103,9 @@ public class RayTracer implements ISequentialFrameSource {
 			pixels.put((byte)(BACKGROUND_COLOR_I >> 24));
 			pixels.put((byte)(BACKGROUND_COLOR_I >> 16));
 			pixels.put((byte)(BACKGROUND_COLOR_I >> 8));
-			pixels.put((byte)(BACKGROUND_COLOR_I));
+			if(hasAlpha)
+				pixels.put((byte)(BACKGROUND_COLOR_I));
+			return;
 		}
 
 		// create vector which is sure over surface
@@ -111,7 +123,9 @@ public class RayTracer implements ISequentialFrameSource {
 				pixels.put((byte)0);
 				pixels.put((byte)0);
 				pixels.put((byte)0);
-				pixels.put((byte)255);
+				if(hasAlpha)
+					pixels.put((byte)255);
+				return;
 			}
 		}
 
@@ -124,7 +138,8 @@ public class RayTracer implements ISequentialFrameSource {
 		pixels.put((byte)(f * c.x * lc.x * 255f));
 		pixels.put((byte)(f * c.y * lc.y * 255f));
 		pixels.put((byte)(f * c.z * lc.z * 255f));
-		pixels.put((byte)(c.w * 255f));
+		if(hasAlpha)
+			pixels.put((byte)(c.w * 255f));
 	}
 
 	@Override
@@ -165,40 +180,49 @@ public class RayTracer implements ISequentialFrameSource {
 	public void rewind() {}
 
 	@Override
-	public Frame getNextFrame() {
-		RGBA8Frame result = new RGBA8Frame(w, h);
-
+	public SFrameReq getFrames(SFrameReq req) {
 		if(!lights.isEmpty()) {
-			ILight light      = lights.get(0);
-			Vec3 camPos       = camera.getPosition();
+			req.processFrames(RGBA8Frame.class, w, h, (Frame frame, int frameIdx)->{
+				SyncGroup.sync(this);
 
-			float aspect      = (float)w / (float)h;
-			float planeWidth  = (float) (2 * Math.tan(camera.getFov() / 2) * camera.getNear());
-			float planeHeight = planeWidth / aspect;
+				final int   w     = frame.dimI;
+				final int   h     = frame.dimJ;
 
-			float deltaX = planeWidth / w;
-			float deltaY = planeHeight / h;
+				if(!(frame instanceof RGB8Frame)) throw new FrameException("Unsupported frame type " + frame.getClass().getName());
 
-			Vec3 lookVector = camera.getTarget().subtract(camera.getPosition()).normalize();
-			Vec3 upVector   = camera.getUp().normalize();
-			Vec3 sideVector = lookVector.cross(upVector).normalize();
+				final ILight light      = lights.get(0);
+				final Vec3   camPos       = camera.getPosition();
 
-			result.processByLine((ByteBuffer pixels, int line)->{
-				int j = line - (h / 2);
-				for (int i = -w / 2; i < w / 2; ++i) {
-					Vec3 x     = sideVector.scale(i * deltaX);
-					Vec3 y     = upVector.scale(j * deltaY);
-					Vec3 dir   = lookVector.add(x).add(y);
-					Line ray   = new Line(camPos, dir);
-					intersection((i + w / 2), (j + h / 2), ray, light, pixels);
-				}
-			});			
+				final float aspect      = (float)w / (float)h;
+
+				final float planeWidth  = (float) (2 * Math.tan(camera.getFov() / 2) * camera.getNear());
+				final float planeHeight = planeWidth / aspect;
+
+				final float deltaX = planeWidth / w;
+				final float deltaY = planeHeight / h;
+
+				final Vec3    lookVector = camera.getTarget().subtract(camera.getPosition()).normalize();
+				final Vec3    upVector   = camera.getUp().normalize();
+				final Vec3    sideVector = lookVector.cross(upVector).normalize();
+				final boolean hasAlpha   = frame instanceof RGBA8Frame;
+
+				frame.processByLine((ByteBuffer pixels, int line)->{
+					final int j = line - (h / 2);
+					for (int i = -w / 2; i < w / 2; ++i) {
+						final Vec3 x     = sideVector.scale(i * deltaX);
+						final Vec3 y     = upVector.scale(j * deltaY);
+						final Vec3 dir   = lookVector.add(x).add(y);
+						final Line ray   = new Line(camPos, dir);
+						intersection((i + w / 2), (j + h / 2), ray, light, pixels, hasAlpha);
+					}
+				});
+			});
 		}
-		return result;
+		return req;
 	}
 
 	public void setLights(List<ILight> lights) {
-		this.lights = new ArrayList<>(lights);
+		this.lights = new ArrayList<ILight>(lights);
 	}
 
 	public void addLigth(ILight light) {

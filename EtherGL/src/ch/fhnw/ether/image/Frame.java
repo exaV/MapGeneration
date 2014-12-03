@@ -47,11 +47,9 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GL3;
 
-import org.jcodec.common.model.ColorSpace;
-import org.jcodec.common.model.Picture;
-import org.jcodec.scale.ColorUtil;
-import org.jcodec.scale.Transform;
-
+import ch.fhnw.ether.media.FrameReq;
+import ch.fhnw.ether.media.RFrameReq;
+import ch.fhnw.ether.media.SFrameReq;
 import ch.fhnw.ether.video.IRandomAccessFrameSource;
 import ch.fhnw.ether.video.ISequentialFrameSource;
 import ch.fhnw.util.BufferUtil;
@@ -184,33 +182,6 @@ public abstract class Frame implements ISequentialFrameSource, IRandomAccessFram
 		}
 
 		result.setPixels(0, 0, img.getWidth(), img.getHeight(), img, flags);
-		return result;
-	}
-
-	public final static Frame newFrame(Picture src) {
-		if (src.getColor() != ColorSpace.RGB) {
-			Transform transform = ColorUtil.getTransform(src.getColor(), ColorSpace.RGB);
-			Picture   rgb       = Picture.create(src.getWidth(), src.getHeight(), ColorSpace.RGB, src.getCrop());
-			transform.transform(src, rgb);
-			src = rgb;
-		}
-
-		final Frame      result  = new RGB8Frame(src.getWidth(), src.getHeight());
-		final ByteBuffer pixels  = result.pixels;
-		final int[]      srcData = src.getPlaneData(0);
-		final int        line    = result.dimI * result.pixelSize;
-
-		pixels.clear();
-		for(int j = result.dimJ; --j >= 0;) {
-			int idx = j * line;
-			for (int i = result.dimI; --i >= 0;) {
-				pixels.put((byte) srcData[idx+2]);
-				pixels.put((byte) srcData[idx+1]);
-				pixels.put((byte) srcData[idx+0]);
-				idx += 3;
-			}
-		}
-
 		return result;
 	}
 
@@ -498,20 +469,30 @@ public abstract class Frame implements ISequentialFrameSource, IRandomAccessFram
 	protected abstract void loadInternal(GL gl, int target, int textureId);
 
 	@Override
-	public Frame getFrame(double time) {
-		return this;
+	public RFrameReq getFrames(RFrameReq req) {
+		getFrames(req);
+		return req;
 	}
 
 	@Override
-	public Frame getFrame(long frame) {
-		return this;
+	public SFrameReq getFrames(SFrameReq req) {
+		getFramesInternal(req);
+		return req;
 	}
 
-	@Override
-	public Frame getNextFrame() {
-		return this;
+	private void getFramesInternal(FrameReq req) {
+		for(int i = req.getNumFrames(); --i >= 0;) {
+			if(req.getFrame(i) == null)
+				req.setFrame(i, copy());
+			else {
+				Frame dst = req.getFrame(i);
+				dst.setPixels(0, 0, dst.dimI, dst.dimJ, toBufferedImage());
+			}
+		}
+		if(req.hasTextureId())
+			req.loadFrames();
 	}
-
+	
 	@Override
 	public double getDuration() {
 		return DURATION_UNKNOWN;
@@ -576,7 +557,7 @@ public abstract class Frame implements ISequentialFrameSource, IRandomAccessFram
 	}
 
 	public void processByLine(ILineProcessor processor) {
-		List<Future<?>> result = new ArrayList<>(NUM_CHUNKS + 1);
+		List<Future<?>> result = new ArrayList<Future<?>>(NUM_CHUNKS + 1);
 		int inc  = Math.max(1, dimJ / NUM_CHUNKS);
 		for(int from = 0; from < dimJ; from += inc)
 			result.add(POOL.submit(new Chunk(from, Math.min(from + inc, dimJ), processor)));

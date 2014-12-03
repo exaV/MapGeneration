@@ -29,9 +29,7 @@
 
 package ch.fhnw.ether.video;
 
-import javax.media.opengl.GL;
-
-import ch.fhnw.ether.image.Frame;
+import ch.fhnw.ether.media.RFrameReq;
 
 /**
  * Interface for decoding frames from a frame source (e.g. video) in random-access mode. Note
@@ -42,14 +40,5 @@ import ch.fhnw.ether.image.Frame;
  *
  */
 public interface IRandomAccessFrameSource extends IFrameSource {
-	Frame getFrame(long frame);
-	Frame getFrame(double time);
-	
-	default void getFrame(GL gl, long frame, int textureId) {
-		loadFrames(gl, textureId, getFrame(frame));
-	}
-	
-	default void getFrame(GL gl, double time, int textureId) {
-		loadFrames(gl, textureId, getFrame(time));
-	}
+	RFrameReq getFrames(RFrameReq req);
 }

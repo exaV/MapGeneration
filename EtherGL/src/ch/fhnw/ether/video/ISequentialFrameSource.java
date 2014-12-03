@@ -29,11 +29,7 @@
 
 package ch.fhnw.ether.video;
 
-import java.util.Arrays;
-
-import javax.media.opengl.GL;
-
-import ch.fhnw.ether.image.Frame;
+import ch.fhnw.ether.media.SFrameReq;
 
 /**
  * Interface for decoding frames from a frame source (e.g. video)) sequentially from the beginning. This will be very fast for most
@@ -44,21 +40,5 @@ import ch.fhnw.ether.image.Frame;
  */
 public interface ISequentialFrameSource extends IFrameSource {
 	void rewind();
-
-	Frame getNextFrame();
-
-	default int getNextFrames(GL gl, int count, int textureId) {
-		int     result = 0;
-		Frame[] frames = new Frame[count];
-		for(int i = 0; i < count; i++) {
-			Frame frame  = getNextFrame();
-			if(frame == null) break;
-			frames[result++] = frame;
-		}
-		if(result == count)
-			result = loadFrames(gl, textureId, frames);
-		else
-			result = loadFrames(gl, textureId, Arrays.copyOf(frames, result));
-		return result;
-	}
+	SFrameReq getFrames(SFrameReq req);
 }

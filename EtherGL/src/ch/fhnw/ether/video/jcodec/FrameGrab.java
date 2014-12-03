@@ -46,12 +46,20 @@ import org.jcodec.common.JCodecUtil.Format;
 import org.jcodec.common.SeekableByteChannel;
 import org.jcodec.common.SeekableDemuxerTrack;
 import org.jcodec.common.VideoDecoder;
+import org.jcodec.common.model.ColorSpace;
 import org.jcodec.common.model.Packet;
 import org.jcodec.common.model.Picture;
 import org.jcodec.containers.mp4.MP4Packet;
 import org.jcodec.containers.mp4.boxes.SampleEntry;
 import org.jcodec.containers.mp4.demuxer.AbstractMP4DemuxerTrack;
 import org.jcodec.containers.mp4.demuxer.MP4Demuxer;
+import org.jcodec.scale.ColorUtil;
+import org.jcodec.scale.Transform;
+
+import ch.fhnw.ether.image.Frame;
+import ch.fhnw.ether.image.RGB8Frame;
+import ch.fhnw.ether.image.RGBA8Frame;
+import ch.fhnw.ether.media.FrameException;
 
 /**
  * A minimal version of org.jcodec.api.FrameGrab, with some additional methods and adjustments for our needs.
@@ -250,6 +258,47 @@ final class FrameGrab {
 		return decoder.decodeFrame(frame, getBuffer());
 	}
 
+	public void grabAndSet(Frame frame) {
+		try {
+			Picture src = getNativeFrame();
+			if (src.getColor() != ColorSpace.RGB) {
+				Transform transform = ColorUtil.getTransform(src.getColor(), ColorSpace.RGB);
+				Picture   rgb       = Picture.create(src.getWidth(), src.getHeight(), ColorSpace.RGB, src.getCrop());
+				transform.transform(src, rgb);
+				src = rgb;
+			}
+			if(!(frame instanceof RGB8Frame))
+				throw new FrameException("Unsupported frame type:" + frame.getClass().getName());
+
+			final ByteBuffer pixels  = frame.pixels;
+			final int[]      srcData = src.getPlaneData(0);
+			final int        line    = frame.dimI * frame.pixelSize;
+
+			pixels.clear();
+			for(int j = frame.dimJ; --j >= 0;) {
+				int idx = j * line;
+				if(frame instanceof RGBA8Frame) {
+					for (int i = frame.dimI; --i >= 0;) {
+						pixels.put((byte) srcData[idx+2]);
+						pixels.put((byte) srcData[idx+1]);
+						pixels.put((byte) srcData[idx+0]);
+						pixels.put((byte) 0xFF);
+						idx += 3;
+					}
+				} else {
+					for (int i = frame.dimI; --i >= 0;) {
+						pixels.put((byte) srcData[idx+2]);
+						pixels.put((byte) srcData[idx+1]);
+						pixels.put((byte) srcData[idx+0]);
+						idx += 3;
+					}
+				}
+			}
+		} catch(Throwable t) {
+			throw new FrameException("Could not create frame", t);
+		}
+	}	
+
 	/**
 	 * Gets info about the media
 	 * 
@@ -266,5 +315,9 @@ final class FrameGrab {
 	 */
 	public DemuxerTrack getVideoTrack() {
 		return videoTrack;
+	}
+
+	public Class<? extends Frame> getPreferredType() {
+		return RGB8Frame.class;
 	}
 }

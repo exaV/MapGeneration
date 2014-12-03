@@ -43,9 +43,9 @@ public class DefaultScene implements IScene {
 
 	private final IController controller;
 
-	private final List<IMesh> meshes = new ArrayList<>();
-	private final List<ICamera> cameras = new ArrayList<>();
-	private final List<ILight> lights = new ArrayList<>();
+	private final List<IMesh>     meshes  = new ArrayList<>();
+	private final List<ICamera>   cameras = new ArrayList<>();
+	private final List<ILight>    lights  = new ArrayList<>();
 	private final List<I3DObject> objects = new ArrayList<>();
 	
 	public DefaultScene(IController controller) {
