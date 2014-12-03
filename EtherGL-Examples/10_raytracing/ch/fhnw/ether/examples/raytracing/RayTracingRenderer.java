@@ -65,7 +65,7 @@ public class RayTracingRenderer implements IRenderer {
 
 	@Override
 	public void addLight(ILight light) {
-		rayTracer.addLigth(light);
+		rayTracer.addLight(light);
 	}
 
 	@Override

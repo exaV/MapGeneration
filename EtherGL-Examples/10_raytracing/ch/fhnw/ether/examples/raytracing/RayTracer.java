@@ -65,6 +65,7 @@ public class RayTracer implements ISequentialFrameSource, IScalingFrameSource {
 	private List<ILight>          lights = new ArrayList<>();
 
 
+	@Override
 	public void setSize(int width, int height) {
 		this.w = width;
 		this.h = height;
@@ -222,10 +223,10 @@ public class RayTracer implements ISequentialFrameSource, IScalingFrameSource {
 	}
 
 	public void setLights(List<ILight> lights) {
-		this.lights = new ArrayList<ILight>(lights);
+		this.lights = new ArrayList<>(lights);
 	}
 
-	public void addLigth(ILight light) {
+	public void addLight(ILight light) {
 		lights.add(light);
 	}
 
