@@ -49,7 +49,6 @@ public final class CameraMatrices {
 	private Mat4 viewProjMatrix;
 	private Mat4 viewProjInvMatrix;
 	private Mat3 normalMatrix;
-	private Vec3 eyeDirection;
 
 	public CameraMatrices(Vec3 position, Vec3 target, Vec3 up, float fov, float near, float far, float aspect) {
 		this.position = position;
@@ -101,12 +100,5 @@ public final class CameraMatrices {
 			normalMatrix = new Mat3(getViewMatrix()).inverse().transpose();
 		}
 		return normalMatrix;
-	}
-	
-	public Vec3 getEyeDirection() {
-		if (eyeDirection == null) {
-			eyeDirection = Vec3.Z;
-		}
-		return eyeDirection;
 	}
 }

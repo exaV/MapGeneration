@@ -29,8 +29,14 @@
 
 package ch.fhnw.ether.render.variable.builtin;
 
+import java.nio.FloatBuffer;
+import java.util.Collection;
+
 import ch.fhnw.ether.render.IRenderer.RendererAttribute;
 import ch.fhnw.ether.render.variable.base.UniformBlock;
+import ch.fhnw.ether.scene.camera.CameraMatrices;
+import ch.fhnw.ether.scene.light.GenericLight;
+import ch.fhnw.ether.scene.light.GenericLight.LightSource;
 
 // TODO: need a way to add defines & includes
 public final class LightUniformBlock extends UniformBlock {
@@ -41,11 +47,35 @@ public final class LightUniformBlock extends UniformBlock {
 
 	private static final String DEFAULT_SHADER_NAME = "lightBlock";
 
+	private static final float[] OFF_LIGHT = new float[LightUniformBlock.BLOCK_SIZE];
+
 	public LightUniformBlock() {
 		super(ATTRIBUTE, DEFAULT_SHADER_NAME);
 	}
 
 	public LightUniformBlock(String shaderName) {
 		super(ATTRIBUTE, shaderName);
+	}
+	
+	public static void fillBuffer(FloatBuffer buffer, Collection<GenericLight> lights, CameraMatrices matrices) {
+		for (GenericLight light : lights) {
+			LightSource source = light.getLightSource();
+
+			buffer.put(matrices.getViewMatrix().transform(source.getPosition()).toArray());
+			buffer.put(source.getAmbient().toArray());
+			buffer.put(0);
+			buffer.put(source.getColor().toArray());
+			buffer.put(0);
+			buffer.put(matrices.getNormalMatrix().transform(source.getSpotDirection()).toArray());
+			buffer.put(0);
+			buffer.put(source.getSpotCosCutoff());
+			buffer.put(source.getSpotExponent());
+			buffer.put(source.getRange());
+			buffer.put(source.getType().ordinal());
+		}
+		for (int i = 0; i < LightUniformBlock.MAX_LIGHTS - lights.size(); ++i) {
+			buffer.put(OFF_LIGHT);
+		}
+		buffer.rewind();
 	}
 }

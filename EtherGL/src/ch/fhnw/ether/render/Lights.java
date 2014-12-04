@@ -13,19 +13,20 @@ import ch.fhnw.ether.scene.attribute.IAttributeProvider;
 import ch.fhnw.ether.scene.camera.CameraMatrices;
 import ch.fhnw.ether.scene.light.DirectionalLight;
 import ch.fhnw.ether.scene.light.GenericLight;
-import ch.fhnw.ether.scene.light.GenericLight.LightSource;
 import ch.fhnw.ether.scene.light.ILight;
+import ch.fhnw.util.BufferUtil;
 import ch.fhnw.util.color.RGB;
 import ch.fhnw.util.math.Vec3;
 
 public final class Lights {
 
 	private static final GenericLight DEFAULT_LIGHT = new DirectionalLight(Vec3.Z, RGB.BLACK, RGB.WHITE);
-	private static final float[] OFF_LIGHT = new float[LightUniformBlock.BLOCK_SIZE];
 
 	private final List<GenericLight> lights = new ArrayList<>(Collections.singletonList(DEFAULT_LIGHT));
 
-	private UniformBuffer uniformBuffer = new UniformBuffer(UniformBuffer.getNewBindingPoint());
+	private FloatBuffer buffer = BufferUtil.newDirectFloatBuffer(LightUniformBlock.MAX_LIGHTS * LightUniformBlock.BLOCK_SIZE);
+	
+	private UniformBuffer uniforms = new UniformBuffer(UniformBuffer.getNewBindingPoint());
 
 	public Lights(AbstractRenderer renderer) {
 	}
@@ -38,7 +39,7 @@ public final class Lights {
 		return new IAttributeProvider() {
 			@Override
 			public void getAttributes(IAttributes attributes) {
-				attributes.provide(LightUniformBlock.ATTRIBUTE, () -> 0);
+				attributes.provide(LightUniformBlock.ATTRIBUTE, () -> uniforms.getBindingPoint());
 			}
 		};
 	}
@@ -69,31 +70,9 @@ public final class Lights {
 		}
 	}
 
-	// FIXME: move some of this to LightUniformBlock (so it's all in one place)
-	public synchronized void update(GL3 gl, CameraMatrices cameraMatrices) {
-		FloatBuffer buffer = FloatBuffer.allocate(LightUniformBlock.MAX_LIGHTS * LightUniformBlock.BLOCK_SIZE);
-
-		for (GenericLight light : lights) {
-			LightSource source = light.getLightSource();
-
-			buffer.put(cameraMatrices.getViewMatrix().transform(source.getPosition()).toArray());
-			buffer.put(source.getAmbient().toArray());
-			buffer.put(0);
-			buffer.put(source.getColor().toArray());
-			buffer.put(0);
-			buffer.put(cameraMatrices.getNormalMatrix().transform(source.getSpotDirection()).toArray());
-			buffer.put(0);
-			buffer.put(source.getSpotCosCutoff());
-			buffer.put(source.getSpotExponent());
-			buffer.put(source.getRange());
-			buffer.put(source.getType().ordinal());
-		}
-
-		for (int i = 0; i < LightUniformBlock.MAX_LIGHTS - lights.size(); ++i) {
-			buffer.put(OFF_LIGHT);
-		}
-
-		uniformBuffer.load(gl, buffer);
-		uniformBuffer.bind(gl);
+	public synchronized void update(GL3 gl, CameraMatrices matrices) {
+		LightUniformBlock.fillBuffer(buffer, lights, matrices);
+		uniforms.load(gl, buffer);
+		uniforms.bind(gl);
 	}
 }
