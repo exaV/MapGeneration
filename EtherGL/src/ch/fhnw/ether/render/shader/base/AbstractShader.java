@@ -43,6 +43,7 @@ import ch.fhnw.ether.render.variable.IShaderUniform;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 
 public abstract class AbstractShader implements IShader {
+	
 	// important: keep this in sync with PrimitiveType enum
 	public static final int[] MODE = { GL.GL_POINTS, GL.GL_LINES, GL.GL_TRIANGLES };
 
