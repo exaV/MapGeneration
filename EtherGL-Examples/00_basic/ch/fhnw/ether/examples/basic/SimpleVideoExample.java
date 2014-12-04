@@ -1,5 +1,7 @@
 package ch.fhnw.ether.examples.basic;
 
+import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +11,7 @@ import java.util.TimerTask;
 import ch.fhnw.ether.controller.DefaultController;
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.image.Frame;
-import ch.fhnw.ether.media.SFrameReq;
+import ch.fhnw.ether.media.FrameReq;
 import ch.fhnw.ether.scene.DefaultScene;
 import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.scene.camera.Camera;
@@ -26,7 +28,7 @@ import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.gl.DefaultView;
 
 public class SimpleVideoExample {
-	private static final int PRELOAD_FRAMES = 300;
+	private static final int PRELOAD_FRAMES = 0;
 
 	public static void main(String[] args) {
 		new SimpleVideoExample(args[0]);
@@ -53,7 +55,12 @@ public class SimpleVideoExample {
 				Pass.DEVICE_SPACE_OVERLAY));
 
 		try {
-			URL url = new URL(path);
+			URL url = null;
+			try {
+				url = new URL(path);
+			} catch(MalformedURLException e) {
+				url = new File(path).toURI().toURL();
+			}
 			final ISequentialFrameSource track = VideoTrackFactory.createSequentialTrack(url);
 
 			long delay = (long) (1000 / track.getFrameRate());
@@ -61,12 +68,10 @@ public class SimpleVideoExample {
 			if (PRELOAD_FRAMES > 0) {
 				System.out.println("preloading frames");
 				List<Frame> frames = new ArrayList<>();
-				for (int i = 0; i < PRELOAD_FRAMES; ++i) {
-					Frame f = track.getFrames(new SFrameReq()).getFrame();
-					if (f == null)
-						System.exit(0);
-					frames.add(f.flipJ());
-				}
+				FrameReq req = track.getFrames(new FrameReq(PRELOAD_FRAMES));
+
+				for (int i = 0; i < req.getNumFrames(); ++i)
+					frames.add(req.getFrame(i));
 				System.out.println("done.");
 				new Timer().schedule(new TimerTask() {
 					int frame = 0;
@@ -81,10 +86,10 @@ public class SimpleVideoExample {
 				new Timer().schedule(new TimerTask() {
 					@Override
 					public void run() {
-						Frame frame = track.getFrames(new SFrameReq()).getFrame();
+						Frame frame = track.getFrames(new FrameReq()).getFrame();
 						if (frame == null)
 							System.exit(0);
-						texture.setData(frame.flipJ());
+						texture.setData(frame);
 						view.repaint();
 					}
 				}, 1000, delay);

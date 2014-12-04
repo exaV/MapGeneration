@@ -5,8 +5,7 @@ import java.net.URL;
 import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.media.FXParameter;
 import ch.fhnw.ether.media.FrameException;
-import ch.fhnw.ether.media.RFrameReq;
-import ch.fhnw.ether.media.SFrameReq;
+import ch.fhnw.ether.media.FrameReq;
 import ch.fhnw.ether.video.IFrameSource;
 import ch.fhnw.ether.video.IRandomAccessFrameSource;
 import ch.fhnw.ether.video.ISequentialFrameSource;
@@ -78,7 +77,7 @@ public abstract class AbstractFX implements IVideoFX {
 	public final void getNextFrame(IFrameSource source, Frame outFrame) {
 		if(source instanceof ISequentialFrameSource) {
 			ISequentialFrameSource sfs = (ISequentialFrameSource)source;
-			SFrameReq              req = new SFrameReq(outFrame);
+			FrameReq               req = new FrameReq(outFrame);
 			try {
 				sfs.getFrames(req);
 			} catch(FrameException e) {
@@ -89,7 +88,7 @@ public abstract class AbstractFX implements IVideoFX {
 			IRandomAccessFrameSource rafs = (IRandomAccessFrameSource)source;
 			if(frame >= rafs.getFrameCount())
 				frame = 0;
-			rafs.getFrames(new RFrameReq(frame++, outFrame));
+			rafs.getFrames(new FrameReq(frame++, outFrame));
 		}
 	}
 

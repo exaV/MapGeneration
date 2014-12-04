@@ -6,7 +6,7 @@ import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.image.RGB8Frame;
 import ch.fhnw.ether.image.RGBA8Frame;
 import ch.fhnw.ether.media.FXParameter;
-import ch.fhnw.ether.media.SFrameReq;
+import ch.fhnw.ether.media.FrameReq;
 import ch.fhnw.ether.video.IFrameSource;
 
 public class RGBGain extends AbstractFX {
@@ -20,7 +20,7 @@ public class RGBGain extends AbstractFX {
 	}
 
 	@Override
-	public SFrameReq getFrames(SFrameReq req) {
+	public FrameReq getFrames(FrameReq req) {
 		req.processFrames(RGB8Frame.class, getWidth(), getHeight(), (Frame frame, int frameIdx)->{
 			getNextFrame(sources[0], frame);
 

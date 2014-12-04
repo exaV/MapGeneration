@@ -48,8 +48,6 @@ import javax.media.opengl.GL2;
 import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.media.FrameReq;
-import ch.fhnw.ether.media.RFrameReq;
-import ch.fhnw.ether.media.SFrameReq;
 import ch.fhnw.ether.video.IRandomAccessFrameSource;
 import ch.fhnw.ether.video.ISequentialFrameSource;
 import ch.fhnw.util.BufferUtil;
@@ -429,22 +427,6 @@ public abstract class Frame implements ISequentialFrameSource, IRandomAccessFram
 
 	public abstract int getARGB(int i, int j);
 
-	public Frame flipJ() {
-		Frame result = alloc();
-		int linelen = dimI * pixelSize;
-		for (int j = dimJ / 2; --j >= 0;) {
-			int top = j * linelen;
-			int bottom = (dimJ - 1 - j) * linelen;
-			BufferUtil.arraycopy(pixels, top, result.pixels, bottom, linelen);
-			BufferUtil.arraycopy(pixels, bottom, result.pixels, top, linelen);
-		}
-		if ((dimJ & 1) == 1) {
-			int line = (dimJ / 2) * linelen;
-			BufferUtil.arraycopy(pixels, line, result.pixels, line, linelen);
-		}
-		return result;
-	}
-
 	protected static final float linearInterpolate(float low, float high, float weight) {
 		return low + ((high - low) * weight);
 	}
@@ -469,18 +451,7 @@ public abstract class Frame implements ISequentialFrameSource, IRandomAccessFram
 	protected abstract void loadInternal(GL gl, int target, int textureId);
 
 	@Override
-	public RFrameReq getFrames(RFrameReq req) {
-		getFrames(req);
-		return req;
-	}
-
-	@Override
-	public SFrameReq getFrames(SFrameReq req) {
-		getFramesInternal(req);
-		return req;
-	}
-
-	private void getFramesInternal(FrameReq req) {
+	public FrameReq getFrames(FrameReq req) {
 		for(int i = req.getNumFrames(); --i >= 0;) {
 			if(req.getFrame(i) == null)
 				req.setFrame(i, copy());
@@ -491,8 +462,9 @@ public abstract class Frame implements ISequentialFrameSource, IRandomAccessFram
 		}
 		if(req.hasTextureId())
 			req.loadFrames();
+		return req;
 	}
-	
+
 	@Override
 	public double getDuration() {
 		return DURATION_UNKNOWN;

@@ -5,17 +5,27 @@ import javax.media.opengl.GL;
 import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.image.IFrameProcessor;
 
-public abstract class FrameReq {
+public final class FrameReq {
 	private final int     numFrames;
 	private final Frame[] frames;
 	private final int     textureId;
 	private final GL      gl;
+	private final double  time;
+	private final boolean isFrameNumber;
+	private final boolean isSequential;
 
+	public FrameReq() {
+		this(new Frame[1]);
+	}
+	
 	public FrameReq(Frame ... frames) {
-		this.frames    = frames;
-		this.numFrames = frames.length;
-		this.textureId = -1;
-		this.gl        = null;
+		this.frames        = frames;
+		this.numFrames     = frames.length;
+		this.textureId     = -1;
+		this.gl            = null;
+		this.isSequential  = true;
+		this.time          = 0;
+		this.isFrameNumber = false;
 	}
 
 	public FrameReq(int numFrames) {
@@ -23,10 +33,51 @@ public abstract class FrameReq {
 	}
 
 	public FrameReq(GL gl, int numFrames, int textureId) {
-		this.numFrames = numFrames;
-		this.frames    = new Frame[numFrames];
-		this.textureId = textureId;
-		this.gl        = gl;
+		this.numFrames    = numFrames;
+		this.frames       = new Frame[numFrames];
+		this.textureId    = textureId;
+		this.gl           = gl;
+		this.isSequential = true;
+		this.time          = 0;
+		this.isFrameNumber = false;
+	}
+	
+	public FrameReq(double time) {
+		this.frames        = new Frame[1];
+		this.numFrames     = frames.length;
+		this.textureId     = -1;
+		this.gl            = null;
+		this.isSequential  = false;
+		this.time          = time;
+		this.isFrameNumber = false;
+	}
+
+	public FrameReq(long frameNumber, Frame ... frames) {
+		this.frames        = frames;
+		this.numFrames     = frames.length;
+		this.textureId     = -1;
+		this.gl            = null;
+		this.isSequential  = false;
+		this.time          = frameNumber;
+		this.isFrameNumber = true;
+	}
+
+	public FrameReq(GL gl, double time, int textureId) {
+		this.frames        = new Frame[1];
+		this.numFrames     = this.frames.length;
+		this.textureId     = textureId;
+		this.gl            = gl;
+		this.isSequential  = false;
+		this.time          = time;
+		this.isFrameNumber = false;
+	}
+
+	public boolean hasFrameNumber() {
+		return isFrameNumber;
+	}
+
+	public int getFrameNumber() {
+		return (int) time;
 	}
 
 	public int getNumFrames() {
@@ -75,4 +126,7 @@ public abstract class FrameReq {
 		return true;
 	}
 
+	public boolean isSequential() {
+		return isSequential;
+	}
 }

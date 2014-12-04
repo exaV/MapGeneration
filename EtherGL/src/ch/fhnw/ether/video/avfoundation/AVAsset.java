@@ -35,8 +35,7 @@ import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.image.RGB8Frame;
 import ch.fhnw.ether.image.RGBA8Frame;
 import ch.fhnw.ether.media.FrameException;
-import ch.fhnw.ether.media.RFrameReq;
-import ch.fhnw.ether.media.SFrameReq;
+import ch.fhnw.ether.media.FrameReq;
 import ch.fhnw.ether.video.IRandomAccessFrameSource;
 import ch.fhnw.ether.video.ISequentialFrameSource;
 
@@ -118,12 +117,7 @@ public final class AVAsset implements ISequentialFrameSource, IRandomAccessFrame
 	}
 
 	@Override
-	public RFrameReq getFrames(RFrameReq req) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public SFrameReq getFrames(SFrameReq req) {
+	public FrameReq getFrames(FrameReq req) {
 		req.processFrames(RGBA8Frame.class, getWidth(), getHeight(), (Frame frame, int i)->{
 			if(!(frame instanceof RGB8Frame))
 				throw new FrameException("Type mismatch, use a type converter for " + frame.getClass().getName() + "->" + RGBA8Frame.class.getName());

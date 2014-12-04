@@ -29,10 +29,9 @@
 
 package ch.fhnw.ether.video;
 
-import ch.fhnw.ether.media.RFrameReq;
 
 /**
- * Interface for decoding frames from a frame source (e.g. video) in random-access mode. Note
+ * Marker interface for decoding frames from a frame source (e.g. video) in random-access mode. Note
  * this might be slow and should mainly be used for obtaining individual frames,
  * e.g. for film-strip images or previews.
  * 
@@ -40,5 +39,4 @@ import ch.fhnw.ether.media.RFrameReq;
  *
  */
 public interface IRandomAccessFrameSource extends IFrameSource {
-	RFrameReq getFrames(RFrameReq req);
 }

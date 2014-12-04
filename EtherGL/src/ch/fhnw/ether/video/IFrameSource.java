@@ -31,22 +31,19 @@ package ch.fhnw.ether.video;
 
 import java.net.URL;
 
+import ch.fhnw.ether.media.FrameReq;
+
 public interface IFrameSource {
 	double DURATION_UNKNOWN   = -1;
 	long   FRAMECOUNT_UNKNOWN = -1;
 	long   FRAMERATE_UNKNOWN  = 0;
 
-	void dispose();
-
-	URL getURL();
-
-	double getDuration();
-
-	double getFrameRate();
-
-	long getFrameCount();
-
-	int getWidth();
-
-	int getHeight();
+	void     dispose();
+	URL      getURL();
+	double   getDuration();
+	double   getFrameRate();
+	long     getFrameCount();
+	int      getWidth();
+	int      getHeight();
+	FrameReq getFrames(FrameReq request);
 }

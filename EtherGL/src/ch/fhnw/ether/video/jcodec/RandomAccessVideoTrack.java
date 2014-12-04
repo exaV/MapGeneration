@@ -35,7 +35,7 @@ import java.net.URL;
 
 import org.jcodec.api.JCodecException;
 
-import ch.fhnw.ether.media.RFrameReq;
+import ch.fhnw.ether.media.FrameReq;
 import ch.fhnw.ether.video.IRandomAccessFrameSource;
 
 public final class RandomAccessVideoTrack extends AbstractVideoTrack implements IRandomAccessFrameSource {
@@ -44,7 +44,7 @@ public final class RandomAccessVideoTrack extends AbstractVideoTrack implements 
 	}
 
 	@Override
-	public RFrameReq getFrames(RFrameReq req) {
+	public FrameReq getFrames(FrameReq req) {
 		throw new UnsupportedOperationException();
 		/*
 		if(req.hasFrameNumber()) {

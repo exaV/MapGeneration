@@ -39,7 +39,7 @@ import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.image.RGB8Frame;
 import ch.fhnw.ether.image.RGBA8Frame;
 import ch.fhnw.ether.media.FrameException;
-import ch.fhnw.ether.media.SFrameReq;
+import ch.fhnw.ether.media.FrameReq;
 import ch.fhnw.ether.scene.SyncGroup;
 import ch.fhnw.ether.scene.camera.Camera;
 import ch.fhnw.ether.scene.camera.ICamera;
@@ -180,7 +180,7 @@ public class RayTracer implements ISequentialFrameSource, IScalingFrameSource {
 	public void rewind() {}
 
 	@Override
-	public SFrameReq getFrames(SFrameReq req) {
+	public FrameReq getFrames(FrameReq req) {
 		if(!lights.isEmpty()) {
 			req.processFrames(RGBA8Frame.class, w, h, (Frame frame, int frameIdx)->{
 				SyncGroup.sync(this);

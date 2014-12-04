@@ -29,7 +29,6 @@
 
 package ch.fhnw.ether.video;
 
-import ch.fhnw.ether.media.SFrameReq;
 
 /**
  * Interface for decoding frames from a frame source (e.g. video)) sequentially from the beginning. This will be very fast for most
@@ -40,5 +39,4 @@ import ch.fhnw.ether.media.SFrameReq;
  */
 public interface ISequentialFrameSource extends IFrameSource {
 	void rewind();
-	SFrameReq getFrames(SFrameReq req);
 }

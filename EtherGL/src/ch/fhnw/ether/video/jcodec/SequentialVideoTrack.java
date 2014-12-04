@@ -36,7 +36,7 @@ import java.net.URL;
 import org.jcodec.api.JCodecException;
 
 import ch.fhnw.ether.image.Frame;
-import ch.fhnw.ether.media.SFrameReq;
+import ch.fhnw.ether.media.FrameReq;
 import ch.fhnw.ether.video.ISequentialFrameSource;
 
 public final class SequentialVideoTrack extends AbstractVideoTrack implements ISequentialFrameSource {
@@ -54,7 +54,7 @@ public final class SequentialVideoTrack extends AbstractVideoTrack implements IS
 	}
 
 	@Override
-	public SFrameReq getFrames(SFrameReq req) {
+	public FrameReq getFrames(FrameReq req) {
 		req.processFrames(grab.getPreferredType(), getWidth(), getHeight(), (Frame frame, int i)->{
 			grab.grabAndSet(frame);
 		});
