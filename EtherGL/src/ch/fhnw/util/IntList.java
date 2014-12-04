@@ -63,9 +63,8 @@ public final class IntList {
 			System.arraycopy(values, 0, data, size, values.length);
 			size += values.length;
 			return true;
-		} else {
-			return false;
 		}
+		return false;
 	}
 
 	public void clear() {

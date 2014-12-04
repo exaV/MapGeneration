@@ -19,11 +19,9 @@ import ch.fhnw.util.color.RGB;
 import ch.fhnw.util.math.Vec3;
 
 public final class Lights {
-	private static final int MAX_LIGHTS = 8;
-	private static final int BLOCK_SIZE = 20;
 
 	private static final GenericLight DEFAULT_LIGHT = new DirectionalLight(Vec3.Z, RGB.BLACK, RGB.WHITE);
-	private static final float[] OFF_LIGHT = new float[BLOCK_SIZE];
+	private static final float[] OFF_LIGHT = new float[LightUniformBlock.BLOCK_SIZE];
 
 	private final List<GenericLight> lights = new ArrayList<>(Collections.singletonList(DEFAULT_LIGHT));
 
@@ -52,8 +50,8 @@ public final class Lights {
 		if (lights.contains(light)) {
 			throw new IllegalArgumentException("light already in renderer: " + light);
 		}
-		if (lights.size() == MAX_LIGHTS) {
-			throw new IllegalStateException("too many lights in renderer: " + MAX_LIGHTS);
+		if (lights.size() == LightUniformBlock.MAX_LIGHTS) {
+			throw new IllegalStateException("too many lights in renderer: " + LightUniformBlock.MAX_LIGHTS);
 		}
 		if (lights.get(0) == DEFAULT_LIGHT)
 			lights.remove(0);
@@ -73,7 +71,7 @@ public final class Lights {
 
 	// FIXME: move some of this to LightUniformBlock (so it's all in one place)
 	public synchronized void update(GL3 gl, CameraMatrices cameraMatrices) {
-		FloatBuffer buffer = FloatBuffer.allocate(MAX_LIGHTS * BLOCK_SIZE);
+		FloatBuffer buffer = FloatBuffer.allocate(LightUniformBlock.MAX_LIGHTS * LightUniformBlock.BLOCK_SIZE);
 
 		for (GenericLight light : lights) {
 			LightSource source = light.getLightSource();
@@ -91,7 +89,7 @@ public final class Lights {
 			buffer.put(source.getType().ordinal());
 		}
 
-		for (int i = 0; i < MAX_LIGHTS - lights.size(); ++i) {
+		for (int i = 0; i < LightUniformBlock.MAX_LIGHTS - lights.size(); ++i) {
 			buffer.put(OFF_LIGHT);
 		}
 

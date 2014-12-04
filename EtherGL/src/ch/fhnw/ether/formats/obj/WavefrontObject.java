@@ -41,12 +41,12 @@ import java.util.Map;
 import ch.fhnw.util.math.Vec3;
 
 public class WavefrontObject {
-	private List<Vec3> vertices = new ArrayList<Vec3>();
-	private List<Vec3> normals = new ArrayList<Vec3>();
-	private List<TexCoord> textures = new ArrayList<TexCoord>();
-	private List<Group> groups = new ArrayList<Group>();
-	private Map<String, Group> groupsDirectAccess = new HashMap<String, Group>();
-	private Map<String, Material> materials = new HashMap<String, Material>();
+	private List<Vec3> vertices = new ArrayList<>();
+	private List<Vec3> normals = new ArrayList<>();
+	private List<TexCoord> textures = new ArrayList<>();
+	private List<Group> groups = new ArrayList<>();
+	private Map<String, Group> groupsDirectAccess = new HashMap<>();
+	private Map<String, Material> materials = new HashMap<>();
 	private String fileName;
 
 	private ObjLineParserFactory parserFactory;
@@ -95,16 +95,9 @@ public class WavefrontObject {
 	private void parse(InputStream input) {
 		parserFactory = new ObjLineParserFactory(this);
 
-		BufferedReader in = null;
-		try {
-			in = new BufferedReader(new InputStreamReader(input));
-
+		try (BufferedReader in = new BufferedReader(new InputStreamReader(input))) {
 			for (String currentLine = null; (currentLine = in.readLine()) != null;)
 				parseLine(currentLine);
-
-			if (in != null)
-				in.close();
-
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException("Error reading file :'" + fileName + "'");

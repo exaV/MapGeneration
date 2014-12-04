@@ -32,7 +32,11 @@ package ch.fhnw.ether.render.variable.builtin;
 import ch.fhnw.ether.render.IRenderer.RendererAttribute;
 import ch.fhnw.ether.render.variable.base.UniformBlock;
 
+// TODO: need a way to add defines & includes
 public final class LightUniformBlock extends UniformBlock {
+	public static final int MAX_LIGHTS = 8;
+	public static final int BLOCK_SIZE = 20;
+
 	public static final RendererAttribute<Integer> ATTRIBUTE = new RendererAttribute<>("builtin.light_uniform_block");
 
 	private static final String DEFAULT_SHADER_NAME = "lightBlock";

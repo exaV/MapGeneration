@@ -27,8 +27,6 @@
  */
 package ch.fhnw.ether.formats;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -41,10 +39,6 @@ public abstract class AbstractModelReader {
 
 	public AbstractModelReader(URL resource) throws IOException {
 		this(resource.getFile(), resource.openStream());
-	}
-
-	public AbstractModelReader(File file) throws IOException {
-		this(file.getAbsolutePath(), new FileInputStream(file));
 	}
 
 	public AbstractModelReader(String path, InputStream in) throws IOException {

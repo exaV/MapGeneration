@@ -27,65 +27,30 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.util;
+package ch.fhnw.ether.formats.mtl;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
-public class BufferUtil {
+import ch.fhnw.ether.image.Frame;
 
-	public static ByteBuffer newDirectByteBuffer(int size) {
-		ByteBuffer result = ByteBuffer.allocateDirect(size);
-		result.order(ByteOrder.nativeOrder());
-		return result;
+public class TextureLoader {
+
+	private TextureLoader() {
 	}
 
-	public static IntBuffer newDirectIntBuffer(int size) {
-		return newDirectByteBuffer(4 * size).asIntBuffer();
-	}
+	private static final Map<String, Frame> frameCache = new HashMap<>();
 
-	public static FloatBuffer newDirectFloatBuffer(int size) {
-		return newDirectByteBuffer(4 * size).asFloatBuffer();
-	}
-
-	public static void arraycopy(ByteBuffer src, int srcPos, ByteBuffer dst, int dstPos, int length) {
-		if (src == dst) {
-			src.clear();
-			byte[] tmp = new byte[length];
-			src.position(srcPos);
-			src.get(tmp, 0, length);
-			dst.position(dstPos);
-			dst.put(tmp, 0, length);
-		} else {
-			src.position(srcPos);
-			src.limit(srcPos + length);
-			dst.position(dstPos);
-			dst.put(src);
-			src.limit(src.capacity());
+	public static Frame loadTexture(String path) {
+		Frame frame = frameCache.get(path);
+		if (frame == null) {
+			try {
+				frame = Frame.newFrame(new File(path));
+				frameCache.put(path, frame);
+			} catch (Exception e) {
+			}
 		}
-	}
-
-	public static void fill(ByteBuffer buffer, int off, int len, byte val) {
-		buffer.position(off);
-		while (len-- >= 0)
-			buffer.put(val);
-	}
-
-	public static byte[] toByteArray(ByteBuffer buffer) {
-		return toByteArray(buffer, 0, buffer.capacity());
-	}
-
-	public static byte[] toByteArray(ByteBuffer buffer, int off, int len) {
-		if (buffer.hasArray())
-			if (off == 0 && len == buffer.capacity())
-				return buffer.array();
-
-		byte[] result = new byte[len];
-		buffer.clear();
-		buffer.position(off);
-		buffer.get(result);
-		return result;
+		return frame;
 	}
 }

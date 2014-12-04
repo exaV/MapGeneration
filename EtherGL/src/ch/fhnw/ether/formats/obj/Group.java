@@ -39,12 +39,12 @@ public class Group {
 	private String name;
 	private Vec3 min = null;
 	private Material material;
-	private ArrayList<Face> faces = new ArrayList<Face>();
+	private ArrayList<Face> faces = new ArrayList<>();
 
 	public IntList indices = new IntList();
-	public ArrayList<Vec3> vertices = new ArrayList<Vec3>();
-	public ArrayList<Vec3> normals = new ArrayList<Vec3>();
-	public ArrayList<TexCoord> texcoords = new ArrayList<TexCoord>();
+	public ArrayList<Vec3> vertices = new ArrayList<>();
+	public ArrayList<Vec3> normals = new ArrayList<>();
+	public ArrayList<TexCoord> texcoords = new ArrayList<>();
 	public int indexCount;
 
 	public Group(String name) {

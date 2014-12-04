@@ -58,7 +58,7 @@ public class OBJReader extends AbstractModelReader {
 
 	@Override
 	protected List<IMesh> decode(String path, InputStream in) throws IOException {
-		List<IMesh> meshes = new ArrayList<IMesh>();
+		List<IMesh> meshes = new ArrayList<>();
 		WavefrontObject obj = new WavefrontObject(path, in);
 		for (Group g : obj.getGroups()) {
 			FloatList edgVertices = new FloatList();

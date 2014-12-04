@@ -52,9 +52,8 @@ public class GenericLight implements ILight {
 			if (type == Type.DIRECTIONAL_LIGHT) {
 				position = position.normalize();
 				return new Vec4(position.x, position.y, position.z, 0);
-			} else {
-				return new Vec4(position.x, position.y, position.z, 1);
 			}
+			return new Vec4(position.x, position.y, position.z, 1);
 		}
 
 		public static LightSource directionalSource(Vec3 direction, RGB ambient, RGB color) {
