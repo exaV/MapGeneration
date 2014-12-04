@@ -62,6 +62,11 @@ public abstract class AbstractShader implements IShader {
 		this.source = source;
 		this.type = type;
 	}
+	
+	@Override
+	public String id() {
+		return name;
+	}
 
 	@Override
 	public void dispose(GL3 gl) {
@@ -119,16 +124,6 @@ public abstract class AbstractShader implements IShader {
 	}
 
 	@Override
-	public final Program getProgram() {
-		return program;
-	}
-
-	@Override
-	public final Primitive getPrimitiveType() {
-		return type;
-	}
-
-	@Override
 	public List<IShaderUniform<?>> getUniforms() {
 		return uniforms;
 	}
@@ -148,7 +143,7 @@ public abstract class AbstractShader implements IShader {
 
 	@Override
 	public String toString() {
-		return name + "[uniforms:" + uniforms + " array attribs:" + arrays + "]";
+		return id();
 	}
 
 }

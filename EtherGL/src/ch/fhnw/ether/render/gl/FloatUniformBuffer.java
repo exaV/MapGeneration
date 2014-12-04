@@ -29,32 +29,44 @@
 
 package ch.fhnw.ether.render.gl;
 
-import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
-import javax.media.opengl.GL;
 import javax.media.opengl.GL3;
 
-import com.jogamp.common.nio.Buffers;
+import ch.fhnw.util.BufferUtil;
 
 /**
  * Basic uniform buffer object wrapper.
  *
  * @author radar
  */
-public class UniformBuffer {
+public final class FloatUniformBuffer {
 	private static final AtomicInteger BINDING_POINT_COUNTER = new AtomicInteger();
-	
-	private static final int BYTES_PER_FLOAT = Float.SIZE / Byte.SIZE;
 
-	private static final FloatBuffer EMPTY_BUFFER = Buffers.newDirectFloatBuffer(0);
+	private static int blockAlignment;
 
+	private final int blockSize;
+	private final int blockCount;
 	private final int bindingPoint;
-	private int[] ubo;
-	private int size;
 
-	public UniformBuffer(int bindingPoint) {
+	private FloatBuffer buffer;
+
+	private int[] ubo;
+
+	public FloatUniformBuffer(int blockSize) {
+		this(blockSize, 1);
+	}
+
+	public FloatUniformBuffer(int blockSize, int blockCount) {
+		this(blockSize, blockCount, getNewBindingPoint());
+	}
+
+	public FloatUniformBuffer(int blockSize, int blockCount, int bindingPoint) {
+		this.blockSize = blockSize;
+		this.blockCount = blockCount;
 		this.bindingPoint = bindingPoint;
 	}
 
@@ -63,55 +75,75 @@ public class UniformBuffer {
 			gl.glDeleteBuffers(1, ubo, 0);
 			ubo = null;
 		}
-		size = 0;
+		buffer = null;
 	}
 
-	public void load(GL3 gl, Buffer data) {
+	public void load(GL3 gl, BiConsumer<Integer, FloatBuffer> consumer) {
+		int stride = stride(gl);
+
 		if (ubo == null) {
 			ubo = new int[1];
 			gl.glGenBuffers(1, ubo, 0);
 		}
+		
+		if (buffer == null)
+			buffer = BufferUtil.newDirectFloatBuffer(size(stride));
 
-		gl.glBindBuffer(GL3.GL_UNIFORM_BUFFER, ubo[0]);
-		if (data != null && data.limit() != 0) {
-			size = data.limit();
-			data.rewind();
-
-			// transfer data to VBO
-			int numBytes = size * BYTES_PER_FLOAT;
-			gl.glBufferData(GL3.GL_UNIFORM_BUFFER, numBytes, data, GL.GL_STATIC_DRAW);
-		} else {
-			size = 0;
-			gl.glBufferData(GL3.GL_UNIFORM_BUFFER, 0, EMPTY_BUFFER, GL.GL_STATIC_DRAW);
+		buffer.rewind();
+		for (int i = 0; i < blockCount; ++i) {
+			buffer.position(i * stride);
+			consumer.accept(i, buffer);
 		}
-		gl.glBindBuffer(GL.GL_ARRAY_BUFFER, 0);
+		buffer.rewind();
+		gl.glBindBuffer(GL3.GL_UNIFORM_BUFFER, ubo[0]);
+		gl.glBufferData(GL3.GL_UNIFORM_BUFFER, size(stride) * 4, buffer, GL3.GL_STREAM_DRAW);
+		gl.glBindBuffer(GL3.GL_UNIFORM_BUFFER, 0);
 	}
 
-	public void clear(GL3 gl) {
-		load(gl, null);
+	public void load(GL3 gl, int blockIndex, Consumer<FloatBuffer> consumer) {
+		int stride = stride(gl);
+
+		if (ubo == null) {
+			ubo = new int[1];
+			gl.glGenBuffers(1, ubo, 0);
+			gl.glBufferData(GL3.GL_UNIFORM_BUFFER, size(stride) * 4, null, GL3.GL_STREAM_DRAW);
+		}
+
+		if (buffer == null)
+			buffer = BufferUtil.newDirectFloatBuffer(size(stride));
+
+		buffer.rewind();
+		consumer.accept(buffer);
+		buffer.rewind();
+		gl.glBindBuffer(GL3.GL_UNIFORM_BUFFER, ubo[0]);
+		gl.glBufferSubData(GL3.GL_UNIFORM_BUFFER, blockIndex * stride * 4, blockSize * 4, buffer);
+		gl.glBindBuffer(GL3.GL_UNIFORM_BUFFER, 0);
 	}
 
 	public void bind(GL3 gl) {
 		gl.glBindBufferBase(GL3.GL_UNIFORM_BUFFER, bindingPoint, ubo[0]);
 	}
 
-	public void bind(GL3 gl, int offset, int size) {
-		gl.glBindBufferRange(GL3.GL_UNIFORM_BUFFER, bindingPoint, ubo[0], offset, size);
+	public void bind(GL3 gl, int blockIndex) {
+		gl.glBindBufferRange(GL3.GL_UNIFORM_BUFFER, bindingPoint, ubo[0], blockIndex * stride(gl) * 4, blockSize * 4);
 	}
 
 	public int getBindingPoint() {
 		return bindingPoint;
 	}
 
-	public int size() {
-		return size;
-	}
-
-	public boolean isEmpty() {
-		return size == 0;
-	}
-	
 	public static int getNewBindingPoint() {
 		return BINDING_POINT_COUNTER.getAndIncrement();
+	}
+
+	private int stride(GL3 gl) {
+		if (blockAlignment == 0) {
+			blockAlignment = GLUtil.getInteger(gl, GL3.GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT) / 4;
+		}
+		return blockSize / blockAlignment + blockAlignment;
+	}
+
+	private int size(int stride) {
+		return (blockCount - 1) * stride + blockSize;
 	}
 }

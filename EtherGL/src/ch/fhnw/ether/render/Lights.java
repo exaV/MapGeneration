@@ -1,40 +1,39 @@
 package ch.fhnw.ether.render;
 
-import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import javax.media.opengl.GL3;
 
-import ch.fhnw.ether.render.gl.UniformBuffer;
+import ch.fhnw.ether.render.gl.FloatUniformBuffer;
 import ch.fhnw.ether.render.variable.builtin.LightUniformBlock;
 import ch.fhnw.ether.scene.attribute.IAttributeProvider;
 import ch.fhnw.ether.scene.camera.CameraMatrices;
 import ch.fhnw.ether.scene.light.DirectionalLight;
 import ch.fhnw.ether.scene.light.GenericLight;
 import ch.fhnw.ether.scene.light.ILight;
-import ch.fhnw.util.BufferUtil;
 import ch.fhnw.util.color.RGB;
 import ch.fhnw.util.math.Vec3;
 
 public final class Lights {
-
 	private static final GenericLight DEFAULT_LIGHT = new DirectionalLight(Vec3.Z, RGB.BLACK, RGB.WHITE);
 
 	private final List<GenericLight> lights = new ArrayList<>(Collections.singletonList(DEFAULT_LIGHT));
+	private FloatUniformBuffer uniforms = new FloatUniformBuffer(LightUniformBlock.BLOCK_SIZE);
 
-	private FloatBuffer buffer = BufferUtil.newDirectFloatBuffer(LightUniformBlock.MAX_LIGHTS * LightUniformBlock.BLOCK_SIZE);
-	
-	private UniformBuffer uniforms = new UniformBuffer(UniformBuffer.getNewBindingPoint());
-
-	public Lights(AbstractRenderer renderer) {
+	public Lights() {
 	}
-	
+
+	public void dispose(GL3 gl) {
+		uniforms.dispose(gl);
+		uniforms = null;
+	}
+
 	public List<GenericLight> getLights() {
 		return lights;
 	}
-	
+
 	public IAttributeProvider getAttributeProvider() {
 		return new IAttributeProvider() {
 			@Override
@@ -71,8 +70,7 @@ public final class Lights {
 	}
 
 	public synchronized void update(GL3 gl, CameraMatrices matrices) {
-		LightUniformBlock.fillBuffer(buffer, lights, matrices);
-		uniforms.load(gl, buffer);
+		LightUniformBlock.loadUniforms(gl, uniforms, lights, matrices);
 		uniforms.bind(gl);
 	}
 }

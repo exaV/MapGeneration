@@ -33,15 +33,8 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.render.AbstractRenderer;
-import ch.fhnw.ether.render.variable.builtin.NormalMatrixUniform;
-import ch.fhnw.ether.render.variable.builtin.ProjMatrixUniform;
-import ch.fhnw.ether.render.variable.builtin.ViewMatrixUniform;
-import ch.fhnw.ether.scene.attribute.IAttributeProvider;
-import ch.fhnw.ether.scene.camera.CameraMatrices;
 import ch.fhnw.ether.scene.mesh.IMesh.Pass;
 import ch.fhnw.ether.view.IView;
-import ch.fhnw.util.math.Mat3;
-import ch.fhnw.util.math.Mat4;
 
 /*
  * General flow:
@@ -71,67 +64,31 @@ import ch.fhnw.util.math.Mat4;
  * @author radar
  */
 public class ForwardRenderer extends AbstractRenderer {
-	
-	private static class ViewState implements IAttributeProvider {
-		private static final Mat3 ID_3X3 = Mat3.identityMatrix();
-		private static final Mat4 ID_4X4 = Mat4.identityMatrix();
-
-		private Mat4 viewMatrix;
-		private Mat4 projMatrix;
-		private Mat3 normalMatrix;
-
-		void setCameraSpace(IView view) {
-			viewMatrix = view.getCameraMatrices().getViewMatrix();
-			projMatrix = view.getCameraMatrices().getProjMatrix();
-			normalMatrix = view.getCameraMatrices().getNormalMatrix();
-		}
-		
-		void setOrthoScreenSpace(IView view) {
-			viewMatrix = ID_4X4;
-			projMatrix = Mat4.ortho(0, view.getViewport().w, view.getViewport().h, 0, -1, 1);
-			normalMatrix = ID_3X3;
-		}
-
-		void setOrthoDeviceSpace(IView view) {
-			viewMatrix = projMatrix = ID_4X4;
-			normalMatrix = ID_3X3;
-		}
-		
-		@Override
-		public void getAttributes(IAttributes attributes) {
-			attributes.provide(ProjMatrixUniform.ATTRIBUTE, () -> projMatrix);
-			attributes.provide(ViewMatrixUniform.ATTRIBUTE, () -> viewMatrix);
-			attributes.provide(NormalMatrixUniform.ATTRIBUTE, () -> normalMatrix);
-		}
-	}
-
-	private final ViewState state = new ViewState();
 
 	public ForwardRenderer() {
-		addAttributeProvider(state);
 	}
-	
+
+	// FIXME: we should not pass view here, as it might be modified while we're rendering...
 	@Override
 	public void render(GL3 gl, IView view) {
-		CameraMatrices cameraMatrices = view.getCameraMatrices();
 		boolean interactive = view.getConfig().getViewType() == IView.ViewType.INTERACTIVE_VIEW;
-		
-		
-		update(gl, cameraMatrices);
 
-		state.setCameraSpace(view);
-		
+		update(gl, view.getCameraMatrices(), view.getViewport());
+
+		getCameras().setCameraSpace(gl);
+
 		// ---- 1. DEPTH PASS (DEPTH WRITE&TEST ENABLED, BLEND OFF)
 		// FIXME: where do we deal with two-sided vs one-sided? mesh options? shader dependent?
-		gl.glEnable(GL.GL_CULL_FACE);			
+		gl.glEnable(GL.GL_CULL_FACE);
 		gl.glEnable(GL.GL_DEPTH_TEST);
 		gl.glEnable(GL.GL_POLYGON_OFFSET_FILL);
 		gl.glPolygonOffset(1, 3);
 		renderObjects(gl, Pass.DEPTH, interactive);
 		gl.glDisable(GL.GL_POLYGON_OFFSET_FILL);
-		gl.glDisable(GL.GL_CULL_FACE);			
-		
-		if (false) renderShadowVolumes(gl, Pass.DEPTH, interactive);
+		gl.glDisable(GL.GL_CULL_FACE);
+
+		if (false)
+			renderShadowVolumes(gl, Pass.DEPTH, interactive);
 
 		// ---- 2. TRANSPARENCY PASS (DEPTH WRITE DISABLED, DEPTH TEST ENABLED, BLEND ON)
 		gl.glEnable(GL.GL_BLEND);
@@ -143,11 +100,11 @@ public class ForwardRenderer extends AbstractRenderer {
 		renderObjects(gl, Pass.OVERLAY, interactive);
 
 		// ---- 4. DEVICE SPACE OVERLAY (DEPTH WRITE&TEST DISABLED, BLEND ON)
-		state.setOrthoDeviceSpace(view);
+		getCameras().setOrthoDeviceSpace(gl);
 		renderObjects(gl, Pass.DEVICE_SPACE_OVERLAY, interactive);
 
 		// ---- 5. SCREEN SPACE OVERLAY (DEPTH WRITE&TEST DISABLED, BLEND ON)
-		state.setOrthoScreenSpace(view);
+		getCameras().setOrthoScreenSpace(gl);
 		renderObjects(gl, Pass.SCREEN_SPACE_OVERLAY, interactive);
 
 		// ---- 6. CLEANUP: RETURN TO DEFAULTS

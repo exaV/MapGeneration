@@ -30,23 +30,18 @@
 package ch.fhnw.ether.render.gl;
 
 import java.nio.Buffer;
-import java.nio.FloatBuffer;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL3;
 
-import com.jogamp.common.nio.Buffers;
+import ch.fhnw.util.BufferUtil;
 
 /**
  * Basic float buffer attribute wrapper.
  *
  * @author radar
  */
-public class FloatArrayBuffer implements IArrayBuffer {
-	private static final int BYTES_PER_FLOAT = Float.SIZE / Byte.SIZE;
-
-	private static final FloatBuffer EMPTY_BUFFER = Buffers.newDirectFloatBuffer(0);
-
+public final class FloatArrayBuffer implements IArrayBuffer {
 	private int[] vbo;
 	private int size;
 
@@ -75,11 +70,11 @@ public class FloatArrayBuffer implements IArrayBuffer {
 			data.rewind();
 
 			// transfer data to VBO
-			int numBytes = size * BYTES_PER_FLOAT;
+			int numBytes = size * 4;
 			gl.glBufferData(GL.GL_ARRAY_BUFFER, numBytes, data, GL.GL_STATIC_DRAW);
 		} else {
 			size = 0;
-			gl.glBufferData(GL.GL_ARRAY_BUFFER, 0, EMPTY_BUFFER, GL.GL_STATIC_DRAW);
+			gl.glBufferData(GL.GL_ARRAY_BUFFER, 0, BufferUtil.EMPTY_FLOAT_BUFFER, GL.GL_STATIC_DRAW);
 		}
 		gl.glBindBuffer(GL.GL_ARRAY_BUFFER, 0);
 	}
@@ -100,7 +95,7 @@ public class FloatArrayBuffer implements IArrayBuffer {
 	public void enableAttribute(GL3 gl, int index, int numComponents, int stride, int offset) {
 		if (size > 0) {
 			gl.glEnableVertexAttribArray(index);
-			gl.glVertexAttribPointer(index, numComponents, GL.GL_FLOAT, false, stride * BYTES_PER_FLOAT, offset * BYTES_PER_FLOAT);
+			gl.glVertexAttribPointer(index, numComponents, GL.GL_FLOAT, false, stride * 4, offset * 4);
 		}
 	}
 

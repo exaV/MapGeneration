@@ -35,23 +35,22 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GL3;
 
 public interface IArrayBuffer {
-	
 	void dispose(GL gl);
-	
+
 	void load(GL gl, Buffer data);
-	
+
 	void clear(GL gl);
-	
+
 	void bind(GL gl);
-	
+
 	void enableAttribute(GL3 gl, int index, int numComponents, int stride, int offset);
-	
+
 	void enableAttribute(GL3 gl, int index, int numComponents);
 
-	void disableAttribute(GL3 gl, int index);	
-	
+	void disableAttribute(GL3 gl, int index);
+
 	int size();
-	
+
 	boolean isEmpty();
 
 	public static void unbind(GL3 gl) {

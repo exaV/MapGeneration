@@ -29,14 +29,27 @@
 
 package ch.fhnw.ether.render.variable.builtin;
 
-import ch.fhnw.ether.render.IRenderer.RendererAttribute;
-import ch.fhnw.ether.render.variable.base.UniformBlock;
+import javax.media.opengl.GL3;
 
-// FIXME: not used yet. uniform block for view related variables, such as matrices, viewport size etc
+import ch.fhnw.ether.render.IRenderer.RendererAttribute;
+import ch.fhnw.ether.render.gl.FloatUniformBuffer;
+import ch.fhnw.ether.render.variable.base.UniformBlock;
+import ch.fhnw.ether.scene.camera.CameraMatrices;
+import ch.fhnw.util.Viewport;
+import ch.fhnw.util.math.Mat4;
+
 public final class ViewUniformBlock extends UniformBlock {
 	public static final RendererAttribute<Integer> ATTRIBUTE = new RendererAttribute<>("builtin.view_uniform_block");
 
+	// 3 * mat4 + 1 * mat3 + 3 pad
+	// layout: viewMatrix, viewProjMatrix, projMatrix, normalMatrix
+	// 3x (3D, ortho device space, ortho screen space
+	public static final int BLOCK_SIZE = 3 * 16 + 9 + 3;
+
 	private static final String DEFAULT_SHADER_NAME = "viewBlock";
+
+	private static final Mat4 ID_4X4 = Mat4.identityMatrix();
+	private static final float[] PAD_12 = new float[12];
 
 	public ViewUniformBlock() {
 		super(ATTRIBUTE, DEFAULT_SHADER_NAME);
@@ -44,5 +57,34 @@ public final class ViewUniformBlock extends UniformBlock {
 
 	public ViewUniformBlock(String shaderName) {
 		super(ATTRIBUTE, shaderName);
+	}
+
+	public static void loadUniforms(GL3 gl, FloatUniformBuffer uniforms, CameraMatrices matrices, Viewport viewport) {
+		uniforms.load(gl, (blockIndex, buffer) -> {
+			switch (blockIndex) {
+			case 0:
+				// 3d setup
+				buffer.put(matrices.getViewMatrix().m);
+				buffer.put(matrices.getViewProjMatrix().m);
+				buffer.put(matrices.getProjMatrix().m);
+				addMat3(buffer, matrices.getNormalMatrix());
+				break;
+			case 1:
+				// ortho device space
+				buffer.put(ID_4X4.m);
+				buffer.put(ID_4X4.m);
+				buffer.put(ID_4X4.m);
+				buffer.put(PAD_12);
+				break;
+			case 2:
+				// ortho screen space
+				Mat4 ortho = Mat4.ortho(0, viewport.w, viewport.h, 0, -1, 1);
+				buffer.put(ID_4X4.m);
+				buffer.put(ortho.m);
+				buffer.put(ortho.m);
+				buffer.put(PAD_12);
+				break;
+			}
+		});
 	}
 }

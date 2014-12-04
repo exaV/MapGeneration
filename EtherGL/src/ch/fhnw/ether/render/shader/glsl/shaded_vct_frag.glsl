@@ -9,7 +9,6 @@
 
 #define MAX_LIGHTS 8
 
-#include <light_struct.glsl>
 #include <light_block.glsl>
 
 #include <material_struct.glsl>

@@ -34,7 +34,10 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
+import com.jogamp.common.nio.Buffers;
+
 public class BufferUtil {
+	public static final FloatBuffer EMPTY_FLOAT_BUFFER = Buffers.newDirectFloatBuffer(0);
 
 	public static ByteBuffer newDirectByteBuffer(int size) {
 		ByteBuffer result = ByteBuffer.allocateDirect(size);

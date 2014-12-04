@@ -29,10 +29,13 @@
 
 package ch.fhnw.ether.render.variable.base;
 
+import java.nio.FloatBuffer;
+
 import javax.media.opengl.GL3;
 
-import ch.fhnw.ether.render.gl.Program;
 import ch.fhnw.ether.render.IRenderer.RendererAttribute;
+import ch.fhnw.ether.render.gl.Program;
+import ch.fhnw.util.math.Mat3;
 
 public class UniformBlock extends AbstractUniform<Integer> {
 	private boolean canBind = true;
@@ -62,5 +65,22 @@ public class UniformBlock extends AbstractUniform<Integer> {
 	@Override
 	public String toString() {
 		return super.toString() + "[" + isBound + "]";
+	}
+	
+	public static void addMat3(FloatBuffer buffer, Mat3 mat) {
+		buffer.put(mat.m[0]);
+		buffer.put(mat.m[1]);
+		buffer.put(mat.m[2]);
+		buffer.put(0);
+
+		buffer.put(mat.m[3]);
+		buffer.put(mat.m[4]);
+		buffer.put(mat.m[5]);
+		buffer.put(0);
+
+		buffer.put(mat.m[6]);
+		buffer.put(mat.m[7]);
+		buffer.put(mat.m[8]);
+		buffer.put(0);
 	}
 }

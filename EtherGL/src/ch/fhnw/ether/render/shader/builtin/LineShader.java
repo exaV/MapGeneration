@@ -37,8 +37,7 @@ import ch.fhnw.ether.render.variable.base.BooleanUniform;
 import ch.fhnw.ether.render.variable.builtin.ColorArray;
 import ch.fhnw.ether.render.variable.builtin.ColorUniform;
 import ch.fhnw.ether.render.variable.builtin.PositionArray;
-import ch.fhnw.ether.render.variable.builtin.ProjMatrixUniform;
-import ch.fhnw.ether.render.variable.builtin.ViewMatrixUniform;
+import ch.fhnw.ether.render.variable.builtin.ViewUniformBlock;
 import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
@@ -61,7 +60,6 @@ public class LineShader extends AbstractShader {
 
 		addUniform(new ColorUniform(attributes.contains(IMaterial.COLOR) ? null : () -> RGBA.WHITE));
 		
-		addUniform(new ProjMatrixUniform());
-		addUniform(new ViewMatrixUniform());
+		addUniform(new ViewUniformBlock());
 	}
 }
