@@ -29,10 +29,11 @@
 
 package ch.fhnw.ether.formats.obj;
 
+import ch.fhnw.ether.image.Frame;
 import ch.fhnw.util.color.RGB;
 
 public class Material {
-	private Texture texture;
+	private Frame texture;
 	private RGB Ka;
 	private RGB Kd;
 	private RGB Ks;
@@ -59,11 +60,11 @@ public class Material {
 		return name;
 	}
 
-	public Texture getTexture() {
+	public Frame getTexture() {
 		return texture;
 	}
 
-	public void setTexture(Texture texture) {
+	public void setTexture(Frame texture) {
 		this.texture = texture;
 	}
 

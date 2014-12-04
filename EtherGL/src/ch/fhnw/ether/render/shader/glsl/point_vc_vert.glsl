@@ -1,7 +1,6 @@
 #version 140
 
-uniform mat4 projMatrix;
-uniform mat4 viewMatrix;
+#include <view_block.glsl>
 
 uniform bool useVertexColors;
 
@@ -19,5 +18,5 @@ void main() {
 		vsColor *= vertexColor;
 
 	gl_PointSize = pointSize;
-	gl_Position = projMatrix * viewMatrix * vertexPosition;
+	gl_Position = view.viewProjMatrix * vertexPosition;
 }

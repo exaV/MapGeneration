@@ -40,12 +40,12 @@ public final class ShaderBuilder {
 			attributes.put(attribute, null);
 		}
 
-		Supplier<?> getSupplier(IShaderVariable<?> variable) {
+		Supplier<?> getSupplier(IShader shader, IShaderVariable<?> variable) {
 			for (Entry<IAttribute, Supplier<?>> entry : attributes.entrySet()) {
 				if (entry.getKey().id().equals(variable.id()))
 					return entry.getValue();
 			}
-			throw new IllegalArgumentException("attribute not provided: " + variable.id());
+			throw new IllegalArgumentException("shader " + shader + " requires attribute " + variable.id());
 		}
 
 		@Override
@@ -57,23 +57,6 @@ public final class ShaderBuilder {
 			return s;
 		}
 	}
-
-	/*
-	 * public static IShader create(IShader shader, IMesh mesh, List<IAttributeProvider> providers) { Attributes
-	 * attributes = new Attributes();
-	 * 
-	 * // get attributes from mesh and from renderer) if (mesh != null) mesh.getMaterial().getAttributes(attributes); if
-	 * (providers != null) providers.forEach((provider) -> provider.getAttributes(attributes));
-	 * 
-	 * // create shader and attach all attributes this shader requires if (shader == null) shader = createShader(mesh,
-	 * Collections.unmodifiableSet(attributes.attributes.keySet()));
-	 * 
-	 * attachUniforms(shader, attributes);
-	 * 
-	 * if (mesh != null) attachArrays(shader, mesh);
-	 * 
-	 * return shader; }
-	 */
 
 	@SuppressWarnings("unchecked")
 	public static <S extends IShader> S create(S shader, IMesh mesh, List<IAttributeProvider> providers) {
@@ -124,7 +107,7 @@ public final class ShaderBuilder {
 	private static void attachUniforms(IShader shader, Attributes attributes) {
 		for (IShaderUniform<?> uniform : shader.getUniforms()) {
 			if (!uniform.hasSupplier()) {
-				uniform.setSupplier(attributes.getSupplier(uniform));
+				uniform.setSupplier(attributes.getSupplier(shader, uniform));
 			}
 		}
 	}
@@ -137,7 +120,7 @@ public final class ShaderBuilder {
 			Attributes attributes = new Attributes();
 			provider.getAttributes(attributes);
 			for (IShaderArray<?> array : shader.getArrays()) {
-				array.addSupplier(attributes.getSupplier(array));
+				array.addSupplier(attributes.getSupplier(shader, array));
 			}
 		}
 	}

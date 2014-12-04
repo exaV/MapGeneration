@@ -42,7 +42,7 @@ import ch.fhnw.ether.formats.obj.WavefrontObject;
 
 public class MaterialFileParser extends LineParser {
 
-	Hashtable<String, Material> materials = new Hashtable<String, Material>();
+	Hashtable<String, Material> materials = new Hashtable<>();
 	private WavefrontObject object;
 	private MtlLineParserFactory parserFactory = null;
 
@@ -76,8 +76,7 @@ public class MaterialFileParser extends LineParser {
 		if (fileInput == null)
 			return;
 		String currentLine = null;
-		try {
-			BufferedReader in = new BufferedReader(new InputStreamReader(fileInput));
+		try (BufferedReader in = new BufferedReader(new InputStreamReader(fileInput))) {
 
 			currentLine = null;
 			while ((currentLine = in.readLine()) != null) {

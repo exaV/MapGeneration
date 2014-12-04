@@ -38,8 +38,7 @@ import ch.fhnw.ether.render.variable.base.IntUniform;
 import ch.fhnw.ether.render.variable.base.Vec4FloatUniform;
 import ch.fhnw.ether.render.variable.builtin.LightUniformBlock;
 import ch.fhnw.ether.render.variable.builtin.PositionArray;
-import ch.fhnw.ether.render.variable.builtin.ProjMatrixUniform;
-import ch.fhnw.ether.render.variable.builtin.ViewMatrixUniform;
+import ch.fhnw.ether.render.variable.builtin.ViewUniformBlock;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.util.math.Vec4;
 
@@ -53,8 +52,7 @@ public class ShadowVolumeShader extends AbstractShader {
 		addUniform(new FloatUniform("shader.extrude_distance", "extrudeDistance", extrudeDistance));
 		addUniform(new Vec4FloatUniform("shader.volume_color", "color", volumeColor));
 
-		addUniform(new ProjMatrixUniform());
-		addUniform(new ViewMatrixUniform());
+		addUniform(new ViewUniformBlock());
 		addUniform(new LightUniformBlock());
 	}
 }

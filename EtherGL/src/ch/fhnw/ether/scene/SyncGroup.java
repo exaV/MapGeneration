@@ -44,7 +44,7 @@ public class SyncGroup {
 		synchronized(groups) {
 			List<IStateProxy> group = groups.get(groupId);
 			if(group == null) {
-				group = new ArrayList<IStateProxy>();
+				group = new ArrayList<>();
 				groups.put(groupId, group);
 			}
 			group.add(proxy);

@@ -31,13 +31,26 @@ package ch.fhnw.util;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+
+import com.jogamp.common.nio.Buffers;
 
 public class BufferUtil {
+	public static final FloatBuffer EMPTY_FLOAT_BUFFER = Buffers.newDirectFloatBuffer(0);
 
-	public static ByteBuffer allocateDirect(int size) {
+	public static ByteBuffer newDirectByteBuffer(int size) {
 		ByteBuffer result = ByteBuffer.allocateDirect(size);
 		result.order(ByteOrder.nativeOrder());
 		return result;
+	}
+
+	public static IntBuffer newDirectIntBuffer(int size) {
+		return newDirectByteBuffer(4 * size).asIntBuffer();
+	}
+
+	public static FloatBuffer newDirectFloatBuffer(int size) {
+		return newDirectByteBuffer(4 * size).asFloatBuffer();
 	}
 
 	public static void arraycopy(ByteBuffer src, int srcPos, ByteBuffer dst, int dstPos, int length) {

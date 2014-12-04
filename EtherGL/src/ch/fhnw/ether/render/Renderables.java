@@ -52,6 +52,10 @@ final class Renderables {
 
 	public Renderables() {
 	}
+	
+	public void dispose(GL3 gl) {
+		rendererRenderables.forEach((r) -> r.dispose(gl)); 
+	}
 
 	public void addMesh(IMesh mesh, List<IAttributeProvider> providers) {
 		Renderable renderable = new Renderable(mesh, providers);
@@ -85,9 +89,7 @@ final class Renderables {
 				rendererRenderables.addAll(r);
 			}
 		}
-		for (Renderable renderable : rendererRenderables) {
-			renderable.update(gl);
-		}
+		rendererRenderables.forEach((r) -> r.update(gl));
 	}
 
 	void renderObjects(GL3 gl, IMesh.Pass pass, boolean interactive) {

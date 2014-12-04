@@ -2,15 +2,14 @@
 
 #define MAX_LIGHTS 8
 
-#include <light_struct.glsl>
+#include <view_block.glsl>
+
 #include <light_block.glsl>
 
 
 struct VertexData {
 	vec4 position;				// vertex position in eye space
 };
-
-uniform mat4 projMatrix;
 
 uniform int lightIndex;
 uniform float extrudeDistance;
@@ -60,12 +59,12 @@ void main() {
 		u2 = t2 + extrudeDistance * d2;
 	}
 	
-	t0 = projMatrix * t0;
-	t1 = projMatrix * t1;
-	t2 = projMatrix * t2;
-	u0 = projMatrix * u0;
-	u1 = projMatrix * u1;
-	u2 = projMatrix * u2;
+	t0 = view.projMatrix * t0;
+	t1 = view.projMatrix * t1;
+	t2 = view.projMatrix * t2;
+	u0 = view.projMatrix * u0;
+	u1 = view.projMatrix * u1;
+	u2 = view.projMatrix * u2;
 
 	// volume with caps (triangle strip)
 

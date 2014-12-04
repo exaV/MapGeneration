@@ -451,9 +451,8 @@ public final class Quaternion {
 		double s = Math.sqrt(1 - q.w * q.w);
 		if (s < MathUtil.FLOAT_ROUNDING_ERROR) {
 			return new Vec4(q.x, q.y, q.z, angle);
-		} else {
-			return new Vec4((float) (q.x / s), (float) (q.y / s), (float) (q.z / s), angle);
 		}
+		return new Vec4((float) (q.x / s), (float) (q.y / s), (float) (q.z / s), angle);
 	}
 
 	/**

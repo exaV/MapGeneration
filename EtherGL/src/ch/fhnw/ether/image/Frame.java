@@ -57,7 +57,7 @@ public abstract class Frame implements ISequentialFrameSource, IRandomAccessFram
 
 	protected static final byte     B0    = 0;
 	protected static final byte     B255  = (byte) 255;
-	private static final ByteBuffer EMPTY = BufferUtil.allocateDirect(0);
+	private static final ByteBuffer EMPTY = BufferUtil.newDirectByteBuffer(0);
 
 	public ByteBuffer pixels = EMPTY;
 	public int dimI;
@@ -72,7 +72,7 @@ public abstract class Frame implements ISequentialFrameSource, IRandomAccessFram
 	}
 
 	protected Frame(int dimI, int dimJ, byte[] frameBuffer, int pixelSize) {
-		this.pixels = BufferUtil.allocateDirect(frameBuffer.length);
+		this.pixels = BufferUtil.newDirectByteBuffer(frameBuffer.length);
 		this.pixels.put(frameBuffer);
 		this.pixelSize = pixelSize;
 		init(dimI, dimJ);
@@ -82,7 +82,7 @@ public abstract class Frame implements ISequentialFrameSource, IRandomAccessFram
 		if (frameBuffer.isDirect()) {
 			this.pixels = frameBuffer;
 		} else {
-			this.pixels = BufferUtil.allocateDirect(frameBuffer.capacity());
+			this.pixels = BufferUtil.newDirectByteBuffer(frameBuffer.capacity());
 			this.pixels.put(frameBuffer);
 		}
 		this.pixelSize = pixelSize;
@@ -119,7 +119,7 @@ public abstract class Frame implements ISequentialFrameSource, IRandomAccessFram
 		this.dimJ = dimJ;
 		int bufsize = dimI * dimJ * pixelSize;
 		if (this.pixels.capacity() < bufsize)
-			this.pixels = BufferUtil.allocateDirect(bufsize);
+			this.pixels = BufferUtil.newDirectByteBuffer(bufsize);
 		isPOT = isPOT(dimI) && isPOT(dimJ);
 	}
 
@@ -529,7 +529,7 @@ public abstract class Frame implements ISequentialFrameSource, IRandomAccessFram
 	}
 
 	public void processByLine(ILineProcessor processor) {
-		List<Future<?>> result = new ArrayList<Future<?>>(NUM_CHUNKS + 1);
+		List<Future<?>> result = new ArrayList<>(NUM_CHUNKS + 1);
 		int inc  = Math.max(1, dimJ / NUM_CHUNKS);
 		for(int from = 0; from < dimJ; from += inc)
 			result.add(POOL.submit(new Chunk(from, Math.min(from + inc, dimJ), processor)));

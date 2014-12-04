@@ -34,8 +34,7 @@ import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.render.shader.base.AbstractShader;
 import ch.fhnw.ether.render.variable.builtin.ColorArray;
 import ch.fhnw.ether.render.variable.builtin.PositionArray;
-import ch.fhnw.ether.render.variable.builtin.ProjMatrixUniform;
-import ch.fhnw.ether.render.variable.builtin.ViewMatrixUniform;
+import ch.fhnw.ether.render.variable.builtin.ViewUniformBlock;
 import ch.fhnw.ether.scene.DefaultScene;
 import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.scene.camera.Camera;
@@ -56,8 +55,7 @@ public final class CustomShaderExample {
 			addArray(new PositionArray());
 			addArray(new ColorArray());
 
-			addUniform(new ProjMatrixUniform());
-			addUniform(new ViewMatrixUniform());
+			addUniform(new ViewUniformBlock());
 		}
 	}
 

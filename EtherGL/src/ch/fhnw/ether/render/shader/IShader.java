@@ -34,12 +34,22 @@ import java.util.List;
 import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.render.gl.IArrayBuffer;
-import ch.fhnw.ether.render.gl.Program;
 import ch.fhnw.ether.render.variable.IShaderArray;
 import ch.fhnw.ether.render.variable.IShaderUniform;
-import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 
 public interface IShader {
+	public static String VERSION_GL_3_1_GLSL_1_40 = "140";
+	public static String VERSION_GL_3_2_GLSL_1_50 = "150";
+	public static String VERSION_GL_3_3_GLSL_3_30 = "330";
+	public static String VERSION_GL_4_0_GLSL_3_40 = "340";
+	public static String VERSION_GL_4_1_GLSL_4_10 = "410";
+	public static String VERSION_GL_4_2_GLSL_4_20 = "420";
+	public static String VERSION_GL_4_3_GLSL_4_30 = "420";
+	public static String VERSION_GL_4_4_GLSL_4_40 = "440";
+	public static String VERSION_GL_4_5_GLSL_4_50 = "450";
+
+	String id();
+	
 	void dispose(GL3 gl);
 
 	void update(GL3 gl);
@@ -49,10 +59,6 @@ public interface IShader {
 	void render(GL3 gl, int count, IArrayBuffer buffer);
 
 	void disable(GL3 gl);
-
-	Program getProgram();
-
-	Primitive getPrimitiveType();
 
 	List<IShaderUniform<?>> getUniforms();
 

@@ -1,7 +1,6 @@
 #version 140
 
-uniform mat4 projMatrix;
-uniform mat4 viewMatrix;
+#include <view_block.glsl>
 
 uniform bool useVertexColors;
 uniform bool useTexture;
@@ -22,5 +21,5 @@ void main() {
 		
 	if (useTexture)
 		vsTexCoord = vertexTexCoord;
-	gl_Position = projMatrix * viewMatrix * vertexPosition;
+	gl_Position = view.viewProjMatrix * vertexPosition;
 }

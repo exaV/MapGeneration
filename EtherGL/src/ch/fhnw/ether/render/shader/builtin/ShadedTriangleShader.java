@@ -41,10 +41,8 @@ import ch.fhnw.ether.render.variable.builtin.ColorMapArray;
 import ch.fhnw.ether.render.variable.builtin.ColorMapUniform;
 import ch.fhnw.ether.render.variable.builtin.LightUniformBlock;
 import ch.fhnw.ether.render.variable.builtin.NormalArray;
-import ch.fhnw.ether.render.variable.builtin.NormalMatrixUniform;
 import ch.fhnw.ether.render.variable.builtin.PositionArray;
-import ch.fhnw.ether.render.variable.builtin.ProjMatrixUniform;
-import ch.fhnw.ether.render.variable.builtin.ViewMatrixUniform;
+import ch.fhnw.ether.render.variable.builtin.ViewUniformBlock;
 import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
@@ -80,9 +78,7 @@ public class ShadedTriangleShader extends AbstractShader {
 		if (useTexture)
 			addUniform(new ColorMapUniform());
 
-		addUniform(new ProjMatrixUniform());
-		addUniform(new ViewMatrixUniform());
-		addUniform(new NormalMatrixUniform());
+		addUniform(new ViewUniformBlock());
 		addUniform(new LightUniformBlock());
 	}
 }

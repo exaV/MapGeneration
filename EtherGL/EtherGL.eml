@@ -30,12 +30,6 @@
 		<relative-module-src project-related="jar://$PROJECT_DIR$/../../git/ether-gl/EtherGL/lib/jogl/gluegen-java-src.zip!/"/>
 		<relative-module-cls project-related="jar://$PROJECT_DIR$/../../git/ether-gl/EtherGL/lib/jogl/gluegen-rt.jar!/"/>
 	</lib>
-	<lib name="commons-math3-3.2.jar" scope="COMPILE">
-		<srcroot url="jar://$MODULE_DIR$/lib/commons-math3/commons-math3-3.2-sources.jar!/"/>
-		<relative-module-src project-related="jar://$PROJECT_DIR$/../../git/ether-gl/EtherGL/lib/commons-math3/commons-math3-3.2-sources.jar!/"/>
-		<relative-module-cls project-related="jar://$PROJECT_DIR$/../../git/ether-gl/EtherGL/lib/commons-math3/commons-math3-3.2.jar!/"/>
-		<relative-module-javadoc project-related="jar://$PROJECT_DIR$/../../git/ether-gl/EtherGL/lib/commons-math3/commons-math3-3.2-javadoc.jar!/"/>
-	</lib>
 	<lib name="gluegen-rt-natives-linux-amd64.jar" scope="COMPILE">
 		<relative-module-cls project-related="jar://$PROJECT_DIR$/../../git/ether-gl/EtherGL/lib/jogl/gluegen-rt-natives-linux-amd64.jar!/"/>
 	</lib>
@@ -47,5 +41,8 @@
 	</lib>
 	<lib name="jogl-all-natives-linux-i586.jar" scope="COMPILE">
 		<relative-module-cls project-related="jar://$PROJECT_DIR$/../../git/ether-gl/EtherGL/lib/jogl/jogl-all-natives-linux-i586.jar!/"/>
+	</lib>
+	<lib name="jcodec-0.1.10.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/../../git/ether-gl/EtherGL/lib/jcodec/jcodec-0.1.10.jar!/"/>
 	</lib>
 </component>

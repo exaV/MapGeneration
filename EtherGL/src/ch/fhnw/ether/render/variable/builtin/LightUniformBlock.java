@@ -29,13 +29,27 @@
 
 package ch.fhnw.ether.render.variable.builtin;
 
+import java.util.Collection;
+
+import javax.media.opengl.GL3;
+
 import ch.fhnw.ether.render.IRenderer.RendererAttribute;
+import ch.fhnw.ether.render.gl.FloatUniformBuffer;
 import ch.fhnw.ether.render.variable.base.UniformBlock;
+import ch.fhnw.ether.scene.camera.CameraMatrices;
+import ch.fhnw.ether.scene.light.GenericLight;
+import ch.fhnw.ether.scene.light.GenericLight.LightSource;
 
 public final class LightUniformBlock extends UniformBlock {
 	public static final RendererAttribute<Integer> ATTRIBUTE = new RendererAttribute<>("builtin.light_uniform_block");
 
+	public static final int MAX_LIGHTS = 8;
+
+	public static final int BLOCK_SIZE = MAX_LIGHTS * 20;
+
 	private static final String DEFAULT_SHADER_NAME = "lightBlock";
+
+	private static final float[] OFF_LIGHT = new float[20];
 
 	public LightUniformBlock() {
 		super(ATTRIBUTE, DEFAULT_SHADER_NAME);
@@ -43,5 +57,28 @@ public final class LightUniformBlock extends UniformBlock {
 
 	public LightUniformBlock(String shaderName) {
 		super(ATTRIBUTE, shaderName);
+	}
+
+	public static void loadUniforms(GL3 gl, FloatUniformBuffer uniforms, Collection<GenericLight> lights, CameraMatrices matrices) {
+		uniforms.load(gl, (blockIndex, buffer) -> {
+			for (GenericLight light : lights) {
+				LightSource source = light.getLightSource();
+
+				buffer.put(matrices.getViewMatrix().transform(source.getPosition()).toArray());
+				buffer.put(source.getAmbient().toArray());
+				buffer.put(0);
+				buffer.put(source.getColor().toArray());
+				buffer.put(0);
+				buffer.put(matrices.getNormalMatrix().transform(source.getSpotDirection()).toArray());
+				buffer.put(0);
+				buffer.put(source.getSpotCosCutoff());
+				buffer.put(source.getSpotExponent());
+				buffer.put(source.getRange());
+				buffer.put(source.getType().ordinal());
+			}
+			for (int i = 0; i < LightUniformBlock.MAX_LIGHTS - lights.size(); ++i) {
+				buffer.put(OFF_LIGHT);
+			}
+		});
 	}
 }

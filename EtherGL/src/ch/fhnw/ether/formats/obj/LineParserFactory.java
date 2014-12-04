@@ -33,7 +33,7 @@ import java.util.Hashtable;
 
 public abstract class LineParserFactory {
 
-	protected Hashtable<String, LineParser> parsers = new Hashtable<String, LineParser>();
+	protected Hashtable<String, LineParser> parsers = new Hashtable<>();
 	protected WavefrontObject object = null;
 
 	public LineParser getLineParser(String line) {

@@ -67,7 +67,7 @@ public final class Program {
 
 		private final int glType;
 	}
-	
+
 	// FIXME: library is currently hardcoded
 	private final static URL LIBRARY = IShader.class.getResource("glsl/lib");
 

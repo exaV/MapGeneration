@@ -27,32 +27,30 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.render.variable.builtin;
+package ch.fhnw.ether.formats.mtl;
 
-import java.util.function.Supplier;
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
-import ch.fhnw.ether.render.IRenderer.RendererAttribute;
-import ch.fhnw.ether.render.variable.base.Mat4FloatUniform;
-import ch.fhnw.util.math.Mat4;
+import ch.fhnw.ether.image.Frame;
 
-public final class ProjMatrixUniform extends Mat4FloatUniform {
-	public static final RendererAttribute<Mat4> ATTRIBUTE = new RendererAttribute<>("builtin.proj_matrix");
+public class TextureLoader {
 
-	private static final String DEFAULT_SHADER_NAME = "projMatrix";
-
-	public ProjMatrixUniform() {
-		super(ATTRIBUTE, DEFAULT_SHADER_NAME);
+	private TextureLoader() {
 	}
 
-	public ProjMatrixUniform(String shaderName) {
-		super(ATTRIBUTE, shaderName);
-	}
+	private static final Map<String, Frame> frameCache = new HashMap<>();
 
-	public ProjMatrixUniform(Supplier<Mat4> supplier) {
-		super(ATTRIBUTE, DEFAULT_SHADER_NAME, supplier);
-	}
-
-	public ProjMatrixUniform(String shaderName, Supplier<Mat4> supplier) {
-		super(ATTRIBUTE, shaderName, supplier);
+	public static Frame loadTexture(String path) {
+		Frame frame = frameCache.get(path);
+		if (frame == null) {
+			try {
+				frame = Frame.newFrame(new File(path));
+				frameCache.put(path, frame);
+			} catch (Exception e) {
+			}
+		}
+		return frame;
 	}
 }

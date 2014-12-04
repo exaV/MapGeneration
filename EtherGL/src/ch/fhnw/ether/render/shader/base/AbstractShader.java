@@ -43,6 +43,7 @@ import ch.fhnw.ether.render.variable.IShaderUniform;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 
 public abstract class AbstractShader implements IShader {
+	
 	// important: keep this in sync with PrimitiveType enum
 	public static final int[] MODE = { GL.GL_POINTS, GL.GL_LINES, GL.GL_TRIANGLES };
 
@@ -60,6 +61,11 @@ public abstract class AbstractShader implements IShader {
 		this.name = name;
 		this.source = source;
 		this.type = type;
+	}
+	
+	@Override
+	public String id() {
+		return name;
 	}
 
 	@Override
@@ -118,16 +124,6 @@ public abstract class AbstractShader implements IShader {
 	}
 
 	@Override
-	public final Program getProgram() {
-		return program;
-	}
-
-	@Override
-	public final Primitive getPrimitiveType() {
-		return type;
-	}
-
-	@Override
 	public List<IShaderUniform<?>> getUniforms() {
 		return uniforms;
 	}
@@ -147,7 +143,7 @@ public abstract class AbstractShader implements IShader {
 
 	@Override
 	public String toString() {
-		return name + "[uniforms:" + uniforms + " array attribs:" + arrays + "]";
+		return id();
 	}
 
 }
