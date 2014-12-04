@@ -78,7 +78,7 @@ public final class ViewUniformBlock extends UniformBlock {
 				break;
 			case 2:
 				// ortho screen space
-				Mat4 ortho = Mat4.ortho(0, viewport.w, viewport.h, 0, -1, 1);
+				Mat4 ortho = Mat4.ortho(0, viewport.w, 0, viewport.h, -1, 1);
 				buffer.put(ID_4X4.m);
 				buffer.put(ortho.m);
 				buffer.put(ortho.m);
