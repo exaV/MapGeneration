@@ -29,9 +29,10 @@
 
 package ch.fhnw.util.color;
 
+import ch.fhnw.util.math.IVec4;
 import ch.fhnw.util.math.Vec4;
 
-public class RGBA extends Vec4 implements IColor {
+public class RGBA implements IColor, IVec4 {
 	/**
 	 * Special value to indicate per-vertex colors for materials.
 	 */
@@ -52,80 +53,102 @@ public class RGBA extends Vec4 implements IColor {
 	public static final RGBA LIGHT_GRAY = new RGBA(0.75f, 0.75f, 0.75f, 1);
 	public static final RGBA DARK_GRAY = new RGBA(0.25f, 0.25f, 0.25f, 1);
 
+	public final float r;
+	public final float g;
+	public final float b;
+	public final float a;
+
 	public RGBA(float r, float g, float b, float a) {
-		super(r, g, b, a);
+		this.r = r;
+		this.g = g;
+		this.b = b;
+		this.a = a;
 	}
 
 	public RGBA(float[] rgba) {
 		this(rgba[0], rgba[1], rgba[2], rgba[3]);
 	}
 
-	public RGBA(int rgba) {
-		this(((rgba >> 24) & 0xFF) / 255f,
-				((rgba >> 16) & 0xFF) / 255f,
-				((rgba >> 8) & 0xFF) / 255f,
-				(rgba & 0xFF) / 255f);
+	public RGBA(Vec4 c) {
+		this(c.x, c.y, c.z, c.w);
 	}
 
-	public RGBA(Vec4 c) {
-		super(c.x, c.y, c.z, c.w);
+	public RGBA(int rgba) {
+		this(((rgba >> 24) & 0xFF) / 255f, ((rgba >> 16) & 0xFF) / 255f, ((rgba >> 8) & 0xFF) / 255f, (rgba & 0xFF) / 255f);
 	}
 
 	@Override
 	public float red() {
-		return x;
+		return r;
 	}
 
 	@Override
 	public float green() {
-		return y;
+		return g;
 	}
 
 	@Override
 	public float blue() {
-		return z;
+		return b;
 	}
 
 	@Override
 	public float alpha() {
-		return w;
+		return a;
+	}
+
+	@Override
+	public float x() {
+		return r;
+	}
+	
+	@Override
+	public float y() {
+		return g;
+	}
+
+	@Override
+	public float z() {
+		return b;
+	}
+
+	@Override
+	public float w() {
+		return a;
+	}
+
+	public RGBA scaleRGB(float s) {
+		return new RGBA(r * s, g * s, b * s, a);
+	}
+
+	public int toRGBA() {
+		int r = (int) (this.r * 255);
+		int g = (int) (this.g * 255);
+		int b = (int) (this.b * 255);
+		int a = (int) (this.a * 255);
+		return (r << 24 | g << 16 | b << 8 | a << 0);
+	}
+
+	public int toABGR() {
+		int r = (int) (this.r * 255);
+		int g = (int) (this.g * 255);
+		int b = (int) (this.b * 255);
+		int a = (int) (this.a * 255);
+		return (a << 24 | b << 16 | g << 8 | r << 0);
+	}
+	
+	@Override
+	public Vec4 toVec4() {
+		return new Vec4(r, g, b, a);
+	}
+	
+	@Override
+	public float[] toArray() {
+		return new float[] { r, g, b, a };
 	}
 
 	@Override
 	public String toString() {
 		return "rgba[" + red() + " " + green() + " " + blue() + " " + alpha() + "]";
 	}
-
-	@Override
-	public float[] generateColorArray(int len) {
-		float[] ret = new float[len * 4];
-		for (int i = 0; i < ret.length; i += 4) {
-			ret[i + 0] = x;
-			ret[i + 1] = y;
-			ret[i + 2] = z;
-			ret[i + 3] = w;
-		}
-		return ret;
-	}
-
-	public RGBA scaleRGB(float s) {
-		return new RGBA(x * s, y * s, z * s, w);
-	}
-
-	public int toABGR() {
-		int r = (int) (x * 255);
-		int g = (int) (y * 255);
-		int b = (int) (z * 255);
-		int a = (int) (w * 255);
-		return (a << 24 | b << 16 | g << 8 | r << 0);
-	}
-
-	public int toRGBA() {
-		int r = (int) (x * 255);
-		int g = (int) (y * 255);
-		int b = (int) (z * 255);
-		int a = (int) (w * 255);
-		return (r << 24 | g << 16 | b << 8 | a << 0);
-	}
-
 }

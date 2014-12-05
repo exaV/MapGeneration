@@ -36,7 +36,7 @@ import java.util.List;
  *
  * @author radar
  */
-public class Vec4 {
+public class Vec4 implements IVec4 {
 	public static final Vec4 ZERO = new Vec4(0, 0, 0, 0);
 	public static final Vec4 ONE = new Vec4(1, 1, 1, 1);
 	public static final Vec4 X = new Vec4(1, 0, 0, 0);
@@ -74,6 +74,26 @@ public class Vec4 {
 
 	public Vec4(Vec3 v) {
 		this(v.x, v.y, v.z, 1);
+	}
+
+	@Override
+	public float x() {
+		return x;
+	}
+	
+	@Override
+	public float y() {
+		return y;
+	}
+
+	@Override
+	public float z() {
+		return z;
+	}
+
+	@Override
+	public float w() {
+		return w;
 	}
 
 	public float length() {
@@ -123,14 +143,20 @@ public class Vec4 {
 		}
 		return false;
 	}
+	
+	@Override
+	public Vec4 toVec4() {
+		return this;
+	}
+
+	@Override
+	public float[] toArray() {
+		return new float[] { x, y, z, w };
+	}
 
 	@Override
 	public String toString() {
 		return "[" + x + ", " + y + ", " + z + ", " + w + "]";
-	}
-
-	public float[] toArray() {
-		return new float[] { x, y, z, w };
 	}
 
 	public static float[] toArray(List<? extends Vec4> vs) {

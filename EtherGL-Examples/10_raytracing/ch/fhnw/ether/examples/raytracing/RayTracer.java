@@ -136,11 +136,11 @@ public class RayTracer implements ISequentialFrameSource, IScalingFrameSource {
 		RGB  lc = ((GenericLight)light).getLightSource().getColor();
 
 		pixels.position((y * w + x) * 4);
-		pixels.put((byte)(f * c.x * lc.x * 255f));
-		pixels.put((byte)(f * c.y * lc.y * 255f));
-		pixels.put((byte)(f * c.z * lc.z * 255f));
+		pixels.put((byte)(f * c.r * lc.r * 255f));
+		pixels.put((byte)(f * c.g * lc.g * 255f));
+		pixels.put((byte)(f * c.b * lc.b * 255f));
 		if(hasAlpha)
-			pixels.put((byte)(c.w * 255f));
+			pixels.put((byte)(c.a * 255f));
 	}
 
 	@Override
@@ -192,7 +192,7 @@ public class RayTracer implements ISequentialFrameSource, IScalingFrameSource {
 				if(!(frame instanceof RGB8Frame)) throw new FrameException("Unsupported frame type " + frame.getClass().getName());
 
 				final ILight light      = lights.get(0);
-				final Vec3   camPos       = camera.getPosition();
+				final Vec3   camPos     = camera.getPosition();
 
 				final float aspect      = (float)w / (float)h;
 

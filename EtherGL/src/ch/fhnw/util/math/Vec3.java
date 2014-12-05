@@ -36,7 +36,7 @@ import java.util.List;
  *
  * @author radar
  */
-public class Vec3 {
+public class Vec3 implements IVec3 {
 	public static final Vec3 ZERO = new Vec3(0, 0, 0);
 	public static final Vec3 ONE = new Vec3(1, 1, 1);
 	public static final Vec3 X = new Vec3(1, 0, 0);
@@ -66,6 +66,21 @@ public class Vec3 {
 
 	public Vec3(Vec4 v) {
 		this(v.x, v.y, v.z);
+	}
+
+	@Override
+	public float x() {
+		return x;
+	}
+	
+	@Override
+	public float y() {
+		return y;
+	}
+
+	@Override
+	public float z() {
+		return z;
 	}
 
 	public float length() {
@@ -122,14 +137,20 @@ public class Vec3 {
 		}
 		return false;
 	}
+	
+	@Override
+	public Vec3 toVec3() {
+		return this;
+	}
+
+	@Override
+	public float[] toArray() {
+		return new float[] { x, y, z };
+	}
 
 	@Override
 	public String toString() {
 		return String.format("[% .2f,% .2f,% .2f]", x, y, z);
-	}
-
-	public float[] toArray() {
-		return new float[] { x, y, z };
 	}
 
 	public static float[] toArray(List<? extends Vec3> vs) {

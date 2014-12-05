@@ -31,12 +31,14 @@ package ch.fhnw.util.math;
 
 import java.util.Collection;
 
+import ch.fhnw.util.IFloatArrayCopyProvider;
+
 /**
  * 2D vector for basic vector algebra. Instances are immutable.
  *
  * @author radar
  */
-public final class Vec2 {
+public final class Vec2 implements IFloatArrayCopyProvider {
 	public static final Vec2 ZERO = new Vec2(0, 0);
 	public static final Vec2 ONE = new Vec2(1, 1);
 	public static final Vec2 X = new Vec2(1, 0);
@@ -102,6 +104,11 @@ public final class Vec2 {
 			return (x == v.x) && (y == v.y);
 		}
 		return false;
+	}
+
+	@Override
+	public float[] toArray() {
+		return new float[] { x, y };
 	}
 
 	@Override

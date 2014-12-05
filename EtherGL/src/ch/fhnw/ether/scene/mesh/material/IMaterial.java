@@ -33,8 +33,8 @@ import ch.fhnw.ether.scene.attribute.AbstractAttribute;
 import ch.fhnw.ether.scene.attribute.IAttributeProvider;
 import ch.fhnw.ether.scene.attribute.ITypedAttribute;
 import ch.fhnw.util.IUpdateRequester;
-import ch.fhnw.util.math.Vec3;
-import ch.fhnw.util.math.Vec4;
+import ch.fhnw.util.math.IVec3;
+import ch.fhnw.util.math.IVec4;
 
 public interface IMaterial extends IAttributeProvider, IUpdateRequester {
 	interface IMaterialAttribute<T> extends ITypedAttribute<T> {
@@ -49,16 +49,16 @@ public interface IMaterial extends IAttributeProvider, IUpdateRequester {
 	// default material attributes
 	
 	// non-shaded objects
-	MaterialAttribute<Vec4> COLOR = new MaterialAttribute<>("builtin.material.color");
+	MaterialAttribute<IVec4> COLOR = new MaterialAttribute<>("builtin.material.color");
 
 	// texture maps
 	MaterialAttribute<Texture> COLOR_MAP = new MaterialAttribute<>("builtin.material.color_map");
 
 	// triangles only: normals & shading
-	MaterialAttribute<Vec3> EMISSION = new MaterialAttribute<>("builtin.material.shading.emission");
-	MaterialAttribute<Vec3> AMBIENT = new MaterialAttribute<>("builtin.material.shading.ambient");
-	MaterialAttribute<Vec3> DIFFUSE = new MaterialAttribute<>("builtin.material.shading.diffuse");
-	MaterialAttribute<Vec3> SPECULAR = new MaterialAttribute<>("builtin.material.shading.specular");
+	MaterialAttribute<IVec3> EMISSION = new MaterialAttribute<>("builtin.material.shading.emission");
+	MaterialAttribute<IVec3> AMBIENT = new MaterialAttribute<>("builtin.material.shading.ambient");
+	MaterialAttribute<IVec3> DIFFUSE = new MaterialAttribute<>("builtin.material.shading.diffuse");
+	MaterialAttribute<IVec3> SPECULAR = new MaterialAttribute<>("builtin.material.shading.specular");
 	MaterialAttribute<Float> SHININESS = new MaterialAttribute<>("builtin.material.shading.shininess");
 	MaterialAttribute<Float> STRENGTH = new MaterialAttribute<>("builtin.material.shading.strength");
 	MaterialAttribute<Float> ALPHA = new MaterialAttribute<>("builtin.material.shading.alpha");

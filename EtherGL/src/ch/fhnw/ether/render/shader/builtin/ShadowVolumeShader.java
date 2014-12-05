@@ -40,10 +40,10 @@ import ch.fhnw.ether.render.variable.builtin.LightUniformBlock;
 import ch.fhnw.ether.render.variable.builtin.PositionArray;
 import ch.fhnw.ether.render.variable.builtin.ViewUniformBlock;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
-import ch.fhnw.util.math.Vec4;
+import ch.fhnw.util.math.IVec4;
 
 public class ShadowVolumeShader extends AbstractShader {
-	public ShadowVolumeShader(Supplier<Integer> lightIndex, Supplier<Float> extrudeDistance, Supplier<Vec4> volumeColor) {
+	public ShadowVolumeShader(Supplier<Integer> lightIndex, Supplier<Float> extrudeDistance, Supplier<IVec4> volumeColor) {
 		super(IShader.class, "builtin.shader.shadow_volumes", "shadow_volumes", Primitive.TRIANGLES);
 
 		addArray(new PositionArray());

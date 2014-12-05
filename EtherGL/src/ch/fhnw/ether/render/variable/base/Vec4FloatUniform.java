@@ -35,18 +35,18 @@ import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.render.gl.Program;
 import ch.fhnw.ether.scene.attribute.ITypedAttribute;
-import ch.fhnw.util.math.Vec4;
+import ch.fhnw.util.math.IVec4;
 
-public class Vec4FloatUniform extends AbstractUniform<Vec4> {
-	public Vec4FloatUniform(ITypedAttribute<Vec4> attribute, String shaderName) {
+public class Vec4FloatUniform extends AbstractUniform<IVec4> {
+	public Vec4FloatUniform(ITypedAttribute<IVec4> attribute, String shaderName) {
 		super(attribute, shaderName);
 	}
 
-	public Vec4FloatUniform(ITypedAttribute<Vec4> attribute, String shaderName, Supplier<Vec4> supplier) {
+	public Vec4FloatUniform(ITypedAttribute<IVec4> attribute, String shaderName, Supplier<IVec4> supplier) {
 		super(attribute, shaderName, supplier);
 	}
 
-	public Vec4FloatUniform(String id, String shaderName, Supplier<Vec4> supplier) {
+	public Vec4FloatUniform(String id, String shaderName, Supplier<IVec4> supplier) {
 		super(id, shaderName, supplier);
 	}
 

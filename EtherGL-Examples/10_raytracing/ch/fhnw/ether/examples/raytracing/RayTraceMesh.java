@@ -95,7 +95,7 @@ public class RayTraceMesh implements IMesh {
 
 	@Override
 	public IMaterial getMaterial() {
-		return new ColorMaterial(new RGBA(color));
+		return new ColorMaterial(color);
 	}
 
 	@Override

@@ -48,7 +48,7 @@ public final class ViewUniformBlock extends UniformBlock {
 
 	private static final String DEFAULT_SHADER_NAME = "viewBlock";
 
-	private static final Mat4 ID_4X4 = Mat4.identityMatrix();
+	private static final float[] ID_4X4 = Mat4.ID.toArray();
 	private static final float[] PAD_12 = new float[12];
 
 	public ViewUniformBlock() {
@@ -64,24 +64,25 @@ public final class ViewUniformBlock extends UniformBlock {
 			switch (blockIndex) {
 			case 0:
 				// 3d setup
-				buffer.put(matrices.getViewMatrix().m);
-				buffer.put(matrices.getViewProjMatrix().m);
-				buffer.put(matrices.getProjMatrix().m);
+				// TODO: add toBuffer method to Mat4/Mat3
+				buffer.put(matrices.getViewMatrix().toArray());
+				buffer.put(matrices.getViewProjMatrix().toArray());
+				buffer.put(matrices.getProjMatrix().toArray());
 				addMat3(buffer, matrices.getNormalMatrix());
 				break;
 			case 1:
 				// ortho device space
-				buffer.put(ID_4X4.m);
-				buffer.put(ID_4X4.m);
-				buffer.put(ID_4X4.m);
+				buffer.put(ID_4X4);
+				buffer.put(ID_4X4);
+				buffer.put(ID_4X4);
 				buffer.put(PAD_12);
 				break;
 			case 2:
 				// ortho screen space
 				Mat4 ortho = Mat4.ortho(0, viewport.w, 0, viewport.h, -1, 1);
-				buffer.put(ID_4X4.m);
-				buffer.put(ortho.m);
-				buffer.put(ortho.m);
+				buffer.put(ID_4X4);
+				buffer.put(ortho.toArray());
+				buffer.put(ortho.toArray());
 				buffer.put(PAD_12);
 				break;
 			}

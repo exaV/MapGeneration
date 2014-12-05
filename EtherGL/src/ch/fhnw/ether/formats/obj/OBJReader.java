@@ -95,7 +95,7 @@ public class OBJReader extends AbstractModelReader {
 			Material mat = g.getMaterial();
 			RGB diffuse = mat.getKd();
 			float[] triv = triVertices.toArray();
-			IMaterial material = new ColorMaterial(new RGBA(diffuse.x, diffuse.y, diffuse.z, 1));
+			IMaterial material = new ColorMaterial(new RGBA(diffuse.r, diffuse.g, diffuse.b, 1));
 			IGeometry geometry = DefaultGeometry.createVN(Primitive.TRIANGLES, triv, GeometryUtil.calculateNormals(triv));
 			DefaultMesh mesh = new DefaultMesh(material, geometry);
 			mesh.setName(path + '/' + g.getName());

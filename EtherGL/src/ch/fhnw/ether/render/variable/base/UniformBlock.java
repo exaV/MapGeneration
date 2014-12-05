@@ -68,19 +68,19 @@ public class UniformBlock extends AbstractUniform<Integer> {
 	}
 	
 	public static void addMat3(FloatBuffer buffer, Mat3 mat) {
-		buffer.put(mat.m[0]);
-		buffer.put(mat.m[1]);
-		buffer.put(mat.m[2]);
+		buffer.put(mat.m00);
+		buffer.put(mat.m10);
+		buffer.put(mat.m20);
 		buffer.put(0);
 
-		buffer.put(mat.m[3]);
-		buffer.put(mat.m[4]);
-		buffer.put(mat.m[5]);
+		buffer.put(mat.m01);
+		buffer.put(mat.m11);
+		buffer.put(mat.m21);
 		buffer.put(0);
 
-		buffer.put(mat.m[6]);
-		buffer.put(mat.m[7]);
-		buffer.put(mat.m[8]);
+		buffer.put(mat.m02);
+		buffer.put(mat.m12);
+		buffer.put(mat.m22);
 		buffer.put(0);
 	}
 }

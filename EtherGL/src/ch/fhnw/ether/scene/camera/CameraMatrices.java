@@ -83,7 +83,7 @@ public final class CameraMatrices {
 
 	public Mat4 getViewProjMatrix() {
 		if (viewProjMatrix == null) {
-			viewProjMatrix = Mat4.product(getProjMatrix(), getViewMatrix());
+			viewProjMatrix = Mat4.multiply(getProjMatrix(), getViewMatrix());
 		}
 		return viewProjMatrix;
 	}

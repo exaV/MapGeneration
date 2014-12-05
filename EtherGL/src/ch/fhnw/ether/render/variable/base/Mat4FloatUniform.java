@@ -56,6 +56,6 @@ public class Mat4FloatUniform extends AbstractUniform<Mat4> {
 
 	@Override
 	public void enable(GL3 gl, Program program) {
-		program.setUniformMat4(gl, getShaderIndex(gl, program), get().m);
+		program.setUniformMat4(gl, getShaderIndex(gl, program), get().toArray());
 	}
 }

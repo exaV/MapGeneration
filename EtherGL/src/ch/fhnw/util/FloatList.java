@@ -29,7 +29,7 @@ package ch.fhnw.util;
 
 import java.util.Arrays;
 
-public class FloatList implements IAddOnlyFloatList {
+public class FloatList {
 	private float[] data;
 	private int size;
 
@@ -45,20 +45,17 @@ public class FloatList implements IAddOnlyFloatList {
 		return data[i];
 	}
 	
-	@Override
 	public void add(float value) {
 		ensureCapacity(size + 1);
 		data[size++] = value;
 	}
 
-	@Override
 	public void add(float value0, float value1) {
 		ensureCapacity(size + 2);
 		data[size++] = value0;
 		data[size++] = value1;
 	}
 
-	@Override
 	public void add(float value0, float value1, float value2) {
 		ensureCapacity(size + 3);
 		data[size++] = value0;
@@ -66,7 +63,6 @@ public class FloatList implements IAddOnlyFloatList {
 		data[size++] = value2;
 	}
 
-	@Override
 	public void add(float value0, float value1, float value2, float value3) {
 		ensureCapacity(size + 4);
 		data[size++] = value0;
@@ -75,7 +71,6 @@ public class FloatList implements IAddOnlyFloatList {
 		data[size++] = value3;
 	}
 
-	@Override
 	public boolean add(float... values) {
 		if ((values != null) && (values.length > 0)) {
 			ensureCapacity(size + values.length);
@@ -90,22 +85,18 @@ public class FloatList implements IAddOnlyFloatList {
 		size = 0;
 	}
 
-	@Override
 	public int size() {
 		return size;
 	}
 
-	@Override
 	public boolean isEmpty() {
 		return size == 0;
 	}
 
-	@Override
 	public int capacity() {
 		return data.length;
 	}
 
-	@Override
 	public void ensureCapacity(int capacity) {
 		if (data.length > capacity)
 			return;

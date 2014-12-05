@@ -36,10 +36,10 @@ import ch.fhnw.ether.render.shader.base.AbstractShader;
 import ch.fhnw.ether.render.variable.base.Vec4FloatUniform;
 import ch.fhnw.ether.render.variable.builtin.PositionArray;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
-import ch.fhnw.util.math.Vec4;
+import ch.fhnw.util.math.IVec4;
 
 public class TrivialDeviceSpaceShader extends AbstractShader {
-	public TrivialDeviceSpaceShader(Supplier<Vec4> color) {
+	public TrivialDeviceSpaceShader(Supplier<IVec4> color) {
 		super(IShader.class, "builtin.shader.trivial_device_space", "device_space", Primitive.TRIANGLES);
 
 		addArray(new PositionArray());

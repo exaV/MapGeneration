@@ -228,11 +228,11 @@ public final class BimberRaskarCalibrator implements ICalibrator {
 	}
 
 	private Mat4 toMat4(RealMatrix m) {
-		Mat4 result = new Mat4();
+		float[] v = new float[16];
 		for (int i = 0; i < 16; ++i) {
-			result.m[i] = (float) m.getEntry(i % 4, i / 4);
+			v[i] = (float) m.getEntry(i % 4, i / 4);
 		}
-		return result;
+		return new Mat4(v);
 	}
 
 	private static Vector3D toVector3D(RealVector v) {

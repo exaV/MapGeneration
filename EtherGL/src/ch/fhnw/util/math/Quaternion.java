@@ -192,8 +192,10 @@ public final class Quaternion {
 	 * Creates quaternion from the given matrix, optionally removing any scaling.
 	 */
 	public static Quaternion fromMatrix(Mat4 matrix, boolean normalize) {
-		return fromAxes(new Vec3(matrix.m[Mat4.M00], matrix.m[Mat4.M01], matrix.m[Mat4.M02]), new Vec3(matrix.m[Mat4.M10], matrix.m[Mat4.M11],
-				matrix.m[Mat4.M12]), new Vec3(matrix.m[Mat4.M20], matrix.m[Mat4.M21], matrix.m[Mat4.M22]), normalize);
+		Vec3 v1 = new Vec3(matrix.m00, matrix.m01, matrix.m02);
+		Vec3 v2 = new Vec3(matrix.m10, matrix.m11, matrix.m12);
+		Vec3 v3 = new Vec3(matrix.m20, matrix.m21, matrix.m22);
+		return fromAxes(v1, v2, v3, normalize);
 	}
 
 	/**
