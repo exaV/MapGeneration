@@ -116,10 +116,10 @@ public class Button extends AbstractWidget {
 		int bg = Button.BUTTON_GAP;
 		int bx = getX() * (bg + bw);
 		int by = getY() * (bg + bh);
-		surface.fillRect(getState().getColor(), bx, by, bw, bh);
+		surface.fillRect(getState().getColor(), bx + 4, surface.getHeight() - by - bh - 4, bw, bh);
 		String label = getLabel();
 		if (label != null)
-			surface.drawString(TEXT_COLOR, label, bx + 2, by + bh - 4);
+			surface.drawString(TEXT_COLOR, label, bx + 6, surface.getHeight() - by - 8);
 
 	}
 

@@ -75,7 +75,7 @@ public final class UI {
 		}
 
 		if (message != null)
-			text.drawString(message, 0, text.getHeight() - GraphicsPlane.FONT.getSize());
+			text.drawString(message, 256, text.getHeight() - 8);
 		
 		text.update();
 	}
