@@ -31,6 +31,7 @@ package ch.fhnw.ether.video.jcodec;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.List;
 
 import org.jcodec.api.FrameGrab.MediaInfo;
 import org.jcodec.api.JCodecException;
@@ -65,10 +66,10 @@ import ch.fhnw.ether.media.FrameException;
  * A minimal version of org.jcodec.api.FrameGrab, with some additional methods and adjustments for our needs.
  */
 final class FrameGrab {
-
-	private DemuxerTrack videoTrack;
-	private ContainerAdaptor decoder;
-	private ThreadLocal<int[][]> buffers = new ThreadLocal<>();
+	private final DemuxerTrack            videoTrack;
+	private final AbstractMP4DemuxerTrack audioTrack;
+	private final ContainerAdaptor        decoder;
+	private final ThreadLocal<int[][]>    buffers = new ThreadLocal<>();
 
 	public FrameGrab(SeekableByteChannel in) throws IOException, JCodecException {
 		ByteBuffer header = ByteBuffer.allocate(65536);
@@ -78,8 +79,9 @@ final class FrameGrab {
 
 		switch (detectFormat) {
 		case MOV:
-			MP4Demuxer d1 = new MP4Demuxer(in);
+			MP4Demuxer   d1 = new MP4Demuxer(in);
 			videoTrack = d1.getVideoTrack();
+			audioTrack = selectAudioTrack(d1);
 			break;
 		case MPEG_PS:
 			throw new UnsupportedFormatException("MPEG PS is temporarily unsupported.");
@@ -88,15 +90,21 @@ final class FrameGrab {
 		default:
 			throw new UnsupportedFormatException("Container format is not supported by JCodec");
 		}
-		decodeLeadingFrames();
+		decoder = decodeLeadingFrames(this);
 	}
 
-	public FrameGrab(SeekableDemuxerTrack videoTrack, ContainerAdaptor decoder) {
+	public FrameGrab(SeekableDemuxerTrack videoTrack, AbstractMP4DemuxerTrack audioTrack, ContainerAdaptor decoder) {
 		this.videoTrack = videoTrack;
-		this.decoder = decoder;
+		this.audioTrack = audioTrack;
+		this.decoder    = decoder;
 	}
 
-	private SeekableDemuxerTrack sdt() throws JCodecException {
+	private AbstractMP4DemuxerTrack selectAudioTrack(MP4Demuxer d) {
+		List<AbstractMP4DemuxerTrack> tracks = d.getAudioTracks();
+		return tracks.isEmpty() ? null : tracks.get(0);
+	}
+	
+	private static SeekableDemuxerTrack sdt(DemuxerTrack videoTrack) throws JCodecException {
 		if (!(videoTrack instanceof SeekableDemuxerTrack))
 			throw new JCodecException("Not a seekable track");
 
@@ -117,8 +125,8 @@ final class FrameGrab {
 	 * @throws JCodecException
 	 */
 	public FrameGrab seekToSecondPrecise(double second) throws IOException, JCodecException {
-		sdt().seek(second);
-		decodeLeadingFrames();
+		sdt(videoTrack).seek(second);
+		decodeLeadingFrames(this);
 		return this;
 	}
 
@@ -136,8 +144,8 @@ final class FrameGrab {
 	 * @throws JCodecException
 	 */
 	public FrameGrab seekToFramePrecise(int frameNumber) throws IOException, JCodecException {
-		sdt().gotoFrame(frameNumber);
-		decodeLeadingFrames();
+		sdt(videoTrack).gotoFrame(frameNumber);
+		decodeLeadingFrames(this);
 		return this;
 	}
 
@@ -155,7 +163,7 @@ final class FrameGrab {
 	 * @throws JCodecException
 	 */
 	public FrameGrab seekToSecondSloppy(double second) throws IOException, JCodecException {
-		sdt().seek(second);
+		sdt(videoTrack).seek(second);
 		goToPrevKeyframe();
 		return this;
 	}
@@ -174,33 +182,37 @@ final class FrameGrab {
 	 * @throws JCodecException
 	 */
 	public FrameGrab seekToFrameSloppy(int frameNumber) throws IOException, JCodecException {
-		sdt().gotoFrame(frameNumber);
+		sdt(videoTrack).gotoFrame(frameNumber);
 		goToPrevKeyframe();
 		return this;
 	}
 
 	private void goToPrevKeyframe() throws JCodecException {
-		sdt().gotoFrame(detectKeyFrame((int) sdt().getCurFrame()));
+		sdt(videoTrack).gotoFrame(detectKeyFrame(videoTrack, (int) sdt(videoTrack).getCurFrame()));
 	}
 
-	private void decodeLeadingFrames() throws IOException, JCodecException {
-		SeekableDemuxerTrack sdt = sdt();
+	private static ContainerAdaptor decodeLeadingFrames(FrameGrab fg) throws IOException, JCodecException {
+		ContainerAdaptor result = null;
+		
+		SeekableDemuxerTrack sdt = sdt(fg.videoTrack);
 
 		int curFrame = (int) sdt.getCurFrame();
-		int keyFrame = detectKeyFrame(curFrame);
+		int keyFrame = detectKeyFrame(fg.videoTrack, curFrame);
 		sdt.gotoFrame(keyFrame);
 
 		Packet frame = sdt.nextFrame();
-		decoder = detectDecoder(sdt, frame);
+		result = detectDecoder(sdt, frame);
 
 		while (frame.getFrameNo() < curFrame) {
-			decoder.decodeFrame(frame, getBuffer());
+			result.decodeFrame(frame, fg.getBuffer(result));
 			frame = sdt.nextFrame();
 		}
 		sdt.gotoFrame(curFrame);
+		
+		return result;
 	}
 
-	private int[][] getBuffer() {
+	private int[][] getBuffer(ContainerAdaptor decoder) {
 		int[][] buf = buffers.get();
 		if (buf == null) {
 			buf = decoder.allocatePicture();
@@ -209,7 +221,7 @@ final class FrameGrab {
 		return buf;
 	}
 
-	private int detectKeyFrame(int start) {
+	private static int detectKeyFrame(DemuxerTrack videoTrack, int start) {
 		int[] seekFrames = videoTrack.getMeta().getSeekFrames();
 		if (seekFrames == null)
 			return start;
@@ -222,7 +234,7 @@ final class FrameGrab {
 		return prev;
 	}
 
-	private ContainerAdaptor detectDecoder(SeekableDemuxerTrack videoTrack, Packet frame) throws JCodecException {
+	private static ContainerAdaptor detectDecoder(SeekableDemuxerTrack videoTrack, Packet frame) throws JCodecException {
 		if (videoTrack instanceof AbstractMP4DemuxerTrack) {
 			SampleEntry se = ((AbstractMP4DemuxerTrack) videoTrack).getSampleEntries()[((MP4Packet) frame).getEntryNo()];
 			VideoDecoder byFourcc = byFourcc(se.getHeader().getFourcc());
@@ -233,7 +245,7 @@ final class FrameGrab {
 		throw new UnsupportedFormatException("Codec is not supported");
 	}
 
-	private VideoDecoder byFourcc(String fourcc) {
+	private static VideoDecoder byFourcc(String fourcc) {
 		if (fourcc.equals("avc1")) {
 			return new H264Decoder();
 		} else if (fourcc.equals("m1v1") || fourcc.equals("m2v1")) {
@@ -254,8 +266,8 @@ final class FrameGrab {
 		Packet frame = videoTrack.nextFrame();
 		if (frame == null)
 			return null;
-
-		return decoder.decodeFrame(frame, getBuffer());
+		
+		return decoder.decodeFrame(frame, getBuffer(decoder));
 	}
 
 	public void grabAndSet(Frame frame) {
@@ -317,6 +329,10 @@ final class FrameGrab {
 		return videoTrack;
 	}
 
+	public DemuxerTrack getAudioTrack() {
+		return audioTrack;
+	}
+	
 	public Class<? extends Frame> getPreferredType() {
 		return RGB8Frame.class;
 	}

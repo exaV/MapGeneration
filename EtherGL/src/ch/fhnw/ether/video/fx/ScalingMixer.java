@@ -3,14 +3,14 @@ package ch.fhnw.ether.video.fx;
 import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.image.RGB8Frame;
 import ch.fhnw.ether.media.FrameReq;
-import ch.fhnw.ether.video.IFrameSource;
 import ch.fhnw.ether.video.IScalingFrameSource;
+import ch.fhnw.ether.video.IVideoFrameSource;
 
-public class ScalingMixer extends AbstractFX implements IScalingFrameSource {
+public class ScalingMixer extends AbstractVideoFX implements IScalingFrameSource {
 	private Frame   outFrame  = new RGB8Frame(1,1);
 	private Frame[] frames    = new Frame[0];
 
-	protected ScalingMixer(int width, int height, IFrameSource ... sources) {
+	protected ScalingMixer(int width, int height, IVideoFrameSource ... sources) {
 		super(width, height);
 		setSources(sources);
 	}

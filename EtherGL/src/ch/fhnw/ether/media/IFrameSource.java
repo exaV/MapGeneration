@@ -27,74 +27,19 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.video.jcodec;
+package ch.fhnw.ether.media;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
 
-import org.jcodec.api.JCodecException;
-import org.jcodec.common.NIOUtils;
-import org.jcodec.common.SeekableByteChannel;
+public interface IFrameSource {
+	double DURATION_UNKNOWN   = -1;
+	long   FRAMECOUNT_UNKNOWN = -1;
+	long   FRAMERATE_UNKNOWN  = 0;
 
-import ch.fhnw.ether.video.IVideoFrameSource;
-
-abstract class AbstractVideoTrack implements IVideoFrameSource {
-
-	private   URL                 url;
-	private   SeekableByteChannel channel;
-	protected FrameGrab           grab;
-
-	public AbstractVideoTrack(URL url) throws IOException, URISyntaxException, JCodecException {
-		this.url     = url;
-		this.channel = NIOUtils.readableFileChannel(new File(url.toURI()));
-		this.grab    = new FrameGrab(channel);
-	}
-
-	@Override
-	public void dispose() {
-		try {
-			channel.close();
-		} catch (IOException e) {
-		}
-		this.url     = null;
-		this.channel = null;
-		this.grab    = null;
-	}
-
-	@Override
-	public URL getURL() {
-		return url;
-	}
-
-	@Override
-	public double getDuration() {
-		return grab.getVideoTrack().getMeta().getTotalDuration();
-	}
-
-	@Override
-	public double getFrameRate() {
-		return getFrameCount() / getDuration();
-	}
-
-	@Override
-	public long getFrameCount() {
-		return grab.getVideoTrack().getMeta().getTotalFrames();
-	}
-
-	@Override
-	public int getWidth() {
-		return grab.getMediaInfo().getDim().getWidth();
-	}
-
-	@Override
-	public int getHeight() {
-		return grab.getMediaInfo().getDim().getHeight();
-	}
-
-	@Override
-	public String toString() {
-		return getURL() + " (d=" + getDuration() + " fr=" + getFrameRate() + " fc=" + getFrameCount() + " w=" + getWidth() + " h=" + getHeight() + ")";
-	}
+	void     dispose();
+	URL      getURL();
+	double   getDuration();
+	double   getFrameRate();
+	long     getFrameCount();
+	FrameReq getFrames(FrameReq request);
 }

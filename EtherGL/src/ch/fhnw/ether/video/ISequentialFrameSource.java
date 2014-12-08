@@ -29,7 +29,6 @@
 
 package ch.fhnw.ether.video;
 
-
 /**
  * Interface for decoding frames from a frame source (e.g. video)) sequentially from the beginning. This will be very fast for most
  * implementations (e.g. Mac OS X AVFoundation).
@@ -37,6 +36,6 @@ package ch.fhnw.ether.video;
  * @author radar
  *
  */
-public interface ISequentialFrameSource extends IFrameSource {
+public interface ISequentialFrameSource extends IVideoFrameSource {
 	void rewind();
 }

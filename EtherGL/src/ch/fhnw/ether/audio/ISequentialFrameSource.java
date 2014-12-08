@@ -27,23 +27,12 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.video;
+package ch.fhnw.ether.audio;
 
-import java.net.URL;
-
-import ch.fhnw.ether.media.FrameReq;
-
-public interface IFrameSource {
-	double DURATION_UNKNOWN   = -1;
-	long   FRAMECOUNT_UNKNOWN = -1;
-	long   FRAMERATE_UNKNOWN  = 0;
-
-	void     dispose();
-	URL      getURL();
-	double   getDuration();
-	double   getFrameRate();
-	long     getFrameCount();
-	int      getWidth();
-	int      getHeight();
-	FrameReq getFrames(FrameReq request);
+/**
+ * Interface for decoding frames from a frame source (e.g. video)) sequentially from the beginning. This will be very fast for most
+ * implementations (e.g. Mac OS X AVFoundation).
+ *
+ */
+public interface ISequentialFrameSource extends IAudioFrameSource {
 }

@@ -29,7 +29,6 @@
 
 package ch.fhnw.ether.video;
 
-
 /**
  * Marker interface for decoding frames from a frame source (e.g. video) in random-access mode. Note
  * this might be slow and should mainly be used for obtaining individual frames,
@@ -38,5 +37,5 @@ package ch.fhnw.ether.video;
  * @author radar
  *
  */
-public interface IRandomAccessFrameSource extends IFrameSource {
+public interface IRandomAccessFrameSource extends IVideoFrameSource {
 }

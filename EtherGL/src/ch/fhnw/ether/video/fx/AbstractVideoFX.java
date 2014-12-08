@@ -3,22 +3,23 @@ package ch.fhnw.ether.video.fx;
 import java.net.URL;
 
 import ch.fhnw.ether.image.Frame;
+import ch.fhnw.ether.media.AbstractFX;
 import ch.fhnw.ether.media.FXParameter;
 import ch.fhnw.ether.media.FrameException;
 import ch.fhnw.ether.media.FrameReq;
-import ch.fhnw.ether.video.IFrameSource;
+import ch.fhnw.ether.media.IFrameSource;
 import ch.fhnw.ether.video.IRandomAccessFrameSource;
 import ch.fhnw.ether.video.ISequentialFrameSource;
+import ch.fhnw.ether.video.IVideoFrameSource;
 
-public abstract class AbstractFX implements IVideoFX {
-	protected final FXParameter[] parameters;
+public abstract class AbstractVideoFX extends AbstractFX implements IVideoFX {
 	protected       int           width;
 	protected       int           height; 
 	protected       long          frame;
-	protected IFrameSource[]      sources;
+	protected IVideoFrameSource[] sources;
 
-	protected AbstractFX(int width, int height, FXParameter ... parameters) {
-		this.parameters = parameters;
+	protected AbstractVideoFX(int width, int height, FXParameter ... parameters) {
+		super(parameters);
 		this.width      = width;
 		this.height     = height;
 	}
@@ -53,7 +54,7 @@ public abstract class AbstractFX implements IVideoFX {
 	@Override
 	public final int getWidth() {
 		int result = width;
-		for(IFrameSource source : getSources())
+		for(IVideoFrameSource source : getSources())
 			result = Math.max(result, source.getWidth());
 		return result;
 	}
@@ -61,7 +62,7 @@ public abstract class AbstractFX implements IVideoFX {
 	@Override
 	public final int getHeight() {
 		int result = height;
-		for(IFrameSource source : getSources())
+		for(IVideoFrameSource source : getSources())
 			result = Math.max(result, source.getHeight());
 		return result;
 	}
@@ -93,7 +94,7 @@ public abstract class AbstractFX implements IVideoFX {
 	}
 
 	@Override
-	public final IFrameSource[] getSources() {
+	public final IVideoFrameSource[] getSources() {
 		return sources;
 	}
 
@@ -102,7 +103,7 @@ public abstract class AbstractFX implements IVideoFX {
 		return sources.length;
 	}
 
-	public final void setSources(IFrameSource ... sources) {
+	public final void setSources(IVideoFrameSource ... sources) {
 		this.sources = sources;
 	}
 	

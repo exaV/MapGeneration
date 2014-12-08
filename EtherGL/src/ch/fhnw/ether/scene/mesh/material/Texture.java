@@ -34,9 +34,10 @@ import java.net.URL;
 import javax.media.opengl.GL;
 
 import ch.fhnw.ether.media.FrameReq;
-import ch.fhnw.ether.video.IFrameSource;
+import ch.fhnw.ether.media.IFrameSource;
 import ch.fhnw.ether.video.IRandomAccessFrameSource;
 import ch.fhnw.ether.video.ISequentialFrameSource;
+import ch.fhnw.ether.video.IVideoFrameSource;
 import ch.fhnw.ether.video.VideoTrackFactory;
 import ch.fhnw.util.UpdateRequest;
 
@@ -48,14 +49,14 @@ import ch.fhnw.util.UpdateRequest;
 public class Texture {
 	private final UpdateRequest updater = new UpdateRequest();
 
-	private IFrameSource track;
-	private long        frame = 0;
-	private double      time  = -1;
+	private IVideoFrameSource track;
+	private long              frame = 0;
+	private double            time  = -1;
 
 	public Texture() {
 	}
 
-	public Texture(IFrameSource track) {
+	public Texture(IVideoFrameSource track) {
 		this.track = track;
 	}
 
@@ -71,7 +72,7 @@ public class Texture {
 		}
 	}
 
-	public void setData(IFrameSource track) {
+	public void setData(IVideoFrameSource track) {
 		this.track = track;
 		updater.requestUpdate();
 	}

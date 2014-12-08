@@ -7,15 +7,15 @@ import ch.fhnw.ether.image.RGB8Frame;
 import ch.fhnw.ether.image.RGBA8Frame;
 import ch.fhnw.ether.media.FXParameter;
 import ch.fhnw.ether.media.FrameReq;
-import ch.fhnw.ether.video.IFrameSource;
+import ch.fhnw.ether.video.IVideoFrameSource;
 
-public class RGBGain extends AbstractFX {
-	private static final FXParameter red   = new FXParameter("red",   "Red Gain",   0, 2, 1);
-	private static final FXParameter green = new FXParameter("green", "Green Gain", 0, 2, 1);
-	private static final FXParameter blue  = new FXParameter("blue",  "Blue Gain",  0, 2, 1);
+public class RGBGain extends AbstractVideoFX {
+	private static final FXParameter RED   = new FXParameter("red",   "Red Gain",   0, 2, 1);
+	private static final FXParameter GREEN = new FXParameter("green", "Green Gain", 0, 2, 1);
+	private static final FXParameter BLUE  = new FXParameter("blue",  "Blue Gain",  0, 2, 1);
 
-	public RGBGain(IFrameSource source) {
-		super(source.getWidth(), source.getHeight(), red, green, blue);
+	public RGBGain(IVideoFrameSource source) {
+		super(source.getWidth(), source.getHeight(), RED, GREEN, BLUE);
 		setSources(source);
 	}
 
@@ -24,9 +24,9 @@ public class RGBGain extends AbstractFX {
 		req.processFrames(RGB8Frame.class, getWidth(), getHeight(), (Frame frame, int frameIdx)->{
 			getNextFrame(sources[0], frame);
 
-			final float  rs = red.getVal();
-			final float  gs = green.getVal();
-			final float  bs = blue.getVal();
+			final float rs = getVal(RED);
+			final float gs = getVal(GREEN);
+			final float bs = getVal(BLUE);
 
 			if(frame instanceof RGBA8Frame) {
 				frame.processByLine((final ByteBuffer pixels, final int j)->{
