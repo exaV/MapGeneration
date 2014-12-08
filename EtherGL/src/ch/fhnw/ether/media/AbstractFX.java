@@ -3,7 +3,7 @@ package ch.fhnw.ether.media;
 public abstract class AbstractFX implements IFX {
 	protected final FXParameter[] parameters;
 
-	public AbstractFX(FXParameter ... parameters) {
+	protected AbstractFX(FXParameter ... parameters) {
 		this.parameters = new FXParameter[parameters.length];
 		for(int i = 0; i < parameters.length; i++) {
 			parameters[i].setIdx(i);
@@ -16,28 +16,33 @@ public abstract class AbstractFX implements IFX {
 		return parameters;
 	}
 
-	
-	protected String getName(FXParameter p) {
+	@Override
+	public String getName(FXParameter p) {
 		return parameters[p.getIdx()].getName();
 	}
 
-	protected String getDescription(FXParameter p) {
+	@Override
+	public String getDescription(FXParameter p) {
 		return parameters[p.getIdx()].getDescription();
 	}
 
-	protected float getMin(FXParameter p) {
+	@Override
+	public float getMin(FXParameter p) {
 		return parameters[p.getIdx()].getMin();
 	}
 
-	protected float getMax(FXParameter p) {
+	@Override
+	public float getMax(FXParameter p) {
 		return parameters[p.getIdx()].getMax();
 	}
 
-	protected float getVal(FXParameter p) {
+	@Override
+	public float getVal(FXParameter p) {
 		return parameters[p.getIdx()].getVal();
 	}
 
-	protected void setVal(FXParameter p, float val) {
+	@Override
+	public void setVal(FXParameter p, float val) {
 		parameters[p.getIdx()].setVal(val);
 	}
 }

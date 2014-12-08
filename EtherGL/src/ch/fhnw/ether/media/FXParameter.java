@@ -18,6 +18,7 @@ public class FXParameter {
 
 	private FXParameter(FXParameter p) {
 		this(p.name, p.description, p.min, p.max, p.val);
+		this.idx = p.idx;
 	}
 
 	@Override
