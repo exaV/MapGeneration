@@ -413,16 +413,44 @@ public final class Mat4 implements IFloatArrayCopyProvider {
 	}
 
 	/**
-	 * Create perspective projection matrix. Supports far plane at infinity.
+	 * Create perspective projection matrix from left/right/bottom/top. Supports far plane at infinity.
+	 *
+	 * @param left
+	 *            left clipping plane
+	 * @param right
+	 *            right clipping plane
+	 * @param bottom
+	 *            bottom clipping plane
+	 * @param top
+	 *            top clipping plane
+	 * @param near
+	 *            near clipping plane
+	 * @param far
+	 *            far clipping plane (set to Float.POSITIVE_INFINITY for far plane at infinity)
+	 * @return perspective projection matrix
+	 */
+	public static Mat4 perspective(float left, float right, float bottom, float top, float near, float far) {
+		float m00 = 2 * near / (right - left);
+		float m11 = 2 * near / (top - bottom);
+		float m02 = (right + left) / (right - left);
+		float m12 = (top + bottom) / (top - bottom);
+		float m22 = far >= Double.POSITIVE_INFINITY ? -1 : -(far + near) / (far - near);
+		float m32 = -1;
+		float m23 = far >= Double.POSITIVE_INFINITY ? -2 * near : 2 * far * near / (far - near);
+		return new Mat4(m00, 0, 0, 0, 0, m11, 0, 0, m02, m12, m22, m32, 0, 0, m23, 0);
+	}
+
+	/**
+	 * Create perspective projection matrix from fov and aspect. Supports far plane at infinity.
 	 *
 	 * @param fov
 	 *            field of view (degrees)
 	 * @param aspect
 	 *            aspect ratio
 	 * @param near
-	 *            near plane
+	 *            near clipping plane
 	 * @param far
-	 *            far plane (set to Float.POSITIVE_INFINITY for far plane at infinity)
+	 *            far clipping plane (set to Float.POSITIVE_INFINITY for far plane at infinity)
 	 * @return perspective projection matrix
 	 */
 	public static Mat4 perspective(float fov, float aspect, float near, float far) {
@@ -438,9 +466,9 @@ public final class Mat4 implements IFloatArrayCopyProvider {
 
 		float m00 = (float) (cotangent / aspect);
 		float m11 = (float) cotangent;
-		float m22 = ((far >= Double.POSITIVE_INFINITY) ? -1 : (-(far + near) / deltaZ));
+		float m22 = far >= Double.POSITIVE_INFINITY ? -1 : -(far + near) / deltaZ;
 		float m32 = -1;
-		float m23 = ((far >= Double.POSITIVE_INFINITY) ? (-2 * near) : (-2 * near * far / deltaZ));
+		float m23 = far >= Double.POSITIVE_INFINITY ? -2 * near : -2 * near * far / deltaZ;
 		return new Mat4(m00, 0, 0, 0, 0, m11, 0, 0, 0, 0, m22, m32, 0, 0, m23, 0);
 	}
 
@@ -448,17 +476,17 @@ public final class Mat4 implements IFloatArrayCopyProvider {
 	 * Create an orthographic projection matrix.
 	 *
 	 * @param left
-	 *            coordinate for left vertical clipping plane
+	 *            left clipping plane
 	 * @param right
-	 *            coordinate for right vertical clipping plane
-	 * @param top
-	 *            coordinate for top horizontal clipping plane
+	 *            right clipping plane
 	 * @param bottom
-	 *            coordinate for bottom horizontal clipping plane
+	 *            bottom clipping plane
+	 * @param top
+	 *            top clipping plane
 	 * @param near
-	 *            near plane
+	 *            near clipping plane
 	 * @param far
-	 *            far plane
+	 *            far clipping plane
 	 * @return orthographic projection matrix
 	 */
 	public static Mat4 ortho(float left, float right, float bottom, float top, float near, float far) {
