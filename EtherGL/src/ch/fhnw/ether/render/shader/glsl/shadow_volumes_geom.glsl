@@ -21,6 +21,8 @@ layout (triangle_strip, max_vertices=14) out;
 
 void main() {
 	Light light = lights[lightIndex];
+	float lightType = light.trss.x;
+	float lightRange = light.trss.y;
 
 	vec4 t0 = vd[0].position;
 	vec4 t1 = vd[1].position;
@@ -31,7 +33,7 @@ void main() {
 	vec4 u1;
 	vec4 u2;
 	
-	if (light.type == 1.0) {
+	if (lightType == 1.0) {
 		if (dot(light.position, norm) < 0)
 			return;
 		vec4 d = normalize(vec4(-light.position, 0));
@@ -41,7 +43,6 @@ void main() {
 	} else {
 		if (dot(light.position - t0.xyz, norm) < 0)
 			return;
-		float r = light.range;
 		vec4 lp = vec4(light.position, 1);
 		vec4 d0 = t0 - lp;
 		vec4 d1 = t1 - lp;
@@ -49,7 +50,7 @@ void main() {
 		float l0 = length(d0);
 		float l1 = length(d1);
 		float l2 = length(d2);
-		if (l0 > r && l1 > r && l2 > r)
+		if (l0 > lightRange && l1 > lightRange && l2 > lightRange)
 			return;
 		d0 /= l0;
 		d1 /= l1;

@@ -45,11 +45,11 @@ public final class LightUniformBlock extends UniformBlock {
 
 	public static final int MAX_LIGHTS = 8;
 
-	public static final int BLOCK_SIZE = MAX_LIGHTS * 20;
+	public static final int BLOCK_SIZE = MAX_LIGHTS * 32; // 20;
 
 	private static final String DEFAULT_SHADER_NAME = "lightBlock";
 
-	private static final float[] OFF_LIGHT = new float[20];
+	private static final float[] OFF_LIGHT = new float[32 /* 20 */];
 
 	public LightUniformBlock() {
 		super(ATTRIBUTE, DEFAULT_SHADER_NAME);
@@ -63,7 +63,8 @@ public final class LightUniformBlock extends UniformBlock {
 		uniforms.load(gl, (blockIndex, buffer) -> {
 			for (GenericLight light : lights) {
 				LightSource source = light.getLightSource();
-
+				float[] trss = new float[] { source.getType().ordinal(), source.getRange(), source.getSpotCosCutoff(), source.getSpotExponent() };
+				buffer.put(trss);
 				buffer.put(matrices.getViewMatrix().transform(source.getPosition()).toArray());
 				buffer.put(source.getAmbient().toArray());
 				buffer.put(0);
@@ -71,10 +72,6 @@ public final class LightUniformBlock extends UniformBlock {
 				buffer.put(0);
 				buffer.put(matrices.getNormalMatrix().transform(source.getSpotDirection()).toArray());
 				buffer.put(0);
-				buffer.put(source.getSpotCosCutoff());
-				buffer.put(source.getSpotExponent());
-				buffer.put(source.getRange());
-				buffer.put(source.getType().ordinal());
 			}
 			for (int i = 0; i < LightUniformBlock.MAX_LIGHTS - lights.size(); ++i) {
 				buffer.put(OFF_LIGHT);

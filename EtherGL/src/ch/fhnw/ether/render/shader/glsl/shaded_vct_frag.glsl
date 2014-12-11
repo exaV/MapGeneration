@@ -46,25 +46,31 @@ void main() {
 	vec3 normal = normalize(gl_FrontFacing ? vd.normal : -vd.normal);
 
 	for (int i = 0; i < MAX_LIGHTS; ++i) {
-		if (lights[i].type == 0.0)
+		float type = lights[i].trss.x;
+		if (type == 0)
 			continue;
-	
+
 		vec3 lightDirection;
 		float attenuation;
 	    // for local lights, compute per-fragment direction, and attenuation
-		if (lights[i].type > 1.0) {
+		if (type > 1) {
+			float range = lights[i].trss.y;
+		
 			lightDirection = -(position - lights[i].position);
 			float lightDistance = length(lightDirection);
 			
 			lightDirection = lightDirection / lightDistance;
-			attenuation = 1 - smoothstep(0, lights[i].range, lightDistance);
+			attenuation = 1 - smoothstep(0, range, lightDistance);
 	
-			if (lights[i].type > 2.0) {
+			if (type > 2) {
+				float spotCosCutoff = lights[i].trss.z;
+				float spotExponent = lights[i].trss.w;
+
 				float spotCos = dot(lightDirection, -normalize(lights[i].spotDirection)); 
-				if (spotCos < lights[i].spotCosCutoff)
+				if (spotCos < spotCosCutoff)
 	            	attenuation = 0.0;
 				else
-					attenuation *= pow(spotCos, lights[i].spotExponent);
+					attenuation *= pow(spotCos, spotExponent);
 			}
 		} else {
 			lightDirection = lights[i].position;
