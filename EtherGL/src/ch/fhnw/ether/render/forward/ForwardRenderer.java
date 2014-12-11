@@ -33,7 +33,7 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.render.AbstractRenderer;
-import ch.fhnw.ether.scene.mesh.IMesh.Pass;
+import ch.fhnw.ether.scene.mesh.IMesh.Queue;
 import ch.fhnw.ether.view.IView;
 
 /*
@@ -77,35 +77,35 @@ public class ForwardRenderer extends AbstractRenderer {
 
 		getCameras().setCameraSpace(gl);
 
-		// ---- 1. DEPTH PASS (DEPTH WRITE&TEST ENABLED, BLEND OFF)
+		// ---- 1. DEPTH QUEUE (DEPTH WRITE&TEST ENABLED, BLEND OFF)
 		// FIXME: where do we deal with two-sided vs one-sided? mesh options? shader dependent?
 		gl.glEnable(GL.GL_CULL_FACE);
 		gl.glEnable(GL.GL_DEPTH_TEST);
 		gl.glEnable(GL.GL_POLYGON_OFFSET_FILL);
 		gl.glPolygonOffset(1, 3);
-		renderObjects(gl, Pass.DEPTH, interactive);
+		renderObjects(gl, Queue.DEPTH, interactive);
 		gl.glDisable(GL.GL_POLYGON_OFFSET_FILL);
 		gl.glDisable(GL.GL_CULL_FACE);
 
 		if (false)
-			renderShadowVolumes(gl, Pass.DEPTH, interactive);
+			renderShadowVolumes(gl, Queue.DEPTH, interactive);
 
-		// ---- 2. TRANSPARENCY PASS (DEPTH WRITE DISABLED, DEPTH TEST ENABLED, BLEND ON)
+		// ---- 2. TRANSPARENCY QUEUE (DEPTH WRITE DISABLED, DEPTH TEST ENABLED, BLEND ON)
 		gl.glEnable(GL.GL_BLEND);
 		gl.glDepthMask(false);
-		renderObjects(gl, Pass.TRANSPARENCY, interactive);
+		renderObjects(gl, Queue.TRANSPARENCY, interactive);
 
-		// ---- 3. OVERLAY PASS (DEPTH WRITE&TEST DISABLED, BLEND ON)
+		// ---- 3. OVERLAY QUEUE (DEPTH WRITE&TEST DISABLED, BLEND ON)
 		gl.glDisable(GL.GL_DEPTH_TEST);
-		renderObjects(gl, Pass.OVERLAY, interactive);
+		renderObjects(gl, Queue.OVERLAY, interactive);
 
-		// ---- 4. DEVICE SPACE OVERLAY (DEPTH WRITE&TEST DISABLED, BLEND ON)
+		// ---- 4. DEVICE SPACE OVERLAY QUEUE (DEPTH WRITE&TEST DISABLED, BLEND ON)
 		getCameras().setOrthoDeviceSpace(gl);
-		renderObjects(gl, Pass.DEVICE_SPACE_OVERLAY, interactive);
+		renderObjects(gl, Queue.DEVICE_SPACE_OVERLAY, interactive);
 
-		// ---- 5. SCREEN SPACE OVERLAY (DEPTH WRITE&TEST DISABLED, BLEND ON)
+		// ---- 5. SCREEN SPACE OVERLAY  QUEUE(DEPTH WRITE&TEST DISABLED, BLEND ON)
 		getCameras().setOrthoScreenSpace(gl);
-		renderObjects(gl, Pass.SCREEN_SPACE_OVERLAY, interactive);
+		renderObjects(gl, Queue.SCREEN_SPACE_OVERLAY, interactive);
 
 		// ---- 6. CLEANUP: RETURN TO DEFAULTS
 		gl.glDisable(GL.GL_BLEND);

@@ -48,7 +48,7 @@ import ch.fhnw.util.IUpdateListener;
  */
 public interface IMesh extends I3DObject, IUpdateListener {
 
-	enum Pass {
+	enum Queue {
 		DEPTH, TRANSPARENCY, OVERLAY, DEVICE_SPACE_OVERLAY, SCREEN_SPACE_OVERLAY
 	}
 
@@ -60,7 +60,7 @@ public interface IMesh extends I3DObject, IUpdateListener {
 
 	EnumSet<Flags> NO_FLAGS = EnumSet.noneOf(Flags.class);
 
-	Pass getPass();
+	Queue getQueue();
 
 	EnumSet<Flags> getFlags();
 

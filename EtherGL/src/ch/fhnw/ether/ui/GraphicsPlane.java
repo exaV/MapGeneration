@@ -40,7 +40,7 @@ import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.IMesh.Flags;
-import ch.fhnw.ether.scene.mesh.IMesh.Pass;
+import ch.fhnw.ether.scene.mesh.IMesh.Queue;
 import ch.fhnw.ether.scene.mesh.MeshLibrary;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
@@ -82,7 +82,7 @@ class GraphicsPlane {
 		IGeometry geometry = DefaultGeometry.createVM(Primitive.TRIANGLES, vertices, MeshLibrary.DEFAULT_QUAD_TEX_COORDS);
 		IMaterial material = new ColorMapMaterial(texture);
 
-		mesh = new DefaultMesh(material, geometry, Pass.SCREEN_SPACE_OVERLAY, EnumSet.of(Flags.INTERACTIVE_VIEWS_ONLY));
+		mesh = new DefaultMesh(material, geometry, Queue.SCREEN_SPACE_OVERLAY, EnumSet.of(Flags.INTERACTIVE_VIEWS_ONLY));
 	}
 
 	public final Texture getTexture() {

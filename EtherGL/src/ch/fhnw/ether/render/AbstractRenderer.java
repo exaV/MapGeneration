@@ -40,7 +40,7 @@ import ch.fhnw.ether.scene.attribute.IAttributeProvider;
 import ch.fhnw.ether.scene.camera.CameraMatrices;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.IMesh;
-import ch.fhnw.ether.scene.mesh.IMesh.Pass;
+import ch.fhnw.ether.scene.mesh.IMesh.Queue;
 import ch.fhnw.util.Viewport;
 
 // FIXME: renderer dispose (in case renderer is disposed)
@@ -129,11 +129,11 @@ public abstract class AbstractRenderer implements IRenderer {
 		renderables.update(gl);
 	}
 
-	protected void renderObjects(GL3 gl, Pass pass, boolean interactive) {
+	protected void renderObjects(GL3 gl, Queue pass, boolean interactive) {
 		renderables.renderObjects(gl, pass, interactive);
 	}
 
-	protected void renderShadowVolumes(GL3 gl, Pass pass, boolean interactive) {
+	protected void renderShadowVolumes(GL3 gl, Queue pass, boolean interactive) {
 		if (shadowVolumes == null) {
 			shadowVolumes = new ShadowVolumes(providers);
 		}

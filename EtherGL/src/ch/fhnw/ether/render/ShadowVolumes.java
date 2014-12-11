@@ -37,7 +37,7 @@ public final class ShadowVolumes {
 	}
 
 	// http://ogldev.atspace.co.uk/www/tutorial40/tutorial40.html
-	void render(GL3 gl, IMesh.Pass pass, boolean interactive, List<Renderable> renderables, List<GenericLight> lights) {
+	void render(GL3 gl, IMesh.Queue pass, boolean interactive, List<Renderable> renderables, List<GenericLight> lights) {
 		volumeShader.update(gl);
 
 		gl.glEnable(GL.GL_BLEND);
@@ -65,7 +65,7 @@ public final class ShadowVolumes {
 					continue;
 				if (renderable.containsFlag(Flags.DONT_CAST_SHADOW))
 					continue;
-				if (renderable.getPass() != pass)
+				if (renderable.getQueue() != pass)
 					continue;
 
 				// FIXME: this is quite hacky... need a cleaner solution to setup an array (offset/stride) on the fly

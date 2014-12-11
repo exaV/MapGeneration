@@ -41,7 +41,7 @@ import ch.fhnw.util.math.geometry.BoundingBox;
 public final class DefaultMesh implements IMesh {
 	private final IMaterial material;
 	private final IGeometry geometry;
-	private final Pass pass;
+	private final Queue queue;
 	private final EnumSet<Flags> flags;
 
 	private String name = "unnamed_mesh";
@@ -49,39 +49,39 @@ public final class DefaultMesh implements IMesh {
 	private final UpdateRequest updater = new UpdateRequest(true);
 
 	public DefaultMesh(IMaterial material, IGeometry geometry) {
-		this(material, geometry, Pass.DEPTH);
+		this(material, geometry, Queue.DEPTH);
 	}
 
-	public DefaultMesh(IMaterial material, IGeometry geometry, Pass pass) {
-		this(material, geometry, pass, NO_FLAGS);
+	public DefaultMesh(IMaterial material, IGeometry geometry, Queue queue) {
+		this(material, geometry, queue, NO_FLAGS);
 	}
 
 	public DefaultMesh(IMaterial material, IGeometry geometry, Flags flag, Flags... flags) {
-		this(material, geometry, Pass.DEPTH, EnumSet.of(flag, flags));
+		this(material, geometry, Queue.DEPTH, EnumSet.of(flag, flags));
 	}
 
 	public DefaultMesh(IMaterial material, IGeometry geometry, Flags flag) {
-		this(material, geometry, Pass.DEPTH, EnumSet.of(flag));
+		this(material, geometry, Queue.DEPTH, EnumSet.of(flag));
 	}
 
 	public DefaultMesh(IMaterial material, IGeometry geometry, EnumSet<Flags> flags) {
-		this(material, geometry, Pass.DEPTH, flags);
+		this(material, geometry, Queue.DEPTH, flags);
 	}
 
-	public DefaultMesh(IMaterial material, IGeometry geometry, Pass pass, Flags flag) {
-		this(material, geometry, pass, EnumSet.of(flag));
+	public DefaultMesh(IMaterial material, IGeometry geometry, Queue queue, Flags flag) {
+		this(material, geometry, queue, EnumSet.of(flag));
 	}
 
-	public DefaultMesh(IMaterial material, IGeometry geometry, Pass pass, Flags flag, Flags... flags) {
-		this(material, geometry, pass, EnumSet.of(flag, flags));
+	public DefaultMesh(IMaterial material, IGeometry geometry, Queue queue, Flags flag, Flags... flags) {
+		this(material, geometry, queue, EnumSet.of(flag, flags));
 	}
 
-	public DefaultMesh(IMaterial material, IGeometry geometry, Pass pass, EnumSet<Flags> flags) {
+	public DefaultMesh(IMaterial material, IGeometry geometry, Queue queue, EnumSet<Flags> flags) {
 		this.material = material;
 		this.material.addUpdateListener(this);
 		this.geometry = geometry;
 		this.geometry.addUpdateListener(this);
-		this.pass = pass;
+		this.queue = queue;
 		this.flags = flags;
 	}
 
@@ -117,8 +117,8 @@ public final class DefaultMesh implements IMesh {
 	// IMesh implementation
 
 	@Override
-	public Pass getPass() {
-		return pass;
+	public Queue getQueue() {
+		return queue;
 	}
 
 	@Override

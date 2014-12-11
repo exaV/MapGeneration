@@ -16,7 +16,7 @@ import ch.fhnw.ether.scene.DefaultScene;
 import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.scene.camera.Camera;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
-import ch.fhnw.ether.scene.mesh.IMesh.Pass;
+import ch.fhnw.ether.scene.mesh.IMesh.Queue;
 import ch.fhnw.ether.scene.mesh.MeshLibrary;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
@@ -52,7 +52,7 @@ public class SimpleVideoExample {
 		float[] vertices = MeshLibrary.DEFAULT_QUAD_VERTICES;
 		float[] texCoords = MeshLibrary.DEFAULT_QUAD_TEX_COORDS;
 		scene.add3DObject(new DefaultMesh(new ColorMapMaterial(texture), DefaultGeometry.createVM(Primitive.TRIANGLES, vertices, texCoords),
-				Pass.DEVICE_SPACE_OVERLAY));
+				Queue.DEVICE_SPACE_OVERLAY));
 
 		try {
 			URL url = null;

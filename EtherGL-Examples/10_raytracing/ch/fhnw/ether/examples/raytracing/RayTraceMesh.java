@@ -84,8 +84,8 @@ public class RayTraceMesh implements IMesh {
 	// IMesh implementation
 
 	@Override
-	public Pass getPass() {
-		return Pass.DEPTH;
+	public Queue getQueue() {
+		return Queue.DEPTH;
 	}
 	
 	@Override

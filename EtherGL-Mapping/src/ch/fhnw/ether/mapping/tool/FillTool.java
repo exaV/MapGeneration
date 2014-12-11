@@ -37,7 +37,7 @@ import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.controller.tool.AbstractTool;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
-import ch.fhnw.ether.scene.mesh.IMesh.Pass;
+import ch.fhnw.ether.scene.mesh.IMesh.Queue;
 import ch.fhnw.ether.scene.mesh.MeshLibrary;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
@@ -77,6 +77,6 @@ public final class FillTool extends AbstractTool {
 		MeshLibrary.addRectangle(dst, 0.1f, -1.0f, 1.0f, -0.1f);
 		MeshLibrary.addRectangle(dst, 0.1f, 0.1f, 1.0f, 1.0f);
 		MeshLibrary.addRectangle(dst, -1.0f, 0.1f, -0.1f, 1.0f);
-		return new DefaultMesh(new ColorMaterial(RGBA.WHITE), DefaultGeometry.createV(Primitive.TRIANGLES, Vec3.toArray(dst)), Pass.DEVICE_SPACE_OVERLAY);
+		return new DefaultMesh(new ColorMaterial(RGBA.WHITE), DefaultGeometry.createV(Primitive.TRIANGLES, Vec3.toArray(dst)), Queue.DEVICE_SPACE_OVERLAY);
 	}
 }

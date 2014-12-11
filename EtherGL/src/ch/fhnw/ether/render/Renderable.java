@@ -109,8 +109,8 @@ public final class Renderable {
 		shader.disable(gl);
 	}
 
-	public IMesh.Pass getPass() {
-		return mesh.getPass();
+	public IMesh.Queue getQueue() {
+		return mesh.getQueue();
 	}
 
 	public boolean containsFlag(IMesh.Flags flag) {
@@ -131,7 +131,7 @@ public final class Renderable {
 
 	@Override
 	public String toString() {
-		return "renderable[pass=" + mesh.getPass() + " shader=" + shader + " stride=" + stride + "]";
+		return "renderable[queue=" + mesh.getQueue() + " shader=" + shader + " stride=" + stride + "]";
 	}
 
 	// FIXME: thread safety

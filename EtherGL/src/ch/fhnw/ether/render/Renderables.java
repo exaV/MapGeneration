@@ -92,17 +92,17 @@ final class Renderables {
 		rendererRenderables.forEach((r) -> r.update(gl));
 	}
 
-	void renderObjects(GL3 gl, IMesh.Pass pass, boolean interactive) {
+	void renderObjects(GL3 gl, IMesh.Queue pass, boolean interactive) {
 		for (Renderable renderable : rendererRenderables) {
 			if (renderable.containsFlag(Flags.INTERACTIVE_VIEWS_ONLY) && !interactive)
 				continue;
-			if (renderable.getPass() == pass) {
+			if (renderable.getQueue() == pass) {
 				renderable.render(gl);
 			}
 		}
 	}
 
-	void renderShadowVolumes(GL3 gl, IMesh.Pass pass, boolean interactive, ShadowVolumes shadowVolumes, List<GenericLight> lights) {
+	void renderShadowVolumes(GL3 gl, IMesh.Queue pass, boolean interactive, ShadowVolumes shadowVolumes, List<GenericLight> lights) {
 		shadowVolumes.render(gl, pass, interactive, rendererRenderables, lights);
 	}
 	

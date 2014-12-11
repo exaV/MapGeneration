@@ -64,8 +64,8 @@ public class MeshProxy implements IMesh, IStateProxy {
 	}
 
 	@Override
-	public Pass getPass() {
-		return delegate.getPass();
+	public Queue getQueue() {
+		return delegate.getQueue();
 	}
 
 	@Override
