@@ -93,7 +93,7 @@ public class OBJReader extends AbstractModelReader {
 			}
 
 			Material mat = g.getMaterial();
-			RGB diffuse = mat.getKd();
+			RGB diffuse = mat != null ? mat.getKd() : RGB.WHITE;
 			float[] triv = triVertices.toArray();
 			IMaterial material = new ColorMaterial(new RGBA(diffuse.r, diffuse.g, diffuse.b, 1));
 			IGeometry geometry = DefaultGeometry.createVN(Primitive.TRIANGLES, triv, GeometryUtil.calculateNormals(triv));

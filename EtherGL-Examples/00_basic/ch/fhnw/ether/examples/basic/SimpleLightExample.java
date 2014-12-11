@@ -28,8 +28,11 @@
  */
 package ch.fhnw.ether.examples.basic;
 
+import java.util.List;
+
 import ch.fhnw.ether.controller.DefaultController;
 import ch.fhnw.ether.controller.IController;
+import ch.fhnw.ether.formats.obj.OBJReader;
 import ch.fhnw.ether.scene.DefaultScene;
 import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.scene.camera.Camera;
@@ -43,6 +46,7 @@ import ch.fhnw.ether.scene.mesh.IMesh.Flags;
 import ch.fhnw.ether.scene.mesh.IMesh.Queue;
 import ch.fhnw.ether.scene.mesh.MeshLibrary;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
@@ -74,6 +78,8 @@ public final class SimpleLightExample {
 	public static void main(String[] args) {
 		new SimpleLightExample();
 	}
+	
+	private static final boolean ADD_BUNNY = true;
 
 	private static final float INC_XY = 0.25f;
 	private static final float INC_Z = 0.25f;
@@ -169,14 +175,30 @@ public final class SimpleLightExample {
 		solidCubeT.getGeometry().setScale(Vec3.ONE.scale(0.8f));
 		solidCubeT.getGeometry().setTranslation(new Vec3(0, 0, 0.5));
 
+		scene.add3DObjects(solidMeshT, solidMeshL, texturedMeshT, solidCubeT);
+
+		// Add bunny
+		if (ADD_BUNNY) {
+			IMesh solidBunnyT = null;
+			try {
+				List<IMesh> meshes = new OBJReader(getClass().getResource("assets/bunny.obj")).getMeshes();
+				solidBunnyT = new DefaultMesh(solidMaterial, meshes.get(0).getGeometry());
+				IGeometry g = solidBunnyT.getGeometry();
+				g.setRotation(new Vec3(90, 0, 0));
+				g.setTranslation(new Vec3(2, 0, 0));
+				g.setScale(new Vec3(4, 4, 4));
+				scene.add3DObject(solidBunnyT);
+			} catch (Throwable throwable) {
+				throwable.printStackTrace();
+			}
+		}
+
+		// Add first light and light geometry
 		lightMesh = new DefaultMesh(new ColorMaterial(RGBA.YELLOW), DefaultGeometry.createV(Primitive.TRIANGLES, s.getTriangles()), Flags.DONT_CAST_SHADOW);
 		lightMesh.getGeometry().setScale(new Vec3(0.1, 0.1, 0.1));
 		lightMesh.setPosition(Vec3.Z.scale(2));
 		light.setPosition(lightMesh.getPosition());
 
-		scene.add3DObjects(solidMeshT, solidMeshL, texturedMeshT, solidCubeT);
-
-		// Add first light and light geometry
 		scene.add3DObjects(light);
 		scene.add3DObjects(lightMesh);
 
@@ -184,7 +206,8 @@ public final class SimpleLightExample {
 		scene.add3DObject(new PointLight(new Vec3(2, 0, 2), RGB.BLACK, RGB.BLUE));
 
 		// Add a ground plane
-		scene.add3DObject(MeshLibrary.createGroundPlane());
+		IMesh ground = MeshLibrary.createGroundPlane();
+		scene.add3DObject(ground);
 
 		// Add an exit button
 		controller.getUI().addWidget(new Button(0, 0, "Quit", "Quit", KeyEvent.VK_ESCAPE, (button, v) -> System.exit(0)));

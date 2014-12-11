@@ -84,6 +84,10 @@ public final class Mat4 implements IFloatArrayCopyProvider {
 	public Mat4(float[] m) {
 		this(m[0], m[1], m[2], m[3], m[4], m[5], m[6], m[7], m[8], m[9], m[10], m[11], m[12], m[13], m[14], m[15]);
 	}
+	
+	public Mat4(Mat3 m) {
+		this(m.m00, m.m10, m.m20, 0, m.m01, m.m11, m.m21, 0, m.m02, m.m12, m.m22, 0, 0, 0, 0, 1);
+	}
 
 	public Mat4(Quaternion q) {
 		float xx = q.x * q.x;
@@ -342,7 +346,7 @@ public final class Mat4 implements IFloatArrayCopyProvider {
 		float v32 = (m02 * m11 * m30 - m01 * m12 * m30 - m02 * m10 * m31 + m00 * m12 * m31 + m01 * m10 * m32 - m00 * m11 * m32) / d;
 		float v33 = (m01 * m12 * m20 - m02 * m11 * m20 + m02 * m10 * m21 - m00 * m12 * m21 - m01 * m10 * m22 + m00 * m11 * m22) / d;
 
-		return new Mat4(v00, v01, v02, v03, v10, v11, v12, v13, v20, v21, v22, v23, v30, v31, v32, v33);
+		return new Mat4(v00, v10, v20, v30, v01, v11, v21, v31, v02, v12, v22, v32, v03, v13, v23, v33);
 	}
 
 	/**

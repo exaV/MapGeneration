@@ -71,15 +71,7 @@ public final class Mat3 implements IFloatArrayCopyProvider {
 	}
 
 	public Mat3(Mat4 m) {
-		this.m00 = m.m00;
-		this.m10 = m.m10;
-		this.m20 = m.m20;
-		this.m01 = m.m01;
-		this.m11 = m.m11;
-		this.m21 = m.m21;
-		this.m02 = m.m02;
-		this.m12 = m.m12;
-		this.m22 = m.m22;
+		this(m.m00, m.m10, m.m20, m.m01, m.m11, m.m21, m.m02, m.m12, m.m22);
 	}
 
 	/**
