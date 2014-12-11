@@ -50,10 +50,16 @@ public final class Mat3 implements IFloatArrayCopyProvider {
 	public final float m12;
 	public final float m22;
 
+	/**
+	 * Create empty 3x3 matrix.
+	 */
 	public Mat3() {
 		this(0, 0, 0, 0, 0, 0, 0, 0, 0);
 	}
 
+	/**
+	 * Create 3x3 matrix from 9 float values.
+	 */
 	public Mat3(float m00, float m10, float m20, float m01, float m11, float m21, float m02, float m12, float m22) {
 		this.m00 = m00;
 		this.m10 = m10;
@@ -66,94 +72,137 @@ public final class Mat3 implements IFloatArrayCopyProvider {
 		this.m22 = m22;
 	}
 
+	/**
+	 * Create 3x3 matrix from array of 9 float values.
+	 */
 	public Mat3(float[] m) {
 		this(m[0], m[1], m[2], m[3], m[4], m[5], m[6], m[7], m[8]);
 	}
 
+	/**
+	 * Create 3x3 matrix from top-left 3x3 matrix of a 4x4 matrix
+	 */
 	public Mat3(Mat4 m) {
 		this(m.m00, m.m10, m.m20, m.m01, m.m11, m.m21, m.m02, m.m12, m.m22);
 	}
 
 	/**
-	 * Post-multiply this matrix: result = this * mat;
+	 * Post-multiply this matrix with mat (result = this * mat).
 	 *
 	 * @param mat
 	 *            the second factor of the matrix product
 	 */
-	public Mat3 postMultiply(final Mat3 mat) {
+	public Mat3 postMultiply(Mat3 mat) {
 		return multiply(this, mat);
 	}
 
 	/**
-	 * Pre-multiply this matrix result = mat * this;
+	 * Pre-multiply this matrix with mat (result = mat * this).
 	 *
 	 * @param mat
 	 *            the first factor of the matrix product
 	 */
-	public Mat3 preMultiply(final Mat3 mat) {
+	public Mat3 preMultiply(Mat3 mat) {
 		return multiply(mat, this);
 	}
 
 	/**
-	 * Pre-multiplies matrix m with translation matrix t (result = t * m)
-	 *
-	 * @param tx
-	 *            x translation
-	 * @param ty
-	 *            y translation
-	 */
-	// TODO: optimize (remove double allocation)
-	public Mat3 translate(float tx, float ty) {
-		Mat3 t = new Mat3(1, 0, 0, 0, 1, 0, tx, ty, 1);
-		return preMultiply(t);
-	}
-
-	public Mat3 translate(Vec3 t) {
-		return translate(t.x, t.y);
-	}
-
-	/**
-	 * Pre-multiplies matrix m with rotation matrix r (result = r * m).
+	 * Pre-multiplies this matrix with rotation matrix mr (result = mr * this).
 	 *
 	 * @param angle
 	 *            rotation angle in degrees
+	 * @param x
+	 *            rotation axis x
+	 * @param y
+	 *            rotation axis y
+	 * @param z
+	 *            rotation axis z
+	 * @return mr * this
 	 */
-	// TODO: optimize (remove double allocation)
-	public Mat3 rotate(float angle) {
+	public Mat3 rotate(float angle, float x, float y, float z) {
+		float l = (float) Math.sqrt(x * x + y * y + z * z);
+		if (l != 0 && l != 1) {
+			l = 1.0f / l;
+			x *= l;
+			y *= l;
+			z *= l;
+		}
+
 		float radians = angle * MathUtil.DEGREES_TO_RADIANS;
 		float c = (float) Math.cos(radians);
+		float ic = 1.0f - c;
 		float s = (float) Math.sin(radians);
-		Mat3 r = new Mat3(c, -s, 0, s, c, 0, 0, 0, 1);
-		return preMultiply(r);
+
+		float xy = x * y;
+		float xz = x * z;
+		float xs = x * s;
+		float ys = y * s;
+		float yz = y * z;
+		float zs = z * s;
+
+		float m00 = x * x * ic + c;
+		float m10 = xy * ic + zs;
+		float m20 = xz * ic - ys;
+		float m01 = xy * ic - zs;
+		float m11 = y * y * ic + c;
+		float m21 = yz * ic + xs;
+		float m02 = xz * ic + ys;
+		float m12 = yz * ic - xs;
+		float m22 = z * z * ic + c;
+
+		return preMultiply(new Mat3(m00, m10, m20, m01, m11, m21, m02, m12, m22));
 	}
 
 	/**
-	 * Multiplies matrix m with scale matrix s (result = s * m = m * s).
+	 * Pre-multiplies this matrix with rotation matrix mr (result = mr * this).
+	 *
+	 * @param angle
+	 *            rotation angle in degrees
+	 * @param axis
+	 *            rotation axis
+	 * @return mr * this
+	 */
+	public Mat3 rotate(float angle, Vec3 axis) {
+		return rotate(angle, axis.x, axis.y, axis.z);
+	}
+
+	/**
+	 * Multiplies this matrix with scale matrix ms (result = ms * this = this * ms).
 	 *
 	 * @param sx
 	 *            scale x factor
 	 * @param sy
 	 *            scale y factor
+	 * @param sz
+	 *            scale z factor
+	 * @return ms * this
 	 */
-	public Mat3 scale(float sx, float sy) {
-		return new Mat3(m00 * sx, m10, m20, m01, m11 * sy, m21, m02 * sx, m12 * sy, 1);
-	}
-
-	public Mat3 scale(Vec3 s) {
-		return scale(s.x, s.y);
+	public Mat3 scale(float sx, float sy, float sz) {
+		return new Mat3(m00 * sx, m10, m20, m01, m11 * sy, m21, m02, m12, m22 * sz);
 	}
 
 	/**
-	 * Transform vector result = m * vec.
+	 * Multiplies this matrix with scale matrix ms (result = ms * this = this * ms).
+	 *
+	 * @param s
+	 *            scale xyz vector
+	 * @return ms * this
+	 */
+	public Mat3 scale(Vec3 s) {
+		return scale(s.x, s.y, s.z);
+	}
+
+	/**
+	 * Transform vector (result = m * vec).
 	 *
 	 * @param vec
 	 *            the vector to be transformed
 	 * @return the transformed vector
 	 */
 	public Vec3 transform(Vec3 vec) {
-		float x = vec.x * m00 + vec.y * m01 + vec.z * m02;
-		float y = vec.x * m10 + vec.y * m11 + vec.z * m12;
-		float z = vec.x * m20 + vec.y * m21 + vec.z * m22;
+		float x = m00 * vec.x + m01 * vec.y + m02 * vec.z;
+		float y = m10 * vec.x + m11 * vec.y + m12 * vec.z;
+		float z = m20 * vec.x + m21 * vec.y + m22 * vec.z;
 		return new Vec3(x, y, z);
 	}
 
@@ -172,9 +221,9 @@ public final class Mat3 implements IFloatArrayCopyProvider {
 		if (result == null)
 			result = new float[xyz.length];
 		for (int i = 0; i < xyz.length; i += 3) {
-			float x = xyz[i] * m00 + xyz[i + 1] * m01 + xyz[i + 2] * m02;
-			float y = xyz[i] * m10 + xyz[i + 1] * m11 + xyz[i + 2] * m12;
-			float z = xyz[i] * m20 + xyz[i + 1] * m21 + xyz[i + 2] * m22;
+			float x = m00 * xyz[i] + m01 * xyz[i + 1] + m02 * xyz[i + 2];
+			float y = m10 * xyz[i] + m11 * xyz[i + 1] + m12 * xyz[i + 2];
+			float z = m20 * xyz[i] + m21 * xyz[i + 1] + m22 * xyz[i + 2];
 			result[i] = x;
 			result[i + 1] = y;
 			result[i + 2] = z;
@@ -194,7 +243,7 @@ public final class Mat3 implements IFloatArrayCopyProvider {
 	}
 
 	/**
-	 * Get transpose matrix.
+	 * Get the transpose matrix.
 	 *
 	 * @return the transpose matrix
 	 */
@@ -212,7 +261,7 @@ public final class Mat3 implements IFloatArrayCopyProvider {
 	}
 
 	/**
-	 * Get inverse matrix.
+	 * Get the inverse matrix.
 	 *
 	 * @return the inverse or null if a is singular
 	 */
@@ -235,13 +284,13 @@ public final class Mat3 implements IFloatArrayCopyProvider {
 	}
 
 	/**
-	 * Multiplies two matrices result = a * b.
+	 * Multiplies two matrices (result = a * b).
 	 *
 	 * @param a
 	 *            3x3 matrix
 	 * @param b
 	 *            3x3 matrix
-	 * @return multiplied column-major matrix
+	 * @return a * b
 	 */
 	public static Mat3 multiply(Mat3 a, Mat3 b) {
 		float v00 = a.m00 * b.m00 + a.m01 * b.m10 + a.m02 * b.m20;
