@@ -109,7 +109,6 @@ public class FloatList {
 		System.arraycopy(tmp, 0, data, 0, size);
 	}
 
-	// FIXME: do we really need a copy here?
 	public float[] toArray() {
 		return Arrays.copyOf(data, size);
 	}

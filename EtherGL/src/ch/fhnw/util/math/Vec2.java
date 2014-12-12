@@ -117,6 +117,9 @@ public final class Vec2 implements IFloatArrayCopyProvider {
 	}
 
 	public static float[] toArray(Collection<Vec2> vectors) {
+		if (vectors == null)
+			return null;
+
 		float[] result = new float[2 * vectors.size()];
 		int i = 0;
 		for (Vec2 v : vectors) {

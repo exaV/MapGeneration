@@ -42,6 +42,10 @@ import ch.fhnw.util.math.Vec3;
 public class GeometryUtil {
 	private static final IntList TRIANGLE = new IntList(new int[] { 0, 1, 2 });
 
+	public static IntList triangulate(List<Vec3> polygon) {
+		return triangulate(Vec3.toArray(polygon));
+	}
+	
 	public static IntList triangulate(float[] polygon) {
 		if (polygon.length == 9)
 			return TRIANGLE;

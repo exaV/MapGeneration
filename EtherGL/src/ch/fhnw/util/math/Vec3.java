@@ -153,10 +153,13 @@ public class Vec3 implements IVec3 {
 		return String.format("[% .2f,% .2f,% .2f]", x, y, z);
 	}
 
-	public static float[] toArray(List<? extends Vec3> vs) {
-		float[] result = new float[vs.size() * 3];
+	public static float[] toArray(List<? extends Vec3> vectors) {
+		if (vectors == null)
+			return null;
+
+		float[] result = new float[vectors.size() * 3];
 		int i = 0;
-		for (Vec3 v : vs) {
+		for (Vec3 v : vectors) {
 			result[i++] = v.x;
 			result[i++] = v.y;
 			result[i++] = v.z;

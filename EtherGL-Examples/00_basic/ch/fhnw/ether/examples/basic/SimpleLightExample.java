@@ -153,8 +153,28 @@ public final class SimpleLightExample {
 		scene = new DefaultScene(controller);
 		controller.setScene(scene);
 
+		// Add first light and light geometry
 		GeodesicSphere s = new GeodesicSphere(4);
 
+		lightMesh = new DefaultMesh(new ColorMaterial(RGBA.YELLOW), DefaultGeometry.createV(Primitive.TRIANGLES, s.getTriangles()), Flags.DONT_CAST_SHADOW);
+		lightMesh.getGeometry().setScale(new Vec3(0.1, 0.1, 0.1));
+		lightMesh.setPosition(Vec3.Z.scale(2));
+		light.setPosition(lightMesh.getPosition());
+
+		scene.add3DObjects(light);
+		scene.add3DObjects(lightMesh);
+
+		// Add a second light (now that we have multiple light support...)
+		scene.add3DObject(new PointLight(new Vec3(2, 0, 2), RGB.BLACK, RGB.BLUE));
+
+		// Add a ground plane
+		IMesh ground = MeshLibrary.createGroundPlane();
+		scene.add3DObject(ground);
+
+		// Add an exit button
+		controller.getUI().addWidget(new Button(0, 0, "Quit", "Quit", KeyEvent.VK_ESCAPE, (button, v) -> System.exit(0)));
+		
+		// Add geometry
 		IMaterial solidMaterial = new ShadedMaterial(RGB.BLACK, RGB.BLUE, RGB.GRAY, RGB.WHITE, 10, 1, 1f);
 		IMaterial lineMaterial = new ColorMaterial(new RGBA(1, 1, 1, 0.2f));
 
@@ -181,7 +201,7 @@ public final class SimpleLightExample {
 		if (ADD_BUNNY) {
 			IMesh solidBunnyT = null;
 			try {
-				List<IMesh> meshes = new OBJReader(getClass().getResource("assets/bunny.obj")).getMeshes();
+				List<IMesh> meshes = new OBJReader(getClass().getResource("assets/bunny_original.obj")).getMeshes();
 				solidBunnyT = new DefaultMesh(solidMaterial, meshes.get(0).getGeometry());
 				IGeometry g = solidBunnyT.getGeometry();
 				g.setRotation(new Vec3(90, 0, 0));
@@ -193,23 +213,5 @@ public final class SimpleLightExample {
 			}
 		}
 
-		// Add first light and light geometry
-		lightMesh = new DefaultMesh(new ColorMaterial(RGBA.YELLOW), DefaultGeometry.createV(Primitive.TRIANGLES, s.getTriangles()), Flags.DONT_CAST_SHADOW);
-		lightMesh.getGeometry().setScale(new Vec3(0.1, 0.1, 0.1));
-		lightMesh.setPosition(Vec3.Z.scale(2));
-		light.setPosition(lightMesh.getPosition());
-
-		scene.add3DObjects(light);
-		scene.add3DObjects(lightMesh);
-
-		// Add a second light (now that we have multiple light support...)
-		scene.add3DObject(new PointLight(new Vec3(2, 0, 2), RGB.BLACK, RGB.BLUE));
-
-		// Add a ground plane
-		IMesh ground = MeshLibrary.createGroundPlane();
-		scene.add3DObject(ground);
-
-		// Add an exit button
-		controller.getUI().addWidget(new Button(0, 0, "Quit", "Quit", KeyEvent.VK_ESCAPE, (button, v) -> System.exit(0)));
 	}
 }

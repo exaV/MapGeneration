@@ -31,6 +31,7 @@ package ch.fhnw.ether.formats.obj;
 
 //import java.util.Hashtable;
 import ch.fhnw.ether.formats.mtl.MaterialFileParser;
+import ch.fhnw.ether.formats.mtl.MtlLineParserFactory;
 
 public class ObjLineParserFactory extends LineParserFactory {
 	public ObjLineParserFactory(WavefrontObject object) {
@@ -38,10 +39,10 @@ public class ObjLineParserFactory extends LineParserFactory {
 		parsers.put("v", new VertexParser());
 		parsers.put("vn", new NormalParser());
 		parsers.put("vp", new FreeFormParser());
-		parsers.put("vt", new TextureCooParser());
-		parsers.put("f", new FaceParser(object));
+		parsers.put("vt", new TexCoordParser());
+		parsers.put("f", new FaceParser());
 		parsers.put("#", new CommentParser());
-		parsers.put("mtllib", new MaterialFileParser(object));
+		parsers.put("mtllib", new MaterialFileParser(new MtlLineParserFactory(object)));
 		parsers.put("usemtl", new MaterialParser());
 		parsers.put("g", new GroupParser());
 		parsers.put("o", new GroupParser());

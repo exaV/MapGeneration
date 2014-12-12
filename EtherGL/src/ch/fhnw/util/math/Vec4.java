@@ -159,10 +159,13 @@ public class Vec4 implements IVec4 {
 		return "[" + x + ", " + y + ", " + z + ", " + w + "]";
 	}
 
-	public static float[] toArray(List<? extends Vec4> vs) {
-		float[] result = new float[vs.size() * 4];
+	public static float[] toArray(List<? extends Vec4> vectors) {
+		if (vectors == null)
+			return null;
+
+		float[] result = new float[vectors.size() * 4];
 		int i = 0;
-		for (Vec4 v : vs) {
+		for (Vec4 v : vectors) {
 			result[i++] = v.x;
 			result[i++] = v.y;
 			result[i++] = v.z;

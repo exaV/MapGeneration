@@ -94,4 +94,8 @@ public final class IntList {
 		data = new int[newCap];
 		System.arraycopy(tmp, 0, data, 0, size);
 	}
+
+	public int[] toArray() {
+		return Arrays.copyOf(data, size);
+	}
 }

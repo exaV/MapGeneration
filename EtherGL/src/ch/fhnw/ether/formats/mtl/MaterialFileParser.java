@@ -34,65 +34,54 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Hashtable;
 
 import ch.fhnw.ether.formats.obj.LineParser;
-import ch.fhnw.ether.formats.obj.Material;
 import ch.fhnw.ether.formats.obj.WavefrontObject;
 
 public class MaterialFileParser extends LineParser {
+	private final MtlLineParserFactory parserFactory;
 
-	Hashtable<String, Material> materials = new Hashtable<>();
-	private WavefrontObject object;
-	private MtlLineParserFactory parserFactory = null;
-
-	public MaterialFileParser(WavefrontObject object) {
-		this.object = object;
-		this.parserFactory = new MtlLineParserFactory(object);
+	public MaterialFileParser(MtlLineParserFactory parserFactory) {
+		this.parserFactory = parserFactory;
 	}
 
 	@Override
-	public void incoporateResults(WavefrontObject wavefrontObject) {
-		// Material are directly added by the parser, no need to do anything here...
+	public void incoporateResults(WavefrontObject object) {
 	}
 
 	@Override
-	public void parse() {
+	public void parse(WavefrontObject object) {
 		String filename = words[1];
 
 		String pathToMTL = object.getContextfolder() + filename;
 
 		InputStream fileInput = this.getClass().getResourceAsStream(pathToMTL);
-		if (fileInput == null)
+		if (fileInput == null) {
 			// Could not find the file in the jar.
 			try {
 				File file = new File(pathToMTL);
 				if (file.exists())
 					fileInput = new FileInputStream(file);
-			} catch (Exception e2) {
-				e2.printStackTrace();
+			} catch (Exception e) {
+				throw new RuntimeException("Error parsing: '" + pathToMTL + "'");
 			}
-
+		}
+			
 		if (fileInput == null)
 			return;
+
 		String currentLine = null;
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(fileInput))) {
-
 			currentLine = null;
 			while ((currentLine = in.readLine()) != null) {
-
 				LineParser parser = parserFactory.getLineParser(currentLine);
-				parser.parse();
-				parser.incoporateResults(object);
+				if (parser != null) {
+					parser.parse(object);
+					parser.incoporateResults(object);
+				}
 			}
-
-			if (in != null)
-				in.close();
-
 		} catch (Exception e) {
-			e.printStackTrace();
-			System.out.println("Error on line:" + currentLine);
-			throw new RuntimeException("Error parsing :'" + pathToMTL + "'");
+			throw new RuntimeException("Error parsing: '" + pathToMTL + "' on line " + currentLine);
 		}
 
 	}
