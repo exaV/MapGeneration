@@ -46,10 +46,6 @@ public class MaterialFileParser extends LineParser {
 	}
 
 	@Override
-	public void incoporateResults(WavefrontObject object) {
-	}
-
-	@Override
 	public void parse(WavefrontObject object) {
 		String filename = words[1];
 
@@ -66,7 +62,7 @@ public class MaterialFileParser extends LineParser {
 				throw new RuntimeException("Error parsing: '" + pathToMTL + "'");
 			}
 		}
-			
+
 		if (fileInput == null)
 			return;
 
@@ -86,4 +82,7 @@ public class MaterialFileParser extends LineParser {
 
 	}
 
+	@Override
+	public void incoporateResults(WavefrontObject object) {
+	}
 }

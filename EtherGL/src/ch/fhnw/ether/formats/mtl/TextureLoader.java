@@ -36,7 +36,6 @@ import java.util.Map;
 import ch.fhnw.ether.image.Frame;
 
 public class TextureLoader {
-
 	private TextureLoader() {
 	}
 

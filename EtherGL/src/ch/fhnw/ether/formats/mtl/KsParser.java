@@ -46,7 +46,7 @@ public class KsParser extends LineParser {
 	}
 
 	@Override
-	public void incoporateResults(WavefrontObject wavefrontObject) {
-		wavefrontObject.getCurrentMaterial().setKs(ks);
+	public void incoporateResults(WavefrontObject object) {
+		object.getCurrentMaterial().setKs(ks);
 	}
 }

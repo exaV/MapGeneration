@@ -37,16 +37,17 @@ import java.util.Collections;
 import java.util.List;
 
 import ch.fhnw.ether.formats.AbstractModelReader;
+import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
-import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
+import ch.fhnw.ether.scene.mesh.material.ShadedMaterial;
+import ch.fhnw.ether.scene.mesh.material.Texture;
 import ch.fhnw.util.IntList;
 import ch.fhnw.util.color.RGB;
-import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Vec2;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.GeometryUtil;
@@ -56,9 +57,7 @@ public class OBJReader extends AbstractModelReader {
 
 	public OBJReader(URL resource) throws IOException {
 		super(resource);
-		long t = System.currentTimeMillis();
 		decode(resource.getFile(), resource.openStream());
-		System.out.println(System.currentTimeMillis() - t);
 	}
 
 	@Override
@@ -106,10 +105,14 @@ public class OBJReader extends AbstractModelReader {
 			}
 
 			// TODO: proper material handling
-			Material mat = group.getMaterial();			
-			RGB diffuse = mat != null ? mat.getKd() : RGB.WHITE;
-			IMaterial material = new ColorMaterial(new RGBA(diffuse.r, diffuse.g, diffuse.b, 1));
-
+			Material mat = group.getMaterial();
+			IMaterial material;
+			if (mat != null) {
+				Frame frame = mat.getTexture();
+				material = new ShadedMaterial(RGB.BLACK, mat.getKa(), mat.getKd(), mat.getKs(), mat.getShininess(), 1, 1, frame != null ? new Texture(mat.getTexture()) : null);
+			} else {
+				material = new ShadedMaterial(RGB.WHITE);
+			}
 			
 			float[] tv = Vec3.toArray(triVertices);
 			float[] tn = hasNormals ? Vec3.toArray(triNormals) : GeometryUtil.calculateNormals(tv);

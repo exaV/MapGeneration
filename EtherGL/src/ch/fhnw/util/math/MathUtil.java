@@ -154,4 +154,12 @@ public final class MathUtil {
 		return ax * bx + ay * by + az * bz + aw * bw;
 	}
 
+	/**
+	 * Checks if a number is a power of two.
+	 * @param n the number to be evaluated
+	 * @return true if n is a power of two, false otherwise
+	 */
+	public static boolean isPowerOfTwo(int n) {
+		return (n > 0) && ((n & (n - 1)) == 0);
+	}
 }

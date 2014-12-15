@@ -51,6 +51,7 @@ import ch.fhnw.ether.media.FrameReq;
 import ch.fhnw.ether.video.IRandomAccessFrameSource;
 import ch.fhnw.ether.video.ISequentialFrameSource;
 import ch.fhnw.util.BufferUtil;
+import ch.fhnw.util.math.MathUtil;
 
 public abstract class Frame implements ISequentialFrameSource, IRandomAccessFrameSource {
 	public enum FileFormat {PNG,JPEG}
@@ -120,7 +121,7 @@ public abstract class Frame implements ISequentialFrameSource, IRandomAccessFram
 		int bufsize = dimI * dimJ * pixelSize;
 		if (this.pixels.capacity() < bufsize)
 			this.pixels = BufferUtil.newDirectByteBuffer(bufsize);
-		isPOT = isPOT(dimI) && isPOT(dimJ);
+		isPOT = MathUtil.isPowerOfTwo(dimI) && MathUtil.isPowerOfTwo(dimJ);
 	}
 
 	public static Frame newFrame(int dimI, int dimJ, int pixelSize, ByteBuffer buffer) {
@@ -270,13 +271,6 @@ public abstract class Frame implements ISequentialFrameSource, IRandomAccessFram
 	}
 
 	public abstract BufferedImage toBufferedImage();
-
-	private static boolean isPOT(int value) {
-		for (int i = 0; i < 23; i++)
-			if (value == (1 << i))
-				return true;
-		return false;
-	}
 
 	public void disposeBuffer() {
 		if (transientBuffer)
