@@ -7,7 +7,7 @@ import ch.fhnw.ether.media.FXParameter;
 import ch.fhnw.ether.media.FrameReq;
 import ch.fhnw.ether.video.IVideoFrameSource;
 import ch.fhnw.ether.video.fx.AbstractVideoFX;
-import ch.fhnw.util.color.ColorUtils;
+import ch.fhnw.util.color.ColorUtilities;
 
 
 public class ChromaKey extends AbstractVideoFX {
@@ -43,7 +43,7 @@ public class ChromaKey extends AbstractVideoFX {
 				final int     pos = pixels.position();
 				final double  dimI1 = frame.dimI - 1;
 				final double  dimJ1 = frame.dimJ - 1;
-				ColorUtils.getHSBfromRGB(pixels, hsb, 4);
+				ColorUtilities.getHSBfromRGB(pixels, hsb, 4);
 				pixels.position(pos);
 				for(int i = 0; i < frame.dimI; i++) {
 					int idx = i * 3;

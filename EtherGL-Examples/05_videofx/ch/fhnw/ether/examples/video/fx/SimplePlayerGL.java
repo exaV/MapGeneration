@@ -65,7 +65,12 @@ public class SimplePlayerGL implements Runnable {
 
 			new Thread(this).start();
 		} else {
-			IVideoFrameSource fx = new Convolution(sources[0]);
+			IVideoFrameSource fx = new RGBGain(sources[0]);
+			//IVideoFrameSource fx = new ChromaKey(sources[1], sources[0]);
+			//IVideoFrameSource fx = new AnalogTVFX(sources[0]);
+			//IVideoFrameSource fx = new BandPass(sources[0]);
+			//IVideoFrameSource fx = new RGBGain(new Convolution(sources[0]));
+			//IVideoFrameSource fx = new MotionBlur(sources[0]);
 			new ParamWindow(fx);
 			texture.setData(fx);
 			for(;;) {

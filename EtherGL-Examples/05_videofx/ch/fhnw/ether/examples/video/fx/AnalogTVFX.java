@@ -7,7 +7,7 @@ import ch.fhnw.ether.media.FXParameter;
 import ch.fhnw.ether.media.FrameReq;
 import ch.fhnw.ether.video.IVideoFrameSource;
 import ch.fhnw.ether.video.fx.AbstractVideoFX;
-import ch.fhnw.util.color.ColorUtils;
+import ch.fhnw.util.color.ColorUtilities;
 
 public class AnalogTVFX extends AbstractVideoFX {
 	private static final int VBLANK = 32;
@@ -53,7 +53,7 @@ public class AnalogTVFX extends AbstractVideoFX {
 			frame.processLines((final ByteBuffer pixels, final int j)->{
 				final float[] yuv  = yuvFrame[j];
 				final int     hoff = 3 * (int)((Math.sin(lineCount++ / hf) + 1.0) * ha + hp * j);      
-				ColorUtils.getYUVfromRGB(pixels, yuv, frame.pixelSize);
+				ColorUtilities.getYUVfromRGB(pixels, yuv, frame.pixelSize);
 				for(int i = 3; i < yuv.length; i += 3) {
 					final int    idx   = (i + hoff) % yuv.length;
 					final int    idxC  = (idx + c) % yuv.length;
@@ -67,7 +67,7 @@ public class AnalogTVFX extends AbstractVideoFX {
 
 			frame.processLines((final ByteBuffer pixels, final int j)->{
 				final float[] yuv  = yuvFrame[(j+vOff) % yuvFrame.length];
-				ColorUtils.putRGBfromYUV(pixels, yuv, frame.pixelSize);
+				ColorUtilities.putRGBfromYUV(pixels, yuv, frame.pixelSize);
 			});
 		});
 		return req;
