@@ -69,7 +69,7 @@ public abstract class Frame implements ISequentialFrameSource, IRandomAccessFram
 	public int        pixelSize;
 	private int       modCount;
 	private final Set<Class<? extends Frame>> preferredTypes = new HashSet<>(Arrays.asList(getFrameTypes()));
-	
+
 	protected Frame(int pixelSize) {
 		this.pixelSize = pixelSize;
 	}
@@ -500,7 +500,7 @@ public abstract class Frame implements ISequentialFrameSource, IRandomAccessFram
 		private final ByteBuffer     pixels;
 		private final ILineProcessor processor;
 		private final int            lineLength;
-		
+
 		Chunk(Frame frame, int from, int to, ILineProcessor processor) {
 			this.from       = from;
 			this.to         = to;
@@ -534,12 +534,12 @@ public abstract class Frame implements ISequentialFrameSource, IRandomAccessFram
 	public final void position(ByteBuffer pixels, int i, int j) {
 		pixels.position((j * dimI + i) * pixelSize);
 	}
-	
+
 	@Override
 	public final Class<? extends Frame>[] getFrameTypes() {
 		return FTS_RGBA8_RGB8_GREY16_FLOAT;
 	}
-	
+
 	@Override
 	public void setPreferredFrameTypes(Set<Class<? extends Frame>> frameTypes) {
 		IVideoFrameSource.updatePreferredFrameTypes(preferredTypes, frameTypes);

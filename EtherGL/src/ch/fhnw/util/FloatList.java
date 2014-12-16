@@ -92,7 +92,7 @@ public final class FloatList extends SimpleArrayList<float[], Float> {
 		ensureCapacity(size + 1);  // Increments modCount!!
 		elementData[size++] = e;
 	}
-
+	
 	public void set(int i, float v) {
 		elementData[i] = v;
 	}

@@ -30,28 +30,24 @@
 package ch.fhnw.ether.formats.mtl;
 
 import ch.fhnw.ether.formats.obj.LineParser;
-import ch.fhnw.ether.formats.obj.Material;
 import ch.fhnw.ether.formats.obj.WavefrontObject;
 import ch.fhnw.util.color.RGB;
 
 public class KdParser extends LineParser {
-
-	RGB kd = null;
-
-	@Override
-	public void incoporateResults(WavefrontObject wavefrontObject) {
-		Material currentMaterial = wavefrontObject.getCurrentMaterial();
-		currentMaterial.setKd(kd);
-
-	}
+	private RGB kd = null;
 
 	@Override
-	public void parse() {
+	public void parse(WavefrontObject object) {
 		try {
 			kd = new RGB(Float.parseFloat(words[1]), Float.parseFloat(words[2]), Float.parseFloat(words[3]));
 		} catch (Exception e) {
-			throw new RuntimeException("VertexParser Error");
+			throw new RuntimeException("Kd Parser Error");
 		}
+	}
+
+	@Override
+	public void incoporateResults(WavefrontObject object) {
+		object.getCurrentMaterial().setKd(kd);
 	}
 
 }

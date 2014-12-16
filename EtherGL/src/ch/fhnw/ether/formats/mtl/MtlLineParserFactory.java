@@ -41,8 +41,7 @@ public class MtlLineParserFactory extends LineParserFactory {
 		parsers.put("Kd", new KdParser());
 		parsers.put("Ks", new KsParser());
 		parsers.put("Ns", new NsParser());
-		parsers.put("map_Kd", new KdMapParser(object));
+		parsers.put("map_Kd", new KdMapParser());
 		parsers.put("#", new CommentParser());
 	}
-
 }

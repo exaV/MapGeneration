@@ -33,7 +33,7 @@ package ch.fhnw.util.math;
  * Created by radar on 05/12/13.
  */
 // MV = T * R * S * T-Origin
-// MN = transposed((R * S)^-1)
+// MN = (R * S).inverse().transpose()
 public class Transform implements ITransformable {
 	private Vec3 origin = Vec3.ZERO;
 	private Vec3 translation = Vec3.ZERO;
@@ -41,7 +41,7 @@ public class Transform implements ITransformable {
 	private Vec3 scale = Vec3.ONE;
 
 	private Mat4 vertexTransform;
-	private Mat4 normalTransform;
+	private Mat3 normalTransform;
 
 	@Override
 	public Vec3 getOrigin() {
@@ -106,7 +106,7 @@ public class Transform implements ITransformable {
 
 	private void validateNormalTransform() {
 		if (normalTransform == null) {
-			normalTransform = Mat4.ID.scale(scale).rotate(rotation.z, Vec3.Z).rotate(rotation.y, Vec3.Y).rotate(rotation.x, Vec3.X);
+			normalTransform = Mat3.ID.scale(scale).rotate(rotation.z, Vec3.Z).rotate(rotation.y, Vec3.Y).rotate(rotation.x, Vec3.X);
 			normalTransform = normalTransform.inverse().transpose();
 		}
 	}

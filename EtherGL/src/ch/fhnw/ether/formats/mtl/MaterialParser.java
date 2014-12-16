@@ -34,20 +34,18 @@ import ch.fhnw.ether.formats.obj.Material;
 import ch.fhnw.ether.formats.obj.WavefrontObject;
 
 public class MaterialParser extends LineParser {
-
-	String materialName = "";
+	private String materialName = "";
 
 	@Override
-	public void incoporateResults(WavefrontObject wavefrontObject) {
-		Material newMaterial = new Material(materialName);
-
-		wavefrontObject.getMaterials().put(materialName, newMaterial);
-		wavefrontObject.setCurrentMaterial(newMaterial);
+	public void parse(WavefrontObject object) {
+		materialName = words[1];
 	}
 
 	@Override
-	public void parse() {
-		materialName = words[1];
+	public void incoporateResults(WavefrontObject object) {
+		Material material = new Material(materialName);
+		object.getMaterials().put(materialName, material);
+		object.setCurrentMaterial(material);
 	}
 
 }

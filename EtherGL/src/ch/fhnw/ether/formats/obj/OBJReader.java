@@ -33,72 +33,99 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import ch.fhnw.ether.formats.AbstractModelReader;
+import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
-import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
-import ch.fhnw.util.FloatList;
+import ch.fhnw.ether.scene.mesh.material.ShadedMaterial;
+import ch.fhnw.ether.scene.mesh.material.Texture;
 import ch.fhnw.util.IntList;
 import ch.fhnw.util.color.RGB;
-import ch.fhnw.util.color.RGBA;
+import ch.fhnw.util.math.Vec2;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.GeometryUtil;
 
 public class OBJReader extends AbstractModelReader {
+	private final List<IMesh> meshes = new ArrayList<>();
 
 	public OBJReader(URL resource) throws IOException {
 		super(resource);
+		decode(resource.getFile(), resource.openStream());
 	}
 
 	@Override
-	protected List<IMesh> decode(String path, InputStream in) throws IOException {
-		List<IMesh> meshes = new ArrayList<>();
+	public List<IMesh> getMeshes() {
+		return Collections.unmodifiableList(meshes);
+	}
+
+	private List<IMesh> decode(String path, InputStream in) {
 		WavefrontObject obj = new WavefrontObject(path, in);
-		for (Group g : obj.getGroups()) {
-			FloatList edgVertices = new FloatList();
-			FloatList triVertices = new FloatList();
-			FloatList triNormals = new FloatList();
-			FloatList polyVertices = new FloatList();
+		List<Vec3> vertices = obj.getVertices();
+		List<Vec3> normals = obj.getNormals();
+		List<Vec2> texCoords = obj.getTexCoords();
 
-			for (Face f : g.getFaces()) {
-				polyVertices.clear();
+		for (Group group : obj.getGroups()) {
+			List<Face> faces = group.getFaces();
+			if (faces.isEmpty())
+				continue;
+			boolean hasNormals = faces.get(0).nIndices != null;
+			boolean hasTexCoords = faces.get(0).tIndices != null;
 
-				final Vec3[] vs = f.getVertices();
-				final Vec3[] ns = f.getNormals();
+			List<Vec3> triVertices = new ArrayList<>();
+			List<Vec3> triNormals = hasNormals ? new ArrayList<>() : null;
+			List<Vec2> triTexCoords = hasTexCoords ? new ArrayList<>() : null;
 
-				for (int i = 1; i < vs.length; i++) {
-					polyVertices.addAll(vs[i - 1].x, vs[i - 1].y, vs[i - 1].z);
-					edgVertices.addAll(vs[i - 1].x, vs[i - 1].y, vs[i - 1].z);
-					edgVertices.addAll(vs[i].x, vs[i].y, vs[i].z);
+			for (Face face : group.getFaces()) {
+				final int[] vs = face.vIndices;
+				final int[] ns = face.nIndices;
+				final int[] ts = face.tIndices;
+
+				List<Vec3> polyVertices = new ArrayList<>();
+				for (int i = 0; i < vs.length; ++i) {
+					polyVertices.add(vertices.get(vs[i]));
 				}
-				polyVertices.addAll(vs[vs.length - 1].x, vs[vs.length - 1].y, vs[vs.length - 1].z);
 
-				edgVertices.addAll(vs[vs.length - 1].x, vs[vs.length - 1].y, vs[vs.length - 1].z);
-				edgVertices.addAll(vs[0].x, vs[0].y, vs[0].z);
+				IntList triangulation = GeometryUtil.triangulate(polyVertices);
 
-				IntList triangulation = GeometryUtil.triangulate(polyVertices.toSimpleArray());
-
-				for (int i = 0; i < triangulation.size(); i++) {
+				for (int i = 0; i < triangulation.size(); ++i) {
 					int idx = triangulation.get(i);
-					triVertices.addAll(vs[idx].x, vs[idx].y, vs[idx].z);
-					if (ns[idx] != null)
-						triNormals.addAll(ns[idx].x, ns[idx].y, ns[idx].z);
+					triVertices.add(vertices.get(vs[idx]));
+					if (hasNormals)
+						triNormals.add(ns != null ? normals.get(ns[idx]) : Vec3.Z);
+					if (hasTexCoords)
+						triTexCoords.add(ts != null ? texCoords.get(ts[idx]) : Vec2.ZERO);
 				}
 			}
 
-			Material mat = g.getMaterial();
-			RGB diffuse = mat != null ? mat.getKd() : RGB.WHITE;
-			float[] triv = triVertices.toSimpleArray();
-			IMaterial material = new ColorMaterial(new RGBA(diffuse.r, diffuse.g, diffuse.b, 1));
-			IGeometry geometry = DefaultGeometry.createVN(Primitive.TRIANGLES, triv, GeometryUtil.calculateNormals(triv));
+			// TODO: proper material handling
+			Material mat = group.getMaterial();
+			IMaterial material;
+			if (mat != null) {
+				Frame frame = mat.getTexture();
+				material = new ShadedMaterial(RGB.BLACK, mat.getKa(), mat.getKd(), mat.getKs(), mat.getShininess(), 1, 1, frame != null ? new Texture(mat.getTexture()) : null);
+			} else {
+				material = new ShadedMaterial(RGB.WHITE);
+			}
+			
+			float[] tv = Vec3.toArray(triVertices);
+			float[] tn = hasNormals ? Vec3.toArray(triNormals) : GeometryUtil.calculateNormals(tv);
+			float[] tt = Vec2.toArray(triTexCoords);
+
+			IGeometry geometry;
+			if (hasTexCoords)
+				geometry = DefaultGeometry.createVNM(Primitive.TRIANGLES, tv, tn, tt);
+			else
+				geometry = DefaultGeometry.createVN(Primitive.TRIANGLES, tv, tn);
+
 			DefaultMesh mesh = new DefaultMesh(material, geometry);
-			mesh.setName(path + '/' + g.getName());
+			mesh.setName(path + '/' + group.getName());
 			meshes.add(mesh);
 		}
 		return meshes;

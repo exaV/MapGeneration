@@ -27,28 +27,21 @@
  */
 package ch.fhnw.ether.formats;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 
 import ch.fhnw.ether.scene.mesh.IMesh;
 
 public abstract class AbstractModelReader {
-	private final List<IMesh> meshes;
+	private final URL resource;
 
-	public AbstractModelReader(URL resource) throws IOException {
-		this(resource.getFile(), resource.openStream());
+	public AbstractModelReader(URL resource) {
+		this.resource = resource;
 	}
 
-	public AbstractModelReader(String path, InputStream in) throws IOException {
-		meshes = decode(path, in);
-		in.close();
+	public final URL getResource() {
+		return resource;
 	}
 
-	protected abstract List<IMesh> decode(String path, InputStream in) throws IOException;
-
-	public List<IMesh> getMeshes() {
-		return meshes;
-	}
+	public abstract List<IMesh> getMeshes();
 }

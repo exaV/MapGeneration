@@ -30,16 +30,14 @@
 package ch.fhnw.ether.formats.obj;
 
 public class DefaultParser extends LineParser {
-
 	public DefaultParser() {
 	}
 
 	@Override
-	public void parse() {
+	public void parse(WavefrontObject object) {
 	}
 
 	@Override
-	public void incoporateResults(WavefrontObject wavefrontObject) {
+	public void incoporateResults(WavefrontObject object) {
 	}
-
 }

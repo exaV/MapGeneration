@@ -30,16 +30,15 @@
 package ch.fhnw.ether.formats.obj;
 
 public class MaterialParser extends LineParser {
-	String materialName = "";
+	private String materialName = "";
 
 	@Override
-	public void parse() {
+	public void parse(WavefrontObject object) {
 		materialName = words[1];
 	}
 
 	@Override
-	public void incoporateResults(WavefrontObject wavefrontObject) {
-		Material newMaterial = wavefrontObject.getMaterials().get(materialName);
-		wavefrontObject.getCurrentGroup().setMaterial(newMaterial);
+	public void incoporateResults(WavefrontObject object) {
+		object.getCurrentGroup().setMaterial(object.getMaterials().get(materialName));
 	}
 }

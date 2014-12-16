@@ -35,30 +35,26 @@ import ch.fhnw.ether.formats.obj.WavefrontObject;
 import ch.fhnw.ether.image.Frame;
 
 public class KdMapParser extends LineParser {
+	private Frame texture;
+	private String textureName;
 
-	private Frame texture = null;
-	private WavefrontObject object = null;
-	private String texName;
-
-	public KdMapParser(WavefrontObject object) {
-		this.object = object;
+	public KdMapParser() {
 	}
 
 	@Override
-	public void incoporateResults(WavefrontObject wavefrontObject) {
-		if (texture != null) {
-			Material currentMaterial = wavefrontObject.getCurrentMaterial();
-			currentMaterial.texName = texName;
-			currentMaterial.setTexture(texture);
-		}
-	}
-
-	@Override
-	public void parse() {
+	public void parse(WavefrontObject object) {
 		String textureFileName = words[words.length - 1];
-		texName = textureFileName;
+		textureName = textureFileName;
 		String pathToTextureBinary = object.getContextfolder() + textureFileName;
 		texture = TextureLoader.loadTexture(pathToTextureBinary);
 	}
 
+	@Override
+	public void incoporateResults(WavefrontObject object) {
+		if (texture != null) {
+			Material currentMaterial = object.getCurrentMaterial();
+			currentMaterial.setTexture(texture);
+			currentMaterial.setTextureName(textureName);
+		}
+	}
 }

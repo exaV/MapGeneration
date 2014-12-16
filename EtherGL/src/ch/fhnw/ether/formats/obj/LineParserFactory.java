@@ -29,35 +29,35 @@
 
 package ch.fhnw.ether.formats.obj;
 
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 
 import ch.fhnw.util.TextUtilities;
 
 public abstract class LineParserFactory {
 
-	protected Hashtable<String, LineParser> parsers = new Hashtable<>();
+	protected Map<String, LineParser> parsers = new HashMap<>();
 	protected WavefrontObject object = null;
 
 	public LineParser getLineParser(String line) {
 		if (line == null)
 			return null;
 
-		String[] lineWords = TextUtilities.tokens(line);
+		String[] words = TextUtilities.tokens(line);
 
 		// lineType is the first word in the line (except v,vp,vn,vt)
 
-		if (lineWords.length < 1)
+		if (words.length < 1)
 			return new DefaultParser();
 
-		String lineType = lineWords[0];
+		String lineType = words[0];
 
 		LineParser parser = parsers.get(lineType);
 		if (parser == null) {
-			// System.out.println("ParserFactory: Cannot find the type of the line "+filename+"#"+lineNumber+"for key:'"+lineType+"' , returning default constructor");
 			parser = new DefaultParser();
 		}
 
-		parser.setWords(lineWords);
+		parser.setWords(words);
 		return parser;
 	}
 }

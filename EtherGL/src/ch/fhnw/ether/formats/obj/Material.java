@@ -33,31 +33,56 @@ import ch.fhnw.ether.image.Frame;
 import ch.fhnw.util.color.RGB;
 
 public class Material {
-	private Frame texture;
+	private final String name;
 	private RGB Ka;
 	private RGB Kd;
 	private RGB Ks;
 	private float shininess;
-	private String name;
-	public String texName;
+	private Frame texture;
+	private String textureName;
 
 	public Material(String name) {
+		this.name = name;
 		Ka = new RGB(1, 1, 1);
 		Kd = new RGB(1, 1, 1);
 		Ks = new RGB(0.5f, 0.5f, 0.5f);
-		texture = null;
-		name = null;
-		texName = null;
 		shininess = 0;
-		this.name = name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public String getName() {
 		return name;
+	}
+
+	public RGB getKa() {
+		return Ka;
+	}
+
+	public void setKa(RGB ka) {
+		Ka = ka;
+	}
+
+	public RGB getKd() {
+		return Kd;
+	}
+
+	public void setKd(RGB kd) {
+		Kd = kd;
+	}
+
+	public RGB getKs() {
+		return Ks;
+	}
+
+	public void setKs(RGB ks) {
+		Ks = ks;
+	}
+
+	public float getShininess() {
+		return shininess;
+	}
+
+	public void setShininess(float s) {
+		shininess = s;
 	}
 
 	public Frame getTexture() {
@@ -68,36 +93,11 @@ public class Material {
 		this.texture = texture;
 	}
 
-	public RGB getKa() {
-		return Ka;
+	public String getTextureName() {
+		return textureName;
 	}
-
-	public RGB getKd() {
-		return Kd;
+	
+	public void setTextureName(String textureName) {
+		this.textureName = textureName;
 	}
-
-	public RGB getKs() {
-		return Ks;
-	}
-
-	public float getShininess() {
-		return shininess;
-	}
-
-	public void setKa(RGB ka) {
-		Ka = ka;
-	}
-
-	public void setKd(RGB kd) {
-		Kd = kd;
-	}
-
-	public void setKs(RGB ks) {
-		Ks = ks;
-	}
-
-	public void setShininess(float s) {
-		shininess = s;
-	}
-
 }

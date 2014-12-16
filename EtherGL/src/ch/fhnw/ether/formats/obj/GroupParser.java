@@ -30,26 +30,16 @@
 package ch.fhnw.ether.formats.obj;
 
 public class GroupParser extends LineParser {
-
-	Group newGroup = null;
-
-	@Override
-	public void incoporateResults(WavefrontObject wavefrontObject) {
-
-		if (wavefrontObject.getCurrentGroup() != null)
-			wavefrontObject.getCurrentGroup().pack();
-
-		wavefrontObject.getGroups().add(newGroup);
-		wavefrontObject.getGroupsDirectAccess().put(newGroup.getName(), newGroup);
-
-		wavefrontObject.setCurrentGroup(newGroup);
-	}
+	private Group group = null;
 
 	@Override
-	public void parse() {
-
+	public void parse(WavefrontObject object) {
 		String groupName = words[1];
-		newGroup = new Group(groupName);
+		group = new Group(groupName);
 	}
 
+	@Override
+	public void incoporateResults(WavefrontObject object) {
+		object.setCurrentGroup(group);
+	}
 }

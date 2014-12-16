@@ -129,7 +129,6 @@ public final class IntList extends SimpleArrayList<int[], Integer> {
 	public void addFirst(int e) {
 		add(0, e);
 	}
-
 	
 	public void sort() {
 		Arrays.sort(elementData, 0, size);
@@ -153,5 +152,4 @@ public final class IntList extends SimpleArrayList<int[], Integer> {
 		for(int i = 0; i < size; i++)
 			out.writeInt(elementData[i]);
 	}
-
 }
