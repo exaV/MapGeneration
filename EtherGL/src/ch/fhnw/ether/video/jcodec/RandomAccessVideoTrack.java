@@ -32,14 +32,19 @@ package ch.fhnw.ether.video.jcodec;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
-import org.jcodec.api.JCodecException;
-
+import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.media.FrameReq;
 import ch.fhnw.ether.video.IRandomAccessFrameSource;
+import ch.fhnw.ether.video.IVideoFrameSource;
 
 public final class RandomAccessVideoTrack extends AbstractVideoTrack implements IRandomAccessFrameSource {
-	public RandomAccessVideoTrack(URL url) throws IOException, URISyntaxException, JCodecException {
+	private final Set<Class<? extends Frame>> preferredTypes = new HashSet<>(Arrays.asList(getFrameTypes()));
+	
+	public RandomAccessVideoTrack(URL url) throws IOException, URISyntaxException {
 		super(url);
 	}
 
@@ -64,5 +69,15 @@ public final class RandomAccessVideoTrack extends AbstractVideoTrack implements 
 		}
 		return null;
 		*/
+	}
+	
+	@Override
+	public Class<? extends Frame>[] getFrameTypes() {
+		return null;
+	}
+	
+	@Override
+	public void setPreferredFrameTypes(Set<Class<? extends Frame>> frameTypes) {
+		IVideoFrameSource.updatePreferredFrameTypes(preferredTypes, frameTypes);
 	}
 }

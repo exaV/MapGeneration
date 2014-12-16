@@ -32,15 +32,19 @@ package ch.fhnw.ether.video.jcodec;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-
-import org.jcodec.api.JCodecException;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.media.FrameReq;
 import ch.fhnw.ether.video.ISequentialFrameSource;
+import ch.fhnw.ether.video.IVideoFrameSource;
 
 public final class SequentialVideoTrack extends AbstractVideoTrack implements ISequentialFrameSource {
-	public SequentialVideoTrack(URL url) throws IOException, URISyntaxException, JCodecException {
+	private Set<Class<? extends Frame>> preferredTypes = new HashSet<>(Arrays.asList(getFrameTypes()));
+	
+	public SequentialVideoTrack(URL url) throws IOException, URISyntaxException {
 		super(url);
 	}
 
@@ -59,5 +63,15 @@ public final class SequentialVideoTrack extends AbstractVideoTrack implements IS
 			grab.grabAndSet(frame);
 		});
 		return req;
-	}	
+	}
+	
+	@Override
+	public Class<? extends Frame>[] getFrameTypes() {
+		return FTS_RGBA8_RGB8;
+	}
+	
+	@Override
+	public void setPreferredFrameTypes(Set<Class<? extends Frame>> frameTypes) {
+		IVideoFrameSource.updatePreferredFrameTypes(preferredTypes, frameTypes);
+	}
 }

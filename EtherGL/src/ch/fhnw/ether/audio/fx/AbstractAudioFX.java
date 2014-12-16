@@ -18,6 +18,8 @@ public abstract class AbstractAudioFX extends AbstractFX implements IAudioFX {
 
 	@Override
 	public void dispose() {
+		for(IAudioFrameSource source : sources)
+			source.dispose();
 	}
 
 	@Override

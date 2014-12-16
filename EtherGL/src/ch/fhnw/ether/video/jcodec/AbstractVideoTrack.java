@@ -46,10 +46,14 @@ abstract class AbstractVideoTrack implements IVideoFrameSource {
 	private   SeekableByteChannel channel;
 	protected FrameGrab           grab;
 
-	public AbstractVideoTrack(URL url) throws IOException, URISyntaxException, JCodecException {
+	public AbstractVideoTrack(URL url) throws IOException, URISyntaxException {
 		this.url     = url;
 		this.channel = NIOUtils.readableFileChannel(new File(url.toURI()));
-		this.grab    = new FrameGrab(channel);
+		try {
+			this.grab    = new FrameGrab(channel);
+		} catch(JCodecException e) {
+			throw new IOException(e);
+		}
 	}
 
 	@Override

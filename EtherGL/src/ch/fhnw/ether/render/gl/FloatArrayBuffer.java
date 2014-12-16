@@ -34,7 +34,7 @@ import java.nio.Buffer;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL3;
 
-import ch.fhnw.util.BufferUtil;
+import ch.fhnw.util.BufferUtilities;
 
 /**
  * Basic float buffer attribute wrapper.
@@ -74,7 +74,7 @@ public final class FloatArrayBuffer implements IArrayBuffer {
 			gl.glBufferData(GL.GL_ARRAY_BUFFER, numBytes, data, GL.GL_STATIC_DRAW);
 		} else {
 			size = 0;
-			gl.glBufferData(GL.GL_ARRAY_BUFFER, 0, BufferUtil.EMPTY_FLOAT_BUFFER, GL.GL_STATIC_DRAW);
+			gl.glBufferData(GL.GL_ARRAY_BUFFER, 0, BufferUtilities.EMPTY_FLOAT_BUFFER, GL.GL_STATIC_DRAW);
 		}
 		gl.glBindBuffer(GL.GL_ARRAY_BUFFER, 0);
 	}

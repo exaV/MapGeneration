@@ -38,7 +38,7 @@ import java.nio.FloatBuffer;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL3;
 
-import ch.fhnw.util.BufferUtil;
+import ch.fhnw.util.BufferUtilities;
 
 public final class FloatFrame extends Frame {
 	private static final float[] MIN_MAX_0_1 = { 0f, 1f };
@@ -70,10 +70,15 @@ public final class FloatFrame extends Frame {
 		buffer = pixels.asFloatBuffer();
 	}
 
+	@Override
+	public FloatFrame create(int dimI, int dimJ) {
+		return new FloatFrame(dimI, dimJ);
+	}
+	
 	public FloatFrame(Frame frame, float[] minMax) {
 		this(frame.dimI, frame.dimJ);
 		if (pixelSize == frame.pixelSize && frame instanceof FloatFrame)
-			BufferUtil.arraycopy(frame.pixels, 0, pixels, 0, pixels.capacity());
+			BufferUtilities.arraycopy(frame.pixels, 0, pixels, 0, pixels.capacity());
 		else {
 			Grey16Codec encoder = new Grey16Codec(minMax);
 			final ByteBuffer src = frame.pixels;
@@ -267,5 +272,5 @@ public final class FloatFrame extends Frame {
 	@Override
 	protected void loadInternal(GL gl, int target, int textureId) {
 		gl.glTexImage2D(target, 0, GL3.GL_RED, dimI, dimJ, 0, GL3.GL_RED, GL.GL_FLOAT, pixels);
-	}
+	}	
 }

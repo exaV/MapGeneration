@@ -130,6 +130,8 @@ public final class FrameReq {
 			for(int i = 0; i < numFrames; i++)
 				frameProcessor.process(frames[i], i);
 			loadFrames();
+		} catch(FrameException e) {
+			throw e;
 		} catch(Throwable t) {
 			throw new FrameException("Failed to create frame of type " + preferredType.getName(), t);
 		}

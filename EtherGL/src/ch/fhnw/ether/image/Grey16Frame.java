@@ -45,7 +45,7 @@ import java.util.Arrays;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL3;
 
-import ch.fhnw.util.BufferUtil;
+import ch.fhnw.util.BufferUtilities;
 
 public final class Grey16Frame extends Frame {
 	public float[] originalMinMax = { 0.0f, 1.0f };
@@ -68,7 +68,7 @@ public final class Grey16Frame extends Frame {
 	public Grey16Frame(Frame frame) {
 		this(frame.dimI, frame.dimJ);
 		if (pixelSize == frame.pixelSize)
-			BufferUtil.arraycopy(frame.pixels, 0, pixels, 0, pixels.capacity());
+			BufferUtilities.arraycopy(frame.pixels, 0, pixels, 0, pixels.capacity());
 		else if (frame instanceof FloatFrame) {
 			FloatBuffer src = ((FloatFrame) frame).buffer;
 			final float min = ((FloatFrame) frame).getMinMax()[0];
@@ -105,6 +105,11 @@ public final class Grey16Frame extends Frame {
 			}
 		}
 		this.hasAlpha = frame.hasAlpha();
+	}
+
+	@Override
+	public Grey16Frame create(int dimI, int dimJ) {
+		return new Grey16Frame(dimI, dimJ);
 	}
 
 	@Override

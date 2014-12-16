@@ -40,7 +40,7 @@ import java.nio.FloatBuffer;
 
 import javax.media.opengl.GL;
 
-import ch.fhnw.util.BufferUtil;
+import ch.fhnw.util.BufferUtilities;
 
 public class RGB8Frame extends Frame {
 
@@ -72,7 +72,7 @@ public class RGB8Frame extends Frame {
 	public RGB8Frame(Frame frame) {
 		this(frame.dimI, frame.dimJ, 3);
 		if (pixelSize == frame.pixelSize)
-			BufferUtil.arraycopy(frame.pixels, 0, pixels, 0, pixels.capacity());
+			BufferUtilities.arraycopy(frame.pixels, 0, pixels, 0, pixels.capacity());
 		else {
 			if (frame instanceof Grey16Frame) {
 				final ByteBuffer src = frame.pixels;
@@ -123,6 +123,11 @@ public class RGB8Frame extends Frame {
 				}
 			}
 		}
+	}
+
+	@Override
+	public RGB8Frame create(int dimI, int dimJ) {
+		return new RGB8Frame(dimI, dimJ);
 	}
 
 	public void setPixels(int i, int j, int w, int h, ColorModel model, int[] pixels, int off, int scansize) {

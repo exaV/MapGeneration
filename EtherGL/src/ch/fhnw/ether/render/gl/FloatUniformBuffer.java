@@ -36,7 +36,7 @@ import java.util.function.Consumer;
 
 import javax.media.opengl.GL3;
 
-import ch.fhnw.util.BufferUtil;
+import ch.fhnw.util.BufferUtilities;
 
 /**
  * Basic uniform buffer object wrapper.
@@ -87,7 +87,7 @@ public final class FloatUniformBuffer {
 		}
 		
 		if (buffer == null)
-			buffer = BufferUtil.newDirectFloatBuffer(size(stride));
+			buffer = BufferUtilities.createDirectFloatBuffer(size(stride));
 
 		buffer.rewind();
 		for (int i = 0; i < blockCount; ++i) {
@@ -110,7 +110,7 @@ public final class FloatUniformBuffer {
 		}
 
 		if (buffer == null)
-			buffer = BufferUtil.newDirectFloatBuffer(size(stride));
+			buffer = BufferUtilities.createDirectFloatBuffer(size(stride));
 
 		buffer.rewind();
 		consumer.accept(buffer);

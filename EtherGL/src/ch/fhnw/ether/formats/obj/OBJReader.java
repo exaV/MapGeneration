@@ -73,28 +73,28 @@ public class OBJReader extends AbstractModelReader {
 				final Vec3[] ns = f.getNormals();
 
 				for (int i = 1; i < vs.length; i++) {
-					polyVertices.add(vs[i - 1].x, vs[i - 1].y, vs[i - 1].z);
-					edgVertices.add(vs[i - 1].x, vs[i - 1].y, vs[i - 1].z);
-					edgVertices.add(vs[i].x, vs[i].y, vs[i].z);
+					polyVertices.addAll(vs[i - 1].x, vs[i - 1].y, vs[i - 1].z);
+					edgVertices.addAll(vs[i - 1].x, vs[i - 1].y, vs[i - 1].z);
+					edgVertices.addAll(vs[i].x, vs[i].y, vs[i].z);
 				}
-				polyVertices.add(vs[vs.length - 1].x, vs[vs.length - 1].y, vs[vs.length - 1].z);
+				polyVertices.addAll(vs[vs.length - 1].x, vs[vs.length - 1].y, vs[vs.length - 1].z);
 
-				edgVertices.add(vs[vs.length - 1].x, vs[vs.length - 1].y, vs[vs.length - 1].z);
-				edgVertices.add(vs[0].x, vs[0].y, vs[0].z);
+				edgVertices.addAll(vs[vs.length - 1].x, vs[vs.length - 1].y, vs[vs.length - 1].z);
+				edgVertices.addAll(vs[0].x, vs[0].y, vs[0].z);
 
-				IntList triangulation = GeometryUtil.triangulate(polyVertices.toArray());
+				IntList triangulation = GeometryUtil.triangulate(polyVertices.toSimpleArray());
 
 				for (int i = 0; i < triangulation.size(); i++) {
 					int idx = triangulation.get(i);
-					triVertices.add(vs[idx].x, vs[idx].y, vs[idx].z);
+					triVertices.addAll(vs[idx].x, vs[idx].y, vs[idx].z);
 					if (ns[idx] != null)
-						triNormals.add(ns[idx].x, ns[idx].y, ns[idx].z);
+						triNormals.addAll(ns[idx].x, ns[idx].y, ns[idx].z);
 				}
 			}
 
 			Material mat = g.getMaterial();
 			RGB diffuse = mat != null ? mat.getKd() : RGB.WHITE;
-			float[] triv = triVertices.toArray();
+			float[] triv = triVertices.toSimpleArray();
 			IMaterial material = new ColorMaterial(new RGBA(diffuse.r, diffuse.g, diffuse.b, 1));
 			IGeometry geometry = DefaultGeometry.createVN(Primitive.TRIANGLES, triv, GeometryUtil.calculateNormals(triv));
 			DefaultMesh mesh = new DefaultMesh(material, geometry);

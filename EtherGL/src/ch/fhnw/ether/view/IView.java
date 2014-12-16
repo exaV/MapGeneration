@@ -52,6 +52,8 @@ public interface IView extends IUpdateListener {
 	enum ViewFlag {
 		/** Grid visibility in navigation tool. */
 		GRID, 
+		/** Enable line smoothing. */
+		SMOOTH_LINES,
 	}
 
 	public static final class Config {

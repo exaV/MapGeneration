@@ -49,7 +49,7 @@ public final class VideoTrackFactory {
 
 	public static IRandomAccessFrameSource createRandomAccessTrack(URL url) throws IOException {
 		if (isImage(url))
-			return Frame.newFrame(url);
+			return Frame.create(url);
 		else if (USE_AV_FOUNDATION && AVAsset.isReady())
 			return new AVAsset(url);
 		try {
@@ -61,7 +61,7 @@ public final class VideoTrackFactory {
 
 	public static ISequentialFrameSource createSequentialTrack(URL url) throws IOException {
 		if (isImage(url))
-			return Frame.newFrame(url);
+			return Frame.create(url);
 		else if (USE_AV_FOUNDATION && AVAsset.isReady())
 			return new AVAsset(url);
 		try {

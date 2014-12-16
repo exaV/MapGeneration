@@ -32,7 +32,10 @@ package ch.fhnw.ether.examples.raytracing;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import ch.fhnw.ether.examples.raytracing.util.IntersectResult;
 import ch.fhnw.ether.image.Frame;
@@ -49,6 +52,7 @@ import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.MeshProxy;
 import ch.fhnw.ether.video.IScalingFrameSource;
 import ch.fhnw.ether.video.ISequentialFrameSource;
+import ch.fhnw.ether.video.IVideoFrameSource;
 import ch.fhnw.util.color.RGB;
 import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Vec3;
@@ -63,7 +67,7 @@ public class RayTracer implements ISequentialFrameSource, IScalingFrameSource {
 	private int                   w = 1, h = 1;
 	private ICamera               camera = new Camera();
 	private List<ILight>          lights = new ArrayList<>();
-
+	private final Set<Class<? extends Frame>> preferredTypes = new HashSet<>(Arrays.asList(getFrameTypes()));
 
 	@Override
 	public void setSize(int width, int height) {
@@ -207,7 +211,7 @@ public class RayTracer implements ISequentialFrameSource, IScalingFrameSource {
 				final Vec3    sideVector = lookVector.cross(upVector).normalize();
 				final boolean hasAlpha   = frame instanceof RGBA8Frame;
 
-				frame.processByLine((ByteBuffer pixels, int line)->{
+				frame.processLines((ByteBuffer pixels, int line)->{
 					final int j = line - (h / 2);
 					for (int i = -w / 2; i < w / 2; ++i) {
 						final Vec3 x     = sideVector.scale(i * deltaX);
@@ -232,5 +236,15 @@ public class RayTracer implements ISequentialFrameSource, IScalingFrameSource {
 
 	public void removeLight(ILight light) {
 		lights.remove(light);
+	}
+	
+	@Override
+	public Class<? extends Frame>[] getFrameTypes() {
+		return FTS_RGBA8;
+	}
+	
+	@Override
+	public void setPreferredFrameTypes(Set<Class<? extends Frame>> frameTypes) {
+		IVideoFrameSource.updatePreferredFrameTypes(preferredTypes, frameTypes);
 	}
 }

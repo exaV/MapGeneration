@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry excluding="src/" kind="src" path="00_basic"/>
+	<classpathentry kind="src" path="05_videofx"/>
 	<classpathentry kind="src" path="01_assets"/>
 	<classpathentry kind="src" path="02_mapping"/>
 	<classpathentry kind="src" path="10_raytracing"/>
@@ -8,5 +9,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/EtherGL"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/EtherGL-Mapping"/>
+	<classpathentry kind="lib" path="/EtherGL/lib/jtransforms/JTransforms-3.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

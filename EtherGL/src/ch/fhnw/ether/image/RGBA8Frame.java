@@ -38,7 +38,7 @@ import java.nio.FloatBuffer;
 
 import javax.media.opengl.GL;
 
-import ch.fhnw.util.BufferUtil;
+import ch.fhnw.util.BufferUtilities;
 
 public class RGBA8Frame extends RGB8Frame {
 
@@ -57,7 +57,7 @@ public class RGBA8Frame extends RGB8Frame {
 	public RGBA8Frame(Frame frame) {
 		super(frame.dimI, frame.dimJ, 4);
 		if (pixelSize == frame.pixelSize && !(frame instanceof FloatFrame))
-			BufferUtil.arraycopy(frame.pixels, 0, pixels, 0, pixels.capacity());
+			BufferUtilities.arraycopy(frame.pixels, 0, pixels, 0, pixels.capacity());
 		else {
 			final ByteBuffer dst = pixels;
 			if (frame instanceof Grey16Frame) {
@@ -117,6 +117,11 @@ public class RGBA8Frame extends RGB8Frame {
 				}
 			}
 		}
+	}
+
+	@Override
+	public RGBA8Frame create(int dimI, int dimJ) {
+		return new RGBA8Frame(dimI, dimJ);
 	}
 
 	public byte getAlpha(int i, int j, int k) {
@@ -388,5 +393,5 @@ public class RGBA8Frame extends RGB8Frame {
 	@Override
 	protected void loadInternal(GL gl, int target, int textureId) {
 		gl.glTexImage2D(target, 0, GL.GL_RGBA, dimI, dimJ, 0, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, pixels);
-	}
+	}	
 }

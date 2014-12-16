@@ -37,7 +37,10 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -50,29 +53,29 @@ import javax.media.opengl.GL3;
 import ch.fhnw.ether.media.FrameReq;
 import ch.fhnw.ether.video.IRandomAccessFrameSource;
 import ch.fhnw.ether.video.ISequentialFrameSource;
-import ch.fhnw.util.BufferUtil;
+import ch.fhnw.ether.video.IVideoFrameSource;
+import ch.fhnw.util.BufferUtilities;
 
 public abstract class Frame implements ISequentialFrameSource, IRandomAccessFrameSource {
 	public enum FileFormat {PNG,JPEG}
 
-	protected static final byte     B0    = 0;
-	protected static final byte     B255  = (byte) 255;
-	private static final ByteBuffer EMPTY = BufferUtil.newDirectByteBuffer(0);
+	public static final byte        B0    = 0;
+	public static final byte        B255  = (byte) 255;
+	private static final ByteBuffer EMPTY = BufferUtilities.createDirectByteBuffer(0);
 
 	public ByteBuffer pixels = EMPTY;
-	public int dimI;
-	public int dimJ;
-	public int pixelSize;
-	public boolean isPOT;
-	private boolean transientBuffer;
-	private int modCount;
-
+	public int        dimI;
+	public int        dimJ;
+	public int        pixelSize;
+	private int       modCount;
+	private final Set<Class<? extends Frame>> preferredTypes = new HashSet<>(Arrays.asList(getFrameTypes()));
+	
 	protected Frame(int pixelSize) {
 		this.pixelSize = pixelSize;
 	}
 
 	protected Frame(int dimI, int dimJ, byte[] frameBuffer, int pixelSize) {
-		this.pixels = BufferUtil.newDirectByteBuffer(frameBuffer.length);
+		this.pixels = BufferUtilities.createDirectByteBuffer(frameBuffer.length);
 		this.pixels.put(frameBuffer);
 		this.pixelSize = pixelSize;
 		init(dimI, dimJ);
@@ -82,7 +85,7 @@ public abstract class Frame implements ISequentialFrameSource, IRandomAccessFram
 		if (frameBuffer.isDirect()) {
 			this.pixels = frameBuffer;
 		} else {
-			this.pixels = BufferUtil.newDirectByteBuffer(frameBuffer.capacity());
+			this.pixels = BufferUtilities.createDirectByteBuffer(frameBuffer.capacity());
 			this.pixels.put(frameBuffer);
 		}
 		this.pixelSize = pixelSize;
@@ -105,13 +108,9 @@ public abstract class Frame implements ISequentialFrameSource, IRandomAccessFram
 		return false;
 	}
 
-	public void setTransient() {
-		this.transientBuffer = true;
-	}
-
 	@Override
 	public String toString() {
-		return dimI + "x" + dimJ;
+		return getClass().getName() + ":" + dimI + "x" + dimJ;
 	}
 
 	protected void init(int dimI, int dimJ) {
@@ -119,11 +118,10 @@ public abstract class Frame implements ISequentialFrameSource, IRandomAccessFram
 		this.dimJ = dimJ;
 		int bufsize = dimI * dimJ * pixelSize;
 		if (this.pixels.capacity() < bufsize)
-			this.pixels = BufferUtil.newDirectByteBuffer(bufsize);
-		isPOT = isPOT(dimI) && isPOT(dimJ);
+			this.pixels = BufferUtilities.createDirectByteBuffer(bufsize);
 	}
 
-	public static Frame newFrame(int dimI, int dimJ, int pixelSize, ByteBuffer buffer) {
+	public static Frame create(int dimI, int dimJ, int pixelSize, ByteBuffer buffer) {
 		switch (pixelSize) {
 		case 2:
 			return new Grey16Frame(dimI, dimJ, buffer);
@@ -136,15 +134,15 @@ public abstract class Frame implements ISequentialFrameSource, IRandomAccessFram
 		}
 	}
 
-	public static Frame newFrame(int dimI, int dimJ, int pixelSize, byte[] pixelsData) {
-		return newFrame(dimI, dimJ, pixelSize, ByteBuffer.wrap(pixelsData));
+	public static Frame create(int dimI, int dimJ, int pixelSize, byte[] pixelsData) {
+		return create(dimI, dimJ, pixelSize, ByteBuffer.wrap(pixelsData));
 	}
 
-	public static Frame newFrame(BufferedImage img) {
-		return newFrame(img, 0);
+	public static Frame create(BufferedImage img) {
+		return create(img, 0);
 	}
 
-	public static Frame newFrame(BufferedImage img, int flags) {
+	public static Frame create(BufferedImage img, int flags) {
 		Frame result = null;
 		switch (img.getType()) {
 		case BufferedImage.TYPE_BYTE_BINARY:
@@ -183,19 +181,21 @@ public abstract class Frame implements ISequentialFrameSource, IRandomAccessFram
 		return result;
 	}
 
-	public static Frame newFrame(File file) throws IOException {
-		return newFrame(ImageIO.read(file));
+	public static Frame create(File file) throws IOException {
+		return create(ImageIO.read(file));
 	}
 
-	public static Frame newFrame(URL url) throws IOException {
-		return newFrame(ImageIO.read(url));
+	public static Frame create(URL url) throws IOException {
+		return create(ImageIO.read(url));
 	}
 
-	public static Frame newFrame(InputStream in) throws IOException {
-		return newFrame(ImageIO.read(in));
+	public static Frame create(InputStream in) throws IOException {
+		return create(ImageIO.read(in));
 	}
 
-	public static Frame newFrame(GL gl, int target, int textureId) {
+	public abstract Frame create(int width, int height);
+
+	public static Frame create(GL gl, int target, int textureId) {
 		Frame result = null;
 		int[] tmpi   = new int[1];
 		int width;
@@ -239,7 +239,7 @@ public abstract class Frame implements ISequentialFrameSource, IRandomAccessFram
 		int slnsize = dimI;
 		int dlnsize = dst.dimI;
 		for (int jj = 0; jj < dst.dimJ; jj++) {
-			BufferUtil.arraycopy(pixels, ((j + jj) * slnsize + i) * pixelSize, dst.pixels, jj * dlnsize * pixelSize, dlnsize * pixelSize);
+			BufferUtilities.arraycopy(pixels, ((j + jj) * slnsize + i) * pixelSize, dst.pixels, jj * dlnsize * pixelSize, dlnsize * pixelSize);
 		}
 	}
 
@@ -251,14 +251,14 @@ public abstract class Frame implements ISequentialFrameSource, IRandomAccessFram
 		int slnsize = src.dimI;
 		int dlnsize = dimI;
 		for (int jj = 0; jj < src.dimJ; jj++) {
-			BufferUtil.arraycopy(src.pixels, jj * slnsize * pixelSize, pixels, ((j + jj) * dlnsize + i) * pixelSize, slnsize * pixelSize);
+			BufferUtilities.arraycopy(src.pixels, jj * slnsize * pixelSize, pixels, ((j + jj) * dlnsize + i) * pixelSize, slnsize * pixelSize);
 		}
 	}	
 
 	public static Frame copyTo(Frame src, Frame dst) {
 		if (src.getClass() == dst.getClass()) {
 			for (int j = Math.min(src.dimJ, dst.dimJ); --j >= 0;)
-				BufferUtil.arraycopy(src.pixels, (j * src.dimI) * src.pixelSize, dst.pixels, (j * dst.dimI) * dst.pixelSize, Math.min(src.dimI, dst.dimI)
+				BufferUtilities.arraycopy(src.pixels, (j * src.dimI) * src.pixelSize, dst.pixels, (j * dst.dimI) * dst.pixelSize, Math.min(src.dimI, dst.dimI)
 						* src.pixelSize);
 		} else {
 			for (int j = Math.min(src.dimJ, dst.dimJ); --j >= 0;)
@@ -270,18 +270,6 @@ public abstract class Frame implements ISequentialFrameSource, IRandomAccessFram
 	}
 
 	public abstract BufferedImage toBufferedImage();
-
-	private static boolean isPOT(int value) {
-		for (int i = 0; i < 23; i++)
-			if (value == (1 << i))
-				return true;
-		return false;
-	}
-
-	public void disposeBuffer() {
-		if (transientBuffer)
-			pixels = null;
-	}
 
 	public void modified() {
 		modCount++;
@@ -412,7 +400,7 @@ public abstract class Frame implements ISequentialFrameSource, IRandomAccessFram
 	}
 
 	public void clear() {
-		BufferUtil.fill(pixels, 0, pixels.capacity(), B0);
+		BufferUtilities.fill(pixels, 0, pixels.capacity(), B0);
 	}
 
 	public abstract float getBrightness(int i, int j);
@@ -506,38 +494,54 @@ public abstract class Frame implements ISequentialFrameSource, IRandomAccessFram
 	static final ExecutorService POOL       = Executors.newCachedThreadPool();
 	static final int             NUM_CHUNKS = Runtime.getRuntime().availableProcessors(); 
 
-	class Chunk implements Runnable {
+	final static class Chunk implements Runnable {
 		private final int            from;
 		private final int            to;
 		private final ByteBuffer     pixels;
 		private final ILineProcessor processor;
-
-		Chunk(int from, int to, ILineProcessor processor) {
-			this.from      = from;
-			this.to        = to;
-			this.pixels    = Frame.this.pixels.duplicate();
-			this.processor = processor;
+		private final int            lineLength;
+		
+		Chunk(Frame frame, int from, int to, ILineProcessor processor) {
+			this.from       = from;
+			this.to         = to;
+			this.pixels     = frame.pixels.duplicate();
+			this.processor  = processor;
+			this.lineLength = frame.dimI * frame.pixelSize;
 		}
 
 		@Override
 		public void run() {
 			for(int j = from; j < to; j++) {
-				pixels.position(j * dimI * pixelSize);
+				pixels.position(j * lineLength);
 				processor.process(pixels, j);
 			}
 		}
 	}
 
-	public void processByLine(ILineProcessor processor) {
+	public final void processLines(ILineProcessor processor) {
 		List<Future<?>> result = new ArrayList<>(NUM_CHUNKS + 1);
-		int inc  = Math.max(1, dimJ / NUM_CHUNKS);
+		int inc  = Math.max(32, dimJ / NUM_CHUNKS);
 		for(int from = 0; from < dimJ; from += inc)
-			result.add(POOL.submit(new Chunk(from, Math.min(from + inc, dimJ), processor)));
+			result.add(POOL.submit(new Chunk(this, from, Math.min(from + inc, dimJ), processor)));
 		try {
 			for(Future<?> f : result)
 				f.get();
 		} catch(Throwable t) {
 			t.printStackTrace();
 		}
+	}
+
+	public final void position(ByteBuffer pixels, int i, int j) {
+		pixels.position((j * dimI + i) * pixelSize);
+	}
+	
+	@Override
+	public final Class<? extends Frame>[] getFrameTypes() {
+		return FTS_RGBA8_RGB8_GREY16_FLOAT;
+	}
+	
+	@Override
+	public void setPreferredFrameTypes(Set<Class<? extends Frame>> frameTypes) {
+		IVideoFrameSource.updatePreferredFrameTypes(preferredTypes, frameTypes);
 	}
 }

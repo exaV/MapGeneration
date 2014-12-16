@@ -46,7 +46,7 @@ public class TextureLoader {
 		Frame frame = frameCache.get(path);
 		if (frame == null) {
 			try {
-				frame = Frame.newFrame(new File(path));
+				frame = Frame.create(new File(path));
 				frameCache.put(path, frame);
 			} catch (Exception e) {
 			}

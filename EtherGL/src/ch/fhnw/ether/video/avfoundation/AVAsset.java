@@ -30,9 +30,11 @@
 package ch.fhnw.ether.video.avfoundation;
 
 import java.net.URL;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import ch.fhnw.ether.image.Frame;
-import ch.fhnw.ether.image.RGB8Frame;
 import ch.fhnw.ether.image.RGBA8Frame;
 import ch.fhnw.ether.media.FrameException;
 import ch.fhnw.ether.media.FrameReq;
@@ -41,7 +43,7 @@ import ch.fhnw.ether.video.ISequentialFrameSource;
 
 public final class AVAsset implements ISequentialFrameSource, IRandomAccessFrameSource {
 	private static boolean READY = true;
-
+	
 	static {
 		try {
 			System.loadLibrary("etherglvideo");
@@ -63,17 +65,19 @@ public final class AVAsset implements ISequentialFrameSource, IRandomAccessFrame
 	private long frameCount;
 	private int width;
 	private int height;
-
+	Set<Class<? extends Frame>> preferredTypes;
+	
 	public AVAsset(URL url) {
 		this.url = url;
 		nativeHandle = nativeCreate(url.toString());
 		if (nativeHandle == 0)
 			throw new IllegalArgumentException("cannot create avasset from " + url);
-		duration = nativeGetDuration(nativeHandle);
-		frameRate = nativeGetFrameRate(nativeHandle);
-		frameCount = nativeGetFrameCount(nativeHandle);
-		width = nativeGetWidth(nativeHandle);
-		height = nativeGetHeight(nativeHandle);
+		duration       = nativeGetDuration(nativeHandle);
+		frameRate      = nativeGetFrameRate(nativeHandle);
+		frameCount     = nativeGetFrameCount(nativeHandle);
+		width          = nativeGetWidth(nativeHandle);
+		height         = nativeGetHeight(nativeHandle);
+		preferredTypes = new HashSet<>(Arrays.asList(getFrameTypes()));
 	}
 
 	@Override
@@ -119,8 +123,6 @@ public final class AVAsset implements ISequentialFrameSource, IRandomAccessFrame
 	@Override
 	public FrameReq getFrames(FrameReq req) {
 		req.processFrames(RGBA8Frame.class, getWidth(), getHeight(), (Frame frame, int i)->{
-			if(!(frame instanceof RGB8Frame))
-				throw new FrameException("Type mismatch, use a type converter for " + frame.getClass().getName() + "->" + RGBA8Frame.class.getName());
 			if(frame.dimI != getWidth() || frame.dimJ != getHeight())
 				throw new FrameException("Size mismatch, use a scaler");
 			byte[] pixels = nativeGetNextFrame(nativeHandle);
@@ -138,12 +140,28 @@ public final class AVAsset implements ISequentialFrameSource, IRandomAccessFrame
 					srci++;
 				}
 				pixels = tmp;
+			} else {
+				byte[] tmp = new byte[pixels.length];
+				int dsti = 0;
+				int srci = 0;
+				for(int p = 0; p < pixels.length; p += 4) {
+					tmp[dsti++] = pixels[srci++];
+					tmp[dsti++] = pixels[srci++];
+					tmp[dsti++] = pixels[srci++];
+					tmp[dsti++] = pixels[srci++];
+				}
+				pixels = tmp;
 			}
 			frame.pixels.put(pixels);
 		});
 		return req;
 	}
 
+	@Override
+	public Class<? extends Frame>[] getFrameTypes() {
+		return FTS_RGBA8_RGB8;
+	}
+	
 	/*
 	@Override
 	public Frame getFrame(long frame) {
@@ -162,6 +180,11 @@ public final class AVAsset implements ISequentialFrameSource, IRandomAccessFrame
 	}
 	 */
 
+	@Override
+	public void setPreferredFrameTypes(Set<Class<? extends Frame>> frameTypes) {
+		preferredTypes.retainAll(frameTypes);
+	}
+	
 	@Override
 	public String toString() {
 		return getURL() + " (d=" + getDuration() + " fr=" + getFrameRate() + " fc=" + getFrameCount() + " w=" + getWidth() + " h=" + getHeight() + ")";

@@ -59,7 +59,6 @@ import org.jcodec.scale.Transform;
 
 import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.image.RGB8Frame;
-import ch.fhnw.ether.image.RGBA8Frame;
 import ch.fhnw.ether.media.FrameException;
 
 /**
@@ -263,10 +262,12 @@ final class FrameGrab {
 	 * @throws IOException
 	 */
 	public Picture getNativeFrame() throws IOException {
-		Packet frame = videoTrack.nextFrame();
+		Packet frame = videoTrack.nextFrame();		
 		if (frame == null)
 			return null;
 		
+		System.out.println(frame.isKeyFrame() + "\t" + frame.getData().limit());
+
 		return decoder.decodeFrame(frame, getBuffer(decoder));
 	}
 
@@ -289,7 +290,7 @@ final class FrameGrab {
 			pixels.clear();
 			for(int j = frame.dimJ; --j >= 0;) {
 				int idx = j * line;
-				if(frame instanceof RGBA8Frame) {
+				if(frame.pixelSize == 4) {
 					for (int i = frame.dimI; --i >= 0;) {
 						pixels.put((byte) srcData[idx+2]);
 						pixels.put((byte) srcData[idx+1]);
