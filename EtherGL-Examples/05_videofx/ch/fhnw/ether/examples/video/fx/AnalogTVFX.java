@@ -59,7 +59,7 @@ public class AnalogTVFX extends AbstractVideoFX {
 					final int    idxC  = (idx + c) % yuv.length;
 					final double ampl  = Math.sqrt((yuv[idxC+1] * yuv[idxC+1] + yuv[idxC+2] * yuv[idxC+2])) * a;
 					final double angle = Math.atan2(yuv[idxC+1], yuv[idxC+2]) + p;
-					yuv[i+0] = yuv[idx] * y + hd * yuv[idx - 3];
+					yuv[i+0] = yuv[idx] * y + hd * yuv[i - 3];
 					yuv[i+1] = (float) (Math.sin(angle) * ampl);
 					yuv[i+2] = (float) (Math.cos(angle) * ampl);
 				}

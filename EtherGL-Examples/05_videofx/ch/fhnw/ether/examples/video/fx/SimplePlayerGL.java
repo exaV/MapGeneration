@@ -65,7 +65,7 @@ public class SimplePlayerGL implements Runnable {
 
 			new Thread(this).start();
 		} else {
-			IVideoFrameSource fx = new ScalingMixer(sources);
+			IVideoFrameSource fx = new AnalogTVFX(sources[0]);
 			new ParamWindow(fx);
 			texture.setData(fx);
 			for(;;) {
