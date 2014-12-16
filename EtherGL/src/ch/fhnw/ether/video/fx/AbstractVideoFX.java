@@ -7,7 +7,6 @@ import java.util.Set;
 
 import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.image.IFrameProcessor;
-import ch.fhnw.ether.image.RGB8Frame;
 import ch.fhnw.ether.image.RGBA8Frame;
 import ch.fhnw.ether.media.AbstractFX;
 import ch.fhnw.ether.media.FXParameter;
