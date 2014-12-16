@@ -17,7 +17,7 @@ public class ChromaKey extends AbstractVideoFX {
 	private static final FXParameter S_MIN  = new FXParameter("sMin",  "Saturation Minimum", 0, 1,    0.1f);
 	private static final FXParameter B_MIN  = new FXParameter("bMin",  "Brightness Minimum", 0, 1,    0.1f);
 
-	private Frame backdrop = new RGBA8Frame(1,1);
+	private Frame backdrop = EMPTY;
 	
 	public ChromaKey(IVideoFrameSource mask, IVideoFrameSource backdrop) {
 		super(HUE, RANGE, S_MIN, B_MIN);

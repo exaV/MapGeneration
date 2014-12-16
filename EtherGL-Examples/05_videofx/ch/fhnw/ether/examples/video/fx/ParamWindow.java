@@ -13,6 +13,7 @@ import java.text.NumberFormat;
 import java.util.Hashtable;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -36,12 +37,13 @@ public class ParamWindow {
 
 	private static NumberFormat FMT = new DecimalFormat("#.##");
 
-	static class ParamUI implements ChangeListener {
-		JLabel         label;
-		JSlider        slider;
-		IFX            fx;
-		FXParameter    p;
-		float          def;
+	static class ParamUI implements ChangeListener, ActionListener {
+		JLabel            label;
+		JSlider           slider;
+		JComboBox<String> combo;
+		IFX               fx;
+		FXParameter       p;
+		float             def;
 
 		ParamUI(IFX fx, FXParameter param) {
 			Hashtable<Integer, JLabel> labels = new Hashtable<>();
@@ -53,12 +55,20 @@ public class ParamWindow {
 			this.fx     = fx;
 			this.p      = param;
 			this.def    = fx.getVal(param);
-			this.slider = new JSlider((int)(param.getMin() * S), (int)(param.getMax() * S), (int)(fx.getVal(p) * S));
-			this.slider.setPaintLabels(true);
-			this.slider.setPaintTicks(true);
-			this.slider.setLabelTable(labels);
 			this.label  = new JLabel(param.getDescription());
-			slider.addChangeListener(this);
+			switch(p.getType()) {
+			case RANGE:
+				this.slider = new JSlider((int)(param.getMin() * S), (int)(param.getMax() * S), (int)(fx.getVal(p) * S));
+				this.slider.setPaintLabels(true);
+				this.slider.setPaintTicks(true);
+				this.slider.setLabelTable(labels);
+				this.slider.addChangeListener(this);
+				break;
+			case ITEMS:
+				this.combo = new JComboBox<>(param.getItems());
+				this.combo.addActionListener(this);
+				break;
+			}
 		}
 
 		@Override
@@ -67,11 +77,22 @@ public class ParamWindow {
 		}
 
 		public void reset() {
-			slider.setValue((int)(def * S));
+			if(slider != null)
+				slider.setValue((int)(def * S));
+			if(combo != null)
+				combo.setSelectedIndex((int) def);
 		}
 
 		public void zero() {
-			slider.setValue(0);
+			if(slider != null)
+				slider.setValue(0);
+			if(combo != null)
+				combo.setSelectedIndex(0);
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			fx.setVal(p, combo.getSelectedIndex());
 		}
 	}
 
@@ -98,7 +119,10 @@ public class ParamWindow {
 					for(int i = 0; i < uis.length; i++) {
 						uis[i] = new ParamUI(fx, params[i]);
 						result.add(uis[i].label);
-						result.add(uis[i].slider);
+						if(uis[i].slider != null)
+							result.add(uis[i].slider);
+						if(uis[i].combo != null)
+							result.add(uis[i].combo);
 					}
 					JButton reset = new JButton("Reset");
 					reset.addActionListener(new ActionListener() {
