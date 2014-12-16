@@ -1,25 +1,38 @@
 package ch.fhnw.ether.media;
 
 public class FXParameter {
-	private final String name;
-	private final String description;
-	private final float  min;
-	private final float  max;
-	private       float  val;
-	private       int    idx = -1;
+	public static enum Type {RANGE, ITEMS};
+	
+	private final String   name;
+	private final String   description;
+	private final float    min;
+	private final float    max;
+	private final String[] items;
+	private       float    val;
+	private       int      idx = -1;
 
 	public FXParameter(String name, String description, float min, float max, float val) {
+		this(name, description, min, max, val, null);
+	}
+	
+	public FXParameter(String name, String description, int val, String ... items) {
+		this(name, description, Float.MIN_VALUE, Float.MAX_VALUE, val, items);
+	}
+
+	public FXParameter(String name, String description, float min, float max, float val, String[] items) {
 		this.name        = name;
 		this.description = description;
 		this.min         = min;
 		this.max         = max;
 		this.val         = val;
+		this.items       = items;
 	}
 
 	private FXParameter(FXParameter p) {
-		this(p.name, p.description, p.min, p.max, p.val);
+		this(p.name, p.description, p.min, p.max, p.val, p.items);
 		this.idx = p.idx;
 	}
+
 
 	@Override
 	final public String toString() {
@@ -63,5 +76,13 @@ public class FXParameter {
 	
 	protected FXParameter copy() {
 		return new FXParameter(this);
+	}
+
+	public Type getType() {
+		return items == null ? Type.RANGE : Type.ITEMS; 
+	}
+
+	public String[] getItems() {
+		return items;
 	}
 }

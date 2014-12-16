@@ -19,6 +19,8 @@ import ch.fhnw.ether.video.ISequentialFrameSource;
 import ch.fhnw.ether.video.IVideoFrameSource;
 
 public abstract class AbstractVideoFX extends AbstractFX implements IVideoFX {
+	protected final Frame EMPTY = new RGBA8Frame(1,1);
+	
 	protected long                        frame;
 	protected IVideoFrameSource[]         sources;
 	protected Class<? extends Frame>[]    frameTypes;
