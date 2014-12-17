@@ -213,7 +213,7 @@ public final class ColorUtilities {
 			pixels.put((byte) g);
 			pixels.put((byte) b);
 			if(pixelSize == 4) pixels.get();
-			idx += pixelSize;
+			idx += 3;
 		}
 	}
 
