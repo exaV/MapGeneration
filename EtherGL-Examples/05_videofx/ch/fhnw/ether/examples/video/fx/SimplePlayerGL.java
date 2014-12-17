@@ -31,7 +31,7 @@ import ch.fhnw.util.math.Vec3;
 
 public class SimplePlayerGL implements Runnable {
 	private static final double SEC2MS = 1000.0;
-	private static final float  SCALE  = 2.5f;
+	private static final float  SCALE  = 3.5f;
 
 	private final IVideoFrameSource[] sources;
 	private final Texture             texture = new Texture(new RGB8Frame(16, 16));
@@ -50,7 +50,7 @@ public class SimplePlayerGL implements Runnable {
 		if(SwingUtilities.isEventDispatchThread()) {
 			IController controller = new DefaultController();
 
-			view = new DefaultView(controller, 0, 10, 512, 512, new Config(ViewType.INTERACTIVE_VIEW, 2), "SimplePlayerGL", new Camera());
+			view = new DefaultView(controller, 0, 10, 1024, 512, new Config(ViewType.INTERACTIVE_VIEW, 2), "SimplePlayerGL", new Camera());
 			controller.addView(view);
 
 			IScene scene = new DefaultScene(controller);

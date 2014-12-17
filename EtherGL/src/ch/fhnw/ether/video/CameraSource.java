@@ -116,7 +116,7 @@ public class CameraSource extends Thread implements ISequentialFrameSource, ISca
 
 	@Override
 	public Class<? extends Frame>[] getFrameTypes() {
-		return null;
+		return FTS_RGB8_RGBA8;
 	}
 
 	@Override
