@@ -14,7 +14,7 @@ public class Convolution extends AbstractVideoFX {
 			"Identity", 
 			"Edge Detection1", 
 			"Edge Detection2", 
-			"Edge Detection3", 
+			"Emboss",
 			"Sharpen", 
 			"Box Blur", 
 			"Gaussian Blur");
@@ -23,10 +23,20 @@ public class Convolution extends AbstractVideoFX {
 		new Mat3( 0, 0, 0,   0, 1, 0,   0, 0, 0),
 		new Mat3( 1, 0,-1,   0, 0, 0,  -1, 0, 1),
 		new Mat3( 0, 1, 0,   1,-4, 1,   0, 1, 0),
-		new Mat3(-1,-1,-1,  -1,-8,-1,  -1,-1,-1),
+		new Mat3( 4, 0, 0,   0, 0, 0,   0, 0,-4),
 		new Mat3( 0,-1, 0,  -1, 5,-1,   0,-1, 0),
 		normalize(new Mat3( 1, 1, 1,   1, 1, 1,   1, 1, 1)),
 		normalize(new Mat3( 1, 2, 1,   2, 4, 2,   1, 2, 1)),
+	};
+
+	private static final boolean[] GREYSCALE = {
+		false,
+		true,
+		true,
+		false,
+		false,
+		false,
+		false,
 	};
 
 	public Convolution(IVideoFrameSource source) {
@@ -75,14 +85,24 @@ public class Convolution extends AbstractVideoFX {
 			if(frame.dimJ != outFrame.length || frame.dimI != outFrame[0].length * 3)
 				outFrame = new float[frame.dimJ][frame.dimI * 3];
 
-			Mat3 kernel = KERNELS[(int) getVal(KERNEL)];
+			Mat3    kernel    = KERNELS[(int) getVal(KERNEL)];
+			boolean greyscale = GREYSCALE[(int) getVal(KERNEL)]; 
 
 			for(int j = frame.dimJ - 1; --j >= 1;) {
 				int idx = 0;
-				for(int i = 1; i< frame.dimI - 1; i++) {
-					outFrame[j][idx++] = convolute(frame, i, j, kernel, 0); 
-					outFrame[j][idx++] = convolute(frame, i, j, kernel, 1); 
-					outFrame[j][idx++] = convolute(frame, i, j, kernel, 2); 
+				if(greyscale) {
+					for(int i = 1; i< frame.dimI - 1; i++) {
+						float val = convolute(frame, i, j, kernel, 0) + convolute(frame, i, j, kernel, 1) + convolute(frame, i, j, kernel, 2); 
+						outFrame[j][idx++] = val; 
+						outFrame[j][idx++] = val; 
+						outFrame[j][idx++] = val; 
+					}
+				} else {
+					for(int i = 1; i< frame.dimI - 1; i++) {
+						outFrame[j][idx++] = convolute(frame, i, j, kernel, 0); 
+						outFrame[j][idx++] = convolute(frame, i, j, kernel, 1); 
+						outFrame[j][idx++] = convolute(frame, i, j, kernel, 2); 
+					}
 				}
 			}
 
