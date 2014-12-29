@@ -41,7 +41,7 @@ import ch.fhnw.util.Pair;
  * @author radar
  */
 public final class Quaternion {
-	public static final Quaternion IDENTITY = new Quaternion(0, 0, 0, 1);
+	public static final Quaternion ID = new Quaternion(0, 0, 0, 1);
 
 	public final float x;
 	public final float y;
@@ -62,30 +62,30 @@ public final class Quaternion {
 	/**
 	 * Creates quaternion from given euler angles in degrees.
 	 * 
-	 * @param yaw
-	 *            the rotation around the y axis in degrees
 	 * @param pitch
 	 *            the rotation around the x axis in degrees
+	 * @param yaw
+	 *            the rotation around the y axis in degrees
 	 * @param roll
 	 *            the rotation around the z axis degrees
 	 */
-	public static Quaternion fromEulerAngles(float yaw, float pitch, float roll) {
-		float hr = roll * 0.5f * MathUtil.DEGREES_TO_RADIANS;
-		float shr = (float) Math.sin(hr);
-		float chr = (float) Math.cos(hr);
+	public static Quaternion fromEulerAngles(float pitch, float yaw, float roll) {
 		float hp = pitch * 0.5f * MathUtil.DEGREES_TO_RADIANS;
 		float shp = (float) Math.sin(hp);
 		float chp = (float) Math.cos(hp);
+
 		float hy = yaw * 0.5f * MathUtil.DEGREES_TO_RADIANS;
 		float shy = (float) Math.sin(hy);
 		float chy = (float) Math.cos(hy);
-		float chy_shp = chy * shp;
-		float shy_chp = shy * chp;
-		float chy_chp = chy * chp;
-		float shy_shp = shy * shp;
 
-		return new Quaternion((chy_shp * chr) + (shy_chp * shr), (shy_chp * chr) - (chy_shp * shr), (chy_chp * shr) - (shy_shp * chr), (chy_chp * chr)
-				+ (shy_shp * shr));
+		float hr = roll * 0.5f * MathUtil.DEGREES_TO_RADIANS;
+		float shr = (float) Math.sin(hr);
+		float chr = (float) Math.cos(hr);
+
+		return new Quaternion(chy * shp * chr + shy * chp * shr, 
+							  shy * chp * chr - chy * shp * shr, 
+							  chy * chp * shr - shy * shp * chr, 
+							  chy * chp * chr + shy * shp * shr);
 	}
 
 	/**
@@ -100,7 +100,7 @@ public final class Quaternion {
 		float rad = angle * MathUtil.DEGREES_TO_RADIANS;
 		float d = axis.length();
 		if (d == 0f)
-			return IDENTITY;
+			return ID;
 		d = 1f / d;
 		float alpha = rad;
 		float sin = (float) Math.sin(alpha / 2);
@@ -275,8 +275,10 @@ public final class Quaternion {
 	 * @return the quaternion this * q
 	 */
 	public Quaternion postMultiply(Quaternion q) {
-		return new Quaternion(w * q.x + x * q.w + y * q.z - z * q.y, w * q.y + y * q.w + z * q.x - x * q.z, w * q.z + z * q.w + x * q.y - y * q.x, w * q.w - x
-				* q.x - y * q.y - z * q.z);
+		return new Quaternion(w * q.x + x * q.w + y * q.z - z * q.y, 
+							  w * q.y + y * q.w + z * q.x - x * q.z, 
+							  w * q.z + z * q.w + x * q.y - y * q.x, 
+							  w * q.w - x * q.x - y * q.y - z * q.z);
 	}
 
 	/**
@@ -288,8 +290,10 @@ public final class Quaternion {
 	 * @return the quaternion q * this
 	 */
 	public Quaternion preMultiply(Quaternion q) {
-		return new Quaternion(q.w * x + q.x * w + q.y * z - q.z * y, q.w * y + q.y * w + q.z * x - q.x * z, q.w * z + q.z * w + q.x * y - q.y * x, q.w * w
-				- q.x * x - q.y * y - q.z * z);
+		return new Quaternion(q.w * x + q.x * w + q.y * z - q.z * y, 
+							  q.w * y + q.y * w + q.z * x - q.x * z, 
+							  q.w * z + q.z * w + q.x * y - q.y * x, 
+							  q.w * w - q.x * x - q.y * y - q.z * z);
 	}
 
 	/**
@@ -385,17 +389,6 @@ public final class Quaternion {
 	}
 
 	/**
-	 * Get the yaw euler angle in degrees, which is the rotation around the y axis. Requires that this quaternion is
-	 * normalized.
-	 * 
-	 * @return the rotation around the y axis in degrees (between -180 and +180)
-	 */
-	public float getYaw() {
-		float rad = (float) (getGimbalPole() == 0 ? Math.atan2(2f * (y * w + x * z), 1f - 2f * (y * y + x * x)) : 0f);
-		return rad * MathUtil.RADIANS_TO_DEGREES;
-	}
-
-	/**
 	 * Get the pitch euler angle in degrees, which is the rotation around the x axis. Requires that this quaternion is
 	 * normalized.
 	 * 
@@ -403,8 +396,18 @@ public final class Quaternion {
 	 */
 	public float getPitch() {
 		int pole = getGimbalPole();
-		float rad = pole == 0 ? (float) Math.asin(MathUtil.clamp(2f * (w * x - z * y) * MathUtil.RADIANS_TO_DEGREES, -1f, 1f)) : pole * MathUtil.PI * 0.5f
-				* MathUtil.RADIANS_TO_DEGREES;
+		float rad = pole == 0 ? (float) Math.asin(MathUtil.clamp(2f * (w * x - z * y), -1f, 1f)) : pole * MathUtil.PI * 0.5f;
+		return rad * MathUtil.RADIANS_TO_DEGREES;
+	}
+
+	/**
+	 * Get the yaw euler angle in degrees, which is the rotation around the y axis. Requires that this quaternion is
+	 * normalized.
+	 * 
+	 * @return the rotation around the y axis in degrees (between -180 and +180)
+	 */
+	public float getYaw() {
+		float rad = (float) (getGimbalPole() == 0 ? Math.atan2(2f * (y * w + x * z), 1f - 2f * (y * y + x * x)) : 0f);
 		return rad * MathUtil.RADIANS_TO_DEGREES;
 	}
 
@@ -426,7 +429,7 @@ public final class Quaternion {
 	 * @return +1 for north pole, -1 for south pole, 0 when no gimbal lock
 	 */
 	public int getGimbalPole() {
-		final float t = y * x + z * w;
+		float t = y * x + z * w;
 		return t > 0.499f ? 1 : (t < -0.499f ? -1 : 0);
 	}
 

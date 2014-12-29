@@ -119,10 +119,7 @@ public class Vec3 implements IVec3 {
 	}
 
 	public Vec3 cross(Vec3 a) {
-		float _x = y * a.z - z * a.y;
-		float _y = z * a.x - x * a.z;
-		float _z = x * a.y - y * a.x;
-		return new Vec3(_x, _y, _z);
+		return new Vec3(y * a.z - z * a.y, z * a.x - x * a.z, x * a.y - y * a.x);
 	}
 
 	@Override
