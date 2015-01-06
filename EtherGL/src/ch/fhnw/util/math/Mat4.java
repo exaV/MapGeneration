@@ -241,7 +241,7 @@ public final class Mat4 implements IFloatArrayCopyProvider {
 	}
 
 	/**
-	 * Multiplies this matrix with scale matrix ms (result = ms * this = this * ms).
+	 * Pre-multiplies this matrix with scale matrix ms (result = ms * this).
 	 *
 	 * @param sx
 	 *            scale x factor
@@ -256,7 +256,7 @@ public final class Mat4 implements IFloatArrayCopyProvider {
 	}
 
 	/**
-	 * Multiplies this matrix with scale matrix ms (result = ms * this = this * ms).
+	 * Pre-multiplies this matrix with scale matrix ms (result = ms * this).
 	 *
 	 * @param s
 	 *            scale xyz vector
@@ -437,8 +437,8 @@ public final class Mat4 implements IFloatArrayCopyProvider {
 	public static Mat4 lookAt(Vec3 position, Vec3 target, Vec3 up) {
 		up = up.normalize();
 		Vec3 f = target.subtract(position).normalize();
-		Vec3 s = f.cross(up);
-		Vec3 u = s.normalize().cross(f);
+		Vec3 s = f.cross(up).normalize();
+		Vec3 u = s.cross(f);
 		Vec3 t = position.negate();
 
 		float m00 = s.x;
@@ -481,7 +481,7 @@ public final class Mat4 implements IFloatArrayCopyProvider {
 		float m12 = (top + bottom) / (top - bottom);
 		float m22 = far >= Double.POSITIVE_INFINITY ? -1 : -(far + near) / (far - near);
 		float m32 = -1;
-		float m23 = far >= Double.POSITIVE_INFINITY ? -2 * near : 2 * far * near / (far - near);
+		float m23 = far >= Double.POSITIVE_INFINITY ? -2 * near : -2 * far * near / (far - near);
 		return new Mat4(m00, 0, 0, 0, 0, m11, 0, 0, m02, m12, m22, m32, 0, 0, m23, 0);
 	}
 

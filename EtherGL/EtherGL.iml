@@ -129,5 +129,41 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="module-library">
+      <library name="webcam-capture-0.3.10-RC4.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/webcam/webcam-capture-0.3.10-RC4.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="slf4j-api-1.7.2.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/webcam/slf4j-api-1.7.2.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="bridj-0.7-20130703.103049-42.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/webcam/bridj-0.7-20130703.103049-42.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="JTransforms-3.0.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/jtransforms/JTransforms-3.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>
