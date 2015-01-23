@@ -227,9 +227,11 @@ public class DefaultView implements IView {
 
 				gl3.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT | GL.GL_STENCIL_BUFFER_BIT);
 
+				gl3.glEnable(GL.GL_MULTISAMPLE);
+				
 				if (!isEnabled())
 					return;
-
+				
 				// repaint UI surface to texture if necessary (FIXME: should this be done on model or render thread?)
 				UI ui = getController().getUI();
 				if (ui != null)

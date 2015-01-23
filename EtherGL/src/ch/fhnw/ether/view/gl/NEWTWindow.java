@@ -82,7 +82,7 @@ public final class NEWTWindow {
 		GLCapabilities capabilities = getCapabilities(config);
 		if (sharedDrawable == null) {
 			sharedDrawable = GLDrawableFactory.getFactory(capabilities.getGLProfile()).createDummyAutoDrawable(null, true, capabilities, null);
-			sharedDrawable.display();			
+			sharedDrawable.display();
 		}
 		numWindows++;
 		window = GLWindow.create(getCapabilities(config));

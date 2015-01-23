@@ -87,112 +87,6 @@ public final class Mat3 implements IFloatArrayCopyProvider {
 	}
 
 	/**
-	 * Post-multiply this matrix with mat (result = this * mat).
-	 *
-	 * @param mat
-	 *            the second factor of the matrix product
-	 */
-	public Mat3 postMultiply(Mat3 mat) {
-		return multiply(this, mat);
-	}
-
-	/**
-	 * Pre-multiply this matrix with mat (result = mat * this).
-	 *
-	 * @param mat
-	 *            the first factor of the matrix product
-	 */
-	public Mat3 preMultiply(Mat3 mat) {
-		return multiply(mat, this);
-	}
-
-	/**
-	 * Pre-multiplies this matrix with rotation matrix mr (result = mr * this).
-	 *
-	 * @param angle
-	 *            rotation angle in degrees
-	 * @param x
-	 *            rotation axis x
-	 * @param y
-	 *            rotation axis y
-	 * @param z
-	 *            rotation axis z
-	 * @return mr * this
-	 */
-	public Mat3 rotate(float angle, float x, float y, float z) {
-		float l = (float) Math.sqrt(x * x + y * y + z * z);
-		if (l != 0 && l != 1) {
-			l = 1.0f / l;
-			x *= l;
-			y *= l;
-			z *= l;
-		}
-
-		float radians = angle * MathUtil.DEGREES_TO_RADIANS;
-		float c = (float) Math.cos(radians);
-		float ic = 1.0f - c;
-		float s = (float) Math.sin(radians);
-
-		float xy = x * y;
-		float xz = x * z;
-		float xs = x * s;
-		float ys = y * s;
-		float yz = y * z;
-		float zs = z * s;
-
-		float m00 = x * x * ic + c;
-		float m10 = xy * ic + zs;
-		float m20 = xz * ic - ys;
-		float m01 = xy * ic - zs;
-		float m11 = y * y * ic + c;
-		float m21 = yz * ic + xs;
-		float m02 = xz * ic + ys;
-		float m12 = yz * ic - xs;
-		float m22 = z * z * ic + c;
-
-		return preMultiply(new Mat3(m00, m10, m20, m01, m11, m21, m02, m12, m22));
-	}
-
-	/**
-	 * Pre-multiplies this matrix with rotation matrix mr (result = mr * this).
-	 *
-	 * @param angle
-	 *            rotation angle in degrees
-	 * @param axis
-	 *            rotation axis
-	 * @return mr * this
-	 */
-	public Mat3 rotate(float angle, Vec3 axis) {
-		return rotate(angle, axis.x, axis.y, axis.z);
-	}
-
-	/**
-	 * Multiplies this matrix with scale matrix ms (result = ms * this = this * ms).
-	 *
-	 * @param sx
-	 *            scale x factor
-	 * @param sy
-	 *            scale y factor
-	 * @param sz
-	 *            scale z factor
-	 * @return ms * this
-	 */
-	public Mat3 scale(float sx, float sy, float sz) {
-		return new Mat3(m00 * sx, m10, m20, m01, m11 * sy, m21, m02, m12, m22 * sz);
-	}
-
-	/**
-	 * Multiplies this matrix with scale matrix ms (result = ms * this = this * ms).
-	 *
-	 * @param s
-	 *            scale xyz vector
-	 * @return ms * this
-	 */
-	public Mat3 scale(Vec3 s) {
-		return scale(s.x, s.y, s.z);
-	}
-
-	/**
 	 * Transform vector (result = m * vec).
 	 *
 	 * @param vec
@@ -306,6 +200,146 @@ public final class Mat3 implements IFloatArrayCopyProvider {
 		float v22 = a.m20 * b.m02 + a.m21 * b.m12 + a.m22 * b.m22;
 
 		return new Mat3(v00, v10, v20, v01, v11, v21, v02, v12, v22);
+	}
+
+	/**
+	 * Multiplies three matrices (result = a * b * c).
+	 *
+	 * @param a
+	 *            3x3 matrix in column-major order
+	 * @param b
+	 *            3x3 matrix in column-major order
+	 * @param c
+	 *            3x3 matrix in column-major order
+	 * @return a * b * c
+	 */
+	public static Mat3 multiply(Mat3 a, Mat3 b, Mat3 c) {
+		return multiply(a, multiply(b, c));
+	}
+
+	/**
+	 * Multiplies four matrices (result = a * b * c * d).
+	 *
+	 * @param a
+	 *            3x3 matrix in column-major order
+	 * @param b
+	 *            3x3 matrix in column-major order
+	 * @param c
+	 *            3x3 matrix in column-major order
+	 * @param d
+	 *            3x3 matrix in column-major order
+	 * @return a * b * c * d
+	 */
+	public static Mat3 multiply(Mat3 a, Mat3 b, Mat3 c, Mat3 d) {
+		return multiply(a, multiply(b, c, d));
+	}
+
+	/**
+	 * Multiplies an arbitrary sequence matrices (result = a * b * c * d * ...).
+	 *
+	 * @param a
+	 *            Sequence of 3x3 matrices in column-major order
+	 * @return a0 * a1 * a2 * ...
+	 */
+	public static Mat3 multiply(Mat3... a) {
+		return multiply(0, a);
+	}
+	
+	// TODO: optimize for memory allocation
+	private static Mat3 multiply(int i, Mat3[] a) {
+		if (i == a.length - 1)
+			return a[i];
+		return multiply(a[i], multiply(i + 1, a));
+	}
+
+	/**
+	 * Create rotation matrix.
+	 *
+	 * @param angle
+	 *            rotation angle in degrees
+	 * @param x
+	 *            rotation axis x
+	 * @param y
+	 *            rotation axis y
+	 * @param z
+	 *            rotation axis z
+	 * @return the rotation matrix
+	 */
+	public static Mat3 rotate(float angle, float x, float y, float z) {
+		float l = (float) Math.sqrt(x * x + y * y + z * z);
+		if (l != 0 && l != 1) {
+			l = 1.0f / l;
+			x *= l;
+			y *= l;
+			z *= l;
+		}
+
+		float radians = angle * MathUtil.DEGREES_TO_RADIANS;
+		float c = (float) Math.cos(radians);
+		float ic = 1.0f - c;
+		float s = (float) Math.sin(radians);
+
+		float xy = x * y;
+		float xz = x * z;
+		float xs = x * s;
+		float ys = y * s;
+		float yz = y * z;
+		float zs = z * s;
+
+		float m00 = x * x * ic + c;
+		float m10 = xy * ic + zs;
+		float m20 = xz * ic - ys;
+		float m01 = xy * ic - zs;
+		float m11 = y * y * ic + c;
+		float m21 = yz * ic + xs;
+		float m02 = xz * ic + ys;
+		float m12 = yz * ic - xs;
+		float m22 = z * z * ic + c;
+
+		return new Mat3(m00, m10, m20, m01, m11, m21, m02, m12, m22);
+	}
+
+	/**
+	 * Create rotation matrix.
+	 *
+	 * @param angle
+	 *            rotation angle in degrees
+	 * @param axis
+	 *            rotation axis
+	 * @return the rotation matrix
+	 */
+	public static Mat3 rotate(float angle, Vec3 axis) {
+		return rotate(angle, axis.x, axis.y, axis.z);
+	}
+
+	/**
+	 * Create scale matrix.
+	 *
+	 * @param sx
+	 *            scale x factor
+	 * @param sy
+	 *            scale y factor
+	 * @param sz
+	 *            scale z factor
+	 * @return the scale matrix
+	 */
+	public static Mat3 scale(float sx, float sy, float sz) {
+		//@formatter:off
+		return new Mat3(sx, 0,  0, 
+						0,  sy, 0, 
+						0,  0,  sz);
+		//@formatter:on
+	}
+
+	/**
+	 * Create scale matrix.
+	 *
+	 * @param s
+	 *            scale xyz vector
+	 * @return the scale matrix
+	 */
+	public static Mat3 scale(Vec3 s) {
+		return scale(s.x, s.y, s.z);
 	}
 
 	@Override
