@@ -33,12 +33,15 @@ import java.net.URL;
 
 import javax.media.opengl.GL;
 
-import ch.fhnw.ether.media.FrameReq;
-import ch.fhnw.ether.media.IFrameSource;
-import ch.fhnw.ether.video.IRandomAccessFrameSource;
-import ch.fhnw.ether.video.ISequentialFrameSource;
-import ch.fhnw.ether.video.IVideoFrameSource;
-import ch.fhnw.ether.video.VideoTrackFactory;
+import ch.fhnw.ether.image.Frame;
+import ch.fhnw.ether.media.AbstractMediaTarget;
+import ch.fhnw.ether.media.RenderCommandException;
+import ch.fhnw.ether.media.RenderProgram;
+import ch.fhnw.ether.video.AbstractVideoSource;
+import ch.fhnw.ether.video.IVideoRenderTarget;
+import ch.fhnw.ether.video.URLVideoSource;
+import ch.fhnw.ether.video.VideoFrame;
+import ch.fhnw.util.Log;
 import ch.fhnw.util.UpdateRequest;
 
 /**
@@ -46,34 +49,72 @@ import ch.fhnw.util.UpdateRequest;
  *
  * @author radar
  */
-public class Texture {
+public class Texture extends AbstractMediaTarget<VideoFrame, IVideoRenderTarget> implements IVideoRenderTarget {
+	private static final Log log = Log.create();
+
 	private final UpdateRequest updater = new UpdateRequest();
 
-	private IVideoFrameSource track;
-	private long              frame = 0;
-	private double            time  = -1;
+	private Frame singleFrame;
 
 	public Texture() {
+		super(Thread.MIN_PRIORITY);
 	}
 
-	public Texture(IVideoFrameSource track) {
-		this.track = track;
+	public Texture(Frame frame) {
+		this();
+		setData(frame);
 	}
 
 	public Texture(URL url) {
+		this(url, true);
+	}
+
+	public Texture(URL url, boolean autoStart) {
+		super(Thread.MIN_PRIORITY);
 		setData(url);
 	}
 
+	public Texture(AbstractVideoSource<?> source) {
+		this(source, true);
+	}
+
+	public Texture(AbstractVideoSource<?> source, boolean autoStart) {
+		super(Thread.MIN_PRIORITY);
+		setData(source);
+	}
+
 	public void setData(URL url) {
+		if(URLVideoSource.isStillImage(url)) {
+			try {
+				setData(Frame.create(url));
+			} catch (Throwable e) {
+				throw new IllegalArgumentException("can't load image " + url);
+			}
+		}
+		else
+			setData(new URLVideoSource(url));
+	}
+
+	public void setData(AbstractVideoSource<?> source) {
 		try {
-			setData(VideoTrackFactory.createSequentialTrack(url));
+			singleFrame = null;
+			useProgram(new RenderProgram<>(source));
+			start();
+			updater.requestUpdate();
 		} catch (Throwable e) {
-			throw new IllegalArgumentException("can't load image " + url);
+			throw new IllegalArgumentException("can't load image " + source);
 		}
 	}
 
-	public void setData(IVideoFrameSource track) {
-		this.track = track;
+	@Override
+	protected void runOneCycle() throws RenderCommandException {
+		super.runOneCycle();
+		updater.requestUpdate();
+	}
+	
+	public void setData(Frame frame) {
+		singleFrame = frame;
+		stop();
 		updater.requestUpdate();
 	}
 
@@ -82,11 +123,13 @@ public class Texture {
 	}
 
 	public int getWidth() {
-		return track.getWidth();
+		Frame frame = currentFrame();
+		return frame == null ? 0 : frame.dimI; 
 	}
 
 	public int getHeight() {
-		return track.getHeight();
+		Frame frame = currentFrame();
+		return frame == null ? 0 : frame.dimJ; 
 	}
 
 	@Override
@@ -94,34 +137,27 @@ public class Texture {
 		return "texture[w=" + getWidth() + " h=" + getHeight() + "]";
 	}
 
-	public IFrameSource getTrack() {
-		return track;
-	}
-
-	public void setTime(double time) {
-		this.time  = time;
-		this.frame = -1;
-		this.updater.requestUpdate();
-	}
-
-	public void setFrame(long frame) {
-		this.time  = -1;
-		this.frame = frame;
-		this.updater.requestUpdate();
-	}
-
 	public void update() {
+		isRendering.set(true);
+		try {
+			runOneCycle();
+		} catch (RenderCommandException e) {
+			log.warning(e);
+		}
+		isRendering.set(false);
 		updater.requestUpdate();
 	}
-	
+
 	public void load(GL gl, int target, int textureId) {
-		if(track instanceof ISequentialFrameSource)
-			((ISequentialFrameSource)track).getFrames(new FrameReq(gl, 1, textureId));
-		else if(track instanceof IRandomAccessFrameSource) {
-			if(time >= 0)
-				((IRandomAccessFrameSource)track).getFrames(new FrameReq(gl, time, textureId));
-			else
-				((IRandomAccessFrameSource)track).getFrames(new FrameReq(gl, frame, textureId));
-		}
+		Frame frame = currentFrame();
+		if(frame != null)
+			frame.load(gl, target, textureId);
 	}	
+
+	private Frame currentFrame() {
+		if(singleFrame != null) 
+			return singleFrame;
+		VideoFrame frame = getCurrentFrame();
+		return frame == null ? null : frame.frame;
+	}
 }

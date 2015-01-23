@@ -13,7 +13,7 @@ extern "C" {
  * Signature: (Ljava/lang/String;)J
  */
 JNIEXPORT jlong JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeCreate
-  (JNIEnv *, jobject, jstring);
+  (JNIEnv *, jclass, jstring);
 
 /*
  * Class:     ch_fhnw_ether_video_avfoundation_AVAsset
@@ -21,7 +21,7 @@ JNIEXPORT jlong JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeCrea
  * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeDispose
-  (JNIEnv *, jobject, jlong);
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     ch_fhnw_ether_video_avfoundation_AVAsset
@@ -29,7 +29,7 @@ JNIEXPORT void JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeDispo
  * Signature: (J)D
  */
 JNIEXPORT jdouble JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGetDuration
-  (JNIEnv *, jobject, jlong);
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     ch_fhnw_ether_video_avfoundation_AVAsset
@@ -37,7 +37,7 @@ JNIEXPORT jdouble JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGe
  * Signature: (J)D
  */
 JNIEXPORT jdouble JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGetFrameRate
-  (JNIEnv *, jobject, jlong);
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     ch_fhnw_ether_video_avfoundation_AVAsset
@@ -45,7 +45,7 @@ JNIEXPORT jdouble JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGe
  * Signature: (J)J
  */
 JNIEXPORT jlong JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGetFrameCount
-  (JNIEnv *, jobject, jlong);
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     ch_fhnw_ether_video_avfoundation_AVAsset
@@ -53,7 +53,7 @@ JNIEXPORT jlong JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGetF
  * Signature: (J)I
  */
 JNIEXPORT jint JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGetWidth
-  (JNIEnv *, jobject, jlong);
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     ch_fhnw_ether_video_avfoundation_AVAsset
@@ -61,7 +61,7 @@ JNIEXPORT jint JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGetWi
  * Signature: (J)I
  */
 JNIEXPORT jint JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGetHeight
-  (JNIEnv *, jobject, jlong);
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     ch_fhnw_ether_video_avfoundation_AVAsset
@@ -69,7 +69,7 @@ JNIEXPORT jint JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGetHe
  * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeRewind
-  (JNIEnv *, jobject, jlong);
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     ch_fhnw_ether_video_avfoundation_AVAsset
@@ -77,7 +77,7 @@ JNIEXPORT void JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeRewin
  * Signature: (JD)[B
  */
 JNIEXPORT jbyteArray JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGetFrame
-  (JNIEnv *, jobject, jlong, jdouble);
+  (JNIEnv *, jclass, jlong, jdouble);
 
 /*
  * Class:     ch_fhnw_ether_video_avfoundation_AVAsset
@@ -85,7 +85,7 @@ JNIEXPORT jbyteArray JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativ
  * Signature: (J)[B
  */
 JNIEXPORT jbyteArray JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGetNextFrame
-  (JNIEnv *, jobject, jlong);
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     ch_fhnw_ether_video_avfoundation_AVAsset
@@ -93,7 +93,7 @@ JNIEXPORT jbyteArray JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativ
  * Signature: (JDI)I
  */
 JNIEXPORT jint JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeLoadFrame
-  (JNIEnv *, jobject, jlong, jdouble, jint);
+  (JNIEnv *, jclass, jlong, jdouble, jint);
 
 /*
  * Class:     ch_fhnw_ether_video_avfoundation_AVAsset
@@ -101,7 +101,7 @@ JNIEXPORT jint JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeLoadF
  * Signature: (JII)I
  */
 JNIEXPORT jint JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeLoadFrames
-  (JNIEnv *, jobject, jlong, jint, jint);
+  (JNIEnv *, jclass, jlong, jint, jint);
 
 #ifdef __cplusplus
 }

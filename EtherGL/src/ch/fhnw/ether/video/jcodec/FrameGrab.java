@@ -59,7 +59,6 @@ import org.jcodec.scale.Transform;
 
 import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.image.RGB8Frame;
-import ch.fhnw.ether.media.FrameException;
 
 /**
  * A minimal version of org.jcodec.api.FrameGrab, with some additional methods and adjustments for our needs.
@@ -265,13 +264,10 @@ final class FrameGrab {
 		Packet frame = videoTrack.nextFrame();		
 		if (frame == null)
 			return null;
-		
-		System.out.println(frame.isKeyFrame() + "\t" + frame.getData().limit());
-
 		return decoder.decodeFrame(frame, getBuffer(decoder));
 	}
 
-	public void grabAndSet(Frame frame) {
+	public void grabAndSet(Frame frame) throws IOException {
 		try {
 			Picture src = getNativeFrame();
 			if (src.getColor() != ColorSpace.RGB) {
@@ -281,7 +277,7 @@ final class FrameGrab {
 				src = rgb;
 			}
 			if(!(frame instanceof RGB8Frame))
-				throw new FrameException("Unsupported frame type:" + frame.getClass().getName());
+				throw new IOException("Unsupported frame type:" + frame.getClass().getName());
 
 			final ByteBuffer pixels  = frame.pixels;
 			final int[]      srcData = src.getPlaneData(0);
@@ -308,7 +304,7 @@ final class FrameGrab {
 				}
 			}
 		} catch(Throwable t) {
-			throw new FrameException("Could not create frame", t);
+			throw new IOException("Could not create frame", t);
 		}
 	}	
 

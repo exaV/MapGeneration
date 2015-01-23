@@ -39,6 +39,7 @@ import java.util.Map;
 import javax.media.opengl.GL3;
 import javax.media.opengl.GL4;
 
+import ch.fhnw.ether.render.gl.GLObject.Type;
 import ch.fhnw.ether.render.shader.IShader;
 
 /**
@@ -124,35 +125,35 @@ public final class Program {
 	private static final Map<String, Program> PROGRAMS = new HashMap<>();
 
 	private final String id;
-	private final int programObject;
+	private final GLObject programObject;
 
 	private Program(GL3 gl, PrintStream out, Shader... shaders) {
-		programObject = gl.glCreateProgram();
+		programObject = new GLObject(gl, Type.PROGRAM);
 
 		String id = "";
 		for (Shader shader : shaders) {
 			if (shader != null) {
-				gl.glAttachShader(programObject, shader.shaderObject);
+				gl.glAttachShader(programObject.id(), shader.shaderObject);
 				id += shader.path + " ";
 			}
 		}
 		this.id = id;
 
-		gl.glLinkProgram(programObject);
-		if (!checkStatus(gl, programObject, GL3.GL_LINK_STATUS, out)) {
+		gl.glLinkProgram(programObject.id());
+		if (!checkStatus(gl, programObject.id(), GL3.GL_LINK_STATUS, out)) {
 			out.println("failed to link program: " + this);
 			throw new IllegalArgumentException("failed to link program: " + this);
 		}
 
-		gl.glValidateProgram(programObject);
-		if (!checkStatus(gl, programObject, GL3.GL_VALIDATE_STATUS, out)) {
+		gl.glValidateProgram(programObject.id());
+		if (!checkStatus(gl, programObject.id(), GL3.GL_VALIDATE_STATUS, out)) {
 			out.println("failed to validate program: " + this);
 			throw new IllegalArgumentException("failed to validate program: " + this);
 		}
 	}
 
 	public void enable(GL3 gl) {
-		gl.glUseProgram(programObject);
+		gl.glUseProgram(programObject.id());
 	}
 
 	public void disable(GL3 gl) {
@@ -201,19 +202,19 @@ public final class Program {
 	}
 
 	public int getAttributeLocation(GL3 gl, String name) {
-		return gl.glGetAttribLocation(programObject, name);
+		return gl.glGetAttribLocation(programObject.id(), name);
 	}
 
 	public int getUniformLocation(GL3 gl, String name) {
-		return gl.glGetUniformLocation(programObject, name);
+		return gl.glGetUniformLocation(programObject.id(), name);
 	}
 
 	public int getUniformBlockIndex(GL3 gl, String name) {
-		return gl.glGetUniformBlockIndex(programObject, name);
+		return gl.glGetUniformBlockIndex(programObject.id(), name);
 	}
 
 	public void bindUniformBlock(GL3 gl, int index, int bindingPoint) {
-		gl.glUniformBlockBinding(programObject, index, bindingPoint);
+		gl.glUniformBlockBinding(programObject.id(), index, bindingPoint);
 	}
 
 	@Override

@@ -29,20 +29,16 @@
 
 package ch.fhnw.ether.examples.raytracing;
 
-import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import ch.fhnw.ether.examples.raytracing.util.IntersectResult;
 import ch.fhnw.ether.image.Frame;
-import ch.fhnw.ether.image.RGB8Frame;
 import ch.fhnw.ether.image.RGBA8Frame;
-import ch.fhnw.ether.media.FrameException;
-import ch.fhnw.ether.media.FrameReq;
+import ch.fhnw.ether.media.AbstractFrame;
+import ch.fhnw.ether.media.RenderCommandException;
+import ch.fhnw.ether.media.Stateless;
 import ch.fhnw.ether.scene.SyncGroup;
 import ch.fhnw.ether.scene.camera.Camera;
 import ch.fhnw.ether.scene.camera.ICamera;
@@ -50,15 +46,15 @@ import ch.fhnw.ether.scene.light.GenericLight;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.MeshProxy;
-import ch.fhnw.ether.video.IScalingFrameSource;
-import ch.fhnw.ether.video.ISequentialFrameSource;
-import ch.fhnw.ether.video.IVideoFrameSource;
+import ch.fhnw.ether.video.AbstractVideoSource;
+import ch.fhnw.ether.video.IVideoRenderTarget;
+import ch.fhnw.ether.video.VideoFrame;
 import ch.fhnw.util.color.RGB;
 import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.Line;
 
-public class RayTracer implements ISequentialFrameSource, IScalingFrameSource {
+public class RayTracer extends AbstractVideoSource<Stateless<IVideoRenderTarget>>{
 	private static final RGBA BACKGROUND_COLOR   = RGBA.WHITE;
 	private static final int  BACKGROUND_COLOR_I = RGBA.WHITE.toRGBA();
 
@@ -67,9 +63,7 @@ public class RayTracer implements ISequentialFrameSource, IScalingFrameSource {
 	private int                   w = 1, h = 1;
 	private ICamera               camera = new Camera();
 	private List<ILight>          lights = new ArrayList<>();
-	private final Set<Class<? extends Frame>> preferredTypes = new HashSet<>(Arrays.asList(getFrameTypes()));
 
-	@Override
 	public void setSize(int width, int height) {
 		this.w = width;
 		this.h = height;
@@ -92,7 +86,7 @@ public class RayTracer implements ISequentialFrameSource, IScalingFrameSource {
 		meshes.remove(mesh);
 	}
 
-	private void intersection(final int x, final int y, final Line ray, final ILight light, final ByteBuffer pixels, boolean hasAlpha) {
+	private void intersection(final int x, final int y, final Line ray, final ILight light, final ByteBuffer pixels) {
 		// find nearest intersection point in scene
 		IntersectResult nearest = new IntersectResult(null, null, BACKGROUND_COLOR, Float.POSITIVE_INFINITY);
 		for (RayTraceMesh r : meshes) {
@@ -108,8 +102,7 @@ public class RayTracer implements ISequentialFrameSource, IScalingFrameSource {
 			pixels.put((byte)(BACKGROUND_COLOR_I >> 24));
 			pixels.put((byte)(BACKGROUND_COLOR_I >> 16));
 			pixels.put((byte)(BACKGROUND_COLOR_I >> 8));
-			if(hasAlpha)
-				pixels.put((byte)(BACKGROUND_COLOR_I));
+			pixels.put((byte)(BACKGROUND_COLOR_I));
 			return;
 		}
 
@@ -128,8 +121,7 @@ public class RayTracer implements ISequentialFrameSource, IScalingFrameSource {
 				pixels.put((byte)0);
 				pixels.put((byte)0);
 				pixels.put((byte)0);
-				if(hasAlpha)
-					pixels.put((byte)255);
+				pixels.put(Frame.B255);
 				return;
 			}
 		}
@@ -143,32 +135,7 @@ public class RayTracer implements ISequentialFrameSource, IScalingFrameSource {
 		pixels.put((byte)(f * c.r * lc.r * 255f));
 		pixels.put((byte)(f * c.g * lc.g * 255f));
 		pixels.put((byte)(f * c.b * lc.b * 255f));
-		if(hasAlpha)
-			pixels.put((byte)(c.a * 255f));
-	}
-
-	@Override
-	public void dispose() {
-	}
-
-	@Override
-	public URL getURL() {
-		return null;
-	}
-
-	@Override
-	public double getDuration() {
-		return DURATION_UNKNOWN;
-	}
-
-	@Override
-	public double getFrameRate() {
-		return FRAMERATE_UNKNOWN;
-	}
-
-	@Override
-	public long getFrameCount() {
-		return FRAMECOUNT_UNKNOWN;
+		pixels.put((byte)(c.a * 255f));
 	}
 
 	@Override
@@ -182,48 +149,52 @@ public class RayTracer implements ISequentialFrameSource, IScalingFrameSource {
 	}
 
 	@Override
-	public void rewind() {}
-
+	public double getFrameRate() {
+		return FRAMERATE_UNKNOWN;
+	}
+	
 	@Override
-	public FrameReq getFrames(FrameReq req) {
-		if(!lights.isEmpty()) {
-			req.processFrames(RGBA8Frame.class, w, h, (Frame frame, int frameIdx)->{
-				SyncGroup.sync(this);
+	public long getFrameCount() {
+		return FRAMECOUNT_UNKNOWN;
+	};
+	
+	@Override
+	protected void run(Stateless<IVideoRenderTarget> state) throws RenderCommandException {
+		if(lights.isEmpty()) return;
+		
+		RGBA8Frame frame = new RGBA8Frame(w, h);
+		SyncGroup.sync(this);
 
-				final int   w     = frame.dimI;
-				final int   h     = frame.dimJ;
+		final int   w     = frame.dimI;
+		final int   h     = frame.dimJ;
 
-				if(!(frame instanceof RGB8Frame)) throw new FrameException("Unsupported frame type " + frame.getClass().getName());
+		final ILight light      = lights.get(0);
+		final Vec3   camPos     = camera.getPosition();
 
-				final ILight light      = lights.get(0);
-				final Vec3   camPos     = camera.getPosition();
+		final float aspect      = (float)w / (float)h;
 
-				final float aspect      = (float)w / (float)h;
+		final float planeWidth  = (float) (2 * Math.tan(camera.getFov() / 2) * camera.getNear());
+		final float planeHeight = planeWidth / aspect;
 
-				final float planeWidth  = (float) (2 * Math.tan(camera.getFov() / 2) * camera.getNear());
-				final float planeHeight = planeWidth / aspect;
+		final float deltaX = planeWidth / w;
+		final float deltaY = planeHeight / h;
 
-				final float deltaX = planeWidth / w;
-				final float deltaY = planeHeight / h;
+		final Vec3    lookVector = camera.getTarget().subtract(camera.getPosition()).normalize();
+		final Vec3    upVector   = camera.getUp().normalize();
+		final Vec3    sideVector = lookVector.cross(upVector).normalize();
 
-				final Vec3    lookVector = camera.getTarget().subtract(camera.getPosition()).normalize();
-				final Vec3    upVector   = camera.getUp().normalize();
-				final Vec3    sideVector = lookVector.cross(upVector).normalize();
-				final boolean hasAlpha   = frame instanceof RGBA8Frame;
+		frame.processLines((ByteBuffer pixels, int line)->{
+			final int j = line - (h / 2);
+			for (int i = -w / 2; i < w / 2; ++i) {
+				final Vec3 x     = sideVector.scale(i * deltaX);
+				final Vec3 y     = upVector.scale(j * deltaY);
+				final Vec3 dir   = lookVector.add(x).add(y);
+				final Line ray   = new Line(camPos, dir);
+				intersection((i + w / 2), (j + h / 2), ray, light, pixels);
+			}
+		});
 
-				frame.processLines((ByteBuffer pixels, int line)->{
-					final int j = line - (h / 2);
-					for (int i = -w / 2; i < w / 2; ++i) {
-						final Vec3 x     = sideVector.scale(i * deltaX);
-						final Vec3 y     = upVector.scale(j * deltaY);
-						final Vec3 dir   = lookVector.add(x).add(y);
-						final Line ray   = new Line(camPos, dir);
-						intersection((i + w / 2), (j + h / 2), ray, light, pixels, hasAlpha);
-					}
-				});
-			});
-		}
-		return req;
+		state.getTarget().setFrame(new VideoFrame(AbstractFrame.ASAP, frame));
 	}
 
 	public void setLights(List<ILight> lights) {
@@ -236,15 +207,5 @@ public class RayTracer implements ISequentialFrameSource, IScalingFrameSource {
 
 	public void removeLight(ILight light) {
 		lights.remove(light);
-	}
-	
-	@Override
-	public Class<? extends Frame>[] getFrameTypes() {
-		return FTS_RGBA8;
-	}
-	
-	@Override
-	public void setPreferredFrameTypes(Set<Class<? extends Frame>> frameTypes) {
-		IVideoFrameSource.updatePreferredFrameTypes(preferredTypes, frameTypes);
-	}
+	}	
 }

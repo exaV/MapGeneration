@@ -234,7 +234,7 @@ public:
  * Signature: (Ljava/lang/String;)J
  */
 JNIEXPORT jlong JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeCreate
-(JNIEnv * env, jobject, jstring javaURL) {
+(JNIEnv * env, jclass, jstring javaURL) {
     JNF_COCOA_ENTER(env);
     
     const char* url = env->GetStringUTFChars(javaURL, JNI_FALSE);
@@ -259,7 +259,7 @@ JNIEXPORT jlong JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeCrea
  * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeDispose
-(JNIEnv * env, jobject, jlong nativeHandle) {
+(JNIEnv * env, jclass, jlong nativeHandle) {
     JNF_COCOA_ENTER(env);
     
     delete (AVAssetWrapper*)nativeHandle;
@@ -274,7 +274,7 @@ JNIEXPORT void JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeDispo
  * Signature: (J)D
  */
 JNIEXPORT jdouble JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGetDuration
-(JNIEnv * env, jobject, jlong nativeHandle) {
+(JNIEnv * env, jclass, jlong nativeHandle) {
     JNF_COCOA_ENTER(env);
     
     return ((AVAssetWrapper*)nativeHandle)->getDuration();
@@ -288,7 +288,7 @@ JNIEXPORT jdouble JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGe
  * Signature: (J)D
  */
 JNIEXPORT jdouble JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGetFrameRate
-(JNIEnv * env, jobject, jlong nativeHandle) {
+(JNIEnv * env, jclass, jlong nativeHandle) {
     JNF_COCOA_ENTER(env);
     
     return ((AVAssetWrapper*)nativeHandle)->getFrameRate();
@@ -302,7 +302,7 @@ JNIEXPORT jdouble JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGe
  * Signature: (J)I
  */
 JNIEXPORT jlong JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGetFrameCount
-(JNIEnv * env, jobject, jlong nativeHandle) {
+(JNIEnv * env, jclass, jlong nativeHandle) {
     JNF_COCOA_ENTER(env);
     
     return ((AVAssetWrapper*)nativeHandle)->getFrameCount();
@@ -316,7 +316,7 @@ JNIEXPORT jlong JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGetF
  * Signature: (J)I
  */
 JNIEXPORT jint JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGetWidth
-(JNIEnv * env, jobject, jlong nativeHandle) {
+(JNIEnv * env, jclass, jlong nativeHandle) {
     JNF_COCOA_ENTER(env);
     
     return ((AVAssetWrapper*)nativeHandle)->getWidth();
@@ -330,7 +330,7 @@ JNIEXPORT jint JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGetWi
  * Signature: (J)I
  */
 JNIEXPORT jint JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGetHeight
-(JNIEnv * env, jobject, jlong nativeHandle) {
+(JNIEnv * env, jclass, jlong nativeHandle) {
     JNF_COCOA_ENTER(env);
     
     return ((AVAssetWrapper*)nativeHandle)->getHeight();
@@ -344,7 +344,7 @@ JNIEXPORT jint JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGetHe
  * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeRewind
-(JNIEnv * env, jobject, jlong nativeHandle) {
+(JNIEnv * env, jclass, jlong nativeHandle) {
     JNF_COCOA_ENTER(env);
 
     ((AVAssetWrapper*)nativeHandle)->rewind();
@@ -358,7 +358,7 @@ JNIEXPORT void JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeRewin
  * Signature: (J)[B
  */
 JNIEXPORT jbyteArray JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGetFrame
-(JNIEnv * env, jobject, jlong nativeHandle, jdouble time) {
+(JNIEnv * env, jclass, jlong nativeHandle, jdouble time) {
     JNF_COCOA_ENTER(env);
 
     return ((AVAssetWrapper*)nativeHandle)->getFrame(env, time);
@@ -372,7 +372,7 @@ JNIEXPORT jbyteArray JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativ
  * Signature: (J)[B
  */
 JNIEXPORT jbyteArray JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGetNextFrame
-(JNIEnv * env, jobject, jlong nativeHandle) {
+(JNIEnv * env, jclass, jlong nativeHandle) {
     JNF_COCOA_ENTER(env);
 
     return ((AVAssetWrapper*)nativeHandle)->getNextFrame(env);
@@ -386,7 +386,7 @@ JNIEXPORT jbyteArray JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativ
  * Signature: (JDI)I
  */
 JNIEXPORT jint JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeLoadFrame
-(JNIEnv * env, jobject, jlong nativeHandle, jdouble time, jint textureId) {
+(JNIEnv * env, jclass, jlong nativeHandle, jdouble time, jint textureId) {
     JNF_COCOA_ENTER(env);
     
     return ((AVAssetWrapper*)nativeHandle)->loadFrame(time, textureId);
@@ -400,7 +400,7 @@ JNIEXPORT jint JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeLoadF
  * Signature: (JII)I
  */
 JNIEXPORT jint JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeLoadFrames
-(JNIEnv * env, jobject, jlong nativeHandle, jint numFrames, jint textureId) {
+(JNIEnv * env, jclass, jlong nativeHandle, jint numFrames, jint textureId) {
     JNF_COCOA_ENTER(env);
     
     return ((AVAssetWrapper*)nativeHandle)->loadFrames(numFrames, textureId);

@@ -1,137 +1,26 @@
 package ch.fhnw.ether.video.fx;
 
-import java.net.URL;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 
 import ch.fhnw.ether.image.Frame;
-import ch.fhnw.ether.image.IFrameProcessor;
 import ch.fhnw.ether.image.RGBA8Frame;
-import ch.fhnw.ether.media.AbstractFX;
-import ch.fhnw.ether.media.FXParameter;
-import ch.fhnw.ether.media.FrameException;
-import ch.fhnw.ether.media.FrameReq;
-import ch.fhnw.ether.media.IFrameSource;
-import ch.fhnw.ether.video.IRandomAccessFrameSource;
-import ch.fhnw.ether.video.ISequentialFrameSource;
-import ch.fhnw.ether.video.IVideoFrameSource;
+import ch.fhnw.ether.media.AbstractRenderCommand;
+import ch.fhnw.ether.media.Parameter;
+import ch.fhnw.ether.media.PerTargetState;
+import ch.fhnw.ether.media.RenderCommandException;
+import ch.fhnw.ether.video.IVideoRenderTarget;
+import ch.fhnw.ether.video.VideoFrame;
+import ch.fhnw.util.TextUtilities;
 
-public abstract class AbstractVideoFX extends AbstractFX implements IVideoFX {
+public abstract class AbstractVideoFX<S extends PerTargetState<IVideoRenderTarget>> extends AbstractRenderCommand<IVideoRenderTarget, S> {
 	protected final Frame EMPTY = new RGBA8Frame(1,1);
 	
 	protected long                        frame;
-	protected IVideoFrameSource[]         sources;
 	protected Class<? extends Frame>[]    frameTypes;
 	protected Set<Class<? extends Frame>> preferredTypes;
 
-	protected AbstractVideoFX(FXParameter ... parameters) {
+	protected AbstractVideoFX(Parameter ... parameters) {
 		super(parameters);
-	}
-
-	@Override
-	public void dispose() {
-		for(IVideoFrameSource source : sources)
-			source.dispose();
-	}
-
-	@Override
-	public URL getURL() {
-		return null;
-	}
-
-	@Override
-	public final double getDuration() {
-		return DURATION_UNKNOWN;
-	}
-
-	@Override
-	public final double getFrameRate() {
-		double result = 25.0;
-		for(IFrameSource source : getSources())
-			result = Math.max(result, source.getFrameRate());
-		return result;
-	}
-
-	@Override
-	public final long getFrameCount() {
-		return FRAMECOUNT_UNKNOWN;
-	}
-
-	@Override
-	public int getWidth() {
-		int result = 0;
-		for(IVideoFrameSource source : getSources())
-			result = Math.max(result, source.getWidth());
-		return result;
-	}
-
-	@Override
-	public int getHeight() {
-		int result = 0;
-		for(IVideoFrameSource source : getSources())
-			result = Math.max(result, source.getHeight());
-		return result;
-	}
-
-	@Override
-	public final FXParameter[] getParameters() {
-		return parameters;
-	}
-
-	@Override
-	public void rewind() {}
-
-	public final Frame getNextFrame(IFrameSource source, Frame result) {
-		if(source instanceof ISequentialFrameSource) {
-			ISequentialFrameSource sfs = (ISequentialFrameSource)source;
-			FrameReq               req = new FrameReq(result);
-			try {
-				sfs.getFrames(req);
-			} catch(FrameException e) {
-				sfs.rewind();
-				sfs.getFrames(req);
-			}
-		} else if(source instanceof IRandomAccessFrameSource) {
-			IRandomAccessFrameSource rafs = (IRandomAccessFrameSource)source;
-			if(frame >= rafs.getFrameCount())
-				frame = 0;
-			rafs.getFrames(new FrameReq(frame++, result));
-		}
-		return result;
-	}
-
-	@Override
-	public final IVideoFrameSource[] getSources() {
-		return sources;
-	}
-
-	@Override
-	public final int getNumSources() {
-		return sources.length;
-	}
-
-	public final void init(Class<? extends Frame>[] frameTypes, IVideoFrameSource ... sources) {
-		this.frameTypes     = frameTypes;
-		this.preferredTypes = new HashSet<>(Arrays.asList(getFrameTypes()));
-		for(IVideoFrameSource source : sources)
-			source.setPreferredFrameTypes(preferredTypes);
-		this.sources = sources;
-	}
-
-	@Override
-	public Class<? extends Frame>[] getFrameTypes() {
-		return frameTypes;
-	}
-
-	@SuppressWarnings("unchecked")
-	public String toString(Class<? extends Frame> ... types) {
-		StringBuffer result = new StringBuffer();
-		for(Class<? extends Frame> type : types) {
-			result.append(type.getName());
-			result.append(' ');
-		}
-		return result.toString();
 	}
 
 	public final static float toFloat(final byte v) {
@@ -159,18 +48,16 @@ public abstract class AbstractVideoFX extends AbstractFX implements IVideoFX {
 		return val0 * w + (1f-w) * val1;
 	}
 	
-	protected void processFrames(FrameReq req, IFrameProcessor frameProcessor) {
-		req.processFrames(preferredTypes.iterator().next(), getWidth(), getHeight(), frameProcessor);
-	}
-
 	@Override
-	public void setPreferredFrameTypes(Set<Class<? extends Frame>> frameTypes) {
-		IVideoFrameSource.updatePreferredFrameTypes(preferredTypes, frameTypes);
+	protected final void run(S state) throws RenderCommandException {
+		VideoFrame frame = state.getTarget().getFrame();
+		processFrame(frame.playOutTime, state, frame.frame);
 	}
 	
-	protected static Frame matchSize(IVideoFrameSource source, Frame result) {
-		if(source.getWidth() != result.dimI || source.getHeight() != result.dimJ)
-			result = result.create(source.getWidth(), source.getHeight());
-		return result;
+	protected abstract void processFrame(double playOutTime, S state, Frame frame);
+	
+	@Override
+	public String toString() {
+		return TextUtilities.getShortClassName(this);
 	}
 }

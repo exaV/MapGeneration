@@ -414,7 +414,7 @@ public class ClassUtilities {
 
 	private static final AtomicLong iCounter = new AtomicLong();
 
-	public static long getNewObjectID() {
+	public static long createObjectID() {
 		return iCounter.addAndGet(1);
 	}
 

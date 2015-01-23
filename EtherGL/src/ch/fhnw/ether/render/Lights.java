@@ -26,7 +26,6 @@ public final class Lights {
 	}
 
 	public void dispose(GL3 gl) {
-		uniforms.dispose(gl);
 		uniforms = null;
 	}
 

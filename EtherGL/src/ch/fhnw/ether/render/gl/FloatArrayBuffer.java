@@ -34,6 +34,7 @@ import java.nio.Buffer;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL3;
 
+import ch.fhnw.ether.render.gl.GLObject.Type;
 import ch.fhnw.util.BufferUtilities;
 
 /**
@@ -42,29 +43,19 @@ import ch.fhnw.util.BufferUtilities;
  * @author radar
  */
 public final class FloatArrayBuffer implements IArrayBuffer {
-	private int[] vbo;
-	private int size;
+	private GLObject vbo;
+	private int      size;
 
 	public FloatArrayBuffer() {
 	}
 
 	@Override
-	public void dispose(GL gl) {
-		if (vbo != null) {
-			gl.glDeleteBuffers(1, vbo, 0);
-			vbo = null;
-		}
-		size = 0;
-	}
-
-	@Override
-	public void load(GL gl, Buffer data) {
+	public void load(GL3 gl, Buffer data) {
 		if (vbo == null) {
-			vbo = new int[1];
-			gl.glGenBuffers(1, vbo, 0);
+			vbo = new GLObject(gl, Type.BUFFER);
 		}
 
-		gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vbo[0]);
+		gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vbo.id());
 		if (data != null && data.limit() != 0) {
 			size = data.limit();
 			data.rewind();
@@ -80,14 +71,14 @@ public final class FloatArrayBuffer implements IArrayBuffer {
 	}
 
 	@Override
-	public void clear(GL gl) {
+	public void clear(GL3 gl) {
 		load(gl, null);
 	}
 
 	@Override
-	public void bind(GL gl) {
+	public void bind(GL3 gl) {
 		if (size > 0) {
-			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vbo[0]);
+			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vbo.id());
 		}
 	}
 

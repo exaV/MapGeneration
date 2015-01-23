@@ -3,24 +3,17 @@ package ch.fhnw.ether.render.gl;
 import javax.media.opengl.GL3;
 
 public class FrameBuffer {
-	private int[] fbo;
+	private GLObject fbo;
 
 	public FrameBuffer() {	
 	}
-	
-	public void dispose(GL3 gl) {
-		if (fbo != null) {
-			gl.glDeleteFramebuffers(1, fbo, 0);
-			fbo = null;
-		}
-	}
-	
+		
 	public int checkStatus(GL3 gl) {
 		return gl.glCheckFramebufferStatus(GL3.GL_DRAW_FRAMEBUFFER);
 	}
 	
 	public void bind(GL3 gl) {
-		gl.glBindFramebuffer(GL3.GL_DRAW_FRAMEBUFFER, fbo[0]);
+		gl.glBindFramebuffer(GL3.GL_DRAW_FRAMEBUFFER, fbo.id());
 	}
 	
 	public static void unbind(GL3 gl) {

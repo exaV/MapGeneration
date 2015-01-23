@@ -36,6 +36,7 @@ import java.util.function.Consumer;
 
 import javax.media.opengl.GL3;
 
+import ch.fhnw.ether.render.gl.GLObject.Type;
 import ch.fhnw.util.BufferUtilities;
 
 /**
@@ -54,7 +55,7 @@ public final class FloatUniformBuffer {
 
 	private FloatBuffer buffer;
 
-	private int[] ubo;
+	private GLObject ubo;
 
 	public FloatUniformBuffer(int blockSize) {
 		this(blockSize, 1);
@@ -70,20 +71,11 @@ public final class FloatUniformBuffer {
 		this.bindingPoint = bindingPoint;
 	}
 
-	public void dispose(GL3 gl) {
-		if (ubo != null) {
-			gl.glDeleteBuffers(1, ubo, 0);
-			ubo = null;
-		}
-		buffer = null;
-	}
-
 	public void load(GL3 gl, BiConsumer<Integer, FloatBuffer> consumer) {
 		int stride = stride(gl);
 
 		if (ubo == null) {
-			ubo = new int[1];
-			gl.glGenBuffers(1, ubo, 0);
+			ubo = new GLObject(gl, Type.BUFFER);
 		}
 		
 		if (buffer == null)
@@ -95,7 +87,7 @@ public final class FloatUniformBuffer {
 			consumer.accept(i, buffer);
 		}
 		buffer.rewind();
-		gl.glBindBuffer(GL3.GL_UNIFORM_BUFFER, ubo[0]);
+		gl.glBindBuffer(GL3.GL_UNIFORM_BUFFER, ubo.id());
 		gl.glBufferData(GL3.GL_UNIFORM_BUFFER, size(stride) * 4, buffer, GL3.GL_STREAM_DRAW);
 		gl.glBindBuffer(GL3.GL_UNIFORM_BUFFER, 0);
 	}
@@ -104,8 +96,7 @@ public final class FloatUniformBuffer {
 		int stride = stride(gl);
 
 		if (ubo == null) {
-			ubo = new int[1];
-			gl.glGenBuffers(1, ubo, 0);
+			ubo = new GLObject(gl, Type.BUFFER);
 			gl.glBufferData(GL3.GL_UNIFORM_BUFFER, size(stride) * 4, null, GL3.GL_STREAM_DRAW);
 		}
 
@@ -115,17 +106,17 @@ public final class FloatUniformBuffer {
 		buffer.rewind();
 		consumer.accept(buffer);
 		buffer.rewind();
-		gl.glBindBuffer(GL3.GL_UNIFORM_BUFFER, ubo[0]);
+		gl.glBindBuffer(GL3.GL_UNIFORM_BUFFER, ubo.id());
 		gl.glBufferSubData(GL3.GL_UNIFORM_BUFFER, blockIndex * stride * 4, blockSize * 4, buffer);
 		gl.glBindBuffer(GL3.GL_UNIFORM_BUFFER, 0);
 	}
 
 	public void bind(GL3 gl) {
-		gl.glBindBufferBase(GL3.GL_UNIFORM_BUFFER, bindingPoint, ubo[0]);
+		gl.glBindBufferBase(GL3.GL_UNIFORM_BUFFER, bindingPoint, ubo.id());
 	}
 
 	public void bind(GL3 gl, int blockIndex) {
-		gl.glBindBufferRange(GL3.GL_UNIFORM_BUFFER, bindingPoint, ubo[0], blockIndex * stride(gl) * 4, blockSize * 4);
+		gl.glBindBufferRange(GL3.GL_UNIFORM_BUFFER, bindingPoint, ubo.id(), blockIndex * stride(gl) * 4, blockSize * 4);
 	}
 
 	public int getBindingPoint() {

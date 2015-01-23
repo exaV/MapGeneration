@@ -29,20 +29,34 @@
 
 package ch.fhnw.ether.video.avfoundation;
 
+import java.lang.ref.ReferenceQueue;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.image.RGBA8Frame;
-import ch.fhnw.ether.media.FrameException;
-import ch.fhnw.ether.media.FrameReq;
-import ch.fhnw.ether.video.IRandomAccessFrameSource;
-import ch.fhnw.ether.video.ISequentialFrameSource;
+import ch.fhnw.ether.video.IVideoRenderTarget;
+import ch.fhnw.ether.video.URLVideoSource;
+import ch.fhnw.util.AutoDisposer;
+import ch.fhnw.util.AutoDisposer.Reference;
 
-public final class AVAsset implements ISequentialFrameSource, IRandomAccessFrameSource {
+public final class AVAsset extends URLVideoSource.State {
 	private static boolean READY = true;
+
+	public static class AVAssetRef extends Reference<AVAsset> {
+		private final long nativeHandle;
+		
+		public AVAssetRef(AVAsset referent, ReferenceQueue<? super AVAsset> q) {
+			super(referent, q);
+			nativeHandle = referent.nativeHandle;
+		}
+
+		@Override
+		public void dispose() {
+			nativeDispose(nativeHandle);
+		}
+	}
+
+	public static final AutoDisposer<AVAsset> autoDispose = new AutoDisposer<>(AVAssetRef.class);
 	
 	static {
 		try {
@@ -56,41 +70,31 @@ public final class AVAsset implements ISequentialFrameSource, IRandomAccessFrame
 		return READY;
 	}
 
-	private URL url;
-
-	private long nativeHandle;
-
+	private long   nativeHandle;
 	private double duration;
 	private double frameRate;
-	private long frameCount;
-	private int width;
-	private int height;
-	Set<Class<? extends Frame>> preferredTypes;
+	private long   frameCount;
+	private int    width;
+	private int    height;
 	
-	public AVAsset(URL url) {
-		this.url = url;
+	public AVAsset(IVideoRenderTarget target, URL url, int numPlays) {
+		super(target, url, numPlays);		
 		nativeHandle = nativeCreate(url.toString());
 		if (nativeHandle == 0)
 			throw new IllegalArgumentException("cannot create avasset from " + url);
-		duration       = nativeGetDuration(nativeHandle);
-		frameRate      = nativeGetFrameRate(nativeHandle);
-		frameCount     = nativeGetFrameCount(nativeHandle);
-		width          = nativeGetWidth(nativeHandle);
-		height         = nativeGetHeight(nativeHandle);
-		preferredTypes = new HashSet<>(Arrays.asList(getFrameTypes()));
+		
+		autoDispose.add(this);
+		duration   = nativeGetDuration(nativeHandle);
+		frameRate  = nativeGetFrameRate(nativeHandle);
+		frameCount = nativeGetFrameCount(nativeHandle);
+		width      = nativeGetWidth(nativeHandle);
+		height     = nativeGetHeight(nativeHandle);
 	}
 
-	@Override
-	public void dispose() {
-		nativeDispose(nativeHandle);
-	}
-
-	@Override
 	public URL getURL() {
 		return url;
 	}
 
-	@Override
 	public double getDuration() {
 		return duration;
 	}
@@ -115,75 +119,25 @@ public final class AVAsset implements ISequentialFrameSource, IRandomAccessFrame
 		return height;
 	}
 
-	@Override
 	public void rewind() {
+		playOutTime = 0;
+		startTime   = -1;
 		nativeRewind(nativeHandle);
 	}
-
-	@Override
-	public FrameReq getFrames(FrameReq req) {
-		req.processFrames(RGBA8Frame.class, getWidth(), getHeight(), (Frame frame, int i)->{
-			if(frame.dimI != getWidth() || frame.dimJ != getHeight())
-				throw new FrameException("Size mismatch, use a scaler");
-			byte[] pixels = nativeGetNextFrame(nativeHandle);
-			if(pixels == null) 
-				throw new FrameException("End of trackreached.");
-			frame.pixels.clear();
-			if(frame.pixelSize == 3) {
-				byte[] tmp = new byte[3 * pixels.length / 4];
-				int dsti = 0;
-				int srci = 0;
-				for(int p = 0; p < pixels.length; p += 4) {
-					tmp[dsti++] = pixels[srci++];
-					tmp[dsti++] = pixels[srci++];
-					tmp[dsti++] = pixels[srci++];
-					srci++;
-				}
-				pixels = tmp;
-			} else {
-				byte[] tmp = new byte[pixels.length];
-				int dsti = 0;
-				int srci = 0;
-				for(int p = 0; p < pixels.length; p += 4) {
-					tmp[dsti++] = pixels[srci++];
-					tmp[dsti++] = pixels[srci++];
-					tmp[dsti++] = pixels[srci++];
-					tmp[dsti++] = pixels[srci++];
-				}
-				pixels = tmp;
-			}
-			frame.pixels.put(pixels);
-		});
-		return req;
-	}
-
-	@Override
-	public Class<? extends Frame>[] getFrameTypes() {
-		return FTS_RGBA8_RGB8;
-	}
 	
-	/*
 	@Override
-	public Frame getFrame(long frame) {
-		return getFrame(frameToTime(frame));
-	}
-
-	@Override
-	public Frame getFrame(double time) {
-		byte[] pixels = nativeGetFrame(nativeHandle, time);
-		if(pixels == null) return null;
+	protected Frame getNextFrame() {
+		playOutTime += 1.0 / getFrameRate();
+		byte[] pixels = nativeGetNextFrame(nativeHandle);
+		if(pixels == null) {
+			if(--numPlays <= 0)
+				return null;
+			rewind();
+			pixels = nativeGetNextFrame(nativeHandle);
+		}
 		return new RGBA8Frame(getWidth(), getHeight(), pixels);
 	}
 
-	@Override
-	public Frame getNextFrame() {
-	}
-	 */
-
-	@Override
-	public void setPreferredFrameTypes(Set<Class<? extends Frame>> frameTypes) {
-		preferredTypes.retainAll(frameTypes);
-	}
 	
 	@Override
 	public String toString() {
@@ -194,27 +148,27 @@ public final class AVAsset implements ISequentialFrameSource, IRandomAccessFrame
 		return getDuration() * getFrameRate() / frame;
 	}
 
-	private native long nativeCreate(String url);
+	private static native long nativeCreate(String url);
 
-	private native void nativeDispose(long nativeHandle);
+	private static native void nativeDispose(long nativeHandle);
 
-	private native double nativeGetDuration(long nativeHandle);
+	private static native double nativeGetDuration(long nativeHandle);
 
-	private native double nativeGetFrameRate(long nativeHandle);
+	private static native double nativeGetFrameRate(long nativeHandle);
 
-	private native long nativeGetFrameCount(long nativeHandle);
+	private static native long nativeGetFrameCount(long nativeHandle);
 
-	private native int nativeGetWidth(long nativeHandle);
+	private static native int nativeGetWidth(long nativeHandle);
 
-	private native int nativeGetHeight(long nativeHandle);
+	private static native int nativeGetHeight(long nativeHandle);
 
-	private native void nativeRewind(long nativeHandle);
+	private static native void nativeRewind(long nativeHandle);
 
-	private native byte[] nativeGetFrame(long nativeHandle, double time);
+	private static native byte[] nativeGetFrame(long nativeHandle, double time);
 
-	private native byte[] nativeGetNextFrame(long nativeHandle);
+	private static native byte[] nativeGetNextFrame(long nativeHandle);
 
-	private native int nativeLoadFrame(long nativeHandle, double time, int textureId);
+	private static native int nativeLoadFrame(long nativeHandle, double time, int textureId);
 
-	private native int nativeLoadFrames(long nativeHandle, int numFrames, int textureId);
+	private static native int nativeLoadFrames(long nativeHandle, int numFrames, int textureId);
 }

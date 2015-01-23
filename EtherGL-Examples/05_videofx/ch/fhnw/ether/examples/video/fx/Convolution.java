@@ -3,14 +3,15 @@ package ch.fhnw.ether.examples.video.fx;
 import java.nio.ByteBuffer;
 
 import ch.fhnw.ether.image.Frame;
-import ch.fhnw.ether.media.FXParameter;
-import ch.fhnw.ether.media.FrameReq;
-import ch.fhnw.ether.video.IVideoFrameSource;
+import ch.fhnw.ether.media.Parameter;
+import ch.fhnw.ether.media.PerTargetState;
+import ch.fhnw.ether.media.RenderCommandException;
+import ch.fhnw.ether.video.IVideoRenderTarget;
 import ch.fhnw.ether.video.fx.AbstractVideoFX;
 import ch.fhnw.util.math.Mat3;
 
-public class Convolution extends AbstractVideoFX {
-	private static final FXParameter KERNEL = new FXParameter("kernel", "Effect", 0, 
+public class Convolution extends AbstractVideoFX<Convolution.State> {
+	private static final Parameter KERNEL = new Parameter("kernel", "Effect", 0, 
 			"Identity", 
 			"Edge Detection1", 
 			"Edge Detection2", 
@@ -39,9 +40,8 @@ public class Convolution extends AbstractVideoFX {
 		false,
 	};
 
-	public Convolution(IVideoFrameSource source) {
+	public Convolution() {
 		super(KERNEL);
-		init(FTS_RGBA8_RGB8, source);
 	}
 
 	private static Mat3 normalize(Mat3 mat3) {
@@ -75,13 +75,14 @@ public class Convolution extends AbstractVideoFX {
 				);
 	}
 
-	private float[][] outFrame = new float[1][1];
+	class State extends PerTargetState<IVideoRenderTarget> {
+		private float[][] outFrame = new float[1][1];
 
-	@Override
-	public FrameReq getFrames(FrameReq req) {
-		processFrames(req, (Frame frame, int frameIdx)->{
-			getNextFrame(sources[0], frame);
-
+		public State(IVideoRenderTarget target) {
+			super(target);
+		}
+		
+		protected void processFrame(double playOutTime, Frame frame) {
 			if(frame.dimJ != outFrame.length || frame.dimI != outFrame[0].length * 3)
 				outFrame = new float[frame.dimJ][frame.dimI * 3];
 
@@ -126,23 +127,31 @@ public class Convolution extends AbstractVideoFX {
 					}
 				});
 			}
-		});
-		return req;
+		}
+
+		private float convolute(Frame frame, int i, int j, Mat3 kernel, int c) {
+			return
+					frame.getFloatComponent(i-1, j-1, c) * kernel.m00 +
+					frame.getFloatComponent(i-1, j,   c) * kernel.m10 +
+					frame.getFloatComponent(i-1, j+1, c) * kernel.m20 +
+
+					frame.getFloatComponent(i,   j-1, c) * kernel.m01 +
+					frame.getFloatComponent(i,   j,   c) * kernel.m11 +
+					frame.getFloatComponent(i,   j+1, c) * kernel.m21 +
+
+					frame.getFloatComponent(i+1, j-1, c) * kernel.m02 +
+					frame.getFloatComponent(i+1, j,   c) * kernel.m12 +
+					frame.getFloatComponent(i+1, j+1, c) * kernel.m22;
+		}
 	}
-
-	private float convolute(Frame frame, int i, int j, Mat3 kernel, int c) {
-		return
-				frame.getFloatComponent(i-1, j-1, c) * kernel.m00 +
-				frame.getFloatComponent(i-1, j,   c) * kernel.m10 +
-				frame.getFloatComponent(i-1, j+1, c) * kernel.m20 +
-
-				frame.getFloatComponent(i,   j-1, c) * kernel.m01 +
-				frame.getFloatComponent(i,   j,   c) * kernel.m11 +
-				frame.getFloatComponent(i,   j+1, c) * kernel.m21 +
-
-				frame.getFloatComponent(i+1, j-1, c) * kernel.m02 +
-				frame.getFloatComponent(i+1, j,   c) * kernel.m12 +
-				frame.getFloatComponent(i+1, j+1, c) * kernel.m22;
+	
+	@Override
+	protected State createState(IVideoRenderTarget target) throws RenderCommandException {
+		return new State(target);
 	}
-
+	
+	@Override
+	protected void processFrame(double playOutTime, State state, Frame frame) {
+		state.processFrame(playOutTime, frame);
+	}
 }

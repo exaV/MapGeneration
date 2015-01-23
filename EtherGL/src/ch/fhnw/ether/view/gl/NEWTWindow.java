@@ -32,8 +32,6 @@ package ch.fhnw.ether.view.gl;
 import javax.media.nativewindow.util.Point;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCapabilities;
-import javax.media.opengl.GLDrawableFactory;
-import javax.media.opengl.GLProfile;
 
 import ch.fhnw.ether.view.IView.Config;
 
@@ -79,13 +77,13 @@ public final class NEWTWindow {
 	 *            The configuration.
 	 */
 	public NEWTWindow(int width, int height, String title, Config config) {
-		GLCapabilities capabilities = getCapabilities(config);
+		GLCapabilities capabilities = GLContextManager.getCapabilities(config);
 		if (sharedDrawable == null) {
-			sharedDrawable = GLDrawableFactory.getFactory(capabilities.getGLProfile()).createDummyAutoDrawable(null, true, capabilities, null);
+			sharedDrawable = GLContextManager.getSharedDrawable(capabilities);
 			sharedDrawable.display();			
 		}
 		numWindows++;
-		window = GLWindow.create(getCapabilities(config));
+		window = GLWindow.create(capabilities);
 		window.setSharedAutoDrawable(sharedDrawable);
 		window.setSize(width, height);
 
@@ -106,22 +104,6 @@ public final class NEWTWindow {
 
 	public void dispose() {
 		window.destroy();
-	}
-
-	private static GLCapabilities getCapabilities(Config config) {
-		// FIXME: make this configurable
-		GLProfile profile = GLProfile.get(GLProfile.GL3);
-		GLCapabilities caps = new GLCapabilities(profile);
-		caps.setAlphaBits(8);
-		caps.setStencilBits(16);
-		if(config.getFSAASamples() > 0) {
-			caps.setSampleBuffers(true);
-			caps.setNumSamples(config.getFSAASamples());
-		} else {
-			caps.setSampleBuffers(false);
-			caps.setNumSamples(1);
-		}
-		return caps;
 	}
 
 	public void requestFocus() {

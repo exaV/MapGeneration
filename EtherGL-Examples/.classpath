@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry excluding="src/" kind="src" path="00_basic"/>
+	<classpathentry kind="src" path="04_audiofx"/>
 	<classpathentry kind="src" path="05_videofx"/>
 	<classpathentry kind="src" path="01_assets"/>
 	<classpathentry kind="src" path="02_mapping"/>

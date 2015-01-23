@@ -70,9 +70,6 @@ public abstract class AbstractShader implements IShader {
 
 	@Override
 	public void dispose(GL3 gl) {
-		uniforms.forEach((t) -> t.dispose(gl));
-		arrays.forEach((t) -> t.dispose(gl));
-
 		name = name + " (disposed)";
 		source = null;
 		type = null;

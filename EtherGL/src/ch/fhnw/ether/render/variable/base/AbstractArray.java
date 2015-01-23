@@ -29,8 +29,6 @@
 
 package ch.fhnw.ether.render.variable.base;
 
-import javax.media.opengl.GL3;
-
 import ch.fhnw.ether.render.variable.IShaderArray;
 import ch.fhnw.ether.scene.attribute.ITypedAttribute;
 
@@ -47,10 +45,6 @@ public abstract class AbstractArray<T> extends AbstractVariable<T> implements IS
 	protected AbstractArray(String id, String shaderName, NumComponents numComponents) {
 		super(id, shaderName);
 		this.numComponents = numComponents;
-	}
-
-	@Override
-	public void dispose(GL3 gl) {
 	}
 
 	@Override

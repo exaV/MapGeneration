@@ -46,10 +46,6 @@ public class UniformBlock extends AbstractUniform<Integer> {
 	}
 
 	@Override
-	public void dispose(GL3 gl) {
-	}
-
-	@Override
 	public void enable(GL3 gl, Program program) {
 		if (canBind && !isBound) {
 			int index = program.getUniformBlockIndex(gl, getShaderName());

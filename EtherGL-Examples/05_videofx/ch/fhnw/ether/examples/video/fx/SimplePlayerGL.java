@@ -20,10 +20,10 @@ import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.ColorMapMaterial;
 import ch.fhnw.ether.scene.mesh.material.Texture;
+import ch.fhnw.ether.video.AbstractVideoSource;
 import ch.fhnw.ether.video.CameraInfo;
 import ch.fhnw.ether.video.CameraSource;
-import ch.fhnw.ether.video.IVideoFrameSource;
-import ch.fhnw.ether.video.VideoTrackFactory;
+import ch.fhnw.ether.video.URLVideoSource;
 import ch.fhnw.ether.view.IView.Config;
 import ch.fhnw.ether.view.IView.ViewType;
 import ch.fhnw.ether.view.gl.DefaultView;
@@ -33,11 +33,11 @@ public class SimplePlayerGL implements Runnable {
 	private static final double SEC2MS = 1000.0;
 	private static final float  SCALE  = 3.5f;
 
-	private final IVideoFrameSource[] sources;
-	private final Texture             texture = new Texture(new RGB8Frame(16, 16));
-	private       DefaultView         view;
+	private final AbstractVideoSource<?>[] sources;
+	private final Texture                  texture = new Texture(new RGB8Frame(16, 16));
+	private       DefaultView              view;
 
-	public SimplePlayerGL(IVideoFrameSource[] sources) {
+	public SimplePlayerGL(AbstractVideoSource<?>[] sources) {
 		this.sources = sources;
 	}
 
@@ -65,16 +65,7 @@ public class SimplePlayerGL implements Runnable {
 
 			new Thread(this).start();
 		} else {
-			//IVideoFrameSource fx = new RGBGain(sources[0]);
-			//IVideoFrameSource fx = new ChromaKey(sources[1], sources[0]);
-			//IVideoFrameSource fx = new AnalogTVFX(sources[0]);
-			//IVideoFrameSource fx = new BandPass(sources[0]);
-			//IVideoFrameSource fx = new Convolution(sources[0]);
-			//IVideoFrameSource fx = new MotionBlur(sources[0]);
-			//IVideoFrameSource fx = new Posterize(sources[0]);
-			IVideoFrameSource fx = new FakeThermoCam(sources[0]);
-			new ParamWindow(fx);
-			texture.setData(fx);
+			texture.setData(sources[0]);
 			for(;;) {
 				long before = System.currentTimeMillis();
 				texture.update();
@@ -88,18 +79,18 @@ public class SimplePlayerGL implements Runnable {
 	}
 
 	public static void main(String[] args) throws IOException {
-		IVideoFrameSource[] sources = null;
+		AbstractVideoSource<?>[] sources = null;
 		if(args.length == 0) {
-			sources =  new IVideoFrameSource[] {CameraSource.create(CameraInfo.getInfos()[0])};
+			sources =  new AbstractVideoSource<?>[] {CameraSource.create(CameraInfo.getInfos()[0])};
 		}
 		else {
-			sources = new IVideoFrameSource[args.length];
+			sources = new AbstractVideoSource<?>[args.length];
 			int idx = 0;
 			for(String arg : args) {
 				try {
-					sources[idx] = VideoTrackFactory.createSequentialTrack(new URL(arg));
+					sources[idx] = new URLVideoSource(new URL(arg));
 				} catch(MalformedURLException e) {
-					sources[idx] = VideoTrackFactory.createSequentialTrack(new File(arg).toURI().toURL());
+					sources[idx] = new URLVideoSource(new File(arg).toURI().toURL());
 				}
 				idx++;
 			}

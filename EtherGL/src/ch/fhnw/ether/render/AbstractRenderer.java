@@ -43,13 +43,11 @@ import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.IMesh.Queue;
 import ch.fhnw.util.Viewport;
 
-// FIXME: renderer dispose (in case renderer is disposed)
 public abstract class AbstractRenderer implements IRenderer {
 	protected static class Cameras {
 		private FloatUniformBuffer uniforms = new FloatUniformBuffer(ViewUniformBlock.BLOCK_SIZE, 3);
 
 		public void dispose(GL3 gl) {
-			uniforms.dispose(gl);
 			uniforms = null;
 		}
 		

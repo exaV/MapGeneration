@@ -26,7 +26,7 @@ public class RayTracingRenderer implements IRenderer {
 
 	public RayTracingRenderer(RayTracer rayTracer) {
 		this.rayTracer = rayTracer;
-		this.screenTexture = new Texture(rayTracer);
+		this.screenTexture = new Texture(rayTracer, false);
 		this.plane         = createScreenPlane(-1, -1, 2, 2, screenTexture);
 		this.renderer.addMesh(plane);
 	}

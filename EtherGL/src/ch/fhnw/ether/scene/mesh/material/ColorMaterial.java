@@ -44,7 +44,7 @@ public class ColorMaterial extends AbstractMaterial {
 		this.color = color;
 		this.perVertexColor = perVertexColor;
 	}
-	
+
 	public void setColor(RGBA color) {
 		this.color = color;
 	}

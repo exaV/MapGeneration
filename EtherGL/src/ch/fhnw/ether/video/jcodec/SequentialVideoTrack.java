@@ -29,28 +29,80 @@
 
 package ch.fhnw.ether.video.jcodec;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+
+import org.jcodec.api.JCodecException;
+import org.jcodec.common.NIOUtils;
+import org.jcodec.common.SeekableByteChannel;
 
 import ch.fhnw.ether.image.Frame;
-import ch.fhnw.ether.media.FrameReq;
-import ch.fhnw.ether.video.ISequentialFrameSource;
-import ch.fhnw.ether.video.IVideoFrameSource;
+import ch.fhnw.ether.image.RGB8Frame;
+import ch.fhnw.ether.video.IVideoRenderTarget;
+import ch.fhnw.ether.video.URLVideoSource;
 
-public final class SequentialVideoTrack extends AbstractVideoTrack implements ISequentialFrameSource {
-	private Set<Class<? extends Frame>> preferredTypes = new HashSet<>(Arrays.asList(getFrameTypes()));
-	
-	public SequentialVideoTrack(URL url) throws IOException, URISyntaxException {
-		super(url);
+public final class SequentialVideoTrack extends URLVideoSource.State {
+	private   SeekableByteChannel channel;
+	protected FrameGrab           grab;
+
+	public SequentialVideoTrack(IVideoRenderTarget target, URL url, int numPlays) throws IOException, URISyntaxException {
+		super(target, url, numPlays);
+		this.channel = NIOUtils.readableFileChannel(new File(url.toURI()));
+		try {
+			this.grab    = new FrameGrab(channel);
+		} catch(JCodecException e) {
+			throw new IOException(e);
+		}
+	}
+
+	public void dispose() {
+		try {
+			channel.close();
+		} catch (IOException e) {
+		}
+		this.channel = null;
+		this.grab    = null;
+	}
+
+	public URL getURL() {
+		return url;
+	}
+
+	public double getDuration() {
+		return grab.getVideoTrack().getMeta().getTotalDuration();
 	}
 
 	@Override
+	public double getFrameRate() {
+		return getFrameCount() / getDuration();
+	}
+
+	@Override
+	public long getFrameCount() {
+		return grab.getVideoTrack().getMeta().getTotalFrames();
+	}
+
+	@Override
+	public int getWidth() {
+		return grab.getMediaInfo().getDim().getWidth();
+	}
+
+	@Override
+	public int getHeight() {
+		return grab.getMediaInfo().getDim().getHeight();
+	}
+
+	@Override
+	public String toString() {
+		return getURL() + " (d=" + getDuration() + " fr=" + getFrameRate() + " fc=" + getFrameCount() + " w=" + getWidth() + " h=" + getHeight() + ")";
+	}
+
 	public void rewind() {
 		try {
+			playOutTime = 0;
+			startTime   = -1;
 			grab.seekToFramePrecise(0);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -58,20 +110,19 @@ public final class SequentialVideoTrack extends AbstractVideoTrack implements IS
 	}
 
 	@Override
-	public FrameReq getFrames(FrameReq req) {
-		req.processFrames(grab.getPreferredType(), getWidth(), getHeight(), (Frame frame, int i)->{
+	protected Frame getNextFrame() {
+		playOutTime += 1.0 / getFrameRate();
+		RGB8Frame frame = new RGB8Frame(getWidth(), getHeight());
+		try {
 			grab.grabAndSet(frame);
-		});
-		return req;
-	}
-	
-	@Override
-	public Class<? extends Frame>[] getFrameTypes() {
-		return FTS_RGBA8_RGB8;
-	}
-	
-	@Override
-	public void setPreferredFrameTypes(Set<Class<? extends Frame>> frameTypes) {
-		IVideoFrameSource.updatePreferredFrameTypes(preferredTypes, frameTypes);
+		} catch(Throwable t) {
+			rewind();
+			try {
+				grab.grabAndSet(frame);
+			} catch(Throwable t0) {
+				return null;
+			}
+		}
+		return frame;
 	}
 }

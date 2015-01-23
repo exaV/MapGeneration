@@ -85,7 +85,6 @@ public final class Renderable {
 
 	public void dispose(GL3 gl) {
 		shader.dispose(gl);
-		buffer.dispose(gl);
 
 		mesh = null;
 

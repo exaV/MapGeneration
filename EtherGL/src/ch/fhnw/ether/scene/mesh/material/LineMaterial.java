@@ -39,7 +39,8 @@ public class LineMaterial extends ColorMaterial {
 	}
 
 	public LineMaterial(float width, RGBA color) {
-		this(width, color, false);
+		super(color);
+		this.width = width;
 	}
 
 	public LineMaterial(float width, RGBA color, boolean perVertexColor) {

@@ -74,10 +74,6 @@ public abstract class AbstractUniform<T> extends AbstractVariable<T> implements 
 	}
 
 	@Override
-	public void dispose(GL3 gl) {
-	}
-
-	@Override
 	public void disable(GL3 gl, Program program) {
 	}
 

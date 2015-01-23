@@ -6,33 +6,33 @@ import java.util.Arrays;
 import org.jtransforms.fft.FloatFFT_2D;
 
 import ch.fhnw.ether.image.Frame;
-import ch.fhnw.ether.media.FXParameter;
-import ch.fhnw.ether.media.FrameReq;
-import ch.fhnw.ether.video.IVideoFrameSource;
+import ch.fhnw.ether.media.Parameter;
+import ch.fhnw.ether.media.PerTargetState;
+import ch.fhnw.ether.video.IVideoRenderTarget;
 import ch.fhnw.ether.video.fx.AbstractVideoFX;
 
 
-public class BandPass extends AbstractVideoFX {
-	private static final FXParameter LOW  = new FXParameter("low",  "low cutoff frequency",  0, 1, 0);
-	private static final FXParameter HIGH = new FXParameter("high", "high cutoff frequency", 0, 1, 1);
+public class BandPass extends AbstractVideoFX<BandPass.State> {
+	private static final Parameter LOW  = new Parameter("low",  "low cutoff frequency",  0, 1, 0);
+	private static final Parameter HIGH = new Parameter("high", "high cutoff frequency", 0, 1, 1);
 
-	private int         rows = 16;
-	private int         cols = 16;
-	private float[][]   r    = new float[rows][cols*2]; 
-	private float[][]   g    = new float[rows][cols*2]; 
-	private float[][]   b    = new float[rows][cols*2]; 
-	private FloatFFT_2D fft  = new FloatFFT_2D(rows, cols);
-
-	protected BandPass(IVideoFrameSource source) {
+	protected BandPass() {
 		super(LOW, HIGH);
-		init(FTS_RGBA8_RGB8, source);
 	}
 
-	@Override
-	public FrameReq getFrames(FrameReq req) {
-		processFrames(req, (Frame frame, int frameIdx)->{
-			getNextFrame(sources[0], frame);
-			
+	class State extends PerTargetState<IVideoRenderTarget> {
+		int         rows = 16;
+		int         cols = 16;
+		float[][]   r    = new float[rows][cols*2]; 
+		float[][]   g    = new float[rows][cols*2]; 
+		float[][]   b    = new float[rows][cols*2]; 
+		FloatFFT_2D fft  = new FloatFFT_2D(rows, cols);
+
+		public State(IVideoRenderTarget target) {
+			super(target);
+		}
+
+		void processFrame(double playOutTime, Frame frame) {
 			if(rows != frame.dimJ || cols != frame.dimI) {
 				rows = frame.dimJ;
 				cols = frame.dimI;
@@ -56,27 +56,27 @@ public class BandPass extends AbstractVideoFX {
 					if(frame.pixelSize == 4) pixels.get();
 				}
 			});
-						
+
 			int low  = (int)(getVal(LOW)  * (cols - 1));
 			int high = (int)(getVal(HIGH) * (cols - 1));
-			
+
 			fft.complexForward(r);
 			fft.complexForward(g);
 			fft.complexForward(b);
 			for(int j = r.length; --j >=0;) {
 				Arrays.fill(r[j], 0,        low * 2,     0f);
 				Arrays.fill(r[j], high * 2, r[j].length, 0f);
-				
+
 				Arrays.fill(g[j], 0,        low * 2,     0f);
 				Arrays.fill(g[j], high * 2, g[j].length, 0f);
-				
+
 				Arrays.fill(b[j], 0,        low * 2,     0f);
 				Arrays.fill(b[j], high * 2, b[j].length, 0f);
 			}
 			fft.complexInverse(r, true);
 			fft.complexInverse(g, true);
 			fft.complexInverse(b, true);
-			
+
 			frame.processLines((ByteBuffer pixels, int j)->{
 				final float[] rj = r[j];
 				final float[] gj = g[j];
@@ -94,8 +94,16 @@ public class BandPass extends AbstractVideoFX {
 					if(frame.pixelSize == 4) pixels.get();
 				}
 			});
-		});
-		return req;
+		}
 	}
 
+	@Override
+	protected State createState(IVideoRenderTarget target) {
+		return new State(target);
+	}
+	
+	@Override
+	protected void processFrame(double playOutTime, State state, Frame frame) {
+		state.processFrame(playOutTime, frame);
+	}
 }

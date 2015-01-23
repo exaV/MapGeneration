@@ -37,10 +37,7 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -50,13 +47,9 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GL3;
 
-import ch.fhnw.ether.media.FrameReq;
-import ch.fhnw.ether.video.IRandomAccessFrameSource;
-import ch.fhnw.ether.video.ISequentialFrameSource;
-import ch.fhnw.ether.video.IVideoFrameSource;
 import ch.fhnw.util.BufferUtilities;
 
-public abstract class Frame implements ISequentialFrameSource, IRandomAccessFrameSource {
+public abstract class Frame {
 	public enum FileFormat {PNG,JPEG}
 
 	public static final byte        B0    = 0;
@@ -68,7 +61,6 @@ public abstract class Frame implements ISequentialFrameSource, IRandomAccessFram
 	public int        dimJ;
 	public int        pixelSize;
 	private int       modCount;
-	private final Set<Class<? extends Frame>> preferredTypes = new HashSet<>(Arrays.asList(getFrameTypes()));
 
 	protected Frame(int pixelSize) {
 		this.pixelSize = pixelSize;
@@ -438,59 +430,6 @@ public abstract class Frame implements ISequentialFrameSource, IRandomAccessFram
 
 	protected abstract void loadInternal(GL gl, int target, int textureId);
 
-	@Override
-	public FrameReq getFrames(FrameReq req) {
-		for(int i = req.getNumFrames(); --i >= 0;) {
-			if(req.getFrame(i) == null)
-				req.setFrame(i, copy());
-			else {
-				Frame dst = req.getFrame(i);
-				dst.setPixels(0, 0, dst.dimI, dst.dimJ, toBufferedImage());
-			}
-		}
-		if(req.hasTextureId())
-			req.loadFrames();
-		return req;
-	}
-
-	@Override
-	public double getDuration() {
-		return DURATION_UNKNOWN;
-	}
-
-	@Override
-	public long getFrameCount() {
-		return 1;
-	}
-
-	@Override
-	public double getFrameRate() {
-		return FRAMERATE_UNKNOWN;
-	}
-
-	@Override
-	public int getWidth() {
-		return dimI;
-	}
-
-	@Override
-	public int getHeight() {
-		return dimJ;
-	}
-
-	@Override
-	public void rewind() {}
-
-	@Override
-	public void dispose() {
-		pixels = null; // help gc
-	}
-
-	@Override
-	public URL getURL() {
-		return null;
-	}
-
 	static final ExecutorService POOL       = Executors.newCachedThreadPool();
 	static final int             NUM_CHUNKS = Runtime.getRuntime().availableProcessors(); 
 
@@ -533,15 +472,5 @@ public abstract class Frame implements ISequentialFrameSource, IRandomAccessFram
 
 	public final void position(ByteBuffer pixels, int i, int j) {
 		pixels.position((j * dimI + i) * pixelSize);
-	}
-
-	@Override
-	public final Class<? extends Frame>[] getFrameTypes() {
-		return FTS_RGBA8_RGB8_GREY16_FLOAT;
-	}
-
-	@Override
-	public void setPreferredFrameTypes(Set<Class<? extends Frame>> frameTypes) {
-		IVideoFrameSource.updatePreferredFrameTypes(preferredTypes, frameTypes);
 	}
 }

@@ -52,10 +52,6 @@ public final class StateInject extends AbstractVariable<GL3> implements IShaderU
 	}
 
 	@Override
-	public void dispose(GL3 gl) {
-	}
-
-	@Override
 	public boolean hasSupplier() {
 		return true;
 	}

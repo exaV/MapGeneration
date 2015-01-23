@@ -151,4 +151,11 @@ public class RGBA implements IColor, IVec4 {
 	public String toString() {
 		return "rgba[" + red() + " " + green() + " " + blue() + " " + alpha() + "]";
 	}
+
+	public void set(float[] colors, int idx) {
+		colors[idx+0] = r;
+		colors[idx+1] = g;
+		colors[idx+2] = b;
+		colors[idx+3] = a;
+	}
 }
