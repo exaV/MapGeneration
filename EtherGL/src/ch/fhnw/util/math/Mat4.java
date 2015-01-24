@@ -134,139 +134,6 @@ public final class Mat4 implements IFloatArrayCopyProvider {
 	}
 
 	/**
-	 * Post-multiply this matrix with mat (result = this * mat).
-	 *
-	 * @param mat
-	 *            the second factor of the matrix product
-	 */
-	public Mat4 postMultiply(Mat4 mat) {
-		return multiply(this, mat);
-	}
-
-	/**
-	 * Pre-multiply this matrix with mat (result = mat * this).
-	 *
-	 * @param mat
-	 *            the first factor of the matrix product
-	 */
-	public Mat4 preMultiply(Mat4 mat) {
-		return multiply(mat, this);
-	}
-
-	/**
-	 * Pre-multiply this matrix with translation matrix mt (result = mt * this)
-	 *
-	 * @param tx
-	 *            x translation
-	 * @param ty
-	 *            y translation
-	 * @param tz
-	 *            z translation
-	 * @return mt * this
-	 */
-	public Mat4 translate(float tx, float ty, float tz) {
-		Mat4 t = new Mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, tx, ty, tz, 1);
-		return preMultiply(t);
-	}
-
-	/**
-	 * Pre-multiply this matrix with translation matrix mt (result = mt * this)
-	 *
-	 * @param t
-	 *            translation vector
-	 * @return mt * this
-	 */
-	public Mat4 translate(Vec3 t) {
-		return translate(t.x, t.y, t.z);
-	}
-
-	/**
-	 * Pre-multiplies this matrix with rotation matrix mr (result = mr * this).
-	 *
-	 * @param angle
-	 *            rotation angle in degrees
-	 * @param x
-	 *            rotation axis x
-	 * @param y
-	 *            rotation axis y
-	 * @param z
-	 *            rotation axis z
-	 * @return mr * this
-	 */
-	public Mat4 rotate(float angle, float x, float y, float z) {
-		float l = (float) Math.sqrt(x * x + y * y + z * z);
-		if (l != 0 && l != 1) {
-			l = 1.0f / l;
-			x *= l;
-			y *= l;
-			z *= l;
-		}
-
-		float radians = angle * MathUtil.DEGREES_TO_RADIANS;
-		float c = (float) Math.cos(radians);
-		float ic = 1.0f - c;
-		float s = (float) Math.sin(radians);
-
-		float xy = x * y;
-		float xz = x * z;
-		float xs = x * s;
-		float ys = y * s;
-		float yz = y * z;
-		float zs = z * s;
-
-		float m00 = x * x * ic + c;
-		float m10 = xy * ic + zs;
-		float m20 = xz * ic - ys;
-		float m01 = xy * ic - zs;
-		float m11 = y * y * ic + c;
-		float m21 = yz * ic + xs;
-		float m02 = xz * ic + ys;
-		float m12 = yz * ic - xs;
-		float m22 = z * z * ic + c;
-
-		return preMultiply(new Mat4(m00, m10, m20, 0, m01, m11, m21, 0, m02, m12, m22, 0, 0, 0, 0, 1));
-	}
-
-	/**
-	 * Pre-multiplies this matrix with rotation matrix mr (result = mr * this).
-	 *
-	 * @param angle
-	 *            rotation angle in degrees
-	 * @param axis
-	 *            rotation axis
-	 * @return mr * this
-	 */
-	public Mat4 rotate(float angle, Vec3 axis) {
-		return rotate(angle, axis.x, axis.y, axis.z);
-	}
-
-	/**
-	 * Pre-multiplies this matrix with scale matrix ms (result = ms * this).
-	 *
-	 * @param sx
-	 *            scale x factor
-	 * @param sy
-	 *            scale y factor
-	 * @param sz
-	 *            scale z factor
-	 * @return ms * this
-	 */
-	public Mat4 scale(float sx, float sy, float sz) {
-		return new Mat4(m00 * sx, m10, m20, m30, m01, m11 * sy, m12, m13, m20, m21, m22 * sz, m23, m03 * sx, m13 * sy, m23 * sz, m33);
-	}
-
-	/**
-	 * Pre-multiplies this matrix with scale matrix ms (result = ms * this).
-	 *
-	 * @param s
-	 *            scale xyz vector
-	 * @return ms * this
-	 */
-	public Mat4 scale(Vec3 s) {
-		return scale(s.x, s.y, s.z);
-	}
-
-	/**
 	 * Transform vector (result = m * vec).
 	 *
 	 * @param vec
@@ -421,6 +288,173 @@ public final class Mat4 implements IFloatArrayCopyProvider {
 		float m33 = a.m30 * b.m03 + a.m31 * b.m13 + a.m32 * b.m23 + a.m33 * b.m33;
 
 		return new Mat4(m00, m10, m20, m30, m01, m11, m21, m31, m02, m12, m22, m32, m03, m13, m23, m33);
+	}
+
+	/**
+	 * Multiplies three matrices (result = a * b * c).
+	 *
+	 * @param a
+	 *            4x4 matrix in column-major order
+	 * @param b
+	 *            4x4 matrix in column-major order
+	 * @param c
+	 *            4x4 matrix in column-major order
+	 * @return a * b * c
+	 */
+	public static Mat4 multiply(Mat4 a, Mat4 b, Mat4 c) {
+		return multiply(a, multiply(b, c));
+	}
+
+	/**
+	 * Multiplies four matrices (result = a * b * c * d).
+	 *
+	 * @param a
+	 *            4x4 matrix in column-major order
+	 * @param b
+	 *            4x4 matrix in column-major order
+	 * @param c
+	 *            4x4 matrix in column-major order
+	 * @param d
+	 *            4x4 matrix in column-major order
+	 * @return a * b * c * d
+	 */
+	public static Mat4 multiply(Mat4 a, Mat4 b, Mat4 c, Mat4 d) {
+		return multiply(a, multiply(b, c, d));
+	}
+
+	/**
+	 * Multiplies an arbitrary sequence matrices (result = a * b * c * d * ...).
+	 *
+	 * @param a
+	 *            Sequence of 4x4 matrices in column-major order
+	 * @return a0 * a1 * a2 * ...
+	 */
+	public static Mat4 multiply(Mat4... a) {
+		return multiply(0, a);
+	}
+
+	// TODO: optimize for memory allocation
+	private static Mat4 multiply(int i, Mat4[] a) {
+		if (i == a.length - 1)
+			return a[i];
+		return multiply(a[i], multiply(i + 1, a));
+	}
+	
+	/**
+	 * Create translation matrix
+	 *
+	 * @param tx
+	 *            x translation
+	 * @param ty
+	 *            y translation
+	 * @param tz
+	 *            z translation
+	 * @return the translation matrix
+	 */
+	public static Mat4 translate(float tx, float ty, float tz) {
+		return new Mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, tx, ty, tz, 1);
+	}
+
+	/**
+	 * Create translation matrix
+	 *
+	 * @param t
+	 *            translation vector
+	 * @return the translation matrix
+	 */
+	public static Mat4 translate(Vec3 t) {
+		return translate(t.x, t.y, t.z);
+	}
+
+	/**
+	 * Create rotation matrix.
+	 *
+	 * @param angle
+	 *            rotation angle in degrees
+	 * @param x
+	 *            rotation axis x
+	 * @param y
+	 *            rotation axis y
+	 * @param z
+	 *            rotation axis z
+	 * @return the rotation matrix
+	 */
+	public static Mat4 rotate(float angle, float x, float y, float z) {
+		float l = (float) Math.sqrt(x * x + y * y + z * z);
+		if (l != 0 && l != 1) {
+			l = 1.0f / l;
+			x *= l;
+			y *= l;
+			z *= l;
+		}
+
+		float radians = angle * MathUtil.DEGREES_TO_RADIANS;
+		float c = (float) Math.cos(radians);
+		float ic = 1.0f - c;
+		float s = (float) Math.sin(radians);
+
+		float xy = x * y;
+		float xz = x * z;
+		float xs = x * s;
+		float ys = y * s;
+		float yz = y * z;
+		float zs = z * s;
+
+		float m00 = x * x * ic + c;
+		float m10 = xy * ic + zs;
+		float m20 = xz * ic - ys;
+		float m01 = xy * ic - zs;
+		float m11 = y * y * ic + c;
+		float m21 = yz * ic + xs;
+		float m02 = xz * ic + ys;
+		float m12 = yz * ic - xs;
+		float m22 = z * z * ic + c;
+
+		return new Mat4(m00, m10, m20, 0, m01, m11, m21, 0, m02, m12, m22, 0, 0, 0, 0, 1);
+	}
+
+	/**
+	 * Create rotation matrix.
+	 *
+	 * @param angle
+	 *            rotation angle in degrees
+	 * @param axis
+	 *            rotation axis
+	 * @return the rotation matrix
+	 */
+	public static Mat4 rotate(float angle, Vec3 axis) {
+		return rotate(angle, axis.x, axis.y, axis.z);
+	}
+
+	/**
+	 * Create scale matrix.
+	 *
+	 * @param sx
+	 *            scale x factor
+	 * @param sy
+	 *            scale y factor
+	 * @param sz
+	 *            scale z factor
+	 * @return the scale matrix
+	 */
+	public static Mat4 scale(float sx, float sy, float sz) {
+		//@formatter:off
+		return new Mat4(sx, 0,  0,  0, 
+						0,  sy, 0,  0,
+						0,  0,  sz, 0, 
+						0,  0,  0,  1);
+		//@formatter:on
+	}
+
+	/**
+	 * Create scale matrix.
+	 *
+	 * @param s
+	 *            scale xyz vector
+	 * @return the scale matrix
+	 */
+	public static Mat4 scale(Vec3 s) {
+		return scale(s.x, s.y, s.z);
 	}
 
 	/**

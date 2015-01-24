@@ -205,7 +205,7 @@ public class DefaultView implements IView {
 				// FIXME: need to make this configurable and move to renderer
 				gl.glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
 				gl.glClearDepth(1.0f);
-
+				
 				if(viewConfig.has(ViewFlag.SMOOTH_LINES)) {
 					gl.glEnable(GL.GL_LINE_SMOOTH);
 					gl.glHint(GL.GL_LINE_SMOOTH_HINT, GL.GL_NICEST);
@@ -225,11 +225,13 @@ public class DefaultView implements IView {
 				// gl3 = new TraceGL3(gl3, System.out);
 				// gl3 = new DebugGL3(gl3);
 
-				gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT | GL.GL_STENCIL_BUFFER_BIT);
+				gl3.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT | GL.GL_STENCIL_BUFFER_BIT);
 
+				gl3.glEnable(GL.GL_MULTISAMPLE);
+				
 				if (!isEnabled())
 					return;
-
+				
 				// repaint UI surface to texture if necessary (FIXME: should this be done on model or render thread?)
 				UI ui = getController().getUI();
 				if (ui != null)

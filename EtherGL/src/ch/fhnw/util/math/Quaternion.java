@@ -62,30 +62,30 @@ public final class Quaternion {
 	/**
 	 * Creates quaternion from given euler angles in degrees.
 	 * 
-	 * @param pitch
-	 *            the rotation around the x axis in degrees
-	 * @param yaw
-	 *            the rotation around the y axis in degrees
-	 * @param roll
-	 *            the rotation around the z axis degrees
+	 * @param xRotation
+	 *            the rotation around the x axis in degrees ("pitch")
+	 * @param yRotation
+	 *            the rotation around the y axis in degrees ("yaw")
+	 * @param zRotation
+	 *            the rotation around the z axis in degrees ("roll")
 	 */
-	public static Quaternion fromEulerAngles(float pitch, float yaw, float roll) {
-		float hp = pitch * 0.5f * MathUtil.DEGREES_TO_RADIANS;
-		float shp = (float) Math.sin(hp);
-		float chp = (float) Math.cos(hp);
+	public static Quaternion fromEulerAngles(float xRotation, float yRotation, float zRotation) {
+		float hx = xRotation * 0.5f * MathUtil.DEGREES_TO_RADIANS;
+		float shx = (float) Math.sin(hx);
+		float chx = (float) Math.cos(hx);
 
-		float hy = yaw * 0.5f * MathUtil.DEGREES_TO_RADIANS;
+		float hy = yRotation * 0.5f * MathUtil.DEGREES_TO_RADIANS;
 		float shy = (float) Math.sin(hy);
 		float chy = (float) Math.cos(hy);
 
-		float hr = roll * 0.5f * MathUtil.DEGREES_TO_RADIANS;
-		float shr = (float) Math.sin(hr);
-		float chr = (float) Math.cos(hr);
+		float hz = zRotation * 0.5f * MathUtil.DEGREES_TO_RADIANS;
+		float shz = (float) Math.sin(hz);
+		float chz = (float) Math.cos(hz);
 
-		return new Quaternion(chy * shp * chr + shy * chp * shr, 
-							  shy * chp * chr - chy * shp * shr, 
-							  chy * chp * shr - shy * shp * chr, 
-							  chy * chp * chr + shy * shp * shr);
+		return new Quaternion(chy * shx * chz + shy * chx * shz, 
+							  shy * chx * chz - chy * shx * shz, 
+							  chy * chx * shz - shy * shx * chz, 
+							  chy * chx * chz + shy * shx * shz);
 	}
 
 	/**
@@ -126,7 +126,7 @@ public final class Quaternion {
 		}
 		// the trace is the sum of the diagonal elements; see
 		// http://mathworld.wolfram.com/MatrixTrace.html
-		final float t = vx.x + vy.y + vz.z;
+		float t = vx.x + vy.y + vz.z;
 
 		float x;
 		float y;
@@ -176,8 +176,8 @@ public final class Quaternion {
 	 *            the target vector, which should be normalized.
 	 */
 	public static Quaternion fromCross(Vec3 v1, Vec3 v2) {
-		final float dot = MathUtil.clamp(v1.dot(v2), -1f, 1f);
-		final float angle = (float) Math.acos(dot) * MathUtil.RADIANS_TO_DEGREES;
+		float dot = MathUtil.clamp(v1.dot(v2), -1f, 1f);
+		float angle = (float) Math.acos(dot) * MathUtil.RADIANS_TO_DEGREES;
 		return fromAxis(v1.cross(v2), angle);
 	}
 
@@ -308,15 +308,15 @@ public final class Quaternion {
 	 * @return the resulting quaternion
 	 */
 	public Quaternion slerp(Quaternion end, float alpha) {
-		final float dot = dot(end);
+		float dot = dot(end);
 		float absDot = dot < 0.f ? -dot : dot;
 
 		float scale0 = 1 - alpha;
 		float scale1 = alpha;
 
 		if ((1 - absDot) > 0.1) {
-			final double angle = Math.acos(absDot);
-			final double invSinTheta = 1f / Math.sin(angle);
+			double angle = Math.acos(absDot);
+			double invSinTheta = 1f / Math.sin(angle);
 
 			scale0 = (float) (Math.sin((1 - alpha) * angle) * invSinTheta);
 			scale1 = (float) (Math.sin((alpha * angle)) * invSinTheta);
@@ -325,8 +325,7 @@ public final class Quaternion {
 		if (dot < 0.f)
 			scale1 = -scale1;
 
-		return new Quaternion((scale0 * x) + (scale1 * end.x), (scale0 * y) + (scale1 * end.y), (scale0 * z) + (scale1 * end.z), (scale0 * w)
-				+ (scale1 * end.w));
+		return new Quaternion(scale0 * x + scale1 * end.x, scale0 * y + scale1 * end.y, scale0 * z + scale1 * end.z, scale0 * w	+ scale1 * end.w);
 	}
 
 	/**
@@ -339,7 +338,7 @@ public final class Quaternion {
 	 * @return the resulting quaternion
 	 */
 	public Quaternion slerp(Quaternion[] q) {
-		final float w = 1.0f / q.length;
+		float w = 1.0f / q.length;
 		Quaternion result = q[0].exp(w);
 		for (int i = 1; i < q.length; i++)
 			result = result.postMultiply(q[i]).exp(w);
@@ -389,35 +388,33 @@ public final class Quaternion {
 	}
 
 	/**
-	 * Get the pitch euler angle in degrees, which is the rotation around the x axis. Requires that this quaternion is
-	 * normalized.
+	 * Get the x-rotation Euler angle ("pitch") in degrees. Requires that this quaternion is normalized.
 	 * 
 	 * @return the rotation around the x axis in degrees (between -90 and +90)
 	 */
-	public float getPitch() {
+	// XXX do we really want this to be between -90 and +90?
+	public float getXRotation() {
 		int pole = getGimbalPole();
 		float rad = pole == 0 ? (float) Math.asin(MathUtil.clamp(2f * (w * x - z * y), -1f, 1f)) : pole * MathUtil.PI * 0.5f;
 		return rad * MathUtil.RADIANS_TO_DEGREES;
 	}
 
 	/**
-	 * Get the yaw euler angle in degrees, which is the rotation around the y axis. Requires that this quaternion is
-	 * normalized.
+	 * Get the y-rotation Euler angle ("yaw") in degrees. Requires that this quaternion is normalized.
 	 * 
 	 * @return the rotation around the y axis in degrees (between -180 and +180)
 	 */
-	public float getYaw() {
+	public float getYRotation() {
 		float rad = (float) (getGimbalPole() == 0 ? Math.atan2(2f * (y * w + x * z), 1f - 2f * (y * y + x * x)) : 0f);
 		return rad * MathUtil.RADIANS_TO_DEGREES;
 	}
 
 	/**
-	 * Get the roll euler angle in degrees, which is the rotation around the z axis. Requires that this quaternion is
-	 * normalized.
+	 * Get the z-rotation Euler angle ("roll") in degrees. Requires that this quaternion is normalized.
 	 * 
 	 * @return the rotation around the z axis in degrees (between -180 and +180)
 	 */
-	public float getRoll() {
+	public float getZRotation() {
 		int pole = getGimbalPole();
 		float rad = (float) (pole == 0 ? Math.atan2(2f * (w * z + y * x), 1f - 2f * (x * x + z * z)) : pole * 2f * Math.atan2(y, w));
 		return rad * MathUtil.RADIANS_TO_DEGREES;
@@ -506,20 +503,17 @@ public final class Quaternion {
 	 * @return the transformed vector
 	 */
 	public Vec3 transform(Vec3 v) {
-		Quaternion tmp2 = this;
-		tmp2 = tmp2.conjugate();
-		tmp2 = tmp2.preMultiply(new Quaternion(v.x, v.y, v.z, 0)).preMultiply(this);
-		return new Vec3(tmp2.x, tmp2.y, tmp2.z);
+		Quaternion q = conjugate().preMultiply(new Quaternion(v.x, v.y, v.z, 0)).preMultiply(this);
+		return new Vec3(q.x, q.y, q.z);
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) {
+		if (this == obj)
 			return true;
-		}
 
 		if (obj instanceof Quaternion) {
-			final Quaternion v = (Quaternion) obj;
+			Quaternion v = (Quaternion) obj;
 			return (x == v.x) && (y == v.y) && (z == v.z) && (w == v.w);
 		}
 		return false;

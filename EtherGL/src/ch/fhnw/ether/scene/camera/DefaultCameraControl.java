@@ -90,7 +90,7 @@ public class DefaultCameraControl {
 	 * @param delta relative angle in degrees
 	 */
 	public void addToAzimuth(float delta) {
-		Mat4 m = Mat4.ID.translate(camera.getTarget().negate()).rotate(delta, Vec3.Z).translate(camera.getTarget());
+		Mat4 m = Mat4.multiply(Mat4.translate(camera.getTarget()), Mat4.rotate(delta, Vec3.Z), Mat4.translate(camera.getTarget().negate()));
 		
 		Vec3 p = m.transform(camera.getPosition());
 		Vec3 u = m.transform(camera.getPosition().add(camera.getUp())).subtract(p);
@@ -104,7 +104,7 @@ public class DefaultCameraControl {
 	 * @param delta relative angle in degrees
 	 */
 	public void addToElevation(float delta) {
-		Mat4 m = Mat4.ID.translate(camera.getTarget().negate()).rotate(delta, getCameraXAxis()).translate(camera.getTarget());
+		Mat4 m = Mat4.multiply(Mat4.translate(camera.getTarget()), Mat4.rotate(delta, getCameraXAxis()), Mat4.translate(camera.getTarget().negate()));
 		
 		Vec3 p = m.transform(camera.getPosition());
 		Vec3 u = m.transform(camera.getPosition().add(camera.getUp())).subtract(p);
