@@ -134,6 +134,26 @@ public final class Mat4 implements IFloatArrayCopyProvider {
 	}
 
 	/**
+	 * Post-multiply this matrix with mat (result = this * mat).
+	 *
+	 * @param mat
+	 *            the second factor of the matrix product
+	 */
+	public Mat4 postMultiply(Mat4 mat) {
+		return multiply(this, mat);
+	}
+
+	/**
+	 * Pre-multiply this matrix with mat (result = mat * this).
+	 *
+	 * @param mat
+	 *            the first factor of the matrix product
+	 */
+	public Mat4 preMultiply(Mat4 mat) {
+		return multiply(mat, this);
+	}
+	
+	/**
 	 * Transform vector (result = m * vec).
 	 *
 	 * @param vec
