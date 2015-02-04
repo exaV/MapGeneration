@@ -37,6 +37,8 @@ import ch.fhnw.ether.render.gl.Program;
 import ch.fhnw.ether.scene.attribute.ITypedAttribute;
 
 public class BooleanUniform extends AbstractUniform<Boolean> {
+	private boolean value;
+	
 	public BooleanUniform(ITypedAttribute<Boolean> attribute, String shaderName) {
 		super(attribute, shaderName);
 	}
@@ -52,9 +54,14 @@ public class BooleanUniform extends AbstractUniform<Boolean> {
 	public BooleanUniform(String id, String shaderName) {
 		super(id, shaderName);
 	}
+	
+	@Override
+	public final void update() {
+		value = fetch();
+	}
 
 	@Override
-	public void enable(GL3 gl, Program program) {
-		program.setUniform(gl, getShaderIndex(gl, program), get());
+	public final void enable(GL3 gl, Program program) {
+		program.setUniform(gl, getShaderIndex(gl, program), value);
 	}
 }

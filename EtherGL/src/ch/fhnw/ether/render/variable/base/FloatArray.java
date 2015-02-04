@@ -46,16 +46,6 @@ public class FloatArray extends AbstractArray<float[]> {
 		super(attribute, shaderName, numComponents);
 	}
 
-	public List<Supplier<float[]>> getSuppliers() {
-		return suppliers;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public void addSupplier(Supplier<?> supplier) {
-		suppliers.add((Supplier<float[]>) supplier);
-	}
-
 	@Override
 	public void enable(GL3 gl, Program program, IArrayBuffer buffer) {
 		buffer.enableAttribute(gl, getShaderIndex(gl, program), getNumComponents().get(), getStride(), getOffset());

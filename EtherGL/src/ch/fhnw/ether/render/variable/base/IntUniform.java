@@ -37,6 +37,8 @@ import ch.fhnw.ether.render.gl.Program;
 import ch.fhnw.ether.scene.attribute.ITypedAttribute;
 
 public class IntUniform extends AbstractUniform<Integer> {
+	private int value;
+
 	public IntUniform(ITypedAttribute<Integer> attribute, String shaderName) {
 		super(attribute, shaderName);
 	}
@@ -54,7 +56,12 @@ public class IntUniform extends AbstractUniform<Integer> {
 	}
 
 	@Override
-	public void enable(GL3 gl, Program program) {
-		program.setUniform(gl, getShaderIndex(gl, program), get());
+	public final void update() {
+		value = fetch();
+	}
+
+	@Override
+	public final void enable(GL3 gl, Program program) {
+		program.setUniform(gl, getShaderIndex(gl, program), value);
 	}
 }

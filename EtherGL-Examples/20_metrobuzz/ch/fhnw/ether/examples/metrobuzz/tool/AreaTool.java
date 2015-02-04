@@ -42,6 +42,7 @@ import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.ProjectionUtil;
 import ch.fhnw.util.color.RGBA;
+import ch.fhnw.util.math.Mat4;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.Line;
 import ch.fhnw.util.math.geometry.Plane;
@@ -64,8 +65,8 @@ public final class AreaTool extends AbstractTool {
 	public AreaTool(IController controller) {
 		super(controller);
 		IGeometry geometry = DefaultGeometry.createV(Primitive.TRIANGLES, MeshLibrary.UNIT_CUBE_TRIANGLES);
-		geometry.setScale(new Vec3(0.1, 0.1, 0.001));
 		mesh = new DefaultMesh(new ColorMaterial(TOOL_COLOR), geometry);
+		mesh.setTransform(Mat4.scale(0.1f, 0.1f, 0.001f));
 	}
 
 	@Override
@@ -95,7 +96,7 @@ public final class AreaTool extends AbstractTool {
 			break;
 		}
 
-		mesh.getGeometry().setTranslation(new Vec3(xOffset, yOffset, 0));
+		mesh.setPosition(new Vec3(xOffset, yOffset, 0));
 		view.getController().repaintViews();
 	}
 
@@ -117,7 +118,7 @@ public final class AreaTool extends AbstractTool {
 			if (p != null) {
 				xOffset = p.x;
 				yOffset = p.y;
-				mesh.getGeometry().setTranslation(new Vec3(xOffset, yOffset, 0));
+				mesh.setPosition(new Vec3(xOffset, yOffset, 0));
 				view.getController().repaintViews();
 			}
 		}

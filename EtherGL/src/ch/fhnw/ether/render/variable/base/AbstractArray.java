@@ -34,6 +34,7 @@ import ch.fhnw.ether.scene.attribute.ITypedAttribute;
 
 public abstract class AbstractArray<T> extends AbstractVariable<T> implements IShaderArray<T> {
 	private final NumComponents numComponents;
+	private int index;
 	private int stride;
 	private int offset;
 
@@ -51,13 +52,23 @@ public abstract class AbstractArray<T> extends AbstractVariable<T> implements IS
 	public final NumComponents getNumComponents() {
 		return numComponents;
 	}
+	
+	@Override
+	public int getAttributeIndex() {
+		return index;
+	}
+	
+	@Override
+	public void setAttributeIndex(int index) {
+		this.index = index;
+	}
 
 	@Override
 	public final void setup(int stride, int offset) {
 		this.stride = stride;
 		this.offset = offset;
 	}
-
+	
 	protected final int getStride() {
 		return stride;
 	}

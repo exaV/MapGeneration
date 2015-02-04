@@ -35,6 +35,7 @@ import ch.fhnw.ether.scene.I3DObject;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.util.IUpdateListener;
+import ch.fhnw.util.math.Mat4;
 
 /**
  * Basic mesh abstraction. A mesh is a light weight structure that combines render pass, scene/view/render flags,
@@ -67,9 +68,18 @@ public interface IMesh extends I3DObject, IUpdateListener {
 	IMaterial getMaterial();
 
 	IGeometry getGeometry();
+	
+	Mat4 getTransform();
+	
+	void setTransform(Mat4 transform);
 
 	/**
-	 * @return true if mesh was modified since last call to this method.
+	 * @return true if material was modified since last call to this method.
 	 */
-	boolean needsUpdate();
+	boolean needsMaterialUpdate();
+	
+	/**
+	 * @return true if geometry was modified since last call to this method.
+	 */
+	boolean needsGeometryUpdate();
 }

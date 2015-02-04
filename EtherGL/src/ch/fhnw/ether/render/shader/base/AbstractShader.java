@@ -92,6 +92,7 @@ public abstract class AbstractShader implements IShader {
 				System.exit(1);
 			}
 		}
+		uniforms.forEach((attr) -> attr.update());
 	}
 
 	@Override

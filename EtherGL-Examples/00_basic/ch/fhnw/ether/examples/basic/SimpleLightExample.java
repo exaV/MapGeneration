@@ -46,7 +46,6 @@ import ch.fhnw.ether.scene.mesh.IMesh.Flags;
 import ch.fhnw.ether.scene.mesh.IMesh.Queue;
 import ch.fhnw.ether.scene.mesh.MeshLibrary;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
-import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
@@ -57,6 +56,7 @@ import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.gl.DefaultView;
 import ch.fhnw.util.color.RGB;
 import ch.fhnw.util.color.RGBA;
+import ch.fhnw.util.math.Transform;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.GeodesicSphere;
 
@@ -78,7 +78,7 @@ public final class SimpleLightExample {
 	public static void main(String[] args) {
 		new SimpleLightExample();
 	}
-	
+
 	private static final boolean ADD_BUNNY = true;
 
 	private static final float INC_XY = 0.25f;
@@ -138,6 +138,7 @@ public final class SimpleLightExample {
 				}
 				controller.getUI().setMessage("light position: " + lightMesh.getPosition());
 				light.setPosition(lightMesh.getPosition());
+				lightMesh.requestUpdate(null);
 				repaintViews();
 			};
 		};
@@ -157,8 +158,8 @@ public final class SimpleLightExample {
 		GeodesicSphere s = new GeodesicSphere(4);
 
 		lightMesh = new DefaultMesh(new ColorMaterial(RGBA.YELLOW), DefaultGeometry.createV(Primitive.TRIANGLES, s.getTriangles()), Flags.DONT_CAST_SHADOW);
-		lightMesh.getGeometry().setScale(new Vec3(0.1, 0.1, 0.1));
-		lightMesh.setPosition(Vec3.Z.scale(2));
+		lightMesh.setTransform(Transform.trs(0, 0, 0, 0, 0, 0, 0.1f, 0.1f, 0.1f));
+		lightMesh.setPosition(new Vec3(0, 0, 2));
 		light.setPosition(lightMesh.getPosition());
 
 		scene.add3DObjects(light);
@@ -173,7 +174,7 @@ public final class SimpleLightExample {
 
 		// Add an exit button
 		controller.getUI().addWidget(new Button(0, 0, "Quit", "Quit", KeyEvent.VK_ESCAPE, (button, v) -> System.exit(0)));
-		
+
 		// Add geometry
 		IMaterial solidMaterial = new ShadedMaterial(RGB.BLACK, RGB.BLUE, RGB.GRAY, RGB.WHITE, 10, 1, 1f);
 		IMaterial lineMaterial = new ColorMaterial(new RGBA(1, 1, 1, 0.2f));
@@ -184,16 +185,15 @@ public final class SimpleLightExample {
 		IMesh solidMeshT = new DefaultMesh(solidMaterial, DefaultGeometry.createVN(Primitive.TRIANGLES, s.getTriangles(), s.getNormals()));
 		IMesh solidMeshL = new DefaultMesh(lineMaterial, DefaultGeometry.createV(Primitive.LINES, s.getLines()), Queue.TRANSPARENCY);
 
-		solidMeshT.getGeometry().setTranslation(new Vec3(-1, 0, 0.5));
-		solidMeshL.getGeometry().setTranslation(new Vec3(-1, 0, 0.5));
+		solidMeshT.setTransform(Transform.trs(-1, 0, 0.5f, 0, 0, 0, 1, 1, 1));
+		solidMeshL.setTransform(Transform.trs(-1, 0, 0.5f, 0, 0, 0, 1, 1, 1));
 
 		IMesh texturedMeshT = new DefaultMesh(textureMaterial, DefaultGeometry.createVNM(Primitive.TRIANGLES, s.getTriangles(), s.getNormals(),
 				s.getTexCoords()));
-		texturedMeshT.getGeometry().setTranslation(new Vec3(1, 0, 0.5));
+		texturedMeshT.setTransform(Transform.trs(1, 0, 0.5f, 0, 0, 0, 1, 1, 1));
 
 		IMesh solidCubeT = MeshLibrary.createCube(solidMaterial);
-		solidCubeT.getGeometry().setScale(Vec3.ONE.scale(0.8f));
-		solidCubeT.getGeometry().setTranslation(new Vec3(0, 0, 0.5));
+		solidCubeT.setTransform(Transform.trs(0, 0, 0.5f, 0, 0, 0, 0.8f, 0.8f, 0.8f));
 
 		scene.add3DObjects(solidMeshT, solidMeshL, texturedMeshT, solidCubeT);
 
@@ -203,15 +203,13 @@ public final class SimpleLightExample {
 			try {
 				List<IMesh> meshes = new OBJReader(getClass().getResource("assets/bunny_original.obj")).getMeshes();
 				solidBunnyT = new DefaultMesh(solidMaterial, meshes.get(0).getGeometry());
-				IGeometry g = solidBunnyT.getGeometry();
-				g.setRotation(new Vec3(90, 0, 0));
-				g.setTranslation(new Vec3(2, 0, 0));
-				g.setScale(new Vec3(4, 4, 4));
+				solidBunnyT.setTransform(Transform.trs(2, 0, 0, 90, 0, 0, 4, 4, 4));
 				scene.add3DObject(solidBunnyT);
 			} catch (Throwable throwable) {
 				throwable.printStackTrace();
 			}
 		}
 
+		controller.repaintViews();
 	}
 }

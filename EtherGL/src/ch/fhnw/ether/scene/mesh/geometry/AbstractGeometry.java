@@ -4,8 +4,10 @@ import ch.fhnw.util.IUpdateListener;
 
 public abstract class AbstractGeometry implements IGeometry {
 	private final Primitive type;
+	
 	private final UpdateListeners listeners = new UpdateListeners();
 
+	
 	protected AbstractGeometry(Primitive type) {
 		this.type = type;
 	}
@@ -25,7 +27,8 @@ public abstract class AbstractGeometry implements IGeometry {
 		listeners.removeListener(listener);
 	}
 
-	protected void requestUpdate() {
+	@Override
+	public void requestUpdate() {
 		listeners.requestUpdate(this);
 	}
 }

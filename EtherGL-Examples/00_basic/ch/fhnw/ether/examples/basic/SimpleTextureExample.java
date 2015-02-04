@@ -49,7 +49,7 @@ import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.ether.scene.mesh.material.Texture;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.gl.DefaultView;
-import ch.fhnw.util.math.Vec3;
+import ch.fhnw.util.math.Mat4;
 
 public final class SimpleTextureExample {
 
@@ -106,7 +106,7 @@ public final class SimpleTextureExample {
 				float f = 0.4f + 0.6f * (float) (Math.sin(Math.toRadians(c)) * 0.5 + 1);
 
 				// apply changes to geometry
-				mesh.getGeometry().setScale(new Vec3(f, f, f));
+				mesh.setTransform(Mat4.scale(f, f, f));
 				mesh.getGeometry().modify(1, (IGeometryAttribute id, float[] colors) -> {
 					for (int i = 0; i < colors.length; ++i) {
 						if (i % 4 == 3)

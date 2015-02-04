@@ -14,6 +14,7 @@ import ch.fhnw.ether.scene.DefaultScene;
 import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.scene.camera.Camera;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
+import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.IMesh.Queue;
 import ch.fhnw.ether.scene.mesh.MeshLibrary;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
@@ -27,7 +28,7 @@ import ch.fhnw.ether.video.URLVideoSource;
 import ch.fhnw.ether.view.IView.Config;
 import ch.fhnw.ether.view.IView.ViewType;
 import ch.fhnw.ether.view.gl.DefaultView;
-import ch.fhnw.util.math.Vec3;
+import ch.fhnw.util.math.Transform;
 
 public class SimplePlayerGL implements Runnable {
 	private static final double SEC2MS = 1000.0;
@@ -57,11 +58,9 @@ public class SimplePlayerGL implements Runnable {
 			controller.setScene(scene);
 
 			DefaultGeometry g = DefaultGeometry.createVM(Primitive.TRIANGLES, MeshLibrary.DEFAULT_QUAD_VERTICES, MeshLibrary.DEFAULT_QUAD_TEX_COORDS); 
-
-			g.setRotation(new Vec3(90, 0, 0));
-			g.setScale(new Vec3(SCALE * sources[0].getWidth() / sources[0].getHeight(), SCALE, SCALE));
-
-			scene.add3DObject(new DefaultMesh(new ColorMapMaterial(texture), g, Queue.TRANSPARENCY));
+			IMesh mesh = new DefaultMesh(new ColorMapMaterial(texture), g, Queue.TRANSPARENCY);
+			mesh.setTransform(Transform.trs(0, 0, 0, 90, 0, 0, SCALE * sources[0].getWidth() / sources[0].getHeight(), SCALE, SCALE));			
+			scene.add3DObject(mesh);
 
 			new Thread(this).start();
 		} else {

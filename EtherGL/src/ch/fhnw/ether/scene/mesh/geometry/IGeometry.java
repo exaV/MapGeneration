@@ -30,13 +30,10 @@
 package ch.fhnw.ether.scene.mesh.geometry;
 
 import ch.fhnw.ether.scene.attribute.AbstractAttribute;
-import ch.fhnw.ether.scene.attribute.IAttributeProvider;
 import ch.fhnw.ether.scene.attribute.ITypedAttribute;
 import ch.fhnw.util.IUpdateRequester;
-import ch.fhnw.util.math.ITransformable;
-import ch.fhnw.util.math.geometry.BoundingBox;
 
-public interface IGeometry extends IAttributeProvider, ITransformable, IUpdateRequester {
+public interface IGeometry extends IUpdateRequester {
 	interface IGeometryAttribute extends ITypedAttribute<float[]> {
 	}
 
@@ -58,7 +55,7 @@ public interface IGeometry extends IAttributeProvider, ITransformable, IUpdateRe
 	interface IAttributesVisitor {
 		/**
 		 * Inspect or modify attributes of a geometry through visitor. Note that in the current implementation, the
-		 * attributes must not be changed, otherwise the mesh will result in an undefined state. It is however ok, to
+		 * attributes must not be changed, otherwise the mesh will result in an undefined state. It is however ok to
 		 * replace all attribute data arrays with new arrays, e.g. of different size.
 		 */
 		void visit(IGeometryAttribute[] attributes, float[][] data);
@@ -67,9 +64,9 @@ public interface IGeometry extends IAttributeProvider, ITransformable, IUpdateRe
 	enum Primitive {
 		POINTS, LINES, TRIANGLES;
 	}
-	
+
 	// default geometry attributes
-	
+
 	// position array (note that this attribute is mandatory)
 	IGeometryAttribute POSITION_ARRAY = new GeometryAttribute("builtin.material.position_array");
 
@@ -87,40 +84,60 @@ public interface IGeometry extends IAttributeProvider, ITransformable, IUpdateRe
 
 	// points only: point size
 	IGeometryAttribute POINT_SIZE_ARRAY = new GeometryAttribute("builtin.material.point_size_array");
-	
 
 	/**
+	 * Obtain primitive type of this geometry.
+	 * 
 	 * @return primitive type of this geometry
 	 */
 	Primitive getType();
 
 	/**
-	 * @return axis-aligned bounding box of this geometry
-	 */
-	BoundingBox getBounds();
-
-	/**
-	 * Inspect specific attribute of this geometry through visitor. Note that this will inspect the transformed vertices
-	 * and normals. Must not modify geometry.
+	 * Inspect specific attribute of this geometry through visitor.
+	 * 
+	 * @param index
+	 *            index of attribute to be visited
+	 * @param visitor
+	 *            attribute visitor used for inspection
 	 */
 	void inspect(int index, IAttributeVisitor visitor);
 
 	/**
-	 * Inspect all attributes of this geometry through visitor. Note that this will inspect the transformed vertices and
-	 * normals. Must not modify geometry.
+	 * Inspect all attributes of this geometry through visitor.
+	 * 
+	 * @param visitor
+	 *            attributes visitor used for inspection
 	 */
 	void inspect(IAttributesVisitor visitor);
 
 	/**
-	 * Modify specific attribute of this geometry through visitor. Note that this will modify the original (i.e.
-	 * untransformed) vertices and normals.
+	 * Modify specific attribute of this geometry through visitor. If geometry is modified, {@link #requestUpdate()}
+	 * needs to be called explicitly.
+	 * 
+	 * @param index
+	 *            index of attribute to be visited
+	 * @param visitor
+	 *            attribute visitor used for modification
+	 * 
+	 * @throws UnsupportedOperationException
+	 *             if geometry cannot be modified.
 	 */
 	void modify(int index, IAttributeVisitor visitor);
 
 	/**
-	 * Modify any attribute of this geometry through visitor. Note that this will modify the original (i.e.
-	 * untransformed) vertices and normals.
+	 * Modify all attributes of this geometry through visitor. If geometry is modified, {@link #requestUpdate()} needs
+	 * to be called explicitly.
+	 * 
+	 * @param visitor
+	 *            attributes visitor used for modification
+	 * 
+	 * @throws UnsupportedOperationException
+	 *             if geometry cannot be modified.
 	 */
 	void modify(IAttributesVisitor visitor);
 
+	/**
+	 * Request update after this geometry has been modified
+	 */
+	void requestUpdate();
 }

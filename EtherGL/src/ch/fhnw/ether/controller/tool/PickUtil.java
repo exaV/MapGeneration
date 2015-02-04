@@ -70,6 +70,7 @@ public final class PickUtil {
 				continue;
 			}
 
+			// FIXME: we need to apply the mesh's transform/position
 			IGeometry geometry = ((IMesh) object).getGeometry();
 			geometry.inspect(0, (IGeometryAttribute attribute, float[] data) -> {
 				float dd = Float.POSITIVE_INFINITY;

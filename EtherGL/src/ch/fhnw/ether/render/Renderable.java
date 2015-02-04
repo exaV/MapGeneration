@@ -31,7 +31,6 @@ package ch.fhnw.ether.render;
 
 import java.nio.FloatBuffer;
 import java.util.List;
-import java.util.function.Supplier;
 
 import javax.media.opengl.GL3;
 
@@ -39,11 +38,14 @@ import ch.fhnw.ether.render.gl.FloatArrayBuffer;
 import ch.fhnw.ether.render.gl.IArrayBuffer;
 import ch.fhnw.ether.render.shader.IShader;
 import ch.fhnw.ether.render.variable.IShaderArray;
-import ch.fhnw.ether.render.variable.base.FloatArray;
 import ch.fhnw.ether.scene.attribute.IAttributeProvider;
 import ch.fhnw.ether.scene.mesh.IMesh;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
+import ch.fhnw.util.BufferUtilities;
+import ch.fhnw.util.math.Mat3;
+import ch.fhnw.util.math.Mat4;
 
-// FIXME: deal with max vbo size & multiple vbos, memory optimization, handle non-float arrays
+// TODO: deal with max vbo size & multiple vbos, memory optimization, handle non-float arrays
 
 public final class Renderable {
 	private IShader shader;
@@ -58,7 +60,7 @@ public final class Renderable {
 	public Renderable(IMesh mesh, List<IAttributeProvider> providers) {
 		this(null, mesh, providers);
 	}
-	
+
 	public Renderable(IShader shader, IMesh mesh, List<IAttributeProvider> providers) {
 		this.shader = ShaderBuilder.create(shader, mesh, providers);
 		this.mesh = mesh;
@@ -80,7 +82,6 @@ public final class Renderable {
 
 		// make sure update flag is set, so everything get initialized on the next render cycle
 		mesh.requestUpdate(null);
-		
 	}
 
 	public void dispose(GL3 gl) {
@@ -96,10 +97,11 @@ public final class Renderable {
 	}
 
 	public void update(GL3 gl) {
-		if (mesh.needsUpdate()) {
+		if (mesh.needsMaterialUpdate())
 			shader.update(gl);
+
+		if (mesh.needsGeometryUpdate())
 			loadBuffer(gl);
-		}
 	}
 
 	public void render(GL3 gl) {
@@ -119,7 +121,7 @@ public final class Renderable {
 	public int getCount() {
 		return buffer.size() / stride;
 	}
-	
+
 	public int getStride() {
 		return stride;
 	}
@@ -133,40 +135,42 @@ public final class Renderable {
 		return "renderable[queue=" + mesh.getQueue() + " shader=" + shader + " stride=" + stride + "]";
 	}
 
-	// FIXME: thread safety
-	// FIXME: fix memory management/allocation
+	private static FloatBuffer target = BufferUtilities.createDirectFloatBuffer(1024 * 1024);
+
 	private void loadBuffer(GL3 gl) {
+		Mat4 modelMatrix = Mat4.multiply(Mat4.translate(mesh.getPosition()), mesh.getTransform());
+		Mat3 normalMatrix = new Mat3(modelMatrix).inverse().transpose();
+		
 		List<IShaderArray<?>> arrays = shader.getArrays();
-		int length = 0;
-		FloatArray attr = (FloatArray) arrays.get(0);
-		for (Supplier<float[]> supplier : attr.getSuppliers()) {
-			length += supplier.get().length;
-		}
-		length = length / attr.getNumComponents().get() * stride;
-
-		final float[] interleavedData = new float[length];
-		final float[][] data = new float[arrays.size()][];
-
-		int index = 0;
-		for (int supplierIndex = 0; supplierIndex < attr.getSuppliers().size(); ++supplierIndex) {
-			for (int attributeIndex = 0; attributeIndex < arrays.size(); ++attributeIndex) {
-				data[attributeIndex] = ((FloatArray) (arrays.get(attributeIndex))).getSuppliers().get(supplierIndex).get();
+		float[][] sources = new float[arrays.size()][];
+		mesh.getGeometry().inspect((attributes, data) -> {
+			int size = 0;
+			for (int i = 0; i < arrays.size(); ++i) {
+				IShaderArray<?> array = arrays.get(i);
+				float[] source = data[array.getAttributeIndex()];
+				if (array.id().equals(IGeometry.POSITION_ARRAY.id()))
+					sources[i] = modelMatrix.transform(source);
+				else if (array.id().equals(IGeometry.NORMAL_ARRAY.id()))
+					sources[i] = normalMatrix.transform(source);
+				else
+					sources[i] = source;
+				size += source.length;
 			}
-			index = interleave(interleavedData, index, data, sizes);
-		}
-
-		buffer.load(gl, FloatBuffer.wrap(interleavedData));
+			if (target.capacity() < size)
+				target = BufferUtilities.createDirectFloatBuffer(2 * size);
+			target.clear();
+			target.limit(size);
+			interleave(target, sources, sizes);
+		});
+		buffer.load(gl, target);
 	}
 
-	private static int interleave(final float[] interleavedData, int index, final float[][] data, final int[] sizes) {
+	private static void interleave(FloatBuffer target, float[][] data, int[] sizes) {
 		for (int i = 0; i < data[0].length / sizes[0]; ++i) {
 			for (int j = 0; j < data.length; ++j) {
 				int k = (i * sizes[j]) % data[j].length;
-				for (int l = 0; l < sizes[j]; ++l) {
-					interleavedData[index++] = data[j][k + l];
-				}
+				target.put(data[j], k, sizes[j]);
 			}
 		}
-		return index;
 	}
 }

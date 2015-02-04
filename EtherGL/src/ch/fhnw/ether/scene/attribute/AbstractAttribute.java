@@ -12,6 +12,13 @@ public abstract class AbstractAttribute<T> implements ITypedAttribute<T> {
 	public final String id() {
 		return id;
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof AbstractAttribute<?> && id.equals(((AbstractAttribute<?>) obj).id))
+			return true;
+		return false;
+	}
 
 	@Override
 	public String toString() {

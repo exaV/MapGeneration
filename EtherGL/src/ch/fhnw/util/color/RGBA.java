@@ -33,11 +33,6 @@ import ch.fhnw.util.math.IVec4;
 import ch.fhnw.util.math.Vec4;
 
 public class RGBA implements IColor, IVec4 {
-	/**
-	 * Special value to indicate per-vertex colors for materials.
-	 */
-	public static final RGBA PER_VERTEX_COLOR = new RGBA(1, 1, 1, 1);
-
 	public static final RGBA BLACK = new RGBA(0, 0, 0, 1);
 	public static final RGBA WHITE = new RGBA(1, 1, 1, 1);
 

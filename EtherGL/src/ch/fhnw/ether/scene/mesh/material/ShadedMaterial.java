@@ -34,21 +34,25 @@ import ch.fhnw.util.color.RGB;
 
 // TODO: support for per vertex color (if that's ever needed)
 public class ShadedMaterial extends AbstractMaterial {
-	private final RGB emission;
-	private final RGB ambient;
-	private final RGB diffuse;
-	private final RGB specular;
-	private final float shininess;
-	private final float strength;
-	private final float alpha;
+	private volatile RGB emission;
+	private volatile RGB ambient;
+	private volatile RGB diffuse;
+	private volatile RGB specular;
+	private volatile float shininess;
+	private volatile float strength;
+	private volatile float alpha;
 	
-	private Texture colorMap;
+	private volatile Texture colorMap;
 	
 	public ShadedMaterial(RGB diffuse) {
 		this(RGB.BLACK, RGB.BLACK, diffuse, RGB.BLACK, 0, 0, 1);
 	}
 
 	public ShadedMaterial(RGB emission, RGB ambient, RGB diffuse, RGB specular, float shininess, float strength, float alpha) {
+		this(emission, ambient, diffuse, specular, shininess, strength, alpha, null);
+	}
+
+	public ShadedMaterial(RGB emission, RGB ambient, RGB diffuse, RGB specular, float shininess, float strength, float alpha, Texture colorMap) {
 		this.emission = emission;
 		this.ambient = ambient;
 		this.diffuse = diffuse;
@@ -56,12 +60,74 @@ public class ShadedMaterial extends AbstractMaterial {
 		this.shininess = shininess;
 		this.strength = strength;
 		this.alpha = alpha;
-	}
-
-	public ShadedMaterial(RGB emission, RGB ambient, RGB diffuse, RGB specular, float shininess, float strength, float alpha, Texture colorMap) {
-		this(emission, ambient, diffuse, specular, shininess, strength, alpha);
 		this.colorMap = colorMap;
 	}
+	
+	public final RGB getEmission() {
+		return emission;
+	}
+	
+	public final void setEmission(RGB emission) {
+		this.emission = emission;
+	}
+	
+	public final RGB getAmbient() {
+		return ambient;
+	}
+	
+	public final void setAmbient(RGB ambient) {
+		this.ambient = ambient;
+	}
+	
+	public final RGB getDiffuse() {
+		return diffuse;
+	}
+	
+	public final void setDiffuse(RGB diffuse) {
+		this.diffuse = diffuse;
+	}
+	
+	public final RGB getSpecular() {
+		return specular;
+	}
+	
+	public final void setSpecular(RGB specular) {
+		this.specular = specular;
+	}
+	
+	public final float getShininess() {
+		return shininess;
+	}
+	
+	public final void setShininess(float shininess) {
+		this.shininess = shininess;
+	}
+	
+	public final float getStrength() {
+		return strength;
+	}
+	
+	public final void setStrength(float strength) {
+		this.strength = strength;
+	}
+	
+	public final float getAlpha() {
+		return alpha;
+	}
+	
+	public final void setAlpha(float alpha) {
+		this.alpha = alpha;
+	}
+	
+	public final Texture getColorMap() {
+		return colorMap;
+	}
+	
+	// TODO: need to handle this correctly (with / without color map)
+	public final void setColorMap(Texture colorMap) {
+		this.colorMap = colorMap;
+	}
+
 	
 	@Override
 	public void getAttributes(IAttributes attributes) {

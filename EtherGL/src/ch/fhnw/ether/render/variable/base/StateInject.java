@@ -59,6 +59,10 @@ public final class StateInject extends AbstractVariable<GL3> implements IShaderU
 	@Override
 	public void setSupplier(Supplier<?> supplier) {
 	}
+	
+	@Override
+	public void update() {
+	}
 
 	@Override
 	public void enable(GL3 gl, Program program) {

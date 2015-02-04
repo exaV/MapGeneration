@@ -20,6 +20,7 @@ import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.attribute.IAttributeProvider;
 import ch.fhnw.ether.scene.attribute.ITypedAttribute;
 import ch.fhnw.ether.scene.mesh.IMesh;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.scene.mesh.material.CustomMaterial;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
@@ -30,7 +31,7 @@ public final class ShaderBuilder {
 		private final Map<IAttribute, Supplier<?>> attributes = new HashMap<>();
 
 		@Override
-		public <T> void provide(ITypedAttribute<T> attribute, Supplier<T> supplier) {
+		public <T> void provide(ITypedAttribute<T> attribute, Supplier<? extends T> supplier) {
 			if (attributes.put(attribute, supplier) != null)
 				throw new IllegalArgumentException("duplicate attribute: " + attribute);
 		}
@@ -112,16 +113,20 @@ public final class ShaderBuilder {
 		}
 	}
 
-	// FIXME: currently mesh only contains one geometry
-	// XXX i think this part can be reduced to something cleaner
 	private static void attachArrays(IShader shader, IMesh mesh) {
-		List<? extends IAttributeProvider> arrayAttributeProviders = Collections.singletonList(mesh.getGeometry());
-		for (IAttributeProvider provider : arrayAttributeProviders) {
-			Attributes attributes = new Attributes();
-			provider.getAttributes(attributes);
+		mesh.getGeometry().inspect((attributes, data) -> {
 			for (IShaderArray<?> array : shader.getArrays()) {
-				array.addSupplier(attributes.getSupplier(shader, array));
+				int index = 0;
+				for (IGeometry.IGeometryAttribute attribute : attributes) {
+					if (array.id().equals(attribute.id())) {
+						array.setAttributeIndex(index);
+						break;
+					}
+					index++;
+				}
+				if (index == attributes.length)
+					throw new IllegalArgumentException("shader " + shader + " requires attribute " + array.id());
 			}
-		}
+		});
 	}
 }

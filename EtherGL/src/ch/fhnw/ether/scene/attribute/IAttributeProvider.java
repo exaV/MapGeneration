@@ -38,7 +38,7 @@ import java.util.function.Supplier;
  */
 public interface IAttributeProvider {
 	interface IAttributes {
-		<T> void provide(ITypedAttribute<T> attribute, Supplier<T> supplier);
+		<T> void provide(ITypedAttribute<T> attribute, Supplier<? extends T> supplier);
 
 		void require(IAttribute attribute);
 	}

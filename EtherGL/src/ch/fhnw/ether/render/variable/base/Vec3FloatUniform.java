@@ -38,6 +38,8 @@ import ch.fhnw.ether.scene.attribute.ITypedAttribute;
 import ch.fhnw.util.math.IVec3;
 
 public class Vec3FloatUniform extends AbstractUniform<IVec3> {
+	private float[] value;
+	
 	public Vec3FloatUniform(ITypedAttribute<IVec3> attribute, String shaderName) {
 		super(attribute, shaderName);
 	}
@@ -55,7 +57,12 @@ public class Vec3FloatUniform extends AbstractUniform<IVec3> {
 	}
 
 	@Override
-	public void enable(GL3 gl, Program program) {
-		program.setUniformVec3(gl, getShaderIndex(gl, program), get().toArray());
+	public final void update() {
+		value = fetch().toArray();
+	}
+
+	@Override
+	public final void enable(GL3 gl, Program program) {
+		program.setUniformVec3(gl, getShaderIndex(gl, program), value);
 	}
 }

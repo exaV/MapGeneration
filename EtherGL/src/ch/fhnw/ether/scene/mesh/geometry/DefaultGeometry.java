@@ -1,5 +1,5 @@
 /*
-\ * Copyright (c) 2013 - 2014 Stefan Muller Arisona, Simon Schubiger, Samuel von Stachelski
+ * Copyright (c) 2013 - 2014 Stefan Muller Arisona, Simon Schubiger, Samuel von Stachelski
  * Copyright (c) 2013 - 2014 FHNW & ETH Zurich
  * All rights reserved.
  *
@@ -30,38 +30,25 @@
 package ch.fhnw.ether.scene.mesh.geometry;
 
 import java.util.Arrays;
-
-import ch.fhnw.util.math.Transform;
-import ch.fhnw.util.math.Vec3;
-import ch.fhnw.util.math.geometry.BoundingBox;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 // note: position is always expected as first attribute
 public class DefaultGeometry extends AbstractGeometry {
-	private class TransformCache {
-		TransformCache() {
-			data = new float[attributeTypes.length][];
-			for (int i = 0; i < attributeTypes.length; ++i) {
-				if (attributeTypes[i] == POSITION_ARRAY) {
-					data[i] = transform.transformVertices(DefaultGeometry.this.attributeData[i]);
-				} else if (attributeTypes[i] == NORMAL_ARRAY) {
-					data[i] = transform.transformNormals(DefaultGeometry.this.attributeData[i]);
-				} else {
-					data[i] = DefaultGeometry.this.attributeData[i];
-				}
-			}
-			bounds = new BoundingBox();
-			bounds.add(data[0]);
-		}
+	/*
+	 * private class TransformCache { TransformCache() { data = new float[attributeTypes.length][]; for (int i = 0; i <
+	 * attributeTypes.length; ++i) { if (attributeTypes[i] == POSITION_ARRAY) { data[i] =
+	 * transform.transformVertices(DefaultGeometry.this.attributeData[i]); } else if (attributeTypes[i] == NORMAL_ARRAY)
+	 * { data[i] = transform.transformNormals(DefaultGeometry.this.attributeData[i]); } else { data[i] =
+	 * DefaultGeometry.this.attributeData[i]; } } bounds = new BoundingBox(); bounds.add(data[0]); }
+	 * 
+	 * final float[][] data; final BoundingBox bounds; }
+	 */
 
-		final float[][] data;
-		final BoundingBox bounds;
-	}
+	private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
 	private final IGeometryAttribute[] attributeTypes;
 	private final float[][] attributeData; // first dimension is attribute, second data
-	private final Transform transform = new Transform();
-
-	private TransformCache cache;
 
 	/**
 	 * Generates geometry from the given data with the given attribute-layout. All data is copied. Changes on the passed
@@ -98,116 +85,46 @@ public class DefaultGeometry extends AbstractGeometry {
 	 * @return the copy
 	 */
 	public DefaultGeometry copy() {
-		DefaultGeometry geometry = new DefaultGeometry(getType(), attributeTypes, attributeData);
-		geometry.transform.setOrigin(getOrigin());
-		geometry.transform.setTranslation(getTranslation());
-		geometry.transform.setRotation(getRotation());
-		geometry.transform.setScale(getScale());
-		return geometry;
+		return new DefaultGeometry(getType(), attributeTypes, attributeData);
 	}
 
 	@Override
 	public void inspect(int index, IAttributeVisitor visitor) {
-		validateCache();
-		visitor.visit(attributeTypes[index], cache.data[index]);
+		try {
+			lock.readLock().lock();
+			visitor.visit(attributeTypes[index], attributeData[index]);
+		} finally {
+			lock.readLock().unlock();
+		}
 	}
 
 	@Override
 	public void inspect(IAttributesVisitor visitor) {
-		validateCache();
-		visitor.visit(attributeTypes, cache.data);
+		try {
+			lock.readLock().lock();
+			visitor.visit(attributeTypes, attributeData);
+		} finally {
+			lock.readLock().unlock();
+		}
 	}
 
 	@Override
 	public void modify(int index, IAttributeVisitor visitor) {
-		visitor.visit(attributeTypes[index], attributeData[index]);
-		if (attributeTypes[index].equals(POSITION_ARRAY) || attributeTypes[index].equals(NORMAL_ARRAY))
-			invalidateCache();
-		else
-			requestUpdate();
+		try {
+			lock.writeLock().lock();
+			visitor.visit(attributeTypes[index], attributeData[index]);
+		} finally {
+			lock.writeLock().unlock();
+		}
 	}
 
 	@Override
 	public void modify(IAttributesVisitor visitor) {
-		visitor.visit(attributeTypes, attributeData);
-		invalidateCache();
-	}
-
-	// ---- IArrayAttributeProvider implementation
-
-	@Override
-	public void getAttributes(IAttributes attributes) {
-		for (int i = 0; i < attributeTypes.length; ++i) {
-			final int a = i;
-			attributes.provide(attributeTypes[a], () -> {
-				validateCache();
-				return cache.data[a];
-			});
-		}
-	}
-
-	// ---- IGeometry implementation
-
-	@Override
-	public BoundingBox getBounds() {
-		validateCache();
-		return cache.bounds;
-	}
-
-	// ---- ITransformable implementation
-
-	@Override
-	public Vec3 getOrigin() {
-		return transform.getOrigin();
-	}
-
-	@Override
-	public void setOrigin(Vec3 origin) {
-		transform.setOrigin(origin);
-		invalidateCache();
-	}
-
-	@Override
-	public Vec3 getTranslation() {
-		return transform.getTranslation();
-	}
-
-	@Override
-	public void setTranslation(Vec3 translation) {
-		transform.setTranslation(translation);
-		invalidateCache();
-	}
-
-	@Override
-	public Vec3 getRotation() {
-		return transform.getRotation();
-	}
-
-	@Override
-	public void setRotation(Vec3 rotation) {
-		transform.setRotation(rotation);
-		invalidateCache();
-	}
-
-	@Override
-	public Vec3 getScale() {
-		return transform.getScale();
-	}
-
-	@Override
-	public void setScale(Vec3 scale) {
-		transform.setScale(scale);
-		invalidateCache();
-	}
-
-	private void invalidateCache() {
-		cache = null;
-		requestUpdate();
-	}
-
-	private void validateCache() {
-		if (cache == null) {
-			cache = new TransformCache();
+		try {
+			lock.writeLock().lock();
+			visitor.visit(attributeTypes, attributeData);
+		} finally {
+			lock.writeLock().unlock();
 		}
 	}
 
@@ -236,7 +153,7 @@ public class DefaultGeometry extends AbstractGeometry {
 		float[][] data = { vertices, texCoords };
 		return new DefaultGeometry(type, attributes, data);
 	}
-	
+
 	public static DefaultGeometry createVNC(Primitive type, float[] vertices, float[] normals, float[] colors) {
 		IGeometryAttribute[] attributes = { POSITION_ARRAY, NORMAL_ARRAY, COLOR_ARRAY };
 		float[][] data = { vertices, normals, colors };
@@ -259,5 +176,5 @@ public class DefaultGeometry extends AbstractGeometry {
 		IGeometryAttribute[] attributes = { POSITION_ARRAY, NORMAL_ARRAY, COLOR_ARRAY, COLOR_MAP_ARRAY };
 		float[][] data = { vertices, normals, colors, texCoords };
 		return new DefaultGeometry(type, attributes, data);
-	}	
+	}
 }

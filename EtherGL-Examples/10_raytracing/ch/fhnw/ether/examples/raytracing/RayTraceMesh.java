@@ -36,6 +36,7 @@ import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.util.color.RGBA;
+import ch.fhnw.util.math.Mat4;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.BoundingBox;
 import ch.fhnw.util.math.geometry.Line;
@@ -102,12 +103,29 @@ public class RayTraceMesh implements IMesh {
 	public IGeometry getGeometry() {
 		return null;
 	}
+	
+	@Override
+	public Mat4 getTransform() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public void setTransform(Mat4 transform) {
+		// TODO Auto-generated method stub
+		
+	}
 
 	@Override
-	public boolean needsUpdate() {
+	public boolean needsMaterialUpdate() {
 		return false;
 	}
 
+	@Override
+	public boolean needsGeometryUpdate() {
+		return false;
+	}
+	
 	@Override
 	public void requestUpdate(Object source) {
 	}

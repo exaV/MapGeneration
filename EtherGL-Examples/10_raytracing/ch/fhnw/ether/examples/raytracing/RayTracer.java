@@ -39,13 +39,11 @@ import ch.fhnw.ether.image.RGBA8Frame;
 import ch.fhnw.ether.media.AbstractFrame;
 import ch.fhnw.ether.media.RenderCommandException;
 import ch.fhnw.ether.media.Stateless;
-import ch.fhnw.ether.scene.SyncGroup;
 import ch.fhnw.ether.scene.camera.Camera;
 import ch.fhnw.ether.scene.camera.ICamera;
 import ch.fhnw.ether.scene.light.GenericLight;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.IMesh;
-import ch.fhnw.ether.scene.mesh.MeshProxy;
 import ch.fhnw.ether.video.AbstractVideoSource;
 import ch.fhnw.ether.video.IVideoRenderTarget;
 import ch.fhnw.ether.video.VideoFrame;
@@ -74,15 +72,11 @@ public class RayTracer extends AbstractVideoSource<Stateless<IVideoRenderTarget>
 	}
 
 	public void addMesh(IMesh mesh) {
-		if(mesh instanceof MeshProxy)
-			mesh = ((MeshProxy)mesh).getDelegate();
 		if (mesh instanceof RayTraceMesh)
 			meshes.add((RayTraceMesh) mesh);
 	}
 
 	public void removeMesh(IMesh mesh) {
-		if(mesh instanceof MeshProxy)
-			mesh = ((MeshProxy)mesh).getDelegate();
 		meshes.remove(mesh);
 	}
 
@@ -163,7 +157,6 @@ public class RayTracer extends AbstractVideoSource<Stateless<IVideoRenderTarget>
 		if(lights.isEmpty()) return;
 		
 		RGBA8Frame frame = new RGBA8Frame(w, h);
-		SyncGroup.sync(this);
 
 		final int   w     = frame.dimI;
 		final int   h     = frame.dimJ;

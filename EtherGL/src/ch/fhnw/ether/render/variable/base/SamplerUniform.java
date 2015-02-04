@@ -44,6 +44,8 @@ public class SamplerUniform extends AbstractUniform<Texture> {
 	private final int unit;
 	private final int target;
 
+	private Texture texture;
+	
 	private GLObject tex;
 
 	public SamplerUniform(ITypedAttribute<Texture> attribute, String shaderName, int unit, int target) {
@@ -65,8 +67,12 @@ public class SamplerUniform extends AbstractUniform<Texture> {
 	}
 
 	@Override
-	public void enable(GL3 gl, Program program) {
-		Texture texture = get();
+	public final void update() {
+		texture = fetch();
+	}
+
+	@Override
+	public final void enable(GL3 gl, Program program) {
 		if (texture == null)
 			return;
 		load(gl);
@@ -80,8 +86,7 @@ public class SamplerUniform extends AbstractUniform<Texture> {
 	}
 
 	@Override
-	public void disable(GL3 gl, Program program) {
-		Texture texture = get();
+	public final void disable(GL3 gl, Program program) {
 		if (texture == null || tex == null)
 			return;
 
@@ -91,7 +96,6 @@ public class SamplerUniform extends AbstractUniform<Texture> {
 	}
 
 	private void load(GL3 gl) {
-		Texture texture = get();
 		if (texture == null)
 			return;
 

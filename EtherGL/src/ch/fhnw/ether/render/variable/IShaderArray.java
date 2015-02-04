@@ -29,8 +29,6 @@
 
 package ch.fhnw.ether.render.variable;
 
-import java.util.function.Supplier;
-
 import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.render.gl.IArrayBuffer;
@@ -52,8 +50,10 @@ public interface IShaderArray<T> extends IShaderVariable<T> {
 	}
 
 	NumComponents getNumComponents();
-
-	void addSupplier(Supplier<?> supplier);
+	
+	int getAttributeIndex();
+	
+	void setAttributeIndex(int index);
 
 	void setup(int stride, int offset);
 

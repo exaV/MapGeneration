@@ -1,18 +1,8 @@
 package ch.fhnw.ether.examples.visualizer;
 
-import java.io.File;
-
-import ch.fhnw.ether.audio.IAudioRenderTarget;
-import ch.fhnw.ether.audio.JavaSoundTarget;
-import ch.fhnw.ether.audio.URLAudioSource;
-import ch.fhnw.ether.audio.fx.AudioGain;
-import ch.fhnw.ether.examples.metrobuzz.model.Scene;
-import ch.fhnw.ether.media.RenderProgram;
-import ch.fhnw.ether.ui.ParameterWindow;
-import ch.fhnw.ether.video.IVideoRenderTarget;
-import ch.fhnw.util.math.Mat4;
 
 public class AudioVisualizer {
+	/*
 	private static final int N_CUBES = 5;
 	
 	public static void main(String[] args) {
@@ -55,4 +45,5 @@ public class AudioVisualizer {
 		audioOut.stop();
 		videoOut.stop();
 	}
+	*/
 }
