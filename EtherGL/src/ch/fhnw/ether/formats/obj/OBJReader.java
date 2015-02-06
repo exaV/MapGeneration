@@ -50,7 +50,7 @@ import ch.fhnw.util.IntList;
 import ch.fhnw.util.color.RGB;
 import ch.fhnw.util.math.Vec2;
 import ch.fhnw.util.math.Vec3;
-import ch.fhnw.util.math.geometry.GeometryUtil;
+import ch.fhnw.util.math.geometry.GeometryUtilities;
 
 public class OBJReader extends AbstractModelReader {
 	private final List<IMesh> meshes = new ArrayList<>();
@@ -92,7 +92,7 @@ public class OBJReader extends AbstractModelReader {
 					polyVertices.add(vertices.get(vs[i]));
 				}
 
-				IntList triangulation = GeometryUtil.triangulate(polyVertices);
+				IntList triangulation = GeometryUtilities.triangulate(polyVertices);
 
 				for (int i = 0; i < triangulation.size(); ++i) {
 					int idx = triangulation.get(i);
@@ -115,7 +115,7 @@ public class OBJReader extends AbstractModelReader {
 			}
 			
 			float[] tv = Vec3.toArray(triVertices);
-			float[] tn = hasNormals ? Vec3.toArray(triNormals) : GeometryUtil.calculateNormals(tv);
+			float[] tn = hasNormals ? Vec3.toArray(triNormals) : GeometryUtilities.calculateNormals(tv);
 			float[] tt = Vec2.toArray(triTexCoords);
 
 			IGeometry geometry;

@@ -48,13 +48,13 @@ import ch.fhnw.util.math.Mat4;
 // TODO: deal with max vbo size & multiple vbos, memory optimization, handle non-float arrays
 
 public final class Renderable {
-	private IShader shader;
+	private final IShader shader;
 
-	private IMesh mesh;
+	private final IMesh mesh;
 
-	private FloatArrayBuffer buffer = new FloatArrayBuffer();
-	private int[] sizes;
-	private int stride;
+	private final FloatArrayBuffer buffer = new FloatArrayBuffer();
+	private final int[] sizes;
+	private final int stride;
 
 	// FIXME: let's get rid of this providers list somehow (an unmodifiable map of provided arrays would be fine)
 	public Renderable(IMesh mesh, List<IAttributeProvider> providers) {
@@ -67,12 +67,14 @@ public final class Renderable {
 
 		// setup buffers
 		List<IShaderArray<?>> arrays = this.shader.getArrays();
-		stride = 0;
+		int stride = 0;
 		sizes = new int[arrays.size()];
 		int i = 0;
 		for (IShaderArray<?> attr : arrays) {
 			stride += sizes[i++] = attr.getNumComponents().get();
 		}
+		this.stride = stride;
+		
 		i = 0;
 		int offset = 0;
 		for (IShaderArray<?> attr : arrays) {
@@ -82,18 +84,6 @@ public final class Renderable {
 
 		// make sure update flag is set, so everything get initialized on the next render cycle
 		mesh.requestUpdate(null);
-	}
-
-	public void dispose(GL3 gl) {
-		shader.dispose(gl);
-
-		mesh = null;
-
-		shader = null;
-
-		buffer = null;
-		sizes = null;
-		stride = 0;
 	}
 
 	public void update(GL3 gl) {

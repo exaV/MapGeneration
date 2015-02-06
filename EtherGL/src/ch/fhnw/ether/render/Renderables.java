@@ -53,10 +53,6 @@ final class Renderables {
 	public Renderables() {
 	}
 	
-	public void dispose(GL3 gl) {
-		rendererRenderables.forEach((r) -> r.dispose(gl)); 
-	}
-
 	public void addMesh(IMesh mesh, List<IAttributeProvider> providers) {
 		Renderable renderable = new Renderable(mesh, providers);
 		synchronized (sceneRenderables) {
@@ -78,13 +74,10 @@ final class Renderables {
 
 	void update(GL3 gl) {
 		if (updater.needsUpdate()) {
-			// update added / removed renderables - TODO: not optimized...
+			// update added / removed renderables
 			synchronized (sceneRenderables) {
 				Collection<Renderable> r = sceneRenderables.values();
 				rendererRenderables.removeAll(r);
-				for (Renderable renderable : rendererRenderables) {
-					renderable.dispose(gl);
-				}
 				rendererRenderables.clear();
 				rendererRenderables.addAll(r);
 			}

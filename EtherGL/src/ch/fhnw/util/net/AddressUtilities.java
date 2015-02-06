@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
-public final class AddressUtil {
+public final class AddressUtilities {
 	private static final int[][] PRIVATE_ADDRS = { { 10 }, { 192, 168 }, { 172, 16 }, { 172, 17 }, { 172, 18 }, { 172, 19 }, { 172, 20 }, { 172, 21 },
 			{ 172, 22 }, { 172, 23 }, { 172, 24 }, { 172, 25 }, { 172, 26 }, { 172, 27 }, { 172, 28 }, { 172, 29 }, { 172, 30 }, { 172, 31 }, };
 
@@ -48,7 +48,7 @@ public final class AddressUtil {
 	}
 
 	private static InetAddress getFirstNonLoopbackAddress(boolean ipv4only) throws SocketException {
-		for (InetAddress addr : AddressUtil.getLocalAddresses(ipv4only)) {
+		for (InetAddress addr : AddressUtilities.getLocalAddresses(ipv4only)) {
 			if (!addr.isLoopbackAddress()) {
 				if (isPrivate(addr))
 					return addr;
@@ -60,7 +60,7 @@ public final class AddressUtil {
 	private static InetAddress getLocalHost(boolean ipv4only) throws UnknownHostException, SocketException {
 		InetAddress result = InetAddress.getLocalHost();
 		if (ipv4only && !(result instanceof Inet4Address)) {
-			for (InetAddress addr : AddressUtil.getLocalAddresses(true)) {
+			for (InetAddress addr : AddressUtilities.getLocalAddresses(true)) {
 				if (isPrivate(addr)) {
 					result = addr;
 					break;

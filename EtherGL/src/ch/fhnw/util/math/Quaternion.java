@@ -70,15 +70,15 @@ public final class Quaternion {
 	 *            the rotation around the z axis in degrees ("roll")
 	 */
 	public static Quaternion fromEulerAngles(float xRotation, float yRotation, float zRotation) {
-		float hx = xRotation * 0.5f * MathUtil.DEGREES_TO_RADIANS;
+		float hx = xRotation * 0.5f * MathUtilities.DEGREES_TO_RADIANS;
 		float shx = (float) Math.sin(hx);
 		float chx = (float) Math.cos(hx);
 
-		float hy = yRotation * 0.5f * MathUtil.DEGREES_TO_RADIANS;
+		float hy = yRotation * 0.5f * MathUtilities.DEGREES_TO_RADIANS;
 		float shy = (float) Math.sin(hy);
 		float chy = (float) Math.cos(hy);
 
-		float hz = zRotation * 0.5f * MathUtil.DEGREES_TO_RADIANS;
+		float hz = zRotation * 0.5f * MathUtilities.DEGREES_TO_RADIANS;
 		float shz = (float) Math.sin(hz);
 		float chz = (float) Math.cos(hz);
 
@@ -97,7 +97,7 @@ public final class Quaternion {
 	 *            the angle in degrees
 	 */
 	public static Quaternion fromAxis(Vec3 axis, float angle) {
-		float rad = angle * MathUtil.DEGREES_TO_RADIANS;
+		float rad = angle * MathUtilities.DEGREES_TO_RADIANS;
 		float d = axis.length();
 		if (d == 0f)
 			return ID;
@@ -176,8 +176,8 @@ public final class Quaternion {
 	 *            the target vector, which should be normalized.
 	 */
 	public static Quaternion fromCross(Vec3 v1, Vec3 v2) {
-		float dot = MathUtil.clamp(v1.dot(v2), -1f, 1f);
-		float angle = (float) Math.acos(dot) * MathUtil.RADIANS_TO_DEGREES;
+		float dot = MathUtilities.clamp(v1.dot(v2), -1f, 1f);
+		float angle = (float) Math.acos(dot) * MathUtilities.RADIANS_TO_DEGREES;
 		return fromAxis(v1.cross(v2), angle);
 	}
 
@@ -204,7 +204,7 @@ public final class Quaternion {
 	 * @return true if quaternion is an identity quaternion
 	 */
 	public boolean isIdentity() {
-		return MathUtil.isZero(x) && MathUtil.isZero(y) && MathUtil.isZero(z) && MathUtil.isEqual(w, 1f);
+		return MathUtilities.isZero(x) && MathUtilities.isZero(y) && MathUtilities.isZero(z) && MathUtilities.isEqual(w, 1f);
 	}
 
 	/**
@@ -213,7 +213,7 @@ public final class Quaternion {
 	 * @return true if quaternion is an identity quaternion
 	 */
 	public boolean isIdentity(float tolerance) {
-		return MathUtil.isZero(x, tolerance) && MathUtil.isZero(y, tolerance) && MathUtil.isZero(z, tolerance) && MathUtil.isEqual(w, 1f, tolerance);
+		return MathUtilities.isZero(x, tolerance) && MathUtilities.isZero(y, tolerance) && MathUtilities.isZero(z, tolerance) && MathUtilities.isEqual(w, 1f, tolerance);
 	}
 
 	/**
@@ -223,7 +223,7 @@ public final class Quaternion {
 	 */
 	public Quaternion normalize() {
 		float l = length();
-		if (MathUtil.isZero(l) || l == 1)
+		if (MathUtilities.isZero(l) || l == 1)
 			return this;
 		return new Quaternion(x / l, y / l, z / l, w / l);
 	}
@@ -234,7 +234,7 @@ public final class Quaternion {
 	 * @return the length of this quaternion
 	 */
 	public float length() {
-		return MathUtil.length(x, y, z, w);
+		return MathUtilities.length(x, y, z, w);
 	}
 
 	/**
@@ -243,7 +243,7 @@ public final class Quaternion {
 	 * @return the dot product this*q
 	 */
 	public float dot(Quaternion q) {
-		return MathUtil.dot(x, y, z, w, q.x, q.y, q.z, q.w);
+		return MathUtilities.dot(x, y, z, w, q.x, q.y, q.z, q.w);
 	}
 
 	/**
@@ -395,8 +395,8 @@ public final class Quaternion {
 	// XXX do we really want this to be between -90 and +90?
 	public float getXRotation() {
 		int pole = getGimbalPole();
-		float rad = pole == 0 ? (float) Math.asin(MathUtil.clamp(2f * (w * x - z * y), -1f, 1f)) : pole * MathUtil.PI * 0.5f;
-		return rad * MathUtil.RADIANS_TO_DEGREES;
+		float rad = pole == 0 ? (float) Math.asin(MathUtilities.clamp(2f * (w * x - z * y), -1f, 1f)) : pole * MathUtilities.PI * 0.5f;
+		return rad * MathUtilities.RADIANS_TO_DEGREES;
 	}
 
 	/**
@@ -406,7 +406,7 @@ public final class Quaternion {
 	 */
 	public float getYRotation() {
 		float rad = (float) (getGimbalPole() == 0 ? Math.atan2(2f * (y * w + x * z), 1f - 2f * (y * y + x * x)) : 0f);
-		return rad * MathUtil.RADIANS_TO_DEGREES;
+		return rad * MathUtilities.RADIANS_TO_DEGREES;
 	}
 
 	/**
@@ -417,7 +417,7 @@ public final class Quaternion {
 	public float getZRotation() {
 		int pole = getGimbalPole();
 		float rad = (float) (pole == 0 ? Math.atan2(2f * (w * z + y * x), 1f - 2f * (x * x + z * z)) : pole * 2f * Math.atan2(y, w));
-		return rad * MathUtil.RADIANS_TO_DEGREES;
+		return rad * MathUtilities.RADIANS_TO_DEGREES;
 	}
 
 	/**
@@ -437,7 +437,7 @@ public final class Quaternion {
 	 */
 	public float getAngle() {
 		float rad = (float) (2.0 * Math.acos((this.w > 1) ? (this.w / length()) : this.w));
-		return rad * MathUtil.RADIANS_TO_DEGREES;
+		return rad * MathUtilities.RADIANS_TO_DEGREES;
 	}
 
 	/**
@@ -449,9 +449,9 @@ public final class Quaternion {
 	 */
 	public Vec4 getAxisAngle() {
 		Quaternion q = this.w > 1 ? this : this.normalize();
-		float angle = (float) (2.0 * Math.acos(this.w)) * MathUtil.RADIANS_TO_DEGREES;
+		float angle = (float) (2.0 * Math.acos(this.w)) * MathUtilities.RADIANS_TO_DEGREES;
 		double s = Math.sqrt(1 - q.w * q.w);
-		if (s < MathUtil.FLOAT_ROUNDING_ERROR) {
+		if (s < MathUtilities.FLOAT_ROUNDING_ERROR) {
 			return new Vec4(q.x, q.y, q.z, angle);
 		}
 		return new Vec4((float) (q.x / s), (float) (q.y / s), (float) (q.z / s), angle);
@@ -465,10 +465,10 @@ public final class Quaternion {
 	 * @return the angle in degrees of the rotation around the specified axis
 	 */
 	public float getAngleAround(Vec3 axis) {
-		float d = MathUtil.dot(this.x, this.y, this.z, axis.x, axis.y, axis.z);
-		float l = MathUtil.length(axis.x * d, axis.y * d, axis.z * d, this.w);
-		float rad = MathUtil.isZero(l) ? 0f : (float) (2.0 * Math.acos(this.w / l));
-		return rad * MathUtil.RADIANS_TO_DEGREES;
+		float d = MathUtilities.dot(this.x, this.y, this.z, axis.x, axis.y, axis.z);
+		float l = MathUtilities.length(axis.x * d, axis.y * d, axis.z * d, this.w);
+		float rad = MathUtilities.isZero(l) ? 0f : (float) (2.0 * Math.acos(this.w / l));
+		return rad * MathUtilities.RADIANS_TO_DEGREES;
 	}
 
 	/**

@@ -50,8 +50,6 @@ public interface IShader {
 
 	String id();
 	
-	void dispose(GL3 gl);
-
 	void update(GL3 gl);
 
 	void enable(GL3 gl);

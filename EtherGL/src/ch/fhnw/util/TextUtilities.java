@@ -304,11 +304,13 @@ public final class TextUtilities {
 	}
 
 	/**
-    Remove all occurrences of the characters in <code>filter</code>.
-
-    @param string The source string.
-    @param filter The list of chars to remove as string.
-    @return The source string with all occurrences of the characters in <code>filter</code> removed.
+	 * Remove all occurrences of the characters in <code>filter</code>.
+	 * 
+	 * @param string
+	 *            The source string.
+	 * @param filter
+	 *            The list of chars to remove as string.
+	 * @return The source string with all occurrences of the characters in <code>filter</code> removed.
 	 */
 	public static String remove(String string, String filter) {
 		StringBuilder result = new StringBuilder();
@@ -320,11 +322,13 @@ public final class TextUtilities {
 	}
 
 	/**
-    Return only the chars contained in <code>filter</code>.
-
-    @param string The source string.
-    @param allowed The list of chars that will pass the filter.
-    @return The source string consisting only of chars from <code>filter</code>.
+	 * Return only the chars contained in <code>filter</code>.
+	 * 
+	 * @param string
+	 *            The source string.
+	 * @param allowed
+	 *            The list of chars that will pass the filter.
+	 * @return The source string consisting only of chars from <code>filter</code>.
 	 */
 	public static String filter(String string, String allowed) {
 		StringBuilder result = new StringBuilder();
@@ -337,9 +341,13 @@ public final class TextUtilities {
 
 	/**
 	 * Replace all chars contained in <code>invalidChars</code>.
-	 * @param string The source string
-	 * @param invalidChars The list of chars to replace 
-	 * @param c The char to insert
+	 * 
+	 * @param string
+	 *            The source string
+	 * @param invalidChars
+	 *            The list of chars to replace
+	 * @param c
+	 *            The char to insert
 	 * @return The new string
 	 */
 	public static String replace(String string, String invalidChars, char c) {
@@ -990,13 +998,12 @@ public final class TextUtilities {
 	}
 
 	/**
-	 * Returns a short class name for the specified class. This method will
-	 * omit the package name.  For example, it will return "String" instead
-	 * of "java.lang.String" for a {@link String} object. It will also name
-	 * array according Java language usage,  for example "double[]" instead
-	 * of "[D".
+	 * Returns a short class name for the specified class. This method will omit the package name. For example, it will
+	 * return "String" instead of "java.lang.String" for a {@link String} object. It will also name array according Java
+	 * language usage, for example "double[]" instead of "[D".
 	 *
-	 * @param  cls The object class (may be {@code null}).
+	 * @param cls
+	 *            The object class (may be {@code null}).
 	 * @return A short class name for the specified object.
 	 */
 	public static String getShortName(Class<?> cls) {
@@ -1016,11 +1023,11 @@ public final class TextUtilities {
 	}
 
 	/**
-	 * Returns a short class name for the specified object. This method will
-	 * omit the package name. For example, it will return "String" instead
-	 * of "java.lang.String" for a {@link String} object.
+	 * Returns a short class name for the specified object. This method will omit the package name. For example, it will
+	 * return "String" instead of "java.lang.String" for a {@link String} object.
 	 *
-	 * @param  object The object (may be {@code null}).
+	 * @param object
+	 *            The object (may be {@code null}).
 	 * @return A short class name for the specified object.
 	 */
 	public static String getShortClassName(final Object object) {

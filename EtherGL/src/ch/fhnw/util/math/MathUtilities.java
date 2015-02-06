@@ -29,7 +29,7 @@
 
 package ch.fhnw.util.math;
 
-public final class MathUtil {
+public final class MathUtilities {
 	static public final float FLOAT_ROUNDING_ERROR = 0.000001f; // 32 bits
 	static public final float PI = (float) Math.PI;
 	static public final float RADIANS_TO_DEGREES = 180f / PI;

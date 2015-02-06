@@ -31,7 +31,7 @@ package ch.fhnw.util;
 
 import java.io.File;
 
-public final class FileUtil {
+public final class FileUtilities {
 	/**
 	 * Get file extension.
 	 *

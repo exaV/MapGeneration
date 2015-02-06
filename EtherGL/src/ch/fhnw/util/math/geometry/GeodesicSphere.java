@@ -3,7 +3,7 @@ package ch.fhnw.util.math.geometry;
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.fhnw.util.math.MathUtil;
+import ch.fhnw.util.math.MathUtilities;
 import ch.fhnw.util.math.Vec3;
 
 // #faces = 20 * f^2
@@ -142,7 +142,7 @@ public class GeodesicSphere {
 		if (normals == null) {
 			normals = getTriangles().clone();
 			for (int i = 0; i < normals.length; i += 3) {
-				float l = MathUtil.length(normals[i], normals[i + 1], normals[i + 2]);
+				float l = MathUtilities.length(normals[i], normals[i + 1], normals[i + 2]);
 				normals[i] /= l;
 				normals[i + 1] /= l;
 				normals[i + 2] /= l;

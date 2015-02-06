@@ -40,12 +40,12 @@ import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.ProjectionUtil;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.BoundingBox;
-import ch.fhnw.util.math.geometry.GeometryUtil;
+import ch.fhnw.util.math.geometry.GeometryUtilities;
 
 /**
  * Utilities for 3D object picking
  */
-public final class PickUtil {
+public final class PickUtilities {
 	public enum PickMode {
 		POINT,
 		// TODO: not implemented yet
@@ -119,7 +119,7 @@ public final class PickUtil {
 		Vec3 d = Vec3.Z;
 		float zMin = Float.POSITIVE_INFINITY;
 		for (int i = 0; i < triangles.length; i += 9) {
-			float z = GeometryUtil.intersectRayWithTriangle(o, d, triangles, i);
+			float z = GeometryUtilities.intersectRayWithTriangle(o, d, triangles, i);
 			zMin = Math.min(zMin, z);
 		}
 		return zMin;

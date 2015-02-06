@@ -31,8 +31,8 @@ package ch.fhnw.ether.examples.metrobuzz.tool;
 
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.controller.tool.AbstractTool;
-import ch.fhnw.ether.controller.tool.PickUtil;
-import ch.fhnw.ether.controller.tool.PickUtil.PickMode;
+import ch.fhnw.ether.controller.tool.PickUtilities;
+import ch.fhnw.ether.controller.tool.PickUtilities.PickMode;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.MeshLibrary;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
@@ -104,7 +104,7 @@ public final class AreaTool extends AbstractTool {
 	public void mousePressed(MouseEvent e, IView view) {
 		int x = e.getX();
 		int y = view.getViewport().h - e.getY();
-		float d = PickUtil.pickBoundingBox(PickMode.POINT, x, y, 0, 0, view, mesh.getBounds());
+		float d = PickUtilities.pickBoundingBox(PickMode.POINT, x, y, 0, 0, view, mesh.getBounds());
 		if (d < Float.POSITIVE_INFINITY)
 			moving = true;
 	}

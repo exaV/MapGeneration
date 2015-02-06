@@ -47,10 +47,10 @@ public abstract class AbstractShader implements IShader {
 	// important: keep this in sync with PrimitiveType enum
 	public static final int[] MODE = { GL.GL_POINTS, GL.GL_LINES, GL.GL_TRIANGLES };
 
-	private Class<?> root;
-	private String name;
-	private String source;
-	private Primitive type;
+	private final Class<?> root;
+	private final String name;
+	private final String source;
+	private final Primitive type;
 	private Program program;
 
 	private List<IShaderUniform<?>> uniforms = new ArrayList<>();
@@ -66,17 +66,6 @@ public abstract class AbstractShader implements IShader {
 	@Override
 	public String id() {
 		return name;
-	}
-
-	@Override
-	public void dispose(GL3 gl) {
-		name = name + " (disposed)";
-		source = null;
-		type = null;
-		program = null;
-
-		uniforms = null;
-		arrays = null;
 	}
 
 	@Override

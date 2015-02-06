@@ -9,7 +9,7 @@ import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import ch.fhnw.util.FileUtil;
+import ch.fhnw.util.FileUtilities;
 
 public class GLSLReader {
 	private final URL library;
@@ -54,7 +54,7 @@ public class GLSLReader {
 		}
 		matcher = LOCAL_INCLUDE.matcher(line);
 		if (matcher.find()) {
-			String path = FileUtil.getBasePath(shader.toString());
+			String path = FileUtilities.getBasePath(shader.toString());
 			new GLSLReader(library, new URL(path + "/" + matcher.group(1)), code, out);
 			return;
 		}
