@@ -83,26 +83,6 @@ public final class FloatArrayBuffer implements IArrayBuffer {
 	}
 
 	@Override
-	public void enableAttribute(GL3 gl, int index, int numComponents, int stride, int offset) {
-		if (size > 0) {
-			gl.glEnableVertexAttribArray(index);
-			gl.glVertexAttribPointer(index, numComponents, GL.GL_FLOAT, false, stride * 4, offset * 4);
-		}
-	}
-
-	@Override
-	public void enableAttribute(GL3 gl, int index, int numComponents) {
-		enableAttribute(gl, index, numComponents, 0, 0);
-	}
-
-	@Override
-	public void disableAttribute(GL3 gl, int index) {
-		if (size > 0) {
-			gl.glDisableVertexAttribArray(index);
-		}
-	}
-
-	@Override
 	public int size() {
 		return size;
 	}
