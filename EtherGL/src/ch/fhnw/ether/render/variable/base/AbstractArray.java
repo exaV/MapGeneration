@@ -29,51 +29,41 @@
 
 package ch.fhnw.ether.render.variable.base;
 
+import javax.media.opengl.GL3;
+
+import ch.fhnw.ether.render.IVertexBuffer;
+import ch.fhnw.ether.render.gl.Program;
 import ch.fhnw.ether.render.variable.IShaderArray;
 import ch.fhnw.ether.scene.attribute.ITypedAttribute;
 
 public abstract class AbstractArray<T> extends AbstractVariable<T> implements IShaderArray<T> {
-	private final NumComponents numComponents;
-	private int index;
-	private int stride;
-	private int offset;
+	private int bufferIndex;
 
-	protected AbstractArray(ITypedAttribute<T> attribute, String shaderName, NumComponents numComponents) {
+	protected AbstractArray(ITypedAttribute<T> attribute, String shaderName) {
 		super(attribute, shaderName);
-		this.numComponents = numComponents;
 	}
 
-	protected AbstractArray(String id, String shaderName, NumComponents numComponents) {
+	protected AbstractArray(String id, String shaderName) {
 		super(id, shaderName);
-		this.numComponents = numComponents;
 	}
 
 	@Override
-	public final NumComponents getNumComponents() {
-		return numComponents;
-	}
-	
-	@Override
-	public int getAttributeIndex() {
-		return index;
-	}
-	
-	@Override
-	public void setAttributeIndex(int index) {
-		this.index = index;
+	public final void setBufferIndex(int index) {
+		this.bufferIndex = index;
 	}
 
 	@Override
-	public final void setup(int stride, int offset) {
-		this.stride = stride;
-		this.offset = offset;
-	}
-	
-	protected final int getStride() {
-		return stride;
+	public final void enable(GL3 gl, Program program, IVertexBuffer buffer) {
+		buffer.enableAttribute(gl, bufferIndex, getShaderIndex(gl, program));
 	}
 
-	protected final int getOffset() {
-		return offset;
+	@Override
+	public final void disable(GL3 gl, Program program, IVertexBuffer buffer) {
+		buffer.disableAttribute(gl, bufferIndex, getShaderIndex(gl, program));
+	}
+
+	@Override
+	protected final int resolveShaderIndex(GL3 gl, Program program, String shaderName) {
+		return program.getAttributeLocation(gl, shaderName);
 	}
 }

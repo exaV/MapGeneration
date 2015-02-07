@@ -13,14 +13,12 @@ import ch.fhnw.ether.render.shader.builtin.LineShader;
 import ch.fhnw.ether.render.shader.builtin.PointShader;
 import ch.fhnw.ether.render.shader.builtin.ShadedTriangleShader;
 import ch.fhnw.ether.render.shader.builtin.UnshadedTriangleShader;
-import ch.fhnw.ether.render.variable.IShaderArray;
 import ch.fhnw.ether.render.variable.IShaderUniform;
 import ch.fhnw.ether.render.variable.IShaderVariable;
 import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.attribute.IAttributeProvider;
 import ch.fhnw.ether.scene.attribute.ITypedAttribute;
 import ch.fhnw.ether.scene.mesh.IMesh;
-import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.scene.mesh.material.CustomMaterial;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
@@ -73,10 +71,12 @@ public final class ShaderBuilder {
 		if (shader == null)
 			shader = (S) createShader(mesh, Collections.unmodifiableSet(attributes.attributes.keySet()));
 
-		attachUniforms(shader, attributes);
-
-		if (mesh != null)
-			attachArrays(shader, mesh);
+		// attach attribute suppliers to uniforms
+		for (IShaderUniform<?> uniform : shader.getUniforms()) {
+			if (!uniform.hasSupplier()) {
+				uniform.setSupplier(attributes.getSupplier(shader, uniform));
+			}
+		}
 
 		return shader;
 	}
@@ -103,30 +103,5 @@ public final class ShaderBuilder {
 		default:
 			throw new UnsupportedOperationException("material type not supported: " + material);
 		}
-	}
-
-	private static void attachUniforms(IShader shader, Attributes attributes) {
-		for (IShaderUniform<?> uniform : shader.getUniforms()) {
-			if (!uniform.hasSupplier()) {
-				uniform.setSupplier(attributes.getSupplier(shader, uniform));
-			}
-		}
-	}
-
-	private static void attachArrays(IShader shader, IMesh mesh) {
-		mesh.getGeometry().inspect((attributes, data) -> {
-			for (IShaderArray<?> array : shader.getArrays()) {
-				int index = 0;
-				for (IGeometry.IGeometryAttribute attribute : attributes) {
-					if (array.id().equals(attribute.id())) {
-						array.setAttributeIndex(index);
-						break;
-					}
-					index++;
-				}
-				if (index == attributes.length)
-					throw new IllegalArgumentException("shader " + shader + " requires attribute " + array.id());
-			}
-		});
 	}
 }

@@ -36,10 +36,10 @@ public final class PointSizeArray extends FloatArray {
 	private static final String DEFAULT_SHADER_NAME = "vertexPointSize";
 
 	public PointSizeArray() {
-		super(IGeometry.POINT_SIZE_ARRAY, DEFAULT_SHADER_NAME, NumComponents.ONE);
+		super(IGeometry.POINT_SIZE_ARRAY, DEFAULT_SHADER_NAME);
 	}
 
 	public PointSizeArray(String shaderName) {
-		super(IGeometry.POINT_SIZE_ARRAY, shaderName, NumComponents.ONE);
+		super(IGeometry.POINT_SIZE_ARRAY, shaderName);
 	}
 }

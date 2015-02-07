@@ -35,7 +35,7 @@ import java.util.List;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL3;
 
-import ch.fhnw.ether.render.gl.IArrayBuffer;
+import ch.fhnw.ether.render.IVertexBuffer;
 import ch.fhnw.ether.render.gl.Program;
 import ch.fhnw.ether.render.shader.IShader;
 import ch.fhnw.ether.render.variable.IShaderArray;
@@ -64,7 +64,7 @@ public abstract class AbstractShader implements IShader {
 	}
 	
 	@Override
-	public String id() {
+	public final String id() {
 		return name;
 	}
 
@@ -85,33 +85,33 @@ public abstract class AbstractShader implements IShader {
 	}
 
 	@Override
-	public void enable(GL3 gl) {
+	public final void enable(GL3 gl) {
 		// enable program & uniforms (set uniforms, enable textures, change gl state)
 		program.enable(gl);
 		uniforms.forEach((attr) -> attr.enable(gl, program));
 	}
 
 	@Override
-	public void render(GL3 gl, int count, IArrayBuffer buffer) {
+	public final void render(GL3 gl, IVertexBuffer buffer) {
 		buffer.bind(gl);
 		arrays.forEach((attr) -> attr.enable(gl, program, buffer));
 		
 		int mode = MODE[type.ordinal()];
-		gl.glDrawArrays(mode, 0, count);
+		gl.glDrawArrays(mode, 0, buffer.getNumVertices());
 		
 		arrays.forEach((attr) -> attr.disable(gl, program, buffer));
-		IArrayBuffer.unbind(gl);
+		buffer.unbind(gl);
 	}
 
 	@Override
-	public void disable(GL3 gl) {
+	public final void disable(GL3 gl) {
 		// disable program and uniforms (disable textures, restore gl state)
 		uniforms.forEach((attr) -> attr.disable(gl, program));
 		program.disable(gl);
 	}
 
 	@Override
-	public List<IShaderUniform<?>> getUniforms() {
+	public final List<IShaderUniform<?>> getUniforms() {
 		return uniforms;
 	}
 
@@ -132,5 +132,4 @@ public abstract class AbstractShader implements IShader {
 	public String toString() {
 		return id();
 	}
-
 }

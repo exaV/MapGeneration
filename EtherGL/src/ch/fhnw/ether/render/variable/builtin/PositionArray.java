@@ -36,10 +36,10 @@ public final class PositionArray extends FloatArray {
 	private static final String DEFAULT_SHADER_NAME = "vertexPosition";
 
 	public PositionArray() {
-		super(IGeometry.POSITION_ARRAY, DEFAULT_SHADER_NAME, NumComponents.THREE);
+		super(IGeometry.POSITION_ARRAY, DEFAULT_SHADER_NAME);
 	}
 
 	public PositionArray(String shaderName) {
-		super(IGeometry.POSITION_ARRAY, shaderName, NumComponents.THREE);
+		super(IGeometry.POSITION_ARRAY, shaderName);
 	}
 }
