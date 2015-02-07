@@ -54,6 +54,7 @@ import ch.fhnw.ether.scene.mesh.material.Texture;
 import ch.fhnw.ether.ui.Button;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.gl.DefaultView;
+import ch.fhnw.util.AutoDisposer;
 import ch.fhnw.util.color.RGB;
 import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Transform;
@@ -198,8 +199,8 @@ public final class SimpleLightExample {
 		scene.add3DObjects(solidMeshT, solidMeshL, texturedMeshT, solidCubeT);
 
 		// Add bunny
+		IMesh solidBunnyT = null;
 		if (ADD_BUNNY) {
-			IMesh solidBunnyT = null;
 			try {
 				List<IMesh> meshes = new OBJReader(getClass().getResource("assets/bunny_original.obj")).getMeshes();
 				solidBunnyT = new DefaultMesh(solidMaterial, meshes.get(0).getGeometry());
@@ -211,5 +212,20 @@ public final class SimpleLightExample {
 		}
 
 		controller.repaintViews();
+		
+		// test auto disposer
+		try {
+			Thread.sleep(1000);
+			scene.remove3DObject(solidBunnyT);
+			solidBunnyT = null;
+			controller.repaintViews();
+			Thread.sleep(1000);
+			AutoDisposer.runGC();
+			Thread.sleep(1000);
+			AutoDisposer.runGC();
+			Thread.sleep(1000);
+			AutoDisposer.runGC();
+		} catch (Exception e) {
+		}
 	}
 }

@@ -3,10 +3,9 @@ package ch.fhnw.ether.render.gl;
 import java.lang.ref.ReferenceQueue;
 
 import javax.media.opengl.GL3;
-import javax.media.opengl.GLContext;
 
 import ch.fhnw.ether.view.gl.GLContextManager;
-import ch.fhnw.ether.view.gl.GLContextManager.Context;
+import ch.fhnw.ether.view.gl.GLContextManager.IGLContext;
 import ch.fhnw.util.AutoDisposer;
 import ch.fhnw.util.AutoDisposer.Reference;
 
@@ -27,8 +26,9 @@ public class GLObject {
 
 		@Override
 		public void dispose() {
-			GLContext context = GLContextManager.getTemp(Context.LOCK_AND_MAKE_CURRENT);
-			GL3 gl = context.getGL().getGL3();
+			System.out.println("disposing " + type + " " + id[0]);
+			IGLContext context = GLContextManager.acquireContext();
+			GL3 gl = context.getGL();
 			switch (type) {
 			case TEXTURE:
 				gl.glDeleteTextures(1, id, 0);
@@ -46,7 +46,7 @@ public class GLObject {
 				gl.glDeleteProgram(id[0]);
 				break;
 			}
-			GLContextManager.releaseTemp(context);
+			GLContextManager.releaseContext(context);
 		}
 	}
 
