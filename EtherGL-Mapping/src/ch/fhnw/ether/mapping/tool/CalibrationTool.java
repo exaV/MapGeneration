@@ -98,10 +98,10 @@ public final class CalibrationTool extends AbstractTool {
 		super(controller);
 		this.model = model;
 		lines = new DefaultMesh(new ColorMaterial(MODEL_COLOR), DefaultGeometry.createV(Primitive.LINES, model.getCalibrationLines()), Queue.OVERLAY);
-		points = new DefaultMesh(new PointMaterial(10, MODEL_COLOR), DefaultGeometry.createV(Primitive.POINTS, model.getCalibrationPoints()), Queue.OVERLAY);
+		points = new DefaultMesh(new PointMaterial(MODEL_COLOR, 10), DefaultGeometry.createV(Primitive.POINTS, model.getCalibrationPoints()), Queue.OVERLAY);
 		calibratedLines = new DefaultMesh(new ColorMaterial(UNCALIBRATED_COLOR), DefaultGeometry.createV(Primitive.LINES, new float[0]),
 				Queue.DEVICE_SPACE_OVERLAY);
-		calibratedPoints = new DefaultMesh(new PointMaterial(10, UNCALIBRATED_COLOR), DefaultGeometry.createV(Primitive.POINTS, new float[0]),
+		calibratedPoints = new DefaultMesh(new PointMaterial(UNCALIBRATED_COLOR, 10), DefaultGeometry.createV(Primitive.POINTS, new float[0]),
 				Queue.DEVICE_SPACE_OVERLAY);
 	}
 
@@ -325,6 +325,9 @@ public final class CalibrationTool extends AbstractTool {
 
 		calibratedLines.getGeometry().modify((attributes, data) -> data[0] = Vec3.toArray(v));
 		((ColorMaterial) calibratedLines.getMaterial()).setColor(context.calibrated ? CALIBRATED_COLOR : UNCALIBRATED_COLOR);
+		
+		calibratedPoints.requestUpdate(null);
+		calibratedLines.requestUpdate(null);
 	}
 
 }

@@ -33,19 +33,20 @@ import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.util.color.RGBA;
 
 public class ColorMaterial extends AbstractMaterial {
-	private RGBA color;
-	private boolean perVertexColor;
+	private volatile RGBA color;
 
+	private final boolean perVertexColor;
+	
 	public ColorMaterial(RGBA color) {
-		this(color, color == RGBA.PER_VERTEX_COLOR);
+		this(color, false);
 	}
 
-	protected ColorMaterial(RGBA color, boolean perVertexColor) {
+	public ColorMaterial(RGBA color, boolean perVertexColor) {
 		this.color = color;
 		this.perVertexColor = perVertexColor;
 	}
 
-	public void setColor(RGBA color) {
+	public final void setColor(RGBA color) {
 		this.color = color;
 	}
 

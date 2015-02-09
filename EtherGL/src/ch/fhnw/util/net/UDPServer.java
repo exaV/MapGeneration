@@ -56,7 +56,7 @@ public class UDPServer {
 	private final AtomicBoolean awtPending = new AtomicBoolean();
 
 	public UDPServer(int port, UDPHandler handler) throws IOException {
-		address = new InetSocketAddress(AddressUtil.getDefaultInterface(), port);
+		address = new InetSocketAddress(AddressUtilities.getDefaultInterface(), port);
 		socket = new DatagramSocket(address.getPort());
 		this.handler = handler;
 		int dec = socket.getReceiveBufferSize();

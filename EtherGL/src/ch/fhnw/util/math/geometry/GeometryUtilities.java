@@ -39,7 +39,7 @@ import javax.media.opengl.glu.GLUtessellatorCallbackAdapter;
 import ch.fhnw.util.IntList;
 import ch.fhnw.util.math.Vec3;
 
-public class GeometryUtil {
+public class GeometryUtilities {
 	private static final IntList TRIANGLE = new IntList(new int[] { 0, 1, 2 });
 
 	public static IntList triangulate(List<Vec3> polygon) {

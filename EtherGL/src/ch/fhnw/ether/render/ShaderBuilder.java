@@ -13,7 +13,6 @@ import ch.fhnw.ether.render.shader.builtin.LineShader;
 import ch.fhnw.ether.render.shader.builtin.PointShader;
 import ch.fhnw.ether.render.shader.builtin.ShadedTriangleShader;
 import ch.fhnw.ether.render.shader.builtin.UnshadedTriangleShader;
-import ch.fhnw.ether.render.variable.IShaderArray;
 import ch.fhnw.ether.render.variable.IShaderUniform;
 import ch.fhnw.ether.render.variable.IShaderVariable;
 import ch.fhnw.ether.scene.attribute.IAttribute;
@@ -30,7 +29,7 @@ public final class ShaderBuilder {
 		private final Map<IAttribute, Supplier<?>> attributes = new HashMap<>();
 
 		@Override
-		public <T> void provide(ITypedAttribute<T> attribute, Supplier<T> supplier) {
+		public <T> void provide(ITypedAttribute<T> attribute, Supplier<? extends T> supplier) {
 			if (attributes.put(attribute, supplier) != null)
 				throw new IllegalArgumentException("duplicate attribute: " + attribute);
 		}
@@ -72,10 +71,12 @@ public final class ShaderBuilder {
 		if (shader == null)
 			shader = (S) createShader(mesh, Collections.unmodifiableSet(attributes.attributes.keySet()));
 
-		attachUniforms(shader, attributes);
-
-		if (mesh != null)
-			attachArrays(shader, mesh);
+		// attach attribute suppliers to uniforms
+		for (IShaderUniform<?> uniform : shader.getUniforms()) {
+			if (!uniform.hasSupplier()) {
+				uniform.setSupplier(attributes.getSupplier(shader, uniform));
+			}
+		}
 
 		return shader;
 	}
@@ -101,27 +102,6 @@ public final class ShaderBuilder {
 			}
 		default:
 			throw new UnsupportedOperationException("material type not supported: " + material);
-		}
-	}
-
-	private static void attachUniforms(IShader shader, Attributes attributes) {
-		for (IShaderUniform<?> uniform : shader.getUniforms()) {
-			if (!uniform.hasSupplier()) {
-				uniform.setSupplier(attributes.getSupplier(shader, uniform));
-			}
-		}
-	}
-
-	// FIXME: currently mesh only contains one geometry
-	// XXX i think this part can be reduced to something cleaner
-	private static void attachArrays(IShader shader, IMesh mesh) {
-		List<? extends IAttributeProvider> arrayAttributeProviders = Collections.singletonList(mesh.getGeometry());
-		for (IAttributeProvider provider : arrayAttributeProviders) {
-			Attributes attributes = new Attributes();
-			provider.getAttributes(attributes);
-			for (IShaderArray<?> array : shader.getArrays()) {
-				array.addSupplier(attributes.getSupplier(shader, array));
-			}
 		}
 	}
 }

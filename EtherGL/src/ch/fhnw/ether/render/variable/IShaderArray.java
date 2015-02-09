@@ -29,35 +29,15 @@
 
 package ch.fhnw.ether.render.variable;
 
-import java.util.function.Supplier;
-
 import javax.media.opengl.GL3;
 
-import ch.fhnw.ether.render.gl.IArrayBuffer;
+import ch.fhnw.ether.render.IVertexBuffer;
 import ch.fhnw.ether.render.gl.Program;
 
 public interface IShaderArray<T> extends IShaderVariable<T> {
-	enum NumComponents {
-		ONE(1), TWO(2), THREE(3), FOUR(4);
+	void setBufferIndex(int index);
 
-		private final int numComponents;
+	void enable(GL3 gl, Program program, IVertexBuffer buffer);
 
-		NumComponents(int numComponents) {
-			this.numComponents = numComponents;
-		}
-
-		public int get() {
-			return numComponents;
-		}
-	}
-
-	NumComponents getNumComponents();
-
-	void addSupplier(Supplier<?> supplier);
-
-	void setup(int stride, int offset);
-
-	void enable(GL3 gl, Program program, IArrayBuffer buffer);
-
-	void disable(GL3 gl, Program program, IArrayBuffer buffer);
+	void disable(GL3 gl, Program program, IVertexBuffer buffer);
 }

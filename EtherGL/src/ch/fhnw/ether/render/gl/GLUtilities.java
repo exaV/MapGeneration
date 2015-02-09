@@ -2,7 +2,7 @@ package ch.fhnw.ether.render.gl;
 
 import javax.media.opengl.GL;
 
-public final class GLUtil {
+public final class GLUtilities {
 	public static int getInteger(GL gl, int parameter) {
 		int[] v = new int[1];
 		gl.glGetIntegerv(parameter, v, 0);

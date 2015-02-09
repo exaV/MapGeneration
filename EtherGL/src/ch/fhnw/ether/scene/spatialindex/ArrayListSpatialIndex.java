@@ -33,58 +33,58 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
+import ch.fhnw.ether.scene.I3DObject;
 import ch.fhnw.util.math.geometry.BoundingBox;
 
 /**
  * A simple implementation of spatial index using array list
  */
 class ArrayListSpatialIndex implements ISpatialIndex {
-	private final List<IGeometry> geometries = new ArrayList<>();
+	private final List<I3DObject> objects = new ArrayList<>();
 	private BoundingBox bb;
 
 	@Override
-	public void addGeometry(IGeometry object) {
-		geometries.add(object);
+	public void addGeometry(I3DObject object) {
+		objects.add(object);
 		bb = null;
 	}
 
 	@Override
-	public boolean removeGeometry(IGeometry object) {
-		boolean removed = geometries.remove(object);
+	public boolean removeGeometry(I3DObject object) {
+		boolean removed = objects.remove(object);
 		if (removed)
 			bb = null;
 		return removed;
 	}
 
 	@Override
-	public List<IGeometry> getIntersectingGeometries(BoundingBox bb) {
-		List<IGeometry> result = new ArrayList<>();
-		for (IGeometry geometry : geometries) {
-			if (bb.intersects(geometry.getBounds()))
-				result.add(geometry);
+	public List<I3DObject> getIntersectingGeometries(BoundingBox bb) {
+		List<I3DObject> result = new ArrayList<>();
+		for (I3DObject objects : objects) {
+			if (bb.intersects(objects.getBounds()))
+				result.add(objects);
 		}
 		return result;
 	}
 
 	@Override
-	public List<IGeometry> getContainingGeometries(BoundingBox bb) {
-		List<IGeometry> result = new ArrayList<>();
-		for (IGeometry geometry : geometries) {
-			if (bb.contains(geometry.getBounds()))
-				result.add(geometry);
+	public List<I3DObject> getContainingGeometries(BoundingBox bb) {
+		List<I3DObject> result = new ArrayList<>();
+		for (I3DObject object : objects) {
+			if (bb.contains(object.getBounds()))
+				result.add(object);
 		}
 		return result;
 	}
 
 	@Override
-	public List<IGeometry> getGeometries() {
-		return Collections.unmodifiableList(geometries);
+	public List<I3DObject> getObjects() {
+		return Collections.unmodifiableList(objects);
 	}
 
 	@Override
 	public int size() {
-		return geometries.size();
+		return objects.size();
 	}
 
 	@Override

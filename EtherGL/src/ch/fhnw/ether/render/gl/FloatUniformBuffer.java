@@ -129,7 +129,7 @@ public final class FloatUniformBuffer {
 
 	private int stride(GL3 gl) {
 		if (blockAlignment == 0) {
-			blockAlignment = Math.max(1, GLUtil.getInteger(gl, GL3.GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT) / 4);
+			blockAlignment = Math.max(1, GLUtilities.getInteger(gl, GL3.GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT) / 4);
 		}
 		int stride = (blockSize + blockAlignment - 1) - (blockSize + blockAlignment - 1) % blockAlignment;
 		return stride;

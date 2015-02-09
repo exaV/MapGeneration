@@ -29,8 +29,8 @@ import ch.fhnw.util.TextUtilities;
 
 public class AudioVisualizer {
 	private static final int N_CUBES = 20;
-
-	public static void main(String[] args) throws LineUnavailableException, MalformedURLException, IOException, RenderCommandException {
+	
+	public static void main(String[] args) throws RenderCommandException, MalformedURLException, IOException {
 		AbstractAudioSource<?>            src = new URLAudioSource(new File(args[0]).toURI().toURL());
 		//AbstractAudioSource<?>            src   = new SilenceAudioSource(1, 44100, 16);
 		SinGen                            sin   = new SinGen(0);

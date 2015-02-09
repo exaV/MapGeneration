@@ -45,12 +45,8 @@ import ch.fhnw.util.Viewport;
 
 public abstract class AbstractRenderer implements IRenderer {
 	protected static class Cameras {
-		private FloatUniformBuffer uniforms = new FloatUniformBuffer(ViewUniformBlock.BLOCK_SIZE, 3);
+		private final FloatUniformBuffer uniforms = new FloatUniformBuffer(ViewUniformBlock.BLOCK_SIZE, 3);
 
-		public void dispose(GL3 gl) {
-			uniforms = null;
-		}
-		
 		public void update(GL3 gl, CameraMatrices matrices, Viewport viewport) {
 			ViewUniformBlock.loadUniforms(gl, uniforms, matrices, viewport);
 		}
@@ -91,12 +87,6 @@ public abstract class AbstractRenderer implements IRenderer {
 		providers.add(lights.getAttributeProvider());
 	}
 	
-	public void dispose(GL3 gl) {
-		cameras.dispose(gl);
-		lights.dispose(gl);
-		renderables.dispose(gl);
-	}
-
 	protected Cameras getCameras() {
 		return cameras;
 	}

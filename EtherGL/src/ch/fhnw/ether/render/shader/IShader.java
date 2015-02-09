@@ -33,7 +33,7 @@ import java.util.List;
 
 import javax.media.opengl.GL3;
 
-import ch.fhnw.ether.render.gl.IArrayBuffer;
+import ch.fhnw.ether.render.IVertexBuffer;
 import ch.fhnw.ether.render.variable.IShaderArray;
 import ch.fhnw.ether.render.variable.IShaderUniform;
 
@@ -50,13 +50,11 @@ public interface IShader {
 
 	String id();
 	
-	void dispose(GL3 gl);
-
 	void update(GL3 gl);
 
 	void enable(GL3 gl);
 
-	void render(GL3 gl, int count, IArrayBuffer buffer);
+	void render(GL3 gl, IVertexBuffer buffer);
 
 	void disable(GL3 gl);
 

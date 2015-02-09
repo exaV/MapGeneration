@@ -33,22 +33,26 @@ import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.util.color.RGBA;
 
 public class PointMaterial extends ColorMaterial {
-	/**
-	 * Special value to indicate per-vertex size for materials.
-	 */
-	public static final float PER_VERTEX_SIZE = Float.MIN_VALUE;
+	private volatile float size;
 	
-	private float size;
-	private boolean perVertexSize;
-	
-	public PointMaterial(float size) {
-		this(size, RGBA.WHITE);
+	private final boolean perVertexSize;
+
+	public PointMaterial(RGBA color, float size) {
+		this(color, size, false, false);
 	}
 
-	public PointMaterial(float size, RGBA color) {
-		super(color, color == RGBA.PER_VERTEX_COLOR);
-		this.size          = size;
-		this.perVertexSize = size == PER_VERTEX_SIZE;
+	public PointMaterial(RGBA color, float size, boolean perVertexColor, boolean perVertexSize) {
+		super(color, perVertexColor);
+		this.size = size;
+		this.perVertexSize = perVertexSize;
+	}
+	
+	public final float getSize() {
+		return size;
+	}
+	
+	public final void setSize(float size) {
+		this.size = size;
 	}
 
 	@Override

@@ -36,10 +36,10 @@ public final class NormalArray extends FloatArray {
 	private static final String DEFAULT_SHADER_NAME = "vertexNormal";
 
 	public NormalArray() {
-		super(IGeometry.NORMAL_ARRAY, DEFAULT_SHADER_NAME, NumComponents.THREE);
+		super(IGeometry.NORMAL_ARRAY, DEFAULT_SHADER_NAME);
 	}
 
 	public NormalArray(String shaderName) {
-		super(IGeometry.NORMAL_ARRAY, shaderName, NumComponents.THREE);
+		super(IGeometry.NORMAL_ARRAY, shaderName);
 	}
 }

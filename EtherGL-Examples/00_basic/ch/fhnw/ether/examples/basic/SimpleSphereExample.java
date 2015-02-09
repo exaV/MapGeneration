@@ -75,23 +75,23 @@ public final class SimpleSphereExample {
 
 		IMesh transparentMeshT = new DefaultMesh(new ColorMaterial(new RGBA(1, 1, 1, 0.5f)), DefaultGeometry.createV(Primitive.TRIANGLES, sphere.getTriangles()), Queue.TRANSPARENCY);
 		IMesh transparentMeshL = new DefaultMesh(new ColorMaterial(new RGBA(1, 1, 1, 1)), DefaultGeometry.createV(Primitive.LINES, sphere.getLines()), Queue.TRANSPARENCY);
-		IMesh transparentMeshP = new DefaultMesh(new PointMaterial(8, new RGBA(1, 1, 0, 0.5f)), DefaultGeometry.createV(Primitive.POINTS, sphere.getPoints()), Queue.TRANSPARENCY);
+		IMesh transparentMeshP = new DefaultMesh(new PointMaterial(new RGBA(1, 1, 0, 0.5f), 8), DefaultGeometry.createV(Primitive.POINTS, sphere.getPoints()), Queue.TRANSPARENCY);
 
-		transparentMeshT.getGeometry().setTranslation(Vec3.X_NEG);
-		transparentMeshL.getGeometry().setTranslation(Vec3.X_NEG);
-		transparentMeshP.getGeometry().setTranslation(Vec3.X_NEG);
+		transparentMeshT.setPosition(Vec3.X_NEG);
+		transparentMeshL.setPosition(Vec3.X_NEG);
+		transparentMeshP.setPosition(Vec3.X_NEG);
 		
 		IMesh solidMeshT = new DefaultMesh(new ColorMaterial(new RGBA(0.5f, 0.5f, 0.5f, 1)), DefaultGeometry.createV(Primitive.TRIANGLES, sphere.getTriangles()), Queue.DEPTH);
 		IMesh solidMeshL = new DefaultMesh(new ColorMaterial(new RGBA(1, 1, 1, 1)), DefaultGeometry.createV(Primitive.LINES, sphere.getLines()), Queue.DEPTH);
-		IMesh solidMeshP = new DefaultMesh(new PointMaterial(8, new RGBA(1, 1, 0, 1)), DefaultGeometry.createV(Primitive.POINTS, sphere.getPoints()), Queue.DEPTH);
+		IMesh solidMeshP = new DefaultMesh(new PointMaterial(new RGBA(1, 1, 0, 1), 8), DefaultGeometry.createV(Primitive.POINTS, sphere.getPoints()), Queue.DEPTH);
 		
-		solidMeshT.getGeometry().setTranslation(Vec3.X);
-		solidMeshL.getGeometry().setTranslation(Vec3.X);
-		solidMeshP.getGeometry().setTranslation(Vec3.X);
+		solidMeshT.setPosition(Vec3.X);
+		solidMeshL.setPosition(Vec3.X);
+		solidMeshP.setPosition(Vec3.X);
 		
 		Texture t = new Texture(SimpleSphereExample.class.getResource("assets/earth_nasa.jpg"));
 		IMesh texturedMeshT = new DefaultMesh(new ColorMapMaterial(t), DefaultGeometry.createVM(Primitive.TRIANGLES, sphere.getTriangles(), sphere.getTexCoords()), Queue.DEPTH);
-		texturedMeshT.getGeometry().setTranslation(Vec3.ZERO);
+		texturedMeshT.setPosition(Vec3.ZERO);
 		
 		scene.add3DObjects(transparentMeshT, transparentMeshL, transparentMeshP, solidMeshT, solidMeshL, solidMeshP, texturedMeshT);
 

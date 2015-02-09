@@ -32,6 +32,7 @@ package ch.fhnw.ether.examples.mapping;
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.scene.DefaultScene;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
+import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.MeshLibrary;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
@@ -39,7 +40,7 @@ import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.util.color.RGBA;
-import ch.fhnw.util.math.Vec3;
+import ch.fhnw.util.math.Transform;
 
 public class MappingScene extends DefaultScene {
 
@@ -48,13 +49,13 @@ public class MappingScene extends DefaultScene {
 		IMaterial material = new ColorMaterial(RGBA.WHITE);
 		for (int i = 0; i < 10; ++i) {
 			IGeometry geometry = DefaultGeometry.createV(Primitive.TRIANGLES, MeshLibrary.UNIT_CUBE_TRIANGLES);
-			double s = 0.1 + 0.1 * Math.random();
-			double tx = -1 + 2 * Math.random();
-			double ty = -1 + 2 * Math.random();
-			geometry.setScale(new Vec3(s, s, s));
-			geometry.setRotation(new Vec3(0, 0, 360 * Math.random()));
-			geometry.setTranslation(new Vec3(tx, ty, s * 0.5f));
-			add3DObject(new DefaultMesh(material, geometry));
+			float s = 0.1f + 0.1f * (float) Math.random();
+			float tx = -1 + 2 * (float) Math.random();
+			float ty = -1 + 2 * (float) Math.random();
+			float rz = 360f * (float) Math.random();
+			IMesh mesh = new DefaultMesh(material, geometry);
+			mesh.setTransform(Transform.trs(tx, ty, s * 0.5f, 0, 0, rz, s, s, s));
+			add3DObject(mesh);
 		}
 	}
 }

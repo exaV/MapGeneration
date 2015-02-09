@@ -34,19 +34,23 @@ import java.util.EnumSet;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.util.UpdateRequest;
+import ch.fhnw.util.math.Mat4;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.BoundingBox;
 
 // FIXME: we need some good mesh factory, this here is a mess
 public final class DefaultMesh implements IMesh {
-	private final IMaterial material;
-	private final IGeometry geometry;
 	private final Queue queue;
 	private final EnumSet<Flags> flags;
+	private final IMaterial material;
+	private final IGeometry geometry;
+	private Vec3 position = Vec3.ZERO;
+	private Mat4 transform = Mat4.ID;
 
 	private String name = "unnamed_mesh";
 
-	private final UpdateRequest updater = new UpdateRequest(true);
+	private final UpdateRequest materialUpdater = new UpdateRequest(true);
+	private final UpdateRequest geometryUpdater = new UpdateRequest(true);
 
 	public DefaultMesh(IMaterial material, IGeometry geometry) {
 		this(material, geometry, Queue.DEPTH);
@@ -89,18 +93,18 @@ public final class DefaultMesh implements IMesh {
 
 	@Override
 	public BoundingBox getBounds() {
-		return geometry.getBounds();
+		// TODO: calculate bounding box based on position, transform and geometry...
+		return new BoundingBox();
 	}
 
 	@Override
 	public Vec3 getPosition() {
-		return geometry.getTranslation();
+		return position;
 	}
 
 	@Override
 	public void setPosition(Vec3 position) {
-		geometry.setTranslation(position);
-		requestUpdate();
+		this.position = position;
 	}
 
 	@Override
@@ -111,7 +115,6 @@ public final class DefaultMesh implements IMesh {
 	@Override
 	public void setName(String name) {
 		this.name = name;
-		requestUpdate();
 	}
 
 	// IMesh implementation
@@ -137,13 +140,36 @@ public final class DefaultMesh implements IMesh {
 	}
 
 	@Override
-	public boolean needsUpdate() {
-		return updater.needsUpdate();
+	public Mat4 getTransform() {
+		return transform;
+	}
+
+	@Override
+	public void setTransform(Mat4 transform) {
+		if (this.transform != transform) {
+			this.transform = transform;
+		}
+	}
+
+	@Override
+	public boolean needsMaterialUpdate() {
+		return materialUpdater.needsUpdate();
+	}
+
+	@Override
+	public boolean needsGeometryUpdate() {
+		return geometryUpdater.needsUpdate();
 	}
 
 	@Override
 	public void requestUpdate(Object source) {
-		requestUpdate();
+		if (source == null) {
+			requestMaterialUpdate();
+			requestGeometryUpdate();
+		} else if (source instanceof IMaterial)
+			requestMaterialUpdate();
+		else if (source instanceof IGeometry || source instanceof Mat4)
+			requestGeometryUpdate();
 	}
 
 	@Override
@@ -151,7 +177,11 @@ public final class DefaultMesh implements IMesh {
 		return name;
 	}
 
-	private void requestUpdate() {
-		updater.requestUpdate();
+	private void requestMaterialUpdate() {
+		materialUpdater.requestUpdate();
+	}
+
+	private void requestGeometryUpdate() {
+		geometryUpdater.requestUpdate();
 	}
 }

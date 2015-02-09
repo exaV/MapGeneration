@@ -31,19 +31,19 @@ package ch.fhnw.ether.scene.spatialindex;
 
 import java.util.List;
 
-import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
+import ch.fhnw.ether.scene.I3DObject;
 import ch.fhnw.util.math.geometry.BoundingBox;
 
 interface ISpatialIndex {
-	void addGeometry(IGeometry geometry);
+	void addGeometry(I3DObject object);
 
-	boolean removeGeometry(IGeometry geometry);
+	boolean removeGeometry(I3DObject object);
 
-	List<IGeometry> getIntersectingGeometries(BoundingBox bounds);
+	List<I3DObject> getIntersectingGeometries(BoundingBox bounds);
 
-	List<IGeometry> getContainingGeometries(BoundingBox bounds);
+	List<I3DObject> getContainingGeometries(BoundingBox bounds);
 
-	List<IGeometry> getGeometries();
+	List<I3DObject> getObjects();
 
 	int size();
 

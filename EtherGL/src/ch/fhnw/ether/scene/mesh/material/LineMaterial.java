@@ -32,19 +32,27 @@ package ch.fhnw.ether.scene.mesh.material;
 import ch.fhnw.util.color.RGBA;
 
 public class LineMaterial extends ColorMaterial {
-	private float width;
+	private volatile float width;
 	
 	public LineMaterial(float width) {
-		this(width, RGBA.WHITE);
+		this(RGBA.WHITE, width);
 	}
 
-	public LineMaterial(float width, RGBA color) {
+	public LineMaterial(RGBA color, float width) {
 		super(color);
 		this.width = width;
 	}
 
-	public LineMaterial(float width, RGBA color, boolean perVertexColor) {
+	public LineMaterial(RGBA color, float width, boolean perVertexColor) {
 		super(color, perVertexColor);
+		this.width = width;
+	}
+	
+	public final float getWidth() {
+		return width;
+	}
+	
+	public final void setWidth(float width) {
 		this.width = width;
 	}
 

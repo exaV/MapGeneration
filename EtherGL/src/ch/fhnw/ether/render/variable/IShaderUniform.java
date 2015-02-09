@@ -40,6 +40,8 @@ public interface IShaderUniform<T> extends IShaderVariable<T> {
 
 	void setSupplier(Supplier<?> supplier);
 	
+	void update();
+	
 	void enable(GL3 gl, Program program);
 
 	void disable(GL3 gl, Program program);

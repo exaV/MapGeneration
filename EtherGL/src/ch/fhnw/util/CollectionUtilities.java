@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import java.util.Set;
 
 public class CollectionUtilities {
@@ -55,7 +56,7 @@ public class CollectionUtilities {
 	 * @param s2 The second collection.
 	 * @param added The elements that were added in s2 in comparison to s1.
 	 * @param removed The elements that were removed from s1 in comparison to s2.
-	 * @return The sum of added and removed elments.
+	 * @return The sum of added and removed elements.
 	 */
 	public static <T> int differences(Collection<? extends T> s1, Collection<? extends T> s2, Collection<T> added, Collection<T> removed) {
 		CollectionUtilities.addAll(added, s2);
@@ -200,7 +201,7 @@ public class CollectionUtilities {
 		return false;
 	}
 
-	public static <T extends Comparable<T>> List<T> toSortesList(Collection<T> collection) {
+	public static <T extends Comparable<T>> List<T> toSortedList(Collection<T> collection) {
 		List<T> result = new ArrayList<>(collection);
 		Collections.sort(result);
 		return result;
@@ -257,4 +258,8 @@ public class CollectionUtilities {
 				count++;
 		return count;
 	}
+	
+	public static <T> List<T> filterType(Class<T> cls, Collection<?> c) {
+		return c.stream().filter(cls::isInstance).map(cls::cast).collect(Collectors.toList());
+	}	
 }

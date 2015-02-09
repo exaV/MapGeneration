@@ -47,6 +47,8 @@ public abstract class AbstractUniform<T> extends AbstractVariable<T> implements 
 	protected AbstractUniform(ITypedAttribute<T> attribute, String shaderName, Supplier<T> supplier) {
 		super(attribute, shaderName);
 		this.supplier = supplier;
+		if (supplier != null)
+			update();
 	}
 
 	protected AbstractUniform(String id, String shaderName) {
@@ -56,9 +58,11 @@ public abstract class AbstractUniform<T> extends AbstractVariable<T> implements 
 	protected AbstractUniform(String id, String shaderName, Supplier<T> supplier) {
 		super(id, shaderName);
 		this.supplier = supplier;
+		if (supplier != null)
+			update();
 	}
 
-	protected T get() {
+	protected final T fetch() {
 		return supplier.get();
 	}
 
@@ -70,7 +74,7 @@ public abstract class AbstractUniform<T> extends AbstractVariable<T> implements 
 	@SuppressWarnings("unchecked")
 	@Override
 	public final void setSupplier(Supplier<?> supplier) {
-		this.supplier = (Supplier<T>)supplier;
+		this.supplier = (Supplier<T>) supplier;
 	}
 
 	@Override

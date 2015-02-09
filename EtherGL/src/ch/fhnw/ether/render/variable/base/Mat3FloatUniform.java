@@ -38,6 +38,8 @@ import ch.fhnw.ether.scene.attribute.ITypedAttribute;
 import ch.fhnw.util.math.Mat3;
 
 public class Mat3FloatUniform extends AbstractUniform<Mat3> {
+	private float[] value;
+	
 	public Mat3FloatUniform(ITypedAttribute<Mat3> attribute, String shaderName) {
 		super(attribute, shaderName);
 	}
@@ -55,7 +57,12 @@ public class Mat3FloatUniform extends AbstractUniform<Mat3> {
 	}
 
 	@Override
-	public void enable(GL3 gl, Program program) {
-		program.setUniformMat3(gl, getShaderIndex(gl, program), get().toArray());
+	public final void update() {
+		value = fetch().toArray();
+	}
+
+	@Override
+	public final void enable(GL3 gl, Program program) {
+		program.setUniformMat3(gl, getShaderIndex(gl, program), value);
 	}
 }

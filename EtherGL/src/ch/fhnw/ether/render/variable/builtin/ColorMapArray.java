@@ -36,10 +36,10 @@ public final class ColorMapArray extends FloatArray {
 	private static final String DEFAULT_SHADER_NAME = "vertexTexCoord";
 
 	public ColorMapArray() {
-		super(IGeometry.COLOR_MAP_ARRAY, DEFAULT_SHADER_NAME, NumComponents.TWO);
+		super(IGeometry.COLOR_MAP_ARRAY, DEFAULT_SHADER_NAME);
 	}
 
 	public ColorMapArray(String shaderName) {
-		super(IGeometry.COLOR_MAP_ARRAY, shaderName, NumComponents.TWO);
+		super(IGeometry.COLOR_MAP_ARRAY, shaderName);
 	}
 }

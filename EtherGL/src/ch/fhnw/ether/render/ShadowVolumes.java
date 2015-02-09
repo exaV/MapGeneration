@@ -38,8 +38,6 @@ public final class ShadowVolumes {
 
 	// http://ogldev.atspace.co.uk/www/tutorial40/tutorial40.html
 	void render(GL3 gl, IMesh.Queue pass, boolean interactive, List<Renderable> renderables, List<GenericLight> lights) {
-		volumeShader.update(gl);
-
 		gl.glEnable(GL.GL_BLEND);
 		gl.glBlendFunc(GL.GL_ZERO, GL.GL_SRC_ALPHA);
 		gl.glDepthMask(false);
@@ -59,6 +57,7 @@ public final class ShadowVolumes {
 			gl.glStencilFuncSeparate(GL.GL_BACK, GL.GL_ALWAYS, 0, 0xffffffff);
 			gl.glStencilOpSeparate(GL.GL_BACK, GL.GL_KEEP, GL.GL_INCR_WRAP, GL.GL_KEEP);
 
+			volumeShader.update(gl);
 			volumeShader.enable(gl);
 			for (Renderable renderable : renderables) {
 				if (renderable.containsFlag(Flags.INTERACTIVE_VIEWS_ONLY) && !interactive)
@@ -68,9 +67,7 @@ public final class ShadowVolumes {
 				if (renderable.getQueue() != pass)
 					continue;
 
-				// FIXME: this is quite hacky... need a cleaner solution to setup an array (offset/stride) on the fly
-				volumeShader.getArrays().get(0).setup(renderable.getStride(), 0);
-				volumeShader.render(gl, renderable.getCount(), renderable.getBuffer());
+				volumeShader.render(gl, renderable.getBuffer());
 			}
 			volumeShader.disable(gl);
 

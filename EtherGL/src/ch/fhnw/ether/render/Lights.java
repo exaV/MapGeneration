@@ -20,13 +20,9 @@ public final class Lights {
 	private static final GenericLight DEFAULT_LIGHT = new DirectionalLight(Vec3.Z, RGB.BLACK, RGB.WHITE);
 
 	private final List<GenericLight> lights = new ArrayList<>(Collections.singletonList(DEFAULT_LIGHT));
-	private FloatUniformBuffer uniforms = new FloatUniformBuffer(LightUniformBlock.BLOCK_SIZE);
+	private final FloatUniformBuffer uniforms = new FloatUniformBuffer(LightUniformBlock.BLOCK_SIZE);
 
 	public Lights() {
-	}
-
-	public void dispose(GL3 gl) {
-		uniforms = null;
 	}
 
 	public List<GenericLight> getLights() {

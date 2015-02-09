@@ -41,12 +41,6 @@ public interface IArrayBuffer {
 
 	void bind(GL3 gl);
 
-	void enableAttribute(GL3 gl, int index, int numComponents, int stride, int offset);
-
-	void enableAttribute(GL3 gl, int index, int numComponents);
-
-	void disableAttribute(GL3 gl, int index);
-
 	int size();
 
 	boolean isEmpty();

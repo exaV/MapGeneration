@@ -47,7 +47,7 @@ import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.gl.DefaultView;
 import ch.fhnw.util.color.RGBA;
-import ch.fhnw.util.math.Vec3;
+import ch.fhnw.util.math.Mat4;
 
 public final class SimpleAnimationExample {
 
@@ -60,8 +60,6 @@ public final class SimpleAnimationExample {
 		float[] colors = { 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1 };
 
 		DefaultGeometry g = DefaultGeometry.createVC(Primitive.TRIANGLES, vertices, colors);
-		g.setOrigin(new Vec3(0, 0, 0.25));
-		g.setTranslation(new Vec3(0, 0, 0.5f));
 
 		return new DefaultMesh(new ColorMaterial(RGBA.WHITE), g);
 	}
@@ -97,7 +95,7 @@ public final class SimpleAnimationExample {
 				float f = 0.4f + 0.6f * (float) (Math.sin(Math.toRadians(c)) * 0.5 + 1);
 
 				// apply changes to geometry
-				mesh.getGeometry().setScale(new Vec3(f, f, f));
+				mesh.setTransform(Mat4.scale(f, f, f));
 				mesh.getGeometry().modify(1, (IGeometryAttribute id, float[] colors) -> {
 					for (int i = 0; i < colors.length; ++i) {
 						if (i % 4 == 3)
@@ -107,6 +105,7 @@ public final class SimpleAnimationExample {
 							colors[i + 0] = 1;
 					}
 				});
+				mesh.requestUpdate(null);
 				
 				// update view, because we have no fix rendering loop but event-based rendering
 				if (view != null)

@@ -29,64 +29,19 @@
 
 package ch.fhnw.util.math;
 
-/**
- * Created by radar on 05/12/13.
- */
-// MV = T * R * S * T-Origin
-// MN = (R * S).inverse().transpose()
-public class Transform implements ITransformable {
-	private Vec3 origin = Vec3.ZERO;
-	private Vec3 translation = Vec3.ZERO;
-	private Vec3 rotation = Vec3.ZERO;
-	private Vec3 scale = Vec3.ONE;
+public final class Transform {
 
-	private Mat4 vertexTransform;
-	private Mat3 normalTransform;
-
-	@Override
-	public Vec3 getOrigin() {
-		return origin;
+	// M = T * RX * RY * RZ * S
+	public static Mat4 trs(float tx, float ty, float tz, float rx, float ry, float rz, float sx, float sy, float sz) {
+		return Mat4.multiply(Mat4.translate(tx, ty, tz), Mat4.rotate(rx, Vec3.X), Mat4.rotate(ry, Vec3.Y), Mat4.rotate(rz, Vec3.Z), Mat4.scale(sx, sy, sz));
 	}
 
-	@Override
-	public void setOrigin(Vec3 origin) {
-		this.origin = origin;
+	// M = T * RX * RY * RZ * S
+	public static Mat4 trs(Vec3 t, Vec3 r, Vec3 s) {
+		return trs(t.x, t.y, t.z, r.x, r.y, r.z, s.x, s.y, s.z);
 	}
-
-	@Override
-	public Vec3 getTranslation() {
-		return translation;
-	}
-
-	@Override
-	public void setTranslation(Vec3 translation) {
-		this.translation = translation;
-		vertexTransform = null;
-	}
-
-	@Override
-	public Vec3 getRotation() {
-		return rotation;
-	}
-
-	@Override
-	public void setRotation(Vec3 rotation) {
-		this.rotation = rotation;
-		vertexTransform = null;
-		normalTransform = null;
-	}
-
-	@Override
-	public Vec3 getScale() {
-		return scale;
-	}
-
-	@Override
-	public void setScale(Vec3 scale) {
-		this.scale = scale;
-		vertexTransform = null;
-		normalTransform = null;
-	}
+	
+/*
 
 	public float[] transformVertices(float[] vertices) {
 		validateVertexTransform(origin);
@@ -100,23 +55,17 @@ public class Transform implements ITransformable {
 
 	private void validateVertexTransform(Vec3 origin) {
 		if (vertexTransform == null) {
-			vertexTransform = Mat4.multiply(Mat4.translate(translation), 
-											Mat4.rotate(rotation.x, Vec3.X), Mat4.rotate(rotation.y, Vec3.Y), Mat4.rotate(rotation.z, Vec3.Z),
-											Mat4.scale(scale),
-											Mat4.translate(origin.negate()));
+			vertexTransform = Mat4.multiply(Mat4.translate(translation), Mat4.rotate(rotation.x, Vec3.X), Mat4.rotate(rotation.y, Vec3.Y),
+					Mat4.rotate(rotation.z, Vec3.Z), Mat4.scale(scale), Mat4.translate(origin.negate()));
 		}
 	}
 
 	private void validateNormalTransform() {
 		if (normalTransform == null) {
-			normalTransform = Mat3.multiply(Mat3.rotate(rotation.x, Vec3.X), Mat3.rotate(rotation.y, Vec3.Y), Mat3.rotate(rotation.z, Vec3.Z), Mat3.scale(scale));
+			normalTransform = Mat3.multiply(Mat3.rotate(rotation.x, Vec3.X), Mat3.rotate(rotation.y, Vec3.Y), Mat3.rotate(rotation.z, Vec3.Z),
+					Mat3.scale(scale));
 			normalTransform = normalTransform.inverse().transpose();
 		}
 	}
-
-	@Override
-	public String toString() {
-		validateVertexTransform(origin);
-		return vertexTransform.toString();
-	}
+*/
 }

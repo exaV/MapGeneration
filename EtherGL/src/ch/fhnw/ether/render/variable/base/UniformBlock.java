@@ -40,19 +40,26 @@ import ch.fhnw.util.math.Mat3;
 public class UniformBlock extends AbstractUniform<Integer> {
 	private boolean canBind = true;
 	private boolean isBound = false;
+	
+	private int bindingPoint;
 
 	public UniformBlock(RendererAttribute<Integer> attribute, String shaderName) {
 		super(attribute, shaderName);
 	}
 
 	@Override
-	public void enable(GL3 gl, Program program) {
+	public final void update() {
+		bindingPoint = fetch();
+	}
+
+	@Override
+	public final void enable(GL3 gl, Program program) {
 		if (canBind && !isBound) {
 			int index = program.getUniformBlockIndex(gl, getShaderName());
 			if (index == -1) {
 				canBind = false;
 			} else {
-				program.bindUniformBlock(gl, index, get());
+				program.bindUniformBlock(gl, index, bindingPoint);
 				isBound = true;
 			}
 		}

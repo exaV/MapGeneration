@@ -33,18 +33,26 @@ import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.util.color.RGBA;
 
 public class ColorMapMaterial extends ColorMaterial {
-	private Texture colorMap;
+	private volatile Texture colorMap;
 
 	public ColorMapMaterial(Texture colorMap) {
-		this(colorMap, RGBA.WHITE);
+		this(RGBA.WHITE, colorMap);
+	}
+	
+	public ColorMapMaterial(RGBA color, Texture colorMap) {
+		this(color, colorMap, false);
 	}
 
-	public ColorMapMaterial(Texture colorMap, RGBA color) {
-		this(colorMap, color, false);
-	}
-
-	public ColorMapMaterial(Texture colorMap, RGBA color, boolean perVertexColor) {
+	public ColorMapMaterial(RGBA color, Texture colorMap, boolean perVertexColor) {
 		super(color, perVertexColor);
+		this.colorMap = colorMap;
+	}
+	
+	public final Texture getColorMap() {
+		return colorMap;
+	}
+	
+	public final void setColorMap(Texture colorMap) {
 		this.colorMap = colorMap;
 	}
 
