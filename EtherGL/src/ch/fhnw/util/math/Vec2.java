@@ -59,7 +59,7 @@ public final class Vec2 implements IFloatArrayCopyProvider {
 	}
 
 	public float length() {
-		return MathUtil.length(x, y);
+		return MathUtilities.length(x, y);
 	}
 
 	public float distance(Vec2 v) {
@@ -84,13 +84,13 @@ public final class Vec2 implements IFloatArrayCopyProvider {
 
 	public Vec2 normalize() {
 		float l = length();
-		if (MathUtil.isZero(l) || l == 1)
+		if (MathUtilities.isZero(l) || l == 1)
 			return this;
 		return new Vec2(x / l, y / l);
 	}
 
 	public float dot(Vec2 a) {
-		return MathUtil.dot(x, y, a.x, a.y);
+		return MathUtilities.dot(x, y, a.x, a.y);
 	}
 
 	@Override

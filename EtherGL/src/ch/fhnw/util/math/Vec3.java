@@ -84,7 +84,7 @@ public class Vec3 implements IVec3 {
 	}
 
 	public float length() {
-		return MathUtil.length(x, y, z);
+		return MathUtilities.length(x, y, z);
 	}
 
 	public float distance(Vec3 v) {
@@ -109,13 +109,13 @@ public class Vec3 implements IVec3 {
 
 	public Vec3 normalize() {
 		float l = length();
-		if (MathUtil.isZero(l) || l == 1)
+		if (MathUtilities.isZero(l) || l == 1)
 			return this;
 		return new Vec3(x / l, y / l, z / l);
 	}
 
 	public float dot(Vec3 a) {
-		return MathUtil.dot(x, y, z, a.x, a.y, a.z);
+		return MathUtilities.dot(x, y, z, a.x, a.y, a.z);
 	}
 
 	public Vec3 cross(Vec3 a) {

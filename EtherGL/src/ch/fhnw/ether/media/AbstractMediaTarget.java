@@ -75,7 +75,8 @@ public abstract class AbstractMediaTarget<F extends AbstractFrame, T extends IRe
 		}
 	}
 
-	public final void useProgram(RenderProgram<T> program) {
+	@SuppressWarnings("unused")
+	public void useProgram(RenderProgram<T> program) throws RenderCommandException {
 		this.program = program;	
 	}
 

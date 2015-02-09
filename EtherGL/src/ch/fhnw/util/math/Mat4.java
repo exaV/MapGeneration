@@ -408,7 +408,7 @@ public final class Mat4 implements IFloatArrayCopyProvider {
 			z *= l;
 		}
 
-		float radians = angle * MathUtil.DEGREES_TO_RADIANS;
+		float radians = angle * MathUtilities.DEGREES_TO_RADIANS;
 		float c = (float) Math.cos(radians);
 		float ic = 1.0f - c;
 		float s = (float) Math.sin(radians);
@@ -553,7 +553,7 @@ public final class Mat4 implements IFloatArrayCopyProvider {
 	 * @return perspective projection matrix
 	 */
 	public static Mat4 perspective(float fov, float aspect, float near, float far) {
-		double radians = fov / 2 * MathUtil.DEGREES_TO_RADIANS;
+		double radians = fov / 2 * MathUtilities.DEGREES_TO_RADIANS;
 		double sine = Math.sin(radians);
 		float deltaZ = far - near;
 

@@ -97,7 +97,7 @@ public class Vec4 implements IVec4 {
 	}
 
 	public float length() {
-		return MathUtil.length(x, y, z, w);
+		return MathUtilities.length(x, y, z, w);
 	}
 
 	public float distance(Vec4 v) {
@@ -122,13 +122,13 @@ public class Vec4 implements IVec4 {
 
 	public Vec4 normalize() {
 		float l = length();
-		if (MathUtil.isZero(l) || l == 1)
+		if (MathUtilities.isZero(l) || l == 1)
 			return this;
 		return new Vec4(x / l, y / l, z / l, w / l);
 	}
 
 	public float dot(Vec4 a) {
-		return MathUtil.dot(x, y, z, z, a.x, a.y, a.z, a.w);
+		return MathUtilities.dot(x, y, z, z, a.x, a.y, a.z, a.w);
 	}
 
 	@Override

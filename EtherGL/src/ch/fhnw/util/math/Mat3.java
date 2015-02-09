@@ -294,7 +294,7 @@ public final class Mat3 implements IFloatArrayCopyProvider {
 			z *= l;
 		}
 
-		float radians = angle * MathUtil.DEGREES_TO_RADIANS;
+		float radians = angle * MathUtilities.DEGREES_TO_RADIANS;
 		float c = (float) Math.cos(radians);
 		float ic = 1.0f - c;
 		float s = (float) Math.sin(radians);

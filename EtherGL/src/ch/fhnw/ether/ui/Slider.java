@@ -32,7 +32,7 @@ package ch.fhnw.ether.ui;
 import java.awt.Color;
 
 import ch.fhnw.ether.view.IView;
-import ch.fhnw.util.math.MathUtil;
+import ch.fhnw.util.math.MathUtilities;
 
 import com.jogamp.newt.event.MouseEvent;
 
@@ -131,7 +131,7 @@ public class Slider extends AbstractWidget {
 	private void updateValue(MouseEvent e, IView view) {
 		UI ui = getUI();
 		float bx = ui.getX() + getX() * (SLIDER_GAP + SLIDER_WIDTH);
-		value = MathUtil.clamp((e.getX() - bx) / SLIDER_WIDTH, 0, 1);
+		value = MathUtilities.clamp((e.getX() - bx) / SLIDER_WIDTH, 0, 1);
 		requestUpdate();
 		fire(view);
 	}
