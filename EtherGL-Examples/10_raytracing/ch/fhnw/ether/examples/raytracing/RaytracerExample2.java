@@ -56,7 +56,7 @@ public class RaytracerExample2 {
 
 	public RaytracerExample2() {
 		RayTracer rt = new RayTracer();
-		
+
 		// create controller, camera, scene and view
 		IController controller = new DefaultController(new EventDrivenScheduler(), new RayTracingRenderer(rt));
 		

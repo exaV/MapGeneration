@@ -11,20 +11,18 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-import ch.fhnw.ether.media.AbstractFrame;
-import ch.fhnw.ether.media.AbstractFrameSource;
 import ch.fhnw.ether.media.PerTargetState;
 import ch.fhnw.ether.media.RenderCommandException;
 
 
-public class URLAudioSource extends AbstractFrameSource<IAudioRenderTarget, URLAudioSource.State> {
+public class URLAudioSource extends AbstractAudioSource<URLAudioSource.State> {
 	private static final float S2F  = Short.MAX_VALUE;
 
 	private final URL         url;
 	private final AudioFormat fmt;       
 	private final int         numPlays;
 	private final long        frameCount;
-	
+
 	public URLAudioSource(URL url) throws IOException {
 		this(url, Integer.MAX_VALUE);
 	}
@@ -36,7 +34,7 @@ public class URLAudioSource extends AbstractFrameSource<IAudioRenderTarget, URLA
 		try (AudioInputStream in = AudioSystem.getAudioInputStream(url)) {
 			this.fmt   = in.getFormat();
 			frameCount = in.getFrameLength();
-			
+
 			if(fmt.getSampleSizeInBits() != 16)
 				throw new IOException("Only 16 bit audio supported");
 			if(fmt.getEncoding() != Encoding.PCM_SIGNED) 
@@ -55,22 +53,21 @@ public class URLAudioSource extends AbstractFrameSource<IAudioRenderTarget, URLA
 		state.runInternal();
 	}
 
+	@Override
 	public float getSampleRate() {
 		return fmt.getSampleRate();
 	}
 
-	static class State extends PerTargetState<IAudioRenderTarget> implements Runnable {
+	class State extends PerTargetState<IAudioRenderTarget> implements Runnable {
 		private final BlockingQueue<float[]> data = new LinkedBlockingQueue<>();
 		private       double                 bufferSizeInSecs;
 		private       int                    numPlays;
 		private       double                 size2secs;
-		private       AudioFormat            fmt;       
-		private final URL                    url;
+		private       long                   samples;
 
-		public State(IAudioRenderTarget target, URL url, int numPlays) {
+		public State(IAudioRenderTarget target, int numPlays) {
 			super(target);
 
-			this.url      = url;
 			this.numPlays = numPlays;
 			Thread t      = new Thread(this, "AudioReader:" + url.toExternalForm());
 			t.setDaemon(true);
@@ -85,7 +82,6 @@ public class URLAudioSource extends AbstractFrameSource<IAudioRenderTarget, URLA
 
 				while(--numPlays >= 0) {
 					try (AudioInputStream in = AudioSystem.getAudioInputStream(url)) {
-						fmt                  = in.getFormat();
 						size2secs            = fmt.getSampleRate() * fmt.getChannels();
 						int   bytesPerSample = fmt.getSampleSizeInBits() / 8;
 
@@ -121,7 +117,8 @@ public class URLAudioSource extends AbstractFrameSource<IAudioRenderTarget, URLA
 			try {
 				final float[] outData = data.take();
 				bufferSizeInSecs -= outData.length / size2secs;
-				getTarget().setFrame(new AudioFrame(AbstractFrame.ASAP, fmt.getChannels(), outData));
+				getTarget().setFrame(createAudioFrame(samples, outData));
+				samples += outData.length;
 			} catch(Throwable t) {
 				throw new RenderCommandException(t);
 			}
@@ -130,9 +127,9 @@ public class URLAudioSource extends AbstractFrameSource<IAudioRenderTarget, URLA
 
 	@Override
 	protected State createState(IAudioRenderTarget target) {
-		return new State(target, url, numPlays);
+		return new State(target, numPlays);
 	}
-	
+
 	@Override
 	public String toString() {
 		return url.toString();
@@ -141,5 +138,10 @@ public class URLAudioSource extends AbstractFrameSource<IAudioRenderTarget, URLA
 	@Override
 	public long getFrameCount() {
 		return frameCount;
+	}
+
+	@Override
+	public int getNumChannels() {
+		return fmt.getChannels();
 	}
 }

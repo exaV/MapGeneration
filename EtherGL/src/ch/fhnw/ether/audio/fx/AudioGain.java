@@ -8,7 +8,7 @@ import ch.fhnw.ether.media.Stateless;
 
 public class AudioGain extends AbstractRenderCommand<IAudioRenderTarget,Stateless<IAudioRenderTarget>> {
 	private static final Parameter GAIN = new Parameter("gain", "Gain", 0, 1, 1);
-	
+
 	public AudioGain() {
 		super(GAIN);
 	}

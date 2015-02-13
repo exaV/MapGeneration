@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.JComboBox;
 
+import ch.fhnw.ether.media.RenderCommandException;
 import ch.fhnw.ether.media.RenderProgram;
 import ch.fhnw.ether.ui.ParameterWindow;
 import ch.fhnw.ether.video.AWTFrameTarget;
@@ -16,7 +17,7 @@ import ch.fhnw.ether.video.URLVideoSource;
 import ch.fhnw.ether.video.fx.AbstractVideoFX;
 
 public class SimpleVideoPlayer {
-	public static void main(String[] args) throws MalformedURLException, IOException, InterruptedException {
+	public static void main(String[] args) throws MalformedURLException, IOException, InterruptedException, RenderCommandException {
 		URLVideoSource                    track    = new URLVideoSource(new File(args[0]).toURI().toURL());
 		AWTFrameTarget                    videoOut = new AWTFrameTarget();
 

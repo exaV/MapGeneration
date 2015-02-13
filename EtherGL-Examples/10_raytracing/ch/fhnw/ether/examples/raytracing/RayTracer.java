@@ -72,8 +72,7 @@ public class RayTracer extends AbstractVideoSource<Stateless<IVideoRenderTarget>
 	}
 
 	public void addMesh(IMesh mesh) {
-		if (mesh instanceof RayTraceMesh)
-			meshes.add((RayTraceMesh) mesh);
+		meshes.add((RayTraceMesh) mesh);
 	}
 
 	public void removeMesh(IMesh mesh) {
@@ -146,16 +145,16 @@ public class RayTracer extends AbstractVideoSource<Stateless<IVideoRenderTarget>
 	public double getFrameRate() {
 		return FRAMERATE_UNKNOWN;
 	}
-	
+
 	@Override
 	public long getFrameCount() {
 		return FRAMECOUNT_UNKNOWN;
 	};
-	
+
 	@Override
 	protected void run(Stateless<IVideoRenderTarget> state) throws RenderCommandException {
 		if(lights.isEmpty()) return;
-		
+
 		RGBA8Frame frame = new RGBA8Frame(w, h);
 
 		final int   w     = frame.dimI;

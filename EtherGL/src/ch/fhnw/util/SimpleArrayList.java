@@ -153,7 +153,6 @@ public abstract class SimpleArrayList<AT, WT> implements RandomAccess, Cloneable
 
 	/**
 	 * Public method to remove an element. 
-	 * TODO: Add range check.
 	 * @param i Index of element to remove.
 	 */
 	public final void remove(int i) {
@@ -336,5 +335,5 @@ public abstract class SimpleArrayList<AT, WT> implements RandomAccess, Cloneable
 
 	public int getSize() {
 		return size;
-	}
+	}	
 }

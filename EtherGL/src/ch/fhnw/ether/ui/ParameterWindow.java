@@ -22,6 +22,7 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
+import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -115,7 +116,13 @@ public class ParameterWindow {
 			}
 
 			JComponent createUI(AbstractRenderCommand<?,?> cmd) {
-				JPanel        result = new JPanel();	
+				if(cmd.getClass().getName().equals(cmd.toString())) {
+					JLabel result = new JLabel(cmd.toString());
+					result.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+					return result;
+				}
+				
+				JPanel result = new JPanel();
 				result.setBorder(new TitledBorder(cmd.getClass().getName()));
 				Parameter[] params = cmd.getParameters();
 				result.setLayout(new GridLayout(params.length + 1, 2, 0, 0));
@@ -147,9 +154,10 @@ public class ParameterWindow {
 					});
 					result.add(zero);
 				} else {
-					JTextArea text = new JTextArea(cmd.toString(), 2, 30);
+					JTextArea text = new JTextArea(cmd.toString(), 1, 30);
 					text.setWrapStyleWord(false);
 					text.setEditable(false);
+					text.setBackground(result.getBackground());
 					result.add(text);
 				}
 				return result;

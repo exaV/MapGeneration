@@ -2,8 +2,11 @@ package ch.fhnw.ether.media;
 
 import ch.fhnw.util.ClassUtilities;
 import ch.fhnw.util.IObjectID;
+import ch.fhnw.util.Log;
 
 public abstract class AbstractRenderCommand<T extends IRenderTarget, S extends PerTargetState<T>> implements IObjectID {
+	private static final Log log = Log.create();
+
 	private final long id = ClassUtilities.createObjectID();
 
 	protected final Parameter[] parameters;
@@ -46,11 +49,21 @@ public abstract class AbstractRenderCommand<T extends IRenderTarget, S extends P
 
 	protected abstract void run(S state) throws RenderCommandException;
 	
-	@SuppressWarnings({ "unused", "unchecked" })
+	@SuppressWarnings({"unused","unchecked" })
 	protected S createState(T target) throws RenderCommandException {
 		return (S)new Stateless<>(target);
 	}
-	
+
+	@SuppressWarnings({"unchecked" })
+	protected S getState(T target) {
+		try {
+			return (S)target.getState(this);
+		} catch (RenderCommandException e) {
+			log.severe(e);
+			return null;
+		}
+	}
+
 	@Override
 	public final long getObjectID() {
 		return id;
@@ -72,7 +85,12 @@ public abstract class AbstractRenderCommand<T extends IRenderTarget, S extends P
 	}
 	
 	@SuppressWarnings("unchecked")
-	protected <TS extends PerTargetState<?>> TS createStateInternal(IRenderTarget target) throws RenderCommandException {
+	final <TS extends PerTargetState<?>> TS createStateInternal(IRenderTarget target) throws RenderCommandException {
 		return (TS)createState((T) target);
+	}
+	
+	@Override
+	public String toString() {
+		return getClass().getName();
 	}
 }

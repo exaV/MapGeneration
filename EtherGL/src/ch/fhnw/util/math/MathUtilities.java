@@ -162,4 +162,13 @@ public final class MathUtilities {
 	public static boolean isPowerOfTwo(int n) {
 		return (n > 0) && ((n & (n - 1)) == 0);
 	}
+
+	public static int nextPowerOfTwo(int num) {
+		int result = 1;
+		while (num != 0) {
+			num >>= 1;
+		result <<= 1;
+		}
+		return result;
+	}
 }
