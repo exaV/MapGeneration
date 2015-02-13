@@ -1,8 +1,6 @@
-package ch.fhnw.ether.examples.basic;
-
 /*
- * Copyright (c) 2013 - 2014 Stefan Muller Arisona, Simon Schubiger, Samuel von Stachelski
- * Copyright (c) 2013 - 2014 FHNW & ETH Zurich
+ * Copyright (c) 2013 - 2015 Stefan Muller Arisona, Simon Schubiger, Samuel von Stachelski
+ * Copyright (c) 2013 - 2015 FHNW & ETH Zurich
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,6 +26,8 @@ package ch.fhnw.ether.examples.basic;
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+package ch.fhnw.ether.examples.basic;
 
 import java.util.Timer;
 import java.util.TimerTask;
