@@ -36,7 +36,7 @@ public class AudioVisualizer {
 		SinGen                            sin   = new SinGen(0);
 		DCRemove                          dcrmv = new DCRemove();
 		AutoGain                          gain  = new AutoGain();
-		FFT                               fft  = new FFT(25, Window.HANN);
+		FFT                               fft   = new FFT(25, Window.HANN);
 		Bands                             bands = new Bands(fft, 80, 10000, N_CUBES, Div.LOGARITHMIC);
 		PitchDetect                       pitch = new PitchDetect(fft, 2);
 		InvFFT                            ifft  = new InvFFT(fft);

@@ -467,6 +467,22 @@ public final class Mat4 implements IFloatArrayCopyProvider {
 	}
 
 	/**
+	 * Create uniform scale matrix.
+	 *
+	 * @param s
+	 *          uniform scale factor
+	 * @return the scale matrix
+	 */
+	public static Mat4 scale(float s) {
+		//@formatter:off
+		return new Mat4(s, 0, 0, 0, 
+						0, s, 0, 0,
+						0, 0, s, 0, 
+						0, 0, 0, 1);
+		//@formatter:on
+	}
+
+	/**
 	 * Create scale matrix.
 	 *
 	 * @param s
