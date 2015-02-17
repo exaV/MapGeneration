@@ -9,10 +9,12 @@ public abstract class AbstractRenderCommand<T extends IRenderTarget, S extends P
 
 	private final long id = ClassUtilities.createObjectID();
 
-	protected final Parameter[] parameters;
+	protected final Parameter[]    parameters;
+	private   final StateHandle<S> stateHandle;
 	
 	protected AbstractRenderCommand(Parameter ... parameters) {
-		this.parameters = new Parameter[parameters.length];
+		this.parameters  = new Parameter[parameters.length];
+		this.stateHandle = new StateHandle<>(this);
 		for(int i = 0; i < parameters.length; i++) {
 			parameters[i].setIdx(i);
 			this.parameters[i] = parameters[i].copy();
@@ -92,5 +94,9 @@ public abstract class AbstractRenderCommand<T extends IRenderTarget, S extends P
 	@Override
 	public String toString() {
 		return getClass().getName();
+	}
+	
+	public StateHandle<S> state() {
+		return stateHandle; 
 	}
 }

@@ -37,10 +37,10 @@ public class AudioVisualizer {
 		DCRemove                          dcrmv = new DCRemove();
 		AutoGain                          gain  = new AutoGain();
 		FFT                               fft   = new FFT(25, Window.HANN);
-		Bands                             bands = new Bands(fft, 80, 10000, N_CUBES, Div.LOGARITHMIC);
-		PitchDetect                       pitch = new PitchDetect(fft, 2);
-		InvFFT                            ifft  = new InvFFT(fft);
-		Robotizer                         robo  = new Robotizer(fft);
+		Bands                             bands = new Bands(fft.state(), 80, 10000, N_CUBES, Div.LOGARITHMIC);
+		PitchDetect                       pitch = new PitchDetect(fft.state(), 2);
+		InvFFT                            ifft  = new InvFFT(fft.state());
+		Robotizer                         robo  = new Robotizer(fft.state());
 
 		final JavaSoundTarget audioOut = new JavaSoundTarget();
 

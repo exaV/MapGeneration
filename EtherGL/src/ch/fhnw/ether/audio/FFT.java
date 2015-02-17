@@ -10,6 +10,7 @@ import ch.fhnw.ether.audio.AudioUtilities.Window;
 import ch.fhnw.ether.media.AbstractRenderCommand;
 import ch.fhnw.ether.media.PerTargetState;
 import ch.fhnw.ether.media.RenderCommandException;
+import ch.fhnw.ether.media.StateHandle;
 import ch.fhnw.util.IModifier;
 import ch.fhnw.util.math.MathUtilities;
 
@@ -70,7 +71,7 @@ public class FFT extends AbstractRenderCommand<IAudioRenderTarget,FFT.State> {
 			}
 		}
 
-		float power(float fLow, float fHigh) {
+		public float power(float fLow, float fHigh) {
 			int iLow  = f2idx(fLow);
 			int iHigh = f2idx(fHigh);
 			if(iHigh <= iLow) iHigh = iLow + 1;
@@ -83,7 +84,7 @@ public class FFT extends AbstractRenderCommand<IAudioRenderTarget,FFT.State> {
 			return (float) result;
 		}
 
-		float[] power() {
+		public float[] power() {
 			return power;
 		}
 
@@ -128,6 +129,11 @@ public class FFT extends AbstractRenderCommand<IAudioRenderTarget,FFT.State> {
 					samples[i+c] = sample;
 			}
 		}
+		
+		public void modifySpectrum(IModifier<float[]> modifier) {
+			for(float[] spectrum : getState(target).spectrum)
+				modifier.modify(spectrum);
+		}
 	}
 
 	public FFT(float minFreq, Window windowType) {
@@ -145,37 +151,7 @@ public class FFT extends AbstractRenderCommand<IAudioRenderTarget,FFT.State> {
 		return new State(target);
 	}
 
-	public float power(IAudioRenderTarget target, float fLow, float fHigh) {
-		return getState(target).power(fLow, fHigh);
-	}
-
-	public float[] power(IAudioRenderTarget target) {
-		return getState(target).power();
-	}
-
 	public int size(IAudioRenderTarget target) {
 		return getState(target).size();
-	}
-
-	public int f2idx(IAudioRenderTarget target, float f) {
-		return getState(target).f2idx(f);
-	}
-
-	public float idx2f(IAudioRenderTarget target, int idx) {
-		return getState(target).idx2f(idx);
-	}
-
-	public float[] inverse(IAudioRenderTarget target, float[] spectrum) {
-		getState(target).fft.complexInverse(spectrum, true);
-		return spectrum;
-	}
-
-	public void inverse(IAudioRenderTarget target) {
-		getState(target).inverse();
-	}
-
-	public void modifySpectrum(IAudioRenderTarget target, IModifier<float[]> modifier) {
-		for(float[] spectrum : getState(target).spectrum)
-			modifier.modify(spectrum);
 	}
 }

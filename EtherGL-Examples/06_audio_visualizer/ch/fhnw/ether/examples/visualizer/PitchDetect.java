@@ -12,14 +12,15 @@ import ch.fhnw.ether.audio.FFT;
 import ch.fhnw.ether.media.AbstractRenderCommand;
 import ch.fhnw.ether.media.PerTargetState;
 import ch.fhnw.ether.media.RenderCommandException;
+import ch.fhnw.ether.media.StateHandle;
 import ch.fhnw.util.ClassUtilities;
 import ch.fhnw.util.math.Vec2;
 
 public class PitchDetect extends AbstractRenderCommand<IAudioRenderTarget,PitchDetect.State> {
 	private static final float THRESHOLD = 0.2f;
 
-	private final FFT spectrum;
-	private final int nHarmonics;
+	private final StateHandle<FFT.State> spectrum;
+	private final int                    nHarmonics;
 	
 	class State extends PerTargetState<IAudioRenderTarget> {
 		private final AtomicReference<float[]> pitch = new AtomicReference<>(ClassUtilities.EMPTY_floatA);
@@ -29,9 +30,9 @@ public class PitchDetect extends AbstractRenderCommand<IAudioRenderTarget,PitchD
 			super(target);
 		}
 
-		void process() {
+		void process() throws RenderCommandException {
 			final IAudioRenderTarget target = getTarget();
-			final float[]            spec   = spectrum.power(target).clone();
+			final float[]            spec   = spectrum.get(target).power().clone();
 			
 			for(int h = 0; h < nHarmonics; h++) {
 				final int hop = h + 1;
@@ -44,7 +45,7 @@ public class PitchDetect extends AbstractRenderCommand<IAudioRenderTarget,PitchD
 			this.peaks.clear();
 
 			for (int i = peaks.nextSetBit(0); i >= 0; i = peaks.nextSetBit(i+1))
-				this.peaks.add(new Vec2(spec[i], spectrum.idx2f(target, i)));
+				this.peaks.add(new Vec2(spec[i], spectrum.get(target).idx2f(i)));
 
 			Collections.sort(this.peaks, (Vec2 v0, Vec2 v1)->v0.x < v1.x ? 1 : v0.x > v1.x ? -1 : 0);
 			
@@ -59,7 +60,7 @@ public class PitchDetect extends AbstractRenderCommand<IAudioRenderTarget,PitchD
 		}
 	}
 
-	public PitchDetect(FFT spectrum, int nHarmonics) {
+	public PitchDetect(StateHandle<FFT.State> spectrum, int nHarmonics) {
 		this.spectrum   = spectrum;
 		this.nHarmonics = nHarmonics;
 	}
