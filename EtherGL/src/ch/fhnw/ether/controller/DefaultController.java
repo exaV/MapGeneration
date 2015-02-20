@@ -185,6 +185,11 @@ public class DefaultController implements IController {
 	public final NavigationTool getNavigationTool() {
 		return navigationTool;
 	}
+	
+	@Override
+	public IScheduler getScheduler() {
+		return scheduler;
+	}
 
 	@Override
 	public final IRenderer getRenderer() {
