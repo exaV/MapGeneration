@@ -32,6 +32,7 @@ import java.util.List;
 
 import ch.fhnw.ether.controller.DefaultController;
 import ch.fhnw.ether.controller.IController;
+import ch.fhnw.ether.controller.event.KeyEvent;
 import ch.fhnw.ether.formats.obj.OBJReader;
 import ch.fhnw.ether.scene.DefaultScene;
 import ch.fhnw.ether.scene.IScene;
@@ -60,8 +61,6 @@ import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Transform;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.GeodesicSphere;
-
-import com.jogamp.newt.event.KeyEvent;
 
 public final class SimpleLightExample {
 	private static final String[] HELP = { 
@@ -96,51 +95,52 @@ public final class SimpleLightExample {
 		// Create controller
 		controller = new DefaultController() {
 			@Override
-			public void keyPressed(KeyEvent e, IView view) {
-				switch (e.getKeyCode()) {
-				case KeyEvent.VK_1:
+			protected boolean keyPressed(KeyEvent e) {
+				switch (e.getKey()) {
+				case KeyEvent.KEY_1:
 					scene.remove3DObject(light);
 					light = new DirectionalLight(light.getPosition(), AMBIENT, COLOR);
 					scene.add3DObject(light);
 					break;
-				case KeyEvent.VK_2:
+				case KeyEvent.KEY_2:
 					scene.remove3DObject(light);
 					light = new PointLight(light.getPosition(), AMBIENT, COLOR, 10);
 					scene.add3DObject(light);
 					break;
-				case KeyEvent.VK_3:
+				case KeyEvent.KEY_3:
 					scene.remove3DObject(light);
 					light = new SpotLight(light.getPosition(), AMBIENT, COLOR, 10, Vec3.Z_NEG, 15, 0);
 					scene.add3DObject(light);
 					break;
-				case KeyEvent.VK_UP:
+				case KeyEvent.KEY_UP:
 					lightMesh.setPosition(lightMesh.getPosition().add(Vec3.Y.scale(INC_XY)));
 					break;
-				case KeyEvent.VK_DOWN:
+				case KeyEvent.KEY_DOWN:
 					lightMesh.setPosition(lightMesh.getPosition().add(Vec3.Y_NEG.scale(INC_XY)));
 					break;
-				case KeyEvent.VK_LEFT:
+				case KeyEvent.KEY_LEFT:
 					lightMesh.setPosition(lightMesh.getPosition().add(Vec3.X_NEG.scale(INC_XY)));
 					break;
-				case KeyEvent.VK_RIGHT:
+				case KeyEvent.KEY_RIGHT:
 					lightMesh.setPosition(lightMesh.getPosition().add(Vec3.X.scale(INC_XY)));
 					break;
-				case KeyEvent.VK_Q:
+				case KeyEvent.KEY_Q:
 					lightMesh.setPosition(lightMesh.getPosition().add(Vec3.Z.scale(INC_Z)));
 					break;
-				case KeyEvent.VK_A:
+				case KeyEvent.KEY_A:
 					lightMesh.setPosition(lightMesh.getPosition().add(Vec3.Z_NEG.scale(INC_Z)));
 					break;
-				case KeyEvent.VK_H:
+				case KeyEvent.KEY_H:
 					printHelp(HELP);
 					break;
 				default:
-					super.keyPressed(e, view);
+					return false;
 				}
 				controller.getUI().setMessage("light position: " + lightMesh.getPosition());
 				light.setPosition(lightMesh.getPosition());
 				lightMesh.requestUpdate(null);
 				repaintViews();
+				return true;
 			};
 		};
 
@@ -174,7 +174,7 @@ public final class SimpleLightExample {
 		scene.add3DObject(ground);
 
 		// Add an exit button
-		controller.getUI().addWidget(new Button(0, 0, "Quit", "Quit", KeyEvent.VK_ESCAPE, (button, v) -> System.exit(0)));
+		controller.getUI().addWidget(new Button(0, 0, "Quit", "Quit", KeyEvent.KEY_ESCAPE, (button, v) -> System.exit(0)));
 
 		// Add geometry
 		IMaterial solidMaterial = new ShadedMaterial(RGB.BLACK, RGB.BLUE, RGB.GRAY, RGB.WHITE, 10, 1, 1f);

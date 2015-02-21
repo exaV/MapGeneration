@@ -30,6 +30,8 @@
 package ch.fhnw.ether.examples.metrobuzz.tool;
 
 import ch.fhnw.ether.controller.IController;
+import ch.fhnw.ether.controller.event.KeyEvent;
+import ch.fhnw.ether.controller.event.MouseEvent;
 import ch.fhnw.ether.controller.tool.AbstractTool;
 import ch.fhnw.ether.controller.tool.PickUtilities;
 import ch.fhnw.ether.controller.tool.PickUtilities.PickMode;
@@ -46,9 +48,6 @@ import ch.fhnw.util.math.Mat4;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.Line;
 import ch.fhnw.util.math.geometry.Plane;
-
-import com.jogamp.newt.event.KeyEvent;
-import com.jogamp.newt.event.MouseEvent;
 
 public final class AreaTool extends AbstractTool {
 	private static final RGBA TOOL_COLOR = RGBA.YELLOW;
@@ -80,39 +79,40 @@ public final class AreaTool extends AbstractTool {
 	}
 
 	@Override
-	public void keyPressed(KeyEvent e, IView view) {
-		switch (e.getKeyCode()) {
-		case KeyEvent.VK_UP:
+	public void keyPressed(KeyEvent e) {
+		switch (e.getKey()) {
+		case KeyEvent.KEY_UP:
 			yOffset += KEY_INCREMENT;
 			break;
-		case KeyEvent.VK_DOWN:
+		case KeyEvent.KEY_DOWN:
 			yOffset -= KEY_INCREMENT;
 			break;
-		case KeyEvent.VK_LEFT:
+		case KeyEvent.KEY_LEFT:
 			xOffset -= KEY_INCREMENT;
 			break;
-		case KeyEvent.VK_RIGHT:
+		case KeyEvent.KEY_RIGHT:
 			xOffset += KEY_INCREMENT;
 			break;
 		}
 
 		mesh.setPosition(new Vec3(xOffset, yOffset, 0));
-		view.getController().repaintViews();
+		e.getView().getController().repaintViews();
 	}
 
 	@Override
-	public void mousePressed(MouseEvent e, IView view) {
-		int x = e.getX();
-		int y = view.getViewport().h - e.getY();
-		float d = PickUtilities.pickBoundingBox(PickMode.POINT, x, y, 0, 0, view, mesh.getBounds());
+	public void mousePressed(MouseEvent e) {
+		float x = e.getX();
+		float y = e.getY();
+		float d = PickUtilities.pickBoundingBox(PickMode.POINT, x, y, 0, 0, e.getView(), mesh.getBounds());
 		if (d < Float.POSITIVE_INFINITY)
 			moving = true;
 	}
 
 	@Override
-	public void mouseDragged(MouseEvent e, IView view) {
+	public void mouseDragged(MouseEvent e) {
 		if (moving) {
-			Line line = ProjectionUtil.getRay(view, e.getX(), view.getViewport().h - e.getY());
+			IView view = e.getView();
+			Line line = ProjectionUtil.getRay(view, e.getX(), e.getY());
 			Plane plane = new Plane(new Vec3(0, 0, 1));
 			Vec3 p = plane.intersection(line);
 			if (p != null) {
@@ -125,7 +125,7 @@ public final class AreaTool extends AbstractTool {
 	}
 
 	@Override
-	public void mouseReleased(MouseEvent e, IView view) {
+	public void mouseReleased(MouseEvent e) {
 		moving = false;
 	}
 }

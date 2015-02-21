@@ -29,8 +29,6 @@
 
 package ch.fhnw.ether.render.variable.base;
 
-import javax.media.opengl.GL3;
-
 import ch.fhnw.ether.render.gl.Program;
 import ch.fhnw.ether.render.variable.IShaderVariable;
 import ch.fhnw.ether.scene.attribute.ITypedAttribute;
@@ -58,11 +56,11 @@ public abstract class AbstractVariable<T> implements IShaderVariable<T> {
 		return shaderName;
 	}
 
-	protected final int getShaderIndex(GL3 gl, Program program) {
+	protected final int getShaderIndex(Program program) {
 		if (shaderIndex == -1)
-			shaderIndex = resolveShaderIndex(gl, program, shaderName);
+			shaderIndex = resolveShaderIndex(program, shaderName);
 		return shaderIndex;
 	}
 
-	protected abstract int resolveShaderIndex(GL3 gl, Program program, String shaderName);
+	protected abstract int resolveShaderIndex(Program program, String shaderName);
 }

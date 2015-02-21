@@ -29,10 +29,8 @@
 
 package ch.fhnw.ether.ui;
 
-import ch.fhnw.ether.view.IView;
-
-import com.jogamp.newt.event.KeyEvent;
-import com.jogamp.newt.event.MouseEvent;
+import ch.fhnw.ether.controller.event.KeyEvent;
+import ch.fhnw.ether.controller.event.MouseEvent;
 
 abstract class AbstractWidget implements IWidget {
 	private UI ui;
@@ -81,7 +79,7 @@ abstract class AbstractWidget implements IWidget {
 	}
 
 	@Override
-	public boolean hit(int x, int y, IView view) {
+	public boolean hit(float x, float y) {
 		return false;
 	}
 
@@ -101,27 +99,27 @@ abstract class AbstractWidget implements IWidget {
 	}
 
 	@Override
-	public boolean keyPressed(KeyEvent e, IView view) {
+	public boolean keyPressed(KeyEvent e) {
 		return false;
 	}
 
 	@Override
-	public boolean mousePressed(MouseEvent e, IView view) {
+	public boolean mousePressed(MouseEvent e) {
 		return false;
 	}
 
 	@Override
-	public boolean mouseReleased(MouseEvent e, IView view) {
+	public boolean mouseReleased(MouseEvent e) {
 		return false;
 	}
 
 	@Override
-	public boolean mouseMoved(MouseEvent e, IView view) {
+	public boolean mouseMoved(MouseEvent e) {
 		return false;
 	}
 
 	@Override
-	public boolean mouseDragged(MouseEvent e, IView view) {
+	public boolean mouseDragged(MouseEvent e) {
 		return false;
 	}
 }

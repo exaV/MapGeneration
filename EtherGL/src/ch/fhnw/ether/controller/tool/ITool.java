@@ -29,10 +29,9 @@
 
 package ch.fhnw.ether.controller.tool;
 
+import ch.fhnw.ether.controller.event.KeyEvent;
+import ch.fhnw.ether.controller.event.MouseEvent;
 import ch.fhnw.ether.view.IView;
-
-import com.jogamp.newt.event.KeyEvent;
-import com.jogamp.newt.event.MouseEvent;
 
 public interface ITool {
 	/**
@@ -56,21 +55,21 @@ public interface ITool {
 
 	// key listener
 
-	void keyPressed(KeyEvent e, IView view);
+	void keyPressed(KeyEvent e);
 
 	// mouse listener
 
-	void mousePressed(MouseEvent e, IView view);
+	void mousePressed(MouseEvent e);
 
-	void mouseReleased(MouseEvent e, IView view);
+	void mouseReleased(MouseEvent e);
 
 	// mouse motion listener
 
-	void mouseMoved(MouseEvent e, IView view);
+	void mouseMoved(MouseEvent e);
 
-	void mouseDragged(MouseEvent e, IView view);
+	void mouseDragged(MouseEvent e);
 
 	// mouse wheel listener
 
-	void mouseWheelMoved(MouseEvent e, IView view);
+	void mouseScrolled(MouseEvent e);
 }

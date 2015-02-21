@@ -38,9 +38,6 @@ import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.ui.UI;
 import ch.fhnw.ether.view.IView;
 
-import com.jogamp.newt.event.KeyEvent;
-import com.jogamp.newt.event.MouseEvent;
-
 /**
  * A controller that coordinates both model and associated views. It also handles the relevant events coming from
  * individual views.
@@ -164,32 +161,4 @@ public interface IController {
 	 * @return the ui
 	 */
 	UI getUI();
-
-	// key listener
-
-	void keyPressed(KeyEvent e, IView view);
-
-	void keyReleased(KeyEvent e, IView view);
-
-	// mouse listener
-
-	void mouseEntered(MouseEvent e, IView view);
-
-	void mouseExited(MouseEvent e, IView view);
-
-	void mousePressed(MouseEvent e, IView view);
-
-	void mouseReleased(MouseEvent e, IView view);
-
-	void mouseClicked(MouseEvent e, IView view);
-
-	// mouse motion listener
-
-	void mouseMoved(MouseEvent e, IView view);
-
-	void mouseDragged(MouseEvent e, IView view);
-
-	// mouse wheel listener
-
-	void mouseWheelMoved(MouseEvent e, IView view);
 }

@@ -32,8 +32,6 @@ package ch.fhnw.ether.render;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.media.opengl.GL3;
-
 import ch.fhnw.ether.render.gl.FloatUniformBuffer;
 import ch.fhnw.ether.render.variable.builtin.ViewUniformBlock;
 import ch.fhnw.ether.scene.attribute.IAttributeProvider;
@@ -47,20 +45,20 @@ public abstract class AbstractRenderer implements IRenderer {
 	protected static class Cameras {
 		private final FloatUniformBuffer uniforms = new FloatUniformBuffer(ViewUniformBlock.BLOCK_SIZE, 3);
 
-		public void update(GL3 gl, CameraMatrices matrices, Viewport viewport) {
-			ViewUniformBlock.loadUniforms(gl, uniforms, matrices, viewport);
+		public void update(CameraMatrices matrices, Viewport viewport) {
+			ViewUniformBlock.loadUniforms(uniforms, matrices, viewport);
 		}
 
-		public void setCameraSpace(GL3 gl) {
-			uniforms.bind(gl, 0);
+		public void setCameraSpace() {
+			uniforms.bind(0);
 		}
 
-		public void setOrthoDeviceSpace(GL3 gl) {
-			uniforms.bind(gl, 1);
+		public void setOrthoDeviceSpace() {
+			uniforms.bind(1);
 		}
 
-		public void setOrthoScreenSpace(GL3 gl) {
-			uniforms.bind(gl, 2);
+		public void setOrthoScreenSpace() {
+			uniforms.bind(2);
 		}
 
 		public IAttributeProvider getAttributeProvider() {
@@ -111,20 +109,20 @@ public abstract class AbstractRenderer implements IRenderer {
 		lights.removeLight(light);
 	}
 
-	protected void update(GL3 gl, CameraMatrices matrices, Viewport viewport) {
-		cameras.update(gl, matrices, viewport);
-		lights.update(gl, matrices);
-		renderables.update(gl);
+	protected void update(CameraMatrices matrices, Viewport viewport) {
+		cameras.update(matrices, viewport);
+		lights.update(matrices);
+		renderables.update();
 	}
 
-	protected void renderObjects(GL3 gl, Queue pass, boolean interactive) {
-		renderables.renderObjects(gl, pass, interactive);
+	protected void renderObjects(Queue pass, boolean interactive) {
+		renderables.renderObjects(pass, interactive);
 	}
 
-	protected void renderShadowVolumes(GL3 gl, Queue pass, boolean interactive) {
+	protected void renderShadowVolumes(Queue pass, boolean interactive) {
 		if (shadowVolumes == null) {
 			shadowVolumes = new ShadowVolumes(providers);
 		}
-		renderables.renderShadowVolumes(gl, pass, interactive, shadowVolumes, lights.getLights());
+		renderables.renderShadowVolumes(pass, interactive, shadowVolumes, lights.getLights());
 	}
 }

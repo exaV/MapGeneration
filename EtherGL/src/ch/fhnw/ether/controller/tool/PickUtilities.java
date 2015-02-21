@@ -55,7 +55,7 @@ public final class PickUtilities {
 
 	private static final float PICK_DISTANCE = 5;
 
-	public static Map<Float, I3DObject> pickFromScene(PickMode mode, int x, int y, int w, int h, IView view) {
+	public static Map<Float, I3DObject> pickFromScene(PickMode mode, float x, float y, float w, float h, IView view) {
 		final Map<Float, I3DObject> pickables = new TreeMap<>();
 		for (I3DObject object : view.getController().getScene().get3DObjects()) {
 			BoundingBox b = object.getBounds();
@@ -92,7 +92,7 @@ public final class PickUtilities {
 		return pickables;
 	}
 
-	public static float pickBoundingBox(PickMode mode, int x, int y, int w, int h, IView view, BoundingBox bounds) {
+	public static float pickBoundingBox(PickMode mode, float x, float y, float w, float h, IView view, BoundingBox bounds) {
 		BoundingBox b = new BoundingBox();
 		float xmin = bounds.getMinX();
 		float xmax = bounds.getMaxX();
@@ -112,7 +112,7 @@ public final class PickUtilities {
 		return Float.POSITIVE_INFINITY;
 	}
 
-	public static float pickTriangles(PickMode mode, int x, int y, int w, int h, IView view, float[] triangles) {
+	public static float pickTriangles(PickMode mode, float x, float y, float w, float h, IView view, float[] triangles) {
 		triangles = ProjectionUtil.projectToScreen(view, triangles);
 
 		Vec3 o = new Vec3(x, y, 0);
@@ -125,7 +125,7 @@ public final class PickUtilities {
 		return zMin;
 	}
 
-	public static float pickEdges(PickMode mode, int x, int y, int w, int h, IView view, float[] edges) {
+	public static float pickEdges(PickMode mode, float x, float y, float w, float h, IView view, float[] edges) {
 		edges = ProjectionUtil.projectToScreen(view, edges);
 
 		float zMin = Float.POSITIVE_INFINITY;
@@ -156,7 +156,7 @@ public final class PickUtilities {
 		return zMin;
 	}
 
-	public static float pickPoints(PickMode mode, int x, int y, int w, int h, IView view, float[] points) {
+	public static float pickPoints(PickMode mode, float x, float y, float w, float h, IView view, float[] points) {
 		points = ProjectionUtil.projectToScreen(view, points);
 
 		float zMin = Float.POSITIVE_INFINITY;

@@ -29,7 +29,8 @@
 
 package ch.fhnw.ether.controller.event;
 
-import javax.media.opengl.GLAutoDrawable;
+import ch.fhnw.ether.view.IView;
+
 
 // TODO: currently this is "max-rate" scheduling. implement framerate handling...
 public final class FixedRateScheduler extends AbstractScheduler {
@@ -47,7 +48,7 @@ public final class FixedRateScheduler extends AbstractScheduler {
 					e.printStackTrace();
 				}
 				try {
-					displayDrawables();
+					repaintViews();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -60,7 +61,7 @@ public final class FixedRateScheduler extends AbstractScheduler {
 	}
 
 	@Override
-	public void requestUpdate(GLAutoDrawable drawable) {
+	public void requestUpdate(IView view) {
 		// this is ignored since we're continuously rendering
 	}
 }

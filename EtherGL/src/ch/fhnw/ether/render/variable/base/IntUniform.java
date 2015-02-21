@@ -31,8 +31,6 @@ package ch.fhnw.ether.render.variable.base;
 
 import java.util.function.Supplier;
 
-import javax.media.opengl.GL3;
-
 import ch.fhnw.ether.render.gl.Program;
 import ch.fhnw.ether.scene.attribute.ITypedAttribute;
 
@@ -61,7 +59,7 @@ public class IntUniform extends AbstractUniform<Integer> {
 	}
 
 	@Override
-	public final void enable(GL3 gl, Program program) {
-		program.setUniform(gl, getShaderIndex(gl, program), value);
+	public final void enable(Program program) {
+		program.setUniform(getShaderIndex(program), value);
 	}
 }

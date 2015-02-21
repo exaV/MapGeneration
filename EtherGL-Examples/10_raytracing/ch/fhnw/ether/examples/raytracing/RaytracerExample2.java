@@ -99,7 +99,7 @@ public class RaytracerExample2 {
 				n += 0.1;
 				if (n >= Math.PI)
 					n = 0;
-				view.repaint();
+				view.requestRepaint();
 			}
 		}, 1000, 50);
 	}

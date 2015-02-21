@@ -97,7 +97,7 @@ public class SimplePlayerGL implements Runnable {
 			for(;;) {
 				long before = System.currentTimeMillis();
 				texture.update();
-				view.repaint();
+				view.requestRepaint();
 				long elapsed = System.currentTimeMillis() - before;
 				long sleep   = (long) ((SEC2MS / sources[0].getFrameRate()) - elapsed);
 				if(sleep > 0)

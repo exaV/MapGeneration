@@ -31,8 +31,6 @@ package ch.fhnw.ether.render.variable.builtin;
 
 import java.util.Collection;
 
-import javax.media.opengl.GL3;
-
 import ch.fhnw.ether.render.IRenderer.RendererAttribute;
 import ch.fhnw.ether.render.gl.FloatUniformBuffer;
 import ch.fhnw.ether.render.variable.base.UniformBlock;
@@ -59,8 +57,8 @@ public final class LightUniformBlock extends UniformBlock {
 		super(ATTRIBUTE, shaderName);
 	}
 
-	public static void loadUniforms(GL3 gl, FloatUniformBuffer uniforms, Collection<GenericLight> lights, CameraMatrices matrices) {
-		uniforms.load(gl, (blockIndex, buffer) -> {
+	public static void loadUniforms(FloatUniformBuffer uniforms, Collection<GenericLight> lights, CameraMatrices matrices) {
+		uniforms.load((blockIndex, buffer) -> {
 			for (GenericLight light : lights) {
 				LightSource source = light.getLightSource();
 				float[] trss = new float[] { source.getType().ordinal(), source.getRange(), source.getSpotCosCutoff(), source.getSpotExponent() };

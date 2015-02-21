@@ -30,24 +30,20 @@
 package ch.fhnw.ether.examples.visualizer;
 
 import java.awt.Canvas;
-import java.awt.Color;
 import java.awt.Graphics;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
-import javax.sound.sampled.LineUnavailableException;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 import ch.fhnw.ether.audio.AbstractAudioSource;
 import ch.fhnw.ether.audio.AudioUtilities.Window;
-import ch.fhnw.ether.audio.AudioUtilities;
+import ch.fhnw.ether.audio.FFT;
 import ch.fhnw.ether.audio.IAudioRenderTarget;
 import ch.fhnw.ether.audio.InvFFT;
 import ch.fhnw.ether.audio.JavaSoundTarget;
-import ch.fhnw.ether.audio.SilenceAudioSource;
-import ch.fhnw.ether.audio.FFT;
 import ch.fhnw.ether.audio.SinGen;
 import ch.fhnw.ether.audio.URLAudioSource;
 import ch.fhnw.ether.examples.visualizer.Bands.Div;

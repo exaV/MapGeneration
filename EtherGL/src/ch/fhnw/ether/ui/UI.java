@@ -35,11 +35,10 @@ import java.util.Collections;
 import java.util.List;
 
 import ch.fhnw.ether.controller.IController;
+import ch.fhnw.ether.controller.event.KeyEvent;
+import ch.fhnw.ether.controller.event.MouseEvent;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.util.UpdateRequest;
-
-import com.jogamp.newt.event.KeyEvent;
-import com.jogamp.newt.event.MouseEvent;
 
 public final class UI {
 	private final IController controller;
@@ -124,10 +123,10 @@ public final class UI {
 
 	// key listener
 
-	public boolean keyPressed(KeyEvent e, IView view) {
-		if (view.getConfig().getViewType() == IView.ViewType.INTERACTIVE_VIEW) {
+	public boolean keyPressed(KeyEvent e) {
+		if (e.getView().getConfig().getViewType() == IView.ViewType.INTERACTIVE_VIEW) {
 			for (IWidget widget : getWidgets()) {
-				if (widget.keyPressed(e, view))
+				if (widget.keyPressed(e))
 					return true;
 			}
 		}
@@ -136,26 +135,26 @@ public final class UI {
 
 	// mouse listener
 
-	public void mouseEntered(MouseEvent e, IView view) {
+	public void mouseEntered(MouseEvent e) {
 	}
 
-	public void mouseExited(MouseEvent e, IView view) {
+	public void mouseExited(MouseEvent e) {
 	}
 
-	public boolean mousePressed(MouseEvent e, IView view) {
-		if (view.getConfig().getViewType() == IView.ViewType.INTERACTIVE_VIEW) {
+	public boolean mousePressed(MouseEvent e) {
+		if (e.getView().getConfig().getViewType() == IView.ViewType.INTERACTIVE_VIEW) {
 			for (IWidget widget : getWidgets()) {
-				if (widget.mousePressed(e, view))
+				if (widget.mousePressed(e))
 					return true;
 			}
 		}
 		return false;
 	}
 
-	public boolean mouseReleased(MouseEvent e, IView view) {
-		if (view.getConfig().getViewType() == IView.ViewType.INTERACTIVE_VIEW) {
+	public boolean mouseReleased(MouseEvent e) {
+		if (e.getView().getConfig().getViewType() == IView.ViewType.INTERACTIVE_VIEW) {
 			for (IWidget widget : getWidgets()) {
-				if (widget.mouseReleased(e, view))
+				if (widget.mouseReleased(e))
 					return true;
 			}
 		}
@@ -164,10 +163,10 @@ public final class UI {
 
 	// mouse motion listener
 
-	public void mouseMoved(MouseEvent e, IView view) {
-		if (view.getConfig().getViewType() == IView.ViewType.INTERACTIVE_VIEW) {
+	public void mouseMoved(MouseEvent e) {
+		if (e.getView().getConfig().getViewType() == IView.ViewType.INTERACTIVE_VIEW) {
 			for (IWidget widget : getWidgets()) {
-				if (widget.hit(e.getX(), e.getY(), view)) {
+				if (widget.hit(e.getX(), e.getY())) {
 					String message = widget.getHelp();
 					setMessage(message);
 					return;
@@ -176,10 +175,10 @@ public final class UI {
 		}
 	}
 
-	public boolean mouseDragged(MouseEvent e, IView view) {
-		if (view.getConfig().getViewType() == IView.ViewType.INTERACTIVE_VIEW) {
+	public boolean mouseDragged(MouseEvent e) {
+		if (e.getView().getConfig().getViewType() == IView.ViewType.INTERACTIVE_VIEW) {
 			for (IWidget widget : getWidgets()) {
-				if (widget.mouseDragged(e, view))
+				if (widget.mouseDragged(e))
 					return true;
 			}
 		}

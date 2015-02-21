@@ -29,8 +29,6 @@
 
 package ch.fhnw.ether.render;
 
-import javax.media.opengl.GL3;
-
 import ch.fhnw.ether.scene.attribute.AbstractAttribute;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.IMesh;
@@ -77,5 +75,5 @@ public interface IRenderer {
 	/**
 	 * Called view from render thread to render the meshes. Do not call this method otherwise.
 	 */
-	void render(GL3 gl, IView view);
+	void render(IView view);
 }

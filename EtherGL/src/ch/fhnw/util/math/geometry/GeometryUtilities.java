@@ -31,67 +31,34 @@ package ch.fhnw.util.math.geometry;
 
 import java.util.List;
 
-import javax.media.opengl.glu.GLU;
-import javax.media.opengl.glu.GLUtessellator;
-import javax.media.opengl.glu.GLUtessellatorCallback;
-import javax.media.opengl.glu.GLUtessellatorCallbackAdapter;
-
 import ch.fhnw.util.IntList;
 import ch.fhnw.util.math.Vec3;
 
 public class GeometryUtilities {
 	private static final IntList TRIANGLE = new IntList(new int[] { 0, 1, 2 });
+	private static final IntList QUAD = new IntList(new int[] { 0, 1, 2, 0, 2, 3 });
 
 	public static IntList triangulate(List<Vec3> polygon) {
 		return triangulate(Vec3.toArray(polygon));
 	}
-	
+
 	public static IntList triangulate(float[] polygon) {
 		if (polygon.length == 9)
 			return TRIANGLE;
 
 		final IntList result = new IntList(polygon.length * 2);
 
-		if (isConvex(polygon)) {
-			for (int i = 2; i < polygon.length / 3; i++) {
-				result.add(0);
-				result.add(i - 1);
-				result.add(i);
-			}
-			return result;
+		if (!isConvex(polygon))
+			throw new UnsupportedOperationException("concave polygons not handled currently");
+
+		if (polygon.length == 12)
+			return QUAD;
+
+		for (int i = 2; i < polygon.length / 3; i++) {
+			result.add(0);
+			result.add(i - 1);
+			result.add(i);
 		}
-
-		GLUtessellatorCallback callback = new GLUtessellatorCallbackAdapter() {
-			@Override
-			public void vertex(Object vertexData) {
-				if (vertexData instanceof Integer)
-					result.add(((Integer) vertexData).intValue());
-			}
-
-			@Override
-			public void combine(double[] coords, Object[] data, float[] weight, Object[] outData) {
-				System.out.println("GeometryUtil.triangulate(): combine not supported");
-			}
-		};
-		GLUtessellator tess = GLU.gluNewTess();
-		GLU.gluTessCallback(tess, GLU.GLU_TESS_VERTEX, callback);
-		GLU.gluTessCallback(tess, GLU.GLU_TESS_BEGIN, callback);
-		GLU.gluTessCallback(tess, GLU.GLU_TESS_EDGE_FLAG_DATA, callback);
-		GLU.gluTessCallback(tess, GLU.GLU_TESS_END, callback);
-
-		GLU.gluTessBeginPolygon(tess, null);
-		GLU.gluTessBeginContour(tess);
-		double[] tmp = new double[3];
-		for (int i = 0; i < polygon.length; i += 3) {
-			tmp[0] = polygon[i + 0];
-			tmp[1] = polygon[i + 1];
-			tmp[2] = polygon[i + 2];
-			GLU.gluTessVertex(tess, tmp, 0, Integer.valueOf(i / 3));
-		}
-		GLU.gluTessEndContour(tess);
-		GLU.gluTessEndPolygon(tess);
-		GLU.gluDeleteTess(tess);
-
 		return result;
 	}
 
@@ -116,34 +83,27 @@ public class GeometryUtilities {
 
 		int offset = 2; // Start by projecting to the (x, z) plane.
 
-		int pStartVert = 0;
-
-		float initDirection = getSignedAreaX2(polygon[pStartVert], polygon[pStartVert + 2], polygon[pStartVert + 3], polygon[pStartVert + 5],
-				polygon[pStartVert + 6], polygon[pStartVert + 8]);
+		float initDirection = getSignedAreaX2(polygon[0], polygon[2], polygon[3], polygon[5], polygon[6], polygon[8]);
 
 		if (initDirection > -2 * EPSILON && initDirection < 2 * EPSILON) {
 			// The polygon is on or very close to the vertical plane. Switch to projecting on the (x, y) plane.
 			offset = 1;
-			initDirection = getSignedAreaX2(polygon[pStartVert], polygon[pStartVert + 1], polygon[pStartVert + 3], polygon[pStartVert + 4],
-					polygon[pStartVert + 6], polygon[pStartVert + 7]);
+			initDirection = getSignedAreaX2(polygon[0], polygon[1], polygon[3], polygon[4], polygon[6], polygon[7]);
 			// Dev note: This is meant to be a strict zero test.
 			if (initDirection == 0)
 				// Some sort of problem. Should very rarely ever get here.
 				return false;
 		}
 
-		int vertLength = polygon.length;
-		for (int vertAPointer = pStartVert + 3; vertAPointer < vertLength; vertAPointer += 3) {
-			int vertBPointer = vertAPointer + 3;
-			if (vertBPointer >= vertLength)
-				// Wrap it back to the start.
-				vertBPointer = pStartVert;
-			int vertCPointer = vertBPointer + 3;
-			if (vertCPointer >= vertLength)
-				// Wrap it back to the start.
-				vertCPointer = pStartVert;
-			float direction = getSignedAreaX2(polygon[vertAPointer], polygon[vertAPointer + offset], polygon[vertBPointer], polygon[vertBPointer + offset],
-					polygon[vertCPointer], polygon[vertCPointer + offset]);
+		int length = polygon.length;
+		for (int va = 3; va < length; va += 3) {
+			int vb = va + 3;
+			if (vb >= length)
+				vb = 0;
+			int vc = vb + 3;
+			if (vc >= length)
+				vc = 0;
+			float direction = getSignedAreaX2(polygon[va], polygon[va + offset], polygon[vb], polygon[vb + offset], polygon[vc], polygon[vc + offset]);
 			if (!(initDirection < 0 && direction < 0) && !(initDirection > 0 && direction > 0))
 				// The sign of the current direction is not the same as the sign of the
 				// initial direction. Can't be convex.

@@ -29,7 +29,7 @@
 
 package ch.fhnw.ether.controller.event;
 
-import javax.media.opengl.GLAutoDrawable;
+import ch.fhnw.ether.view.IView;
 
 /*
  * XXX Some thoughts here: Idea is to have a common scheduling mechanism for 
@@ -58,11 +58,11 @@ public interface IScheduler {
 	void repeat(double delay, double interval, IAction action);
 
 	// FIXME: stuff below doesn't belong here
-	void addDrawable(GLAutoDrawable drawable);
+	void addView(IView view);
 
-	void removeDrawable(GLAutoDrawable drawable);
+	void removeView(IView view);
 
-	void requestUpdate(GLAutoDrawable drawable);
+	void requestUpdate(IView view);
 
 	void invokeOnRenderThread(Runnable runnable);
 }

@@ -31,8 +31,6 @@ package ch.fhnw.ether.render;
 
 import java.util.List;
 
-import javax.media.opengl.GL3;
-
 import ch.fhnw.ether.render.shader.IShader;
 import ch.fhnw.ether.scene.attribute.IAttributeProvider;
 import ch.fhnw.ether.scene.mesh.IMesh;
@@ -56,18 +54,18 @@ public final class Renderable {
 		mesh.requestUpdate(null);
 	}
 
-	public void update(GL3 gl) {
+	public void update() {
 		if (mesh.needsMaterialUpdate())
-			shader.update(gl);
+			shader.update();
 
 		if (mesh.needsGeometryUpdate())
-			buffer.load(gl, shader, mesh);
+			buffer.load(shader, mesh);
 	}
 
-	public void render(GL3 gl) {
-		shader.enable(gl);
-		shader.render(gl, buffer);
-		shader.disable(gl);
+	public void render() {
+		shader.enable();
+		shader.render(buffer);
+		shader.disable();
 	}
 
 	public IMesh.Queue getQueue() {

@@ -31,8 +31,6 @@ package ch.fhnw.ether.scene.mesh.material;
 
 import java.net.URL;
 
-import javax.media.opengl.GL;
-
 import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.media.AbstractMediaTarget;
 import ch.fhnw.ether.media.RenderCommandException;
@@ -148,10 +146,10 @@ public class Texture extends AbstractMediaTarget<VideoFrame, IVideoRenderTarget>
 		updater.requestUpdate();
 	}
 
-	public void load(GL gl, int target, int textureId) {
+	public void load(int target, int textureId) {
 		Frame frame = currentFrame();
 		if(frame != null)
-			frame.load(gl, target, textureId);
+			frame.load(target, textureId);
 	}	
 
 	private Frame currentFrame() {

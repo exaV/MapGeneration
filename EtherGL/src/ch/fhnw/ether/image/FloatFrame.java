@@ -35,8 +35,7 @@ import java.awt.image.DataBufferUShort;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
-import javax.media.opengl.GL;
-import javax.media.opengl.GL3;
+import org.lwjgl.opengl.GL11;
 
 import ch.fhnw.util.BufferUtilities;
 
@@ -270,7 +269,7 @@ public final class FloatFrame extends Frame {
 	}
 
 	@Override
-	protected void loadInternal(GL gl, int target, int textureId) {
-		gl.glTexImage2D(target, 0, GL3.GL_RED, dimI, dimJ, 0, GL3.GL_RED, GL.GL_FLOAT, pixels);
+	protected void loadInternal(int target, int textureId) {
+		GL11.glTexImage2D(target, 0, GL11.GL_RED, dimI, dimJ, 0, GL11.GL_RED, GL11.GL_FLOAT, pixels);
 	}	
 }

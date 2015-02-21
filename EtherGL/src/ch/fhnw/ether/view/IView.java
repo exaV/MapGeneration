@@ -29,8 +29,6 @@
 
 import java.util.EnumSet;
 
-import javax.media.opengl.GLAutoDrawable;
-
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.scene.camera.CameraMatrices;
 import ch.fhnw.ether.scene.camera.ICamera;
@@ -90,12 +88,6 @@ public interface IView extends IUpdateListener {
 	 */
 	void dispose();
 	
-	/**
-	 * Get the drawable associated to this view.
-	 * @return the drawable
-	 */
-	GLAutoDrawable getDrawable();
-
 	/**
 	 * Get the controller this view belongs to.
 	 * 
@@ -175,5 +167,10 @@ public interface IView extends IUpdateListener {
 	/**
 	 * Request to repaint this view.
 	 */
-	void repaint();
+	void requestRepaint();
+	
+	/**
+	 * Do repaint this view.
+	 */
+	void doRepaint();
 }

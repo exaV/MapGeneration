@@ -32,8 +32,7 @@ package ch.fhnw.ether.render.shader.base;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.media.opengl.GL;
-import javax.media.opengl.GL3;
+import org.lwjgl.opengl.GL11;
 
 import ch.fhnw.ether.render.IVertexBuffer;
 import ch.fhnw.ether.render.gl.Program;
@@ -45,7 +44,7 @@ import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 public abstract class AbstractShader implements IShader {
 	
 	// important: keep this in sync with PrimitiveType enum
-	public static final int[] MODE = { GL.GL_POINTS, GL.GL_LINES, GL.GL_TRIANGLES };
+	public static final int[] MODE = { GL11.GL_POINTS, GL11.GL_LINES, GL11.GL_TRIANGLES };
 
 	private final Class<?> root;
 	private final String name;
@@ -69,13 +68,13 @@ public abstract class AbstractShader implements IShader {
 	}
 
 	@Override
-	public final void update(GL3 gl) {
+	public final void update() {
 		if (program == null) {
 			String vertShader = "glsl/" + source + "_vert.glsl";
 			String fragShader = "glsl/" + source + "_frag.glsl";
 			String geomShader = "glsl/" + source + "_geom.glsl";
 			try {
-				program = Program.create(gl, root, vertShader, fragShader, geomShader, System.err);
+				program = Program.create(root, vertShader, fragShader, geomShader, System.err);
 			} catch (Exception e) {
 				System.err.println("cannot create glsl program. exiting.\n\n");
 				System.exit(1);
@@ -85,29 +84,29 @@ public abstract class AbstractShader implements IShader {
 	}
 
 	@Override
-	public final void enable(GL3 gl) {
+	public final void enable() {
 		// enable program & uniforms (set uniforms, enable textures, change gl state)
-		program.enable(gl);
-		uniforms.forEach((attr) -> attr.enable(gl, program));
+		program.enable();
+		uniforms.forEach((attr) -> attr.enable(program));
 	}
 
 	@Override
-	public final void render(GL3 gl, IVertexBuffer buffer) {
-		buffer.bind(gl);
-		arrays.forEach((attr) -> attr.enable(gl, program, buffer));
+	public final void render(IVertexBuffer buffer) {
+		buffer.bind();
+		arrays.forEach((attr) -> attr.enable(program, buffer));
 		
 		int mode = MODE[type.ordinal()];
-		gl.glDrawArrays(mode, 0, buffer.getNumVertices());
+		GL11.glDrawArrays(mode, 0, buffer.getNumVertices());
 		
-		arrays.forEach((attr) -> attr.disable(gl, program, buffer));
-		buffer.unbind(gl);
+		arrays.forEach((attr) -> attr.disable(program, buffer));
+		buffer.unbind();
 	}
 
 	@Override
-	public final void disable(GL3 gl) {
+	public final void disable() {
 		// disable program and uniforms (disable textures, restore gl state)
-		uniforms.forEach((attr) -> attr.disable(gl, program));
-		program.disable(gl);
+		uniforms.forEach((attr) -> attr.disable(program));
+		program.disable();
 	}
 
 	@Override

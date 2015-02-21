@@ -32,8 +32,9 @@ package ch.fhnw.ether.render;
 import java.nio.FloatBuffer;
 import java.util.List;
 
-import javax.media.opengl.GL;
-import javax.media.opengl.GL3;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL20;
 
 import ch.fhnw.ether.render.gl.FloatArrayBuffer;
 import ch.fhnw.ether.render.gl.IArrayBuffer;
@@ -49,7 +50,7 @@ import ch.fhnw.util.math.Mat4;
 // TODO: deal with max vbo size & multiple vbos, memory optimization, handle non-float arrays
 
 public final class VertexBuffer implements IVertexBuffer {
-	private static FloatBuffer target = BufferUtilities.createDirectFloatBuffer(1024 * 1024);
+	private static final ThreadLocal<FloatBuffer> BUFFER = ThreadLocal.withInitial(() -> BufferUtils.createFloatBuffer(1024 * 1024));
 
 	private final FloatArrayBuffer buffer = new FloatArrayBuffer();
 
@@ -96,7 +97,7 @@ public final class VertexBuffer implements IVertexBuffer {
 	}
 
 	@Override
-	public void load(GL3 gl, IShader shader, IMesh mesh) {
+	public void load(IShader shader, IMesh mesh) {
 		Mat4 modelMatrix = Mat4.multiply(Mat4.translate(mesh.getPosition()), mesh.getTransform());
 		Mat3 normalMatrix = new Mat3(modelMatrix).inverse().transpose();
 
@@ -116,37 +117,40 @@ public final class VertexBuffer implements IVertexBuffer {
 				bufferIndex++;
 				size += source.length;
 			}
-			if (target.capacity() < size)
+			FloatBuffer target = BUFFER.get();
+			if (target.capacity() < size) {
 				target = BufferUtilities.createDirectFloatBuffer(2 * size);
+				BUFFER.set(target);
+			}
 			target.clear();
 			target.limit(size);
 			interleave(target, sources, sizes);
 		});
-		buffer.load(gl, target);
+		buffer.load(BUFFER.get());
 	}
 
 	@Override
-	public void bind(GL3 gl) {
-		buffer.bind(gl);
+	public void bind() {
+		buffer.bind();
 	}
 
 	@Override
-	public void unbind(GL3 gl) {
-		IArrayBuffer.unbind(gl);
+	public void unbind() {
+		IArrayBuffer.unbind();
 	}
 
 	@Override
-	public void enableAttribute(GL3 gl, int bufferIndex, int shaderIndex) {
+	public void enableAttribute(int bufferIndex, int shaderIndex) {
 		if (!buffer.isEmpty()) {
-			gl.glEnableVertexAttribArray(shaderIndex);
-			gl.glVertexAttribPointer(shaderIndex, sizes[bufferIndex], GL.GL_FLOAT, false, stride * 4, offsets[bufferIndex] * 4);
+			GL20.glEnableVertexAttribArray(shaderIndex);
+			GL20.glVertexAttribPointer(shaderIndex, sizes[bufferIndex], GL11.GL_FLOAT, false, stride * 4, offsets[bufferIndex] * 4);
 		}
 	}
 
 	@Override
-	public void disableAttribute(GL3 gl, int bufferIndex, int shaderIndex) {
+	public void disableAttribute(int bufferIndex, int shaderIndex) {
 		if (!buffer.isEmpty()) {
-			gl.glDisableVertexAttribArray(shaderIndex);
+			GL20.glDisableVertexAttribArray(shaderIndex);
 		}
 	}
 

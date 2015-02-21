@@ -35,8 +35,6 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.media.opengl.GL3;
-
 import ch.fhnw.ether.scene.attribute.IAttributeProvider;
 import ch.fhnw.ether.scene.light.GenericLight;
 import ch.fhnw.ether.scene.mesh.IMesh;
@@ -72,7 +70,7 @@ final class Renderables {
 		updater.requestUpdate();
 	}
 
-	void update(GL3 gl) {
+	void update() {
 		if (updater.needsUpdate()) {
 			// update added / removed renderables
 			synchronized (sceneRenderables) {
@@ -82,21 +80,21 @@ final class Renderables {
 				rendererRenderables.addAll(r);
 			}
 		}
-		rendererRenderables.forEach((r) -> r.update(gl));
+		rendererRenderables.forEach((r) -> r.update());
 	}
 
-	void renderObjects(GL3 gl, IMesh.Queue pass, boolean interactive) {
+	void renderObjects(IMesh.Queue pass, boolean interactive) {
 		for (Renderable renderable : rendererRenderables) {
 			if (renderable.containsFlag(Flags.INTERACTIVE_VIEWS_ONLY) && !interactive)
 				continue;
 			if (renderable.getQueue() == pass) {
-				renderable.render(gl);
+				renderable.render();
 			}
 		}
 	}
 
-	void renderShadowVolumes(GL3 gl, IMesh.Queue pass, boolean interactive, ShadowVolumes shadowVolumes, List<GenericLight> lights) {
-		shadowVolumes.render(gl, pass, interactive, rendererRenderables, lights);
+	void renderShadowVolumes(IMesh.Queue pass, boolean interactive, ShadowVolumes shadowVolumes, List<GenericLight> lights) {
+		shadowVolumes.render(pass, interactive, rendererRenderables, lights);
 	}
 	
 }

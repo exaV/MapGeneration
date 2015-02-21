@@ -29,8 +29,7 @@
 
 package ch.fhnw.ether.render.forward;
 
-import javax.media.opengl.GL;
-import javax.media.opengl.GL3;
+import org.lwjgl.opengl.GL11;
 
 import ch.fhnw.ether.render.AbstractRenderer;
 import ch.fhnw.ether.scene.mesh.IMesh.Queue;
@@ -70,45 +69,45 @@ public class ForwardRenderer extends AbstractRenderer {
 
 	// FIXME: we should not pass view here, as it might be modified while we're rendering...
 	@Override
-	public void render(GL3 gl, IView view) {
+	public void render(IView view) {
 		boolean interactive = view.getConfig().getViewType() == IView.ViewType.INTERACTIVE_VIEW;
 
-		update(gl, view.getCameraMatrices(), view.getViewport());
+		update(view.getCameraMatrices(), view.getViewport());
 
-		getCameras().setCameraSpace(gl);
+		getCameras().setCameraSpace();
 
 		// ---- 1. DEPTH QUEUE (DEPTH WRITE&TEST ENABLED, BLEND OFF)
 		// FIXME: where do we deal with two-sided vs one-sided? mesh options? shader dependent?
-		//gl.glEnable(GL.GL_CULL_FACE);
-		gl.glEnable(GL.GL_DEPTH_TEST);
-		gl.glEnable(GL.GL_POLYGON_OFFSET_FILL);
-		gl.glPolygonOffset(1, 3);
-		renderObjects(gl, Queue.DEPTH, interactive);
-		gl.glDisable(GL.GL_POLYGON_OFFSET_FILL);
+		//GL11.glEnable(GL11.GL_CULL_FACE);
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		GL11.glEnable(GL11.GL_POLYGON_OFFSET_FILL);
+		GL11.glPolygonOffset(1, 3);
+		renderObjects(Queue.DEPTH, interactive);
+		GL11.glDisable(GL11.GL_POLYGON_OFFSET_FILL);
 		//gl.glDisable(GL.GL_CULL_FACE);
 
 		if (false)
-			renderShadowVolumes(gl, Queue.DEPTH, interactive);
+			renderShadowVolumes(Queue.DEPTH, interactive);
 
 		// ---- 2. TRANSPARENCY QUEUE (DEPTH WRITE DISABLED, DEPTH TEST ENABLED, BLEND ON)
-		gl.glEnable(GL.GL_BLEND);
-		gl.glDepthMask(false);
-		renderObjects(gl, Queue.TRANSPARENCY, interactive);
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glDepthMask(false);
+		renderObjects(Queue.TRANSPARENCY, interactive);
 
 		// ---- 3. OVERLAY QUEUE (DEPTH WRITE&TEST DISABLED, BLEND ON)
-		gl.glDisable(GL.GL_DEPTH_TEST);
-		renderObjects(gl, Queue.OVERLAY, interactive);
+		GL11.glDisable(GL11.GL_DEPTH_TEST);
+		renderObjects(Queue.OVERLAY, interactive);
 
 		// ---- 4. DEVICE SPACE OVERLAY QUEUE (DEPTH WRITE&TEST DISABLED, BLEND ON)
-		getCameras().setOrthoDeviceSpace(gl);
-		renderObjects(gl, Queue.DEVICE_SPACE_OVERLAY, interactive);
+		getCameras().setOrthoDeviceSpace();
+		renderObjects(Queue.DEVICE_SPACE_OVERLAY, interactive);
 
 		// ---- 5. SCREEN SPACE OVERLAY  QUEUE(DEPTH WRITE&TEST DISABLED, BLEND ON)
-		getCameras().setOrthoScreenSpace(gl);
-		renderObjects(gl, Queue.SCREEN_SPACE_OVERLAY, interactive);
+		getCameras().setOrthoScreenSpace();
+		renderObjects(Queue.SCREEN_SPACE_OVERLAY, interactive);
 
 		// ---- 6. CLEANUP: RETURN TO DEFAULTS
-		gl.glDisable(GL.GL_BLEND);
-		gl.glDepthMask(true);
+		GL11.glDisable(GL11.GL_BLEND);
+		GL11.glDepthMask(true);
 	}
 }

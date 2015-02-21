@@ -29,15 +29,13 @@
 
 package ch.fhnw.ether.render.variable;
 
-import javax.media.opengl.GL3;
-
 import ch.fhnw.ether.render.IVertexBuffer;
 import ch.fhnw.ether.render.gl.Program;
 
 public interface IShaderArray<T> extends IShaderVariable<T> {
 	void setBufferIndex(int index);
 
-	void enable(GL3 gl, Program program, IVertexBuffer buffer);
+	void enable(Program program, IVertexBuffer buffer);
 
-	void disable(GL3 gl, Program program, IVertexBuffer buffer);
+	void disable(Program program, IVertexBuffer buffer);
 }

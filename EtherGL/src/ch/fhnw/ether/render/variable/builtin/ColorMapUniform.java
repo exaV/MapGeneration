@@ -31,7 +31,7 @@ package ch.fhnw.ether.render.variable.builtin;
 
 import java.util.function.Supplier;
 
-import javax.media.opengl.GL;
+import org.lwjgl.opengl.GL11;
 
 import ch.fhnw.ether.render.variable.base.SamplerUniform;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
@@ -53,6 +53,6 @@ public final class ColorMapUniform extends SamplerUniform {
 	}
 
 	public ColorMapUniform(String shaderName, Supplier<Texture> supplier) {
-		super(IMaterial.COLOR_MAP, shaderName, 0, GL.GL_TEXTURE_2D, supplier);
+		super(IMaterial.COLOR_MAP, shaderName, 0, GL11.GL_TEXTURE_2D, supplier);
 	}
 }

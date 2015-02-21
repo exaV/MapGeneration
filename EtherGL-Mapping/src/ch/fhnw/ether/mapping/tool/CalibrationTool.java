@@ -38,6 +38,8 @@ import java.util.prefs.Preferences;
 
 import ch.fhnw.ether.controller.DefaultController;
 import ch.fhnw.ether.controller.IController;
+import ch.fhnw.ether.controller.event.KeyEvent;
+import ch.fhnw.ether.controller.event.MouseEvent;
 import ch.fhnw.ether.controller.tool.AbstractTool;
 import ch.fhnw.ether.mapping.BimberRaskarCalibrator;
 import ch.fhnw.ether.mapping.ICalibrationModel;
@@ -57,9 +59,6 @@ import ch.fhnw.util.PreferencesStore;
 import ch.fhnw.util.Viewport;
 import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Vec3;
-
-import com.jogamp.newt.event.KeyEvent;
-import com.jogamp.newt.event.MouseEvent;
 
 // FIXME: need possibility to disable current 3d scene when tool is active
 public final class CalibrationTool extends AbstractTool {
@@ -132,34 +131,35 @@ public final class CalibrationTool extends AbstractTool {
 	}
 
 	@Override
-	public void keyPressed(KeyEvent e, IView view) {
-		switch (e.getKeyCode()) {
-		case KeyEvent.VK_L:
+	public void keyPressed(KeyEvent e) {
+		IView view = e.getView();
+		switch (e.getKey()) {
+		case KeyEvent.KEY_L:
 			loadCalibration(view);
 			break;
-		case KeyEvent.VK_S:
+		case KeyEvent.KEY_S:
 			saveCalibration(view);
 			break;
-		case KeyEvent.VK_UP:
+		case KeyEvent.KEY_UP:
 			cursorAdjust(view, 0, 1);
 			break;
-		case KeyEvent.VK_DOWN:
+		case KeyEvent.KEY_DOWN:
 			cursorAdjust(view, 0, -1);
 			break;
-		case KeyEvent.VK_LEFT:
+		case KeyEvent.KEY_LEFT:
 			cursorAdjust(view, -1, 0);
 			break;
-		case KeyEvent.VK_RIGHT:
+		case KeyEvent.KEY_RIGHT:
 			cursorAdjust(view, 1, 0);
 			break;
-		case KeyEvent.VK_C:
+		case KeyEvent.KEY_C:
 			clearCalibration(view);
 			break;
-		case KeyEvent.VK_H:
+		case KeyEvent.KEY_H:
 			DefaultController.printHelp(HELP);
 			break;
-		case KeyEvent.VK_BACK_SPACE:
-		case KeyEvent.VK_DELETE:
+		case KeyEvent.KEY_BACKSPACE:
+		case KeyEvent.KEY_DELETE:
 			deleteCurrent(view);
 			break;
 		}
@@ -167,9 +167,10 @@ public final class CalibrationTool extends AbstractTool {
 	}
 
 	@Override
-	public void mousePressed(MouseEvent e, IView view) {
-		int mx = e.getX();
-		int my = view.getViewport().h - e.getY();
+	public void mousePressed(MouseEvent e) {
+		IView view = e.getView();
+		float mx = e.getX();
+		float my = view.getViewport().h - e.getY();
 		CalibrationContext context = getContext(view);
 
 		// reset first
@@ -177,8 +178,8 @@ public final class CalibrationTool extends AbstractTool {
 
 		// first, try to hit calibration point
 		for (int i = 0; i < context.projectedVertices.size(); ++i) {
-			int x = ProjectionUtil.deviceToScreenX(view, context.projectedVertices.get(i).x);
-			int y = ProjectionUtil.deviceToScreenY(view, context.projectedVertices.get(i).y);
+			float x = ProjectionUtil.deviceToScreenX(view, context.projectedVertices.get(i).x);
+			float y = ProjectionUtil.deviceToScreenY(view, context.projectedVertices.get(i).y);
 			if (snap2D(mx, my, x, y)) {
 				// we got a point to move!
 				context.currentSelection = i;
@@ -211,9 +212,10 @@ public final class CalibrationTool extends AbstractTool {
 	}
 
 	@Override
-	public void mouseDragged(MouseEvent e, IView view) {
-		int mx = e.getX();
-		int my = view.getViewport().h - e.getY();
+	public void mouseDragged(MouseEvent e) {
+		IView view = e.getView();
+		float mx = e.getX();
+		float my = view.getViewport().h - e.getY();
 		CalibrationContext context = getContext(view);
 
 		if (context.currentSelection != -1) {

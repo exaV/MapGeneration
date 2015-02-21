@@ -37,7 +37,7 @@ import java.util.concurrent.Delayed;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import javax.media.opengl.GLAutoDrawable;
+import ch.fhnw.ether.view.IView;
 
 abstract class AbstractScheduler implements IScheduler {
 	
@@ -79,7 +79,7 @@ abstract class AbstractScheduler implements IScheduler {
 	private final DelayQueue<DelayedAction> modelQueue = new DelayQueue<>();
 
 
-	private final List<GLAutoDrawable> drawables = new ArrayList<>();
+	private final List<IView> views = new ArrayList<>();
 
 	protected final BlockingQueue<Runnable> renderQueue = new LinkedBlockingQueue<>();
 	
@@ -109,13 +109,13 @@ abstract class AbstractScheduler implements IScheduler {
 	}
 
 	@Override
-	public void addDrawable(GLAutoDrawable drawable) {
-		invokeOnRenderThread(() -> drawables.add(drawable));
+	public void addView(IView view) {
+		invokeOnRenderThread(() -> views.add(view));
 	}
 
 	@Override
-	public void removeDrawable(GLAutoDrawable drawable) {
-		invokeOnRenderThread(() -> drawables.remove(drawable));
+	public void removeView(IView view) {
+		invokeOnRenderThread(() -> views.remove(view));
 	}
 
 	@Override
@@ -125,10 +125,10 @@ abstract class AbstractScheduler implements IScheduler {
 
 	protected abstract void runRenderThread();
 
-	protected void displayDrawables() {
-		for (GLAutoDrawable drawable : drawables) {
+	protected final void repaintViews() {
+		for (IView view : views) {
 			try {
-				drawable.display();
+				view.doRepaint();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

@@ -31,8 +31,6 @@ package ch.fhnw.ether.render.variable.base;
 
 import java.util.function.Supplier;
 
-import javax.media.opengl.GL3;
-
 import ch.fhnw.ether.render.gl.Program;
 import ch.fhnw.ether.render.variable.IShaderUniform;
 import ch.fhnw.ether.scene.attribute.ITypedAttribute;
@@ -78,12 +76,12 @@ public abstract class AbstractUniform<T> extends AbstractVariable<T> implements 
 	}
 
 	@Override
-	public void disable(GL3 gl, Program program) {
+	public void disable(Program program) {
 	}
 
 	@Override
-	protected final int resolveShaderIndex(GL3 gl, Program program, String shaderName) {
-		return program.getUniformLocation(gl, shaderName);
+	protected final int resolveShaderIndex(Program program, String shaderName) {
+		return program.getUniformLocation(shaderName);
 	}
 
 	@Override

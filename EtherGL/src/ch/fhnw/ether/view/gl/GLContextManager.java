@@ -33,52 +33,33 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.media.opengl.GL3;
-import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.GLCapabilities;
-import javax.media.opengl.GLContext;
-import javax.media.opengl.GLDrawableFactory;
-import javax.media.opengl.GLProfile;
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.GLContext;
 
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.IView.Config;
-
-import com.jogamp.newt.opengl.GLWindow;
+import ch.fhnw.ether.view.IWindow;
 
 public class GLContextManager {
 	public interface IGLContext {
-		GL3 getGL();
 	}
 
 	private static final class ExistingContext implements IGLContext {
-		@Override
-		public GL3 getGL() {
-			return GLContext.getCurrentGL().getGL3();
-		}
 	}
 
 	private static final class TemporaryContext implements IGLContext {
-		private GLWindow window;
+		private GLFWWindow window;
 
 		TemporaryContext() {
-			window = GLWindow.create(theSharedDrawable.getChosenGLCapabilities());
-			window.setSharedAutoDrawable(theSharedDrawable);
-			window.setSize(16, 16);
-			window.setVisible(true);
-			window.setVisible(false, false);
+			create window
 		}
 
 		void makeCurrent() {
-			window.getContext().makeCurrent();
+			window.makeContextCurrent(true);
 		}
 
 		void release() {
-			window.getContext().release();
-		}
-
-		@Override
-		public GL3 getGL() {
-			return GLContext.getCurrentGL().getGL3();
+			window.makeContextCurrent(false);
 		}
 	}
 
@@ -118,7 +99,7 @@ public class GLContextManager {
 
 	private static ContextPool contexts = new ContextPool();
 	
-	private static GLAutoDrawable theSharedDrawable;
+	private static GLFWWindow theSharedWindow;
 
 	public static IGLContext acquireContext() {
 		return acquireContext(true);
@@ -136,28 +117,11 @@ public class GLContextManager {
 			contexts.releaseContext((TemporaryContext)context);
 	}
 
-	public synchronized static GLAutoDrawable getSharedDrawable(GLCapabilities capabilities) {
-		if (theSharedDrawable == null) {
-			if (capabilities == null)
-				capabilities = getCapabilities(IView.INTERACTIVE_VIEW);
-			theSharedDrawable = GLDrawableFactory.getFactory(capabilities.getGLProfile()).createDummyAutoDrawable(null, true, capabilities, null);
+	public synchronized static GLFWWindow getSharedWindow() {
+		if (theSharedWindow == null) {
+			
+			theSharedWindow = ...;
 		}
-		return theSharedDrawable;
-	}
-
-	public static GLCapabilities getCapabilities(Config config) {
-		// FIXME: make this configurable
-		GLProfile profile = GLProfile.get(GLProfile.GL3);
-		GLCapabilities caps = new GLCapabilities(profile);
-		caps.setAlphaBits(8);
-		caps.setStencilBits(16);
-		if (config.getFSAASamples() > 0) {
-			caps.setSampleBuffers(true);
-			caps.setNumSamples(config.getFSAASamples());
-		} else {
-			caps.setSampleBuffers(false);
-			caps.setNumSamples(1);
-		}
-		return caps;
+		return theSharedWindow;
 	}
 }

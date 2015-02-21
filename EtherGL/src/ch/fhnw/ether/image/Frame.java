@@ -43,9 +43,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import javax.imageio.ImageIO;
-import javax.media.opengl.GL;
-import javax.media.opengl.GL2;
-import javax.media.opengl.GL3;
+
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL30;
 
 import ch.fhnw.util.BufferUtilities;
 
@@ -187,29 +187,25 @@ public abstract class Frame {
 
 	public abstract Frame create(int width, int height);
 
-	public static Frame create(GL gl, int target, int textureId) {
+	public static Frame copyFromTexture(int target, int textureId) {
 		Frame result = null;
-		int[] tmpi   = new int[1];
-		int width;
-		int height;
-		int internalFormat;
-		gl.glBindTexture(target, textureId);
-		gl.glGetTexParameteriv(target, GL2.GL_TEXTURE_COMPONENTS, tmpi, 0); internalFormat = tmpi[0];
-		gl.glGetTexParameteriv(target, GL3.GL_TEXTURE_WIDTH,      tmpi, 0); width          = tmpi[0];
-		gl.glGetTexParameteriv(target, GL3.GL_TEXTURE_HEIGHT,     tmpi, 0); height         = tmpi[0];
+		GL11.glBindTexture(target, textureId);
+		int internalFormat = GL11.glGetTexLevelParameteri(target, 0, GL11.GL_TEXTURE_INTERNAL_FORMAT);
+		int width = GL11.glGetTexLevelParameteri(target, 0, GL11.GL_TEXTURE_WIDTH);
+		int height = GL11.glGetTexLevelParameteri(target, 0, GL11.GL_TEXTURE_HEIGHT);
 		switch(internalFormat) {
-		case GL.GL_RGB:
+		case GL11.GL_RGB:
 			result = new RGB8Frame(width, height);
 			break;
-		case GL.GL_RGBA:
+		case GL11.GL_RGBA:
 			result = new RGBA8Frame(width, height);
 			break;
 		default:
 			throw new IllegalArgumentException("Unsupported format:" + internalFormat);
 		}
 		result.pixels.clear();
-		gl.glReadnPixels(0, 0, width, height, internalFormat, GL.GL_UNSIGNED_BYTE, result.pixels.capacity(), result.pixels);
-		gl.glBindTexture(target, 0);
+		GL11.glReadPixels(0, 0, width, height, internalFormat, GL11.GL_UNSIGNED_BYTE, result.pixels);
+		GL11.glBindTexture(target, 0);
 		return result;
 	}
 
@@ -419,16 +415,16 @@ public abstract class Frame {
 		ImageIO.write(toBufferedImage(), format.toString(), out);
 	}
 
-	public void load(GL gl, int target, int textureId) {
-		gl.glBindTexture(target, textureId);
-		gl.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
+	public void load(int target, int textureId) {
+		GL11.glBindTexture(target, textureId);
+		GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
 		pixels.rewind();
-		loadInternal(gl, target, textureId);
-		gl.glGenerateMipmap(target);
-		gl.glBindTexture(target, 0);
+		loadInternal(target, textureId);
+		GL30.glGenerateMipmap(target);
+		GL11.glBindTexture(target, 0);
 	}
 
-	protected abstract void loadInternal(GL gl, int target, int textureId);
+	protected abstract void loadInternal(int target, int textureId);
 
 	static final ExecutorService POOL       = Executors.newCachedThreadPool();
 	static final int             NUM_CHUNKS = Runtime.getRuntime().availableProcessors(); 

@@ -33,11 +33,16 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URL;
+import java.nio.FloatBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.media.opengl.GL3;
-import javax.media.opengl.GL4;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.GL31;
+import org.lwjgl.opengl.GL32;
+import org.lwjgl.opengl.GL40;
+import org.lwjgl.opengl.GL43;
 
 import ch.fhnw.ether.render.gl.GLObject.Type;
 import ch.fhnw.ether.render.shader.IShader;
@@ -51,11 +56,12 @@ import ch.fhnw.ether.render.shader.IShader;
 public final class Program {
 	public enum ShaderType {
 		//@formatter:off
-		VERTEX(GL3.GL_VERTEX_SHADER),
-		TESS_CONTROL(GL4.GL_TESS_CONTROL_SHADER),
-		TESS_EVAL(GL4.GL_TESS_EVALUATION_SHADER),
-		GEOMETRY(GL3.GL_GEOMETRY_SHADER),
-		FRAGMENT(GL3.GL_FRAGMENT_SHADER);
+		COMPUTE(GL43.GL_COMPUTE_SHADER),
+		VERTEX(GL20.GL_VERTEX_SHADER),
+		TESS_CONTROL(GL40.GL_TESS_CONTROL_SHADER),
+		TESS_EVAL(GL40.GL_TESS_EVALUATION_SHADER),
+		GEOMETRY(GL32.GL_GEOMETRY_SHADER),
+		FRAGMENT(GL20.GL_FRAGMENT_SHADER);
 		//@formatter:on
 
 		ShaderType(int glType) {
@@ -79,7 +85,7 @@ public final class Program {
 		final String path;
 		int shaderObject;
 
-		Shader(GL3 gl, Class<?> root, String path, ShaderType type, PrintStream out) throws IOException {
+		Shader(Class<?> root, String path, ShaderType type, PrintStream out) throws IOException {
 			this.root = root;
 			this.path = path;
 
@@ -91,12 +97,12 @@ public final class Program {
 			}
 			new GLSLReader(LIBRARY, url, code, out);
 
-			shaderObject = gl.glCreateShader(type.glType);
+			shaderObject = GL20.glCreateShader(type.glType);
 
-			gl.glShaderSource(shaderObject, 1, new String[] { code.toString() }, new int[] { code.length() }, 0);
-			gl.glCompileShader(shaderObject);
+			GL20.glShaderSource(shaderObject, code.toString());
+			GL20.glCompileShader(shaderObject);
 
-			if (!checkStatus(gl, shaderObject, GL3.GL_COMPILE_STATUS, out)) {
+			if (!checkStatus(shaderObject, GL20.GL_COMPILE_STATUS, out)) {
 				out.println("failed to compile shader: " + this);
 				throw new IllegalArgumentException("failed to compile shader: " + this);
 			}
@@ -107,11 +113,11 @@ public final class Program {
 			return root.getSimpleName() + ":" + path;
 		}
 
-		static Shader create(GL3 gl, Class<?> root, String path, ShaderType type, PrintStream out) throws IOException {
+		static Shader create(Class<?> root, String path, ShaderType type, PrintStream out) throws IOException {
 			String key = key(root, path);
 			Shader shader = SHADERS.get(key);
 			if (shader == null) {
-				shader = new Shader(gl, root, path, type, out);
+				shader = new Shader(root, path, type, out);
 				SHADERS.put(key, shader);
 			}
 			return shader;
@@ -127,94 +133,108 @@ public final class Program {
 	private final String id;
 	private final GLObject programObject;
 
-	private Program(GL3 gl, PrintStream out, Shader... shaders) {
-		programObject = new GLObject(gl, Type.PROGRAM);
+	private Program(PrintStream out, Shader... shaders) {
+		programObject = new GLObject(Type.PROGRAM);
 
 		String id = "";
 		for (Shader shader : shaders) {
 			if (shader != null) {
-				gl.glAttachShader(programObject.id(), shader.shaderObject);
+				GL20.glAttachShader(programObject.id(), shader.shaderObject);
 				id += shader.path + " ";
 			}
 		}
 		this.id = id;
 
-		gl.glLinkProgram(programObject.id());
-		if (!checkStatus(gl, programObject.id(), GL3.GL_LINK_STATUS, out)) {
+		GL20.glLinkProgram(programObject.id());
+		if (!checkStatus(programObject.id(), GL20.GL_LINK_STATUS, out)) {
 			out.println("failed to link program: " + this);
 			throw new IllegalArgumentException("failed to link program: " + this);
 		}
 
-		gl.glValidateProgram(programObject.id());
-		if (!checkStatus(gl, programObject.id(), GL3.GL_VALIDATE_STATUS, out)) {
+		GL20.glValidateProgram(programObject.id());
+		if (!checkStatus(programObject.id(), GL20.GL_VALIDATE_STATUS, out)) {
 			out.println("failed to validate program: " + this);
 			throw new IllegalArgumentException("failed to validate program: " + this);
 		}
 	}
 
-	public void enable(GL3 gl) {
-		gl.glUseProgram(programObject.id());
+	public void enable() {
+		GL20.glUseProgram(programObject.id());
 	}
 
-	public void disable(GL3 gl) {
-		gl.glUseProgram(0);
+	public void disable() {
+		GL20.glUseProgram(0);
 	}
 
-	public void setUniform(GL3 gl, int index, boolean value) {
-		gl.glUniform1i(index, value ? 1 : 0);
+	public void setUniform(int index, boolean value) {
+		GL20.glUniform1i(index, value ? 1 : 0);
 	}
 
-	public void setUniform(GL3 gl, int index, int value) {
-		gl.glUniform1i(index, value);
+	public void setUniform(int index, int value) {
+		GL20.glUniform1i(index, value);
 	}
 
-	public void setUniform(GL3 gl, int index, float value) {
-		gl.glUniform1f(index, value);
+	public void setUniform(int index, float value) {
+		GL20.glUniform1f(index, value);
 	}
 
-	public void setUniformVec2(GL3 gl, int index, float[] value) {
+	public void setUniformVec2(int index, float[] value) {
 		if (value != null)
-			gl.glUniform2fv(index, 1, value, 0);
+			GL20.glUniform2f(index, value[0], value[1]);
 	}
 
-	public void setUniformVec3(GL3 gl, int index, float[] value) {
+	public void setUniformVec3(int index, float[] value) {
 		if (value != null)
-			gl.glUniform3fv(index, 1, value, 0);
+			GL20.glUniform3f(index, value[0], value[1], value[2]);
 	}
 
-	public void setUniformVec4(GL3 gl, int index, float[] value) {
+	public void setUniformVec4(int index, float[] value) {
 		if (value != null)
-			gl.glUniform4fv(index, 1, value, 0);
+			GL20.glUniform4f(index, value[0], value[1], value[2], value[3]);
 	}
 
-	public void setUniformMat3(GL3 gl, int index, float[] value) {
-		if (value != null)
-			gl.glUniformMatrix3fv(index, 1, false, value, 0);
+	private static final ThreadLocal<FloatBuffer> MAT3_BUFFER = ThreadLocal.withInitial(() -> BufferUtils.createFloatBuffer(9));
+
+	public void setUniformMat3(int index, float[] value) {
+		if (value != null) {
+			FloatBuffer buffer = MAT3_BUFFER.get();
+			buffer.clear();
+			buffer.put(value);
+			buffer.rewind();
+			GL20.glUniformMatrix3(index, false, buffer);
+		}
 	}
 
-	public void setUniformMat4(GL3 gl, int index, float[] value) {
-		if (value != null)
-			gl.glUniformMatrix4fv(index, 1, false, value, 0);
+	private static final ThreadLocal<FloatBuffer> MAT4_BUFFER = ThreadLocal.withInitial(() -> BufferUtils.createFloatBuffer(16));
+
+	public void setUniformMat4(int index, float[] value) {
+		if (value != null) {
+			FloatBuffer buffer = MAT4_BUFFER.get();
+			buffer.clear();
+			buffer.put(value);
+			buffer.rewind();
+			GL20.glUniformMatrix4(index, false, buffer);
+		}
 	}
 
-	public void setUniformSampler(GL3 gl, int index, int unit) {
-		setUniform(gl, index, unit);
+	public void setUniformSampler(int index, int unit) {
+		setUniform(index, unit);
 	}
 
-	public int getAttributeLocation(GL3 gl, String name) {
-		return gl.glGetAttribLocation(programObject.id(), name);
+	public int getAttributeLocation(String name) {
+		return GL20.glGetAttribLocation(programObject.id(), name);
 	}
 
-	public int getUniformLocation(GL3 gl, String name) {
-		return gl.glGetUniformLocation(programObject.id(), name);
+	public int getUniformLocation(String name) {
+		return GL20.glGetUniformLocation(programObject.id(), name);
 	}
 
-	public int getUniformBlockIndex(GL3 gl, String name) {
-		return gl.glGetUniformBlockIndex(programObject.id(), name);
+	public int getUniformBlockIndex(String name) {
+		return GL31.glGetUniformBlockIndex(programObject.id(), name);
 	}
 
-	public void bindUniformBlock(GL3 gl, int index, int bindingPoint) {
-		gl.glUniformBlockBinding(programObject.id(), index, bindingPoint);
+	public void bindUniformBlock(int index, int bindingPoint) {
+		GL31.glUniformBlockBinding(programObject.id(), index, bindingPoint);
 	}
 
 	@Override
@@ -222,17 +242,17 @@ public final class Program {
 		return id;
 	}
 
-	public static Program create(GL3 gl, Class<?> root, String vertShader, String fragShader, String geomShader, PrintStream out) throws IOException {
+	public static Program create(Class<?> root, String vertShader, String fragShader, String geomShader, PrintStream out) throws IOException {
 		String key = key(root, vertShader, fragShader, geomShader);
 		Program program = PROGRAMS.get(key);
 		if (program == null) {
-			Shader vert = Shader.create(gl, root, vertShader, ShaderType.VERTEX, out);
-			Shader frag = Shader.create(gl, root, fragShader, ShaderType.FRAGMENT, out);
+			Shader vert = Shader.create(root, vertShader, ShaderType.VERTEX, out);
+			Shader frag = Shader.create(root, fragShader, ShaderType.FRAGMENT, out);
 			Shader geom = null;
 			if (geomShader != null && root.getResource(geomShader) != null) {
-				geom = Shader.create(gl, root, geomShader, ShaderType.GEOMETRY, out);
+				geom = Shader.create(root, geomShader, ShaderType.GEOMETRY, out);
 			}
-			program = new Program(gl, out, vert, frag, geom);
+			program = new Program(out, vert, frag, geom);
 			PROGRAMS.put(key, program);
 		}
 		return program;
@@ -247,24 +267,21 @@ public final class Program {
 		return key;
 	}
 
-	private static boolean checkStatus(GL3 gl3, int object, int statusType, PrintStream out) {
-		int[] status = { 0 };
+	private static boolean checkStatus(int object, int statusType, PrintStream out) {
+		int status = 0;
 
-		if (statusType == GL3.GL_COMPILE_STATUS)
-			gl3.glGetShaderiv(object, statusType, status, 0);
-		else if (statusType == GL3.GL_LINK_STATUS || statusType == GL3.GL_VALIDATE_STATUS)
-			gl3.glGetProgramiv(object, statusType, status, 0);
+		if (statusType == GL20.GL_COMPILE_STATUS)
+			status = GL20.glGetShaderi(object, statusType);
+		else if (statusType == GL20.GL_LINK_STATUS || statusType == GL20.GL_VALIDATE_STATUS)
+			status = GL20.glGetProgrami(object, statusType);
 
-		if (status[0] != 1) {
-			gl3.glGetShaderiv(object, GL3.GL_INFO_LOG_LENGTH, status, 0);
-			byte[] infoLog = new byte[status[0]];
-			if (statusType == GL3.GL_COMPILE_STATUS)
-				gl3.glGetShaderInfoLog(object, status[0], status, 0, infoLog, 0);
-			else if (statusType == GL3.GL_LINK_STATUS)
-				gl3.glGetProgramInfoLog(object, status[0], status, 0, infoLog, 0);
-			out.println(new String(infoLog));
-			return false;
-		}
-		return true;
+		if (status == 1)
+			return true;
+
+		if (statusType == GL20.GL_COMPILE_STATUS)
+			out.println(GL20.glGetShaderInfoLog(object));
+		else if (statusType == GL20.GL_LINK_STATUS)
+			out.println(GL20.glGetProgramInfoLog(object));
+		return false;
 	}
 }

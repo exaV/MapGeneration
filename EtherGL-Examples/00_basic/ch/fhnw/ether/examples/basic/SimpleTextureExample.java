@@ -118,7 +118,7 @@ public final class SimpleTextureExample {
 
 				// update view, because we have no fix rendering loop but event-based rendering
 				if (view != null)
-					view.repaint();
+					view.requestRepaint();
 				
 				return true;
 			}

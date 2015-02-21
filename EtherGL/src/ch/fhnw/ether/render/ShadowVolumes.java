@@ -31,8 +31,10 @@ package ch.fhnw.ether.render;
 
 import java.util.List;
 
-import javax.media.opengl.GL;
-import javax.media.opengl.GL3;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL14;
+import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.GL32;
 
 import ch.fhnw.ether.render.shader.builtin.ShadowVolumeShader;
 import ch.fhnw.ether.render.shader.builtin.TrivialDeviceSpaceShader;
@@ -66,28 +68,28 @@ public final class ShadowVolumes {
 	}
 
 	// http://ogldev.atspace.co.uk/www/tutorial40/tutorial40.html
-	void render(GL3 gl, IMesh.Queue pass, boolean interactive, List<Renderable> renderables, List<GenericLight> lights) {
-		gl.glEnable(GL.GL_BLEND);
-		gl.glBlendFunc(GL.GL_ZERO, GL.GL_SRC_ALPHA);
-		gl.glDepthMask(false);
-		gl.glEnable(GL3.GL_DEPTH_CLAMP);
+	void render(IMesh.Queue pass, boolean interactive, List<Renderable> renderables, List<GenericLight> lights) {
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glBlendFunc(GL11.GL_ZERO, GL11.GL_SRC_ALPHA);
+		GL11.glDepthMask(false);
+		GL11.glEnable(GL32.GL_DEPTH_CLAMP);
 
 		lightIndex = 0;
 		for (@SuppressWarnings("unused") GenericLight light : lights) {
-			gl.glClear(GL.GL_STENCIL_BUFFER_BIT);
+			GL11.glClear(GL11.GL_STENCIL_BUFFER_BIT);
 
-			gl.glColorMask(false, false, false, false);
+			GL11.glColorMask(false, false, false, false);
 
-			gl.glEnable(GL.GL_STENCIL_TEST);
+			GL11.glEnable(GL11.GL_STENCIL_TEST);
 
-			gl.glStencilFuncSeparate(GL.GL_FRONT, GL.GL_ALWAYS, 0, 0xffffffff);
-			gl.glStencilOpSeparate(GL.GL_FRONT, GL.GL_KEEP, GL.GL_DECR_WRAP, GL.GL_KEEP);
+			GL20.glStencilFuncSeparate(GL11.GL_FRONT, GL11.GL_ALWAYS, 0, 0xffffffff);
+			GL20.glStencilOpSeparate(GL11.GL_FRONT, GL11.GL_KEEP, GL14.GL_DECR_WRAP, GL11.GL_KEEP);
 
-			gl.glStencilFuncSeparate(GL.GL_BACK, GL.GL_ALWAYS, 0, 0xffffffff);
-			gl.glStencilOpSeparate(GL.GL_BACK, GL.GL_KEEP, GL.GL_INCR_WRAP, GL.GL_KEEP);
+			GL20.glStencilFuncSeparate(GL11.GL_BACK, GL11.GL_ALWAYS, 0, 0xffffffff);
+			GL20.glStencilOpSeparate(GL11.GL_BACK, GL11.GL_KEEP, GL14.GL_INCR_WRAP, GL11.GL_KEEP);
 
-			volumeShader.update(gl);
-			volumeShader.enable(gl);
+			volumeShader.update();
+			volumeShader.enable();
 			for (Renderable renderable : renderables) {
 				if (renderable.containsFlag(Flags.INTERACTIVE_VIEWS_ONLY) && !interactive)
 					continue;
@@ -96,25 +98,25 @@ public final class ShadowVolumes {
 				if (renderable.getQueue() != pass)
 					continue;
 
-				volumeShader.render(gl, renderable.getBuffer());
+				volumeShader.render(renderable.getBuffer());
 			}
-			volumeShader.disable(gl);
+			volumeShader.disable();
 
-			gl.glColorMask(true, true, true, true);
+			GL11.glColorMask(true, true, true, true);
 
-			gl.glStencilFunc(GL.GL_NOTEQUAL, 0x0, 0xffffffff);
-			gl.glStencilOp(GL.GL_KEEP, GL.GL_KEEP, GL.GL_KEEP);
+			GL11.glStencilFunc(GL11.GL_NOTEQUAL, 0x0, 0xffffffff);
+			GL11.glStencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
 
-			overlay.update(gl);
-			overlay.render(gl);
+			overlay.update();
+			overlay.render();
 
-			gl.glDisable(GL.GL_STENCIL_TEST);
+			GL11.glDisable(GL11.GL_STENCIL_TEST);
 
 			lightIndex++;
 		}
-		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-		gl.glDisable(GL.GL_BLEND);
-		gl.glDepthMask(true);
-		gl.glDisable(GL3.GL_DEPTH_CLAMP);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		GL11.glDisable(GL11.GL_BLEND);
+		GL11.glDepthMask(true);
+		GL11.glDisable(GL32.GL_DEPTH_CLAMP);
 	}
 }

@@ -31,10 +31,9 @@ package ch.fhnw.ether.ui;
 
 import java.awt.Color;
 
+import ch.fhnw.ether.controller.event.MouseEvent;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.util.math.MathUtilities;
-
-import com.jogamp.newt.event.MouseEvent;
 
 public class Slider extends AbstractWidget {
 	public interface ISliderAction extends IWidgetAction<Slider> {
@@ -71,7 +70,7 @@ public class Slider extends AbstractWidget {
 	}
 
 	@Override
-	public boolean hit(int x, int y, IView view) {
+	public boolean hit(float x, float y) {
 		UI ui = getUI();
 		float bx = ui.getX() + getX() * (SLIDER_GAP + SLIDER_WIDTH);
 		float by = ui.getY() + getY() * (SLIDER_GAP + SLIDER_HEIGHT);
@@ -101,17 +100,17 @@ public class Slider extends AbstractWidget {
 	}
 
 	@Override
-	public boolean mousePressed(MouseEvent e, IView view) {
-		if (hit(e.getX(), e.getY(), view)) {
+	public boolean mousePressed(MouseEvent e) {
+		if (hit(e.getX(), e.getY())) {
 			sliding = true;
-			updateValue(e, view);
+			updateValue(e);
 			return true;
 		}
 		return false;
 	}
 
 	@Override
-	public boolean mouseReleased(MouseEvent e, IView view) {
+	public boolean mouseReleased(MouseEvent e) {
 		if (sliding) {
 			sliding = false;
 			return true;
@@ -120,19 +119,19 @@ public class Slider extends AbstractWidget {
 	}
 
 	@Override
-	public boolean mouseDragged(MouseEvent e, IView view) {
+	public boolean mouseDragged(MouseEvent e) {
 		if (sliding) {
-			updateValue(e, view);
+			updateValue(e);
 			return true;
 		}
 		return false;
 	}
 
-	private void updateValue(MouseEvent e, IView view) {
+	private void updateValue(MouseEvent e) {
 		UI ui = getUI();
 		float bx = ui.getX() + getX() * (SLIDER_GAP + SLIDER_WIDTH);
 		value = MathUtilities.clamp((e.getX() - bx) / SLIDER_WIDTH, 0, 1);
 		requestUpdate();
-		fire(view);
+		fire(e.getView());
 	}
 }

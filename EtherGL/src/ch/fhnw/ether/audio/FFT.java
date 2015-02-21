@@ -39,7 +39,6 @@ import ch.fhnw.ether.audio.AudioUtilities.Window;
 import ch.fhnw.ether.media.AbstractRenderCommand;
 import ch.fhnw.ether.media.PerTargetState;
 import ch.fhnw.ether.media.RenderCommandException;
-import ch.fhnw.ether.media.StateHandle;
 import ch.fhnw.util.IModifier;
 import ch.fhnw.util.math.MathUtilities;
 

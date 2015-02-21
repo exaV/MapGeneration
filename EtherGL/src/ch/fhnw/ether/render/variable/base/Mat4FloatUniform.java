@@ -31,8 +31,6 @@ package ch.fhnw.ether.render.variable.base;
 
 import java.util.function.Supplier;
 
-import javax.media.opengl.GL3;
-
 import ch.fhnw.ether.render.gl.Program;
 import ch.fhnw.ether.scene.attribute.ITypedAttribute;
 import ch.fhnw.util.math.Mat4;
@@ -62,7 +60,7 @@ public class Mat4FloatUniform extends AbstractUniform<Mat4> {
 	}
 
 	@Override
-	public final void enable(GL3 gl, Program program) {
-		program.setUniformMat4(gl, getShaderIndex(gl, program), value);
+	public final void enable(Program program) {
+		program.setUniformMat4(getShaderIndex(program), value);
 	}
 }

@@ -30,15 +30,13 @@
 package ch.fhnw.ether.examples.mapping;
 
 import ch.fhnw.ether.controller.DefaultController;
+import ch.fhnw.ether.controller.event.KeyEvent;
 import ch.fhnw.ether.controller.tool.AbstractTool;
 import ch.fhnw.ether.controller.tool.ITool;
 import ch.fhnw.ether.mapping.BoxCalibrationModel;
 import ch.fhnw.ether.mapping.tool.CalibrationTool;
 import ch.fhnw.ether.mapping.tool.FillTool;
-import ch.fhnw.ether.view.IView;
 import ch.fhnw.util.math.Vec3;
-
-import com.jogamp.newt.event.KeyEvent;
 
 public class MappingController extends DefaultController {
 	private static final String[] HELP = { "Simple Mapping Example (Without Content)", "", "[1] Default Tool / View", "[2] Mapping Calibration",
@@ -58,25 +56,26 @@ public class MappingController extends DefaultController {
 	}
 
 	@Override
-	public void keyPressed(KeyEvent e, IView view) {
-		switch (e.getKeyCode()) {
-		case KeyEvent.VK_0:
-		case KeyEvent.VK_1:
+	protected boolean keyPressed(KeyEvent e) {
+		switch (e.getKey()) {
+		case KeyEvent.KEY_0:
+		case KeyEvent.KEY_1:
 			setCurrentTool(defaultTool);
 			break;
-		case KeyEvent.VK_2:
+		case KeyEvent.KEY_2:
 			setCurrentTool(calibrationTool);
 			break;
-		case KeyEvent.VK_3:
+		case KeyEvent.KEY_3:
 			setCurrentTool(fillTool);
 			break;
-		case KeyEvent.VK_H:
+		case KeyEvent.KEY_H:
 			printHelp(HELP);
 			break;
 		default:
-			super.keyPressed(e, view);
+			return false;
 		}
 		repaintViews();
+		return true;
 	}
 
 	public Vec3 getLightPosition() {

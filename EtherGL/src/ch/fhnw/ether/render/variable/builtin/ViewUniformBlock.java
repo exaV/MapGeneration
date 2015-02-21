@@ -29,8 +29,6 @@
 
 package ch.fhnw.ether.render.variable.builtin;
 
-import javax.media.opengl.GL3;
-
 import ch.fhnw.ether.render.IRenderer.RendererAttribute;
 import ch.fhnw.ether.render.gl.FloatUniformBuffer;
 import ch.fhnw.ether.render.variable.base.UniformBlock;
@@ -59,8 +57,8 @@ public final class ViewUniformBlock extends UniformBlock {
 		super(ATTRIBUTE, shaderName);
 	}
 
-	public static void loadUniforms(GL3 gl, FloatUniformBuffer uniforms, CameraMatrices matrices, Viewport viewport) {
-		uniforms.load(gl, (blockIndex, buffer) -> {
+	public static void loadUniforms(FloatUniformBuffer uniforms, CameraMatrices matrices, Viewport viewport) {
+		uniforms.load((blockIndex, buffer) -> {
 			switch (blockIndex) {
 			case 0:
 				// 3d setup

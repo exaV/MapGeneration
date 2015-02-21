@@ -29,15 +29,13 @@
 
 package ch.fhnw.ether.examples.raytracing;
 
-import javax.media.opengl.GL3;
-
 import ch.fhnw.ether.render.IRenderer;
 import ch.fhnw.ether.render.forward.ForwardRenderer;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
-import ch.fhnw.ether.scene.mesh.MeshLibrary;
 import ch.fhnw.ether.scene.mesh.IMesh.Queue;
+import ch.fhnw.ether.scene.mesh.MeshLibrary;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
@@ -61,7 +59,7 @@ public class RayTracingRenderer implements IRenderer {
 	}
 	
 	@Override
-	public void render(GL3 gl, IView view) {
+	public void render(IView view) {
 		long t = System.currentTimeMillis();
 		Viewport viewport = view.getViewport();
 		if (viewport.w != rayTracer.getWidth() || viewport.h != rayTracer.getHeight())
@@ -71,7 +69,7 @@ public class RayTracingRenderer implements IRenderer {
 		
 		screenTexture.update();
 
-		renderer.render(gl, view);
+		renderer.render(view);
 		System.out.println((System.currentTimeMillis() - t) + "ms for " + ++n + "th frame");
 	}
 

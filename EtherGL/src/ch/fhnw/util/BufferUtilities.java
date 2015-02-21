@@ -34,10 +34,11 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-import com.jogamp.common.nio.Buffers;
+import org.lwjgl.BufferUtils;
 
 public class BufferUtilities {
-	public static final FloatBuffer EMPTY_FLOAT_BUFFER = Buffers.newDirectFloatBuffer(0);
+	public static final ByteBuffer EMPTY_BYTE_BUFFER = BufferUtils.createByteBuffer(0);
+	public static final FloatBuffer EMPTY_FLOAT_BUFFER = BufferUtils.createFloatBuffer(0);
 
 	public static ByteBuffer createDirectByteBuffer(int size) {
 		ByteBuffer result = ByteBuffer.allocateDirect(size);

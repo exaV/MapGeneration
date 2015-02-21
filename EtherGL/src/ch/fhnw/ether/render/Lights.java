@@ -33,8 +33,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.media.opengl.GL3;
-
 import ch.fhnw.ether.render.gl.FloatUniformBuffer;
 import ch.fhnw.ether.render.variable.builtin.LightUniformBlock;
 import ch.fhnw.ether.scene.attribute.IAttributeProvider;
@@ -93,8 +91,8 @@ public final class Lights {
 		}
 	}
 
-	public synchronized void update(GL3 gl, CameraMatrices matrices) {
-		LightUniformBlock.loadUniforms(gl, uniforms, lights, matrices);
-		uniforms.bind(gl);
+	public synchronized void update(CameraMatrices matrices) {
+		LightUniformBlock.loadUniforms(uniforms, lights, matrices);
+		uniforms.bind();
 	}
 }

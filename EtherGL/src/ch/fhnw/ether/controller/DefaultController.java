@@ -35,7 +35,13 @@ import java.util.Collections;
 import java.util.List;
 
 import ch.fhnw.ether.controller.event.EventDrivenScheduler;
+import ch.fhnw.ether.controller.event.IKeyListener;
+import ch.fhnw.ether.controller.event.IMouseListener;
 import ch.fhnw.ether.controller.event.IScheduler;
+import ch.fhnw.ether.controller.event.IWindowListener;
+import ch.fhnw.ether.controller.event.KeyEvent;
+import ch.fhnw.ether.controller.event.MouseEvent;
+import ch.fhnw.ether.controller.event.WindowEvent;
 import ch.fhnw.ether.controller.tool.ITool;
 import ch.fhnw.ether.controller.tool.NavigationTool;
 import ch.fhnw.ether.controller.tool.PickTool;
@@ -44,9 +50,6 @@ import ch.fhnw.ether.render.forward.ForwardRenderer;
 import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.ui.UI;
 import ch.fhnw.ether.view.IView;
-
-import com.jogamp.newt.event.KeyEvent;
-import com.jogamp.newt.event.MouseEvent;
 
 /**
  * Default controller that implements some basic common functionality. Use as base for more complex implementations.
@@ -102,9 +105,9 @@ public class DefaultController implements IController {
 		if (currentView == null)
 			currentView = view;
 
-		scheduler.addDrawable(view.getDrawable());
+		scheduler.addView(view);
 
-		view.repaint();
+		view.requestRepaint();
 	}
 
 	@Override
@@ -113,7 +116,7 @@ public class DefaultController implements IController {
 		if (currentView == view)
 			currentView = null;
 
-		scheduler.removeDrawable(view.getDrawable());
+		scheduler.removeView(view);
 	}
 
 	@Override
@@ -201,143 +204,159 @@ public class DefaultController implements IController {
 		return ui;
 	}
 
+
+	// window listener
+
+	private IWindowListener windowListener = new IWindowListener() {
+		@Override
+		public void windowClosed(WindowEvent e) {
+		}
+
+		@Override
+		public void windowGainedFocus(WindowEvent e) {
+		}
+
+		@Override
+		public void windowLostFocus(WindowEvent e) {
+		}
+
+		@Override
+		public void windowResized(WindowEvent e) {
+		}
+
+		@Override
+		public void windowScrolled(WindowEvent e) {
+		};
+	};
+
 	// key listener
 
-	@Override
-	public void keyPressed(KeyEvent e, IView view) {
-		if (DBG)
-			System.out.println("key pressed");
-		setCurrentView(view);
+	private IKeyListener keyListener = new IKeyListener() {
 
-		// ui has precedence over everything else
-		if (ui != null && ui.keyPressed(e, view))
-			return;
+		@Override
+		public void keyPressed(KeyEvent e) {
+			if (DBG)
+				System.out.println("key pressed");
+			setCurrentView(e.getView());
 
-		// always handle ESC (if not handled by button)
-		if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
-			System.exit(0);
+			// controller specialisation comes first
+			if (DefaultController.this.keyPressed(e))
+				return;
+			
+			// ui has precedence over tools
+			if (ui != null && ui.keyPressed(e))
+				return;
 
-		// finally, pass on to tool
-		activeTool.keyPressed(e, view);
-	}
+			// always handle ESC (if not handled by button)
+			if (e.getKey() == KeyEvent.KEY_ESCAPE)
+				System.exit(0);
 
-	@Override
-	public void keyReleased(KeyEvent e, IView view) {
+			// finally, pass on to tool
+			activeTool.keyPressed(e);
+		}
+
+		@Override
+		public void keyReleased(KeyEvent e) {
+		}
+	};
+	
+	protected boolean keyPressed(KeyEvent e) {
+		return false;
 	}
 
 	// mouse listener
 
-	@Override
-	public void mouseEntered(MouseEvent e, IView view) {
-		if (DBG)
-			System.out.println("mouse entered");
-		hoverView = view;
-		navigationTool.activate();
-		if (ui != null)
-			ui.mouseEntered(e, view);
-	}
+	private IMouseListener mouseListener = new IMouseListener() {
 
-	@Override
-	public void mouseExited(MouseEvent e, IView view) {
-		if (DBG)
-			System.out.println("mouse exited");
-		if (ui != null)
-			ui.mouseExited(e, view);
-		navigationTool.deactivate();
-		hoverView = null;
-	}
+		@Override
+		public void mouseEntered(MouseEvent e) {
+			if (DBG)
+				System.out.println("mouse entered");
+			hoverView = e.getView();
+			navigationTool.activate();
+			if (ui != null)
+				ui.mouseEntered(e);
+		}
 
-	@Override
-	public void mousePressed(MouseEvent e, IView view) {
-		if (DBG)
-			System.out.println("mouse pressed");
-		if (hoverView == null)
-			mouseEntered(e, view);
+		@Override
+		public void mouseExited(MouseEvent e) {
+			if (DBG)
+				System.out.println("mouse exited");
+			if (ui != null)
+				ui.mouseExited(e);
+			navigationTool.deactivate();
+			hoverView = null;
+		}
 
-		setCurrentView(view);
+		@Override
+		public void mouseMoved(MouseEvent e) {
+			if (DBG)
+				System.out.println("moved");
+			if (hoverView == null)
+				mouseEntered(e);
 
-		// ui has precedence over everything else
-		if (ui != null && ui.mousePressed(e, view))
-			return;
+			if (ui != null)
+				ui.mouseMoved(e);
+			activeTool.mouseMoved(e);
+			navigationTool.mouseMoved(e);
+		}
 
-		// handle tools (with active navigation when modifier is pressed)
-		if (!isModifierDown(e))
-			activeTool.mousePressed(e, view);
-		else
-			navigationTool.mousePressed(e, view);
-	}
+		@Override
+		public void mouseDragged(MouseEvent e) {
+			if (DBG)
+				System.out.println("dragged");
+			if (hoverView == null)
+				mouseEntered(e);
 
-	@Override
-	public void mouseReleased(MouseEvent e, IView view) {
-		if (DBG)
-			System.out.println("released");
-		if (hoverView == null)
-			mouseEntered(e, view);
+			// ui has precedence over everything else
+			if (ui != null && ui.mouseDragged(e))
+				return;
 
-		if (ui != null && ui.mouseReleased(e, view))
-			return;
+			if (!e.hasModifiers())
+				activeTool.mouseDragged(e);
+			else
+				navigationTool.mouseDragged(e);
+		}
 
-		if (!isModifierDown(e))
-			activeTool.mouseReleased(e, view);
-		else
-			navigationTool.mouseReleased(e, view);
-	}
+		@Override
+		public void mouseButtonPressed(MouseEvent e) {
+			if (DBG)
+				System.out.println("mouse pressed");
+			if (hoverView == null)
+				mouseEntered(e);
 
-	@Override
-	public void mouseClicked(MouseEvent e, IView view) {
-		if (DBG)
-			System.out.println("clicked");
-		if (hoverView == null)
-			mouseEntered(e, view);
-	}
+			setCurrentView(e.getView());
 
-	// mouse motion listener
+			// ui has precedence over everything else
+			if (ui != null && ui.mousePressed(e))
+				return;
 
-	@Override
-	public void mouseMoved(MouseEvent e, IView view) {
-		if (DBG)
-			System.out.println("moved");
-		if (hoverView == null)
-			mouseEntered(e, view);
+			// handle tools (with active navigation when modifier is pressed)
+			if (!e.hasModifiers())
+				activeTool.mousePressed(e);
+			else
+				navigationTool.mousePressed(e);
+		}
 
-		if (ui != null)
-			ui.mouseMoved(e, view);
-		activeTool.mouseMoved(e, view);
-		navigationTool.mouseMoved(e, view);
-	}
+		@Override
+		public void mouseButtonReleased(MouseEvent e) {
+			if (DBG)
+				System.out.println("released");
+			if (hoverView == null)
+				mouseEntered(e);
 
-	@Override
-	public void mouseDragged(MouseEvent e, IView view) {
-		if (DBG)
-			System.out.println("dragged");
-		if (hoverView == null)
-			mouseEntered(e, view);
+			if (ui != null && ui.mouseReleased(e))
+				return;
 
-		// ui has precedence over everything else
-		if (ui != null && ui.mouseDragged(e, view))
-			return;
-
-		if (!isModifierDown(e))
-			activeTool.mouseDragged(e, view);
-		else
-			navigationTool.mouseDragged(e, view);
-	}
-
-	// mouse wheel listener
-
-	@Override
-	public void mouseWheelMoved(MouseEvent e, IView view) {
-		if (hoverView == null)
-			mouseEntered(e, view);
-
-		navigationTool.mouseWheelMoved(e, view);
-	}
+			if (!e.hasModifiers())
+				activeTool.mouseReleased(e);
+			else
+				navigationTool.mouseReleased(e);
+		}
+	};	
+	
 
 	// private stuff
-
-	private boolean isModifierDown(MouseEvent e) {
-		return e.isShiftDown() || e.isControlDown() || e.isAltDown() || e.isMetaDown();
-	}
 
 	public static void printHelp(String[] help) {
 		for (String s : help)

@@ -29,8 +29,6 @@
 
 package ch.fhnw.ether.render.variable.base;
 
-import javax.media.opengl.GL3;
-
 import ch.fhnw.ether.render.IVertexBuffer;
 import ch.fhnw.ether.render.gl.Program;
 import ch.fhnw.ether.render.variable.IShaderArray;
@@ -53,17 +51,17 @@ public abstract class AbstractArray<T> extends AbstractVariable<T> implements IS
 	}
 
 	@Override
-	public final void enable(GL3 gl, Program program, IVertexBuffer buffer) {
-		buffer.enableAttribute(gl, bufferIndex, getShaderIndex(gl, program));
+	public final void enable(Program program, IVertexBuffer buffer) {
+		buffer.enableAttribute(bufferIndex, getShaderIndex(program));
 	}
 
 	@Override
-	public final void disable(GL3 gl, Program program, IVertexBuffer buffer) {
-		buffer.disableAttribute(gl, bufferIndex, getShaderIndex(gl, program));
+	public final void disable(Program program, IVertexBuffer buffer) {
+		buffer.disableAttribute(bufferIndex, getShaderIndex(program));
 	}
 
 	@Override
-	protected final int resolveShaderIndex(GL3 gl, Program program, String shaderName) {
-		return program.getAttributeLocation(gl, shaderName);
+	protected final int resolveShaderIndex(Program program, String shaderName) {
+		return program.getAttributeLocation(shaderName);
 	}
 }

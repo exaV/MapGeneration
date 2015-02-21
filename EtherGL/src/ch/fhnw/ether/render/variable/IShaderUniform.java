@@ -31,8 +31,6 @@ package ch.fhnw.ether.render.variable;
 
 import java.util.function.Supplier;
 
-import javax.media.opengl.GL3;
-
 import ch.fhnw.ether.render.gl.Program;
 
 public interface IShaderUniform<T> extends IShaderVariable<T> {
@@ -42,7 +40,7 @@ public interface IShaderUniform<T> extends IShaderVariable<T> {
 	
 	void update();
 	
-	void enable(GL3 gl, Program program);
+	void enable(Program program);
 
-	void disable(GL3 gl, Program program);
+	void disable(Program program);
 }
