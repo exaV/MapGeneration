@@ -29,6 +29,8 @@
 
 import java.awt.event.KeyEvent;
 
+import org.lwjgl.glfw.GLFW;
+
 import ch.fhnw.ether.controller.DefaultController;
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.scene.DefaultScene;
@@ -42,7 +44,10 @@ import ch.fhnw.util.math.Vec3;
 
 public final class SimpleCubeExample {
 	public static void main(String[] args) {
+		System.out.println("hello");
+		GLFW.glfwInit();
 		new SimpleCubeExample();
+		System.out.println("done");
 	}
 
 	public SimpleCubeExample() {
@@ -64,5 +69,11 @@ public final class SimpleCubeExample {
 		
 		// Add an exit button
 		controller.getUI().addWidget(new Button(0, 0, "Quit", "Quit", KeyEvent.VK_ESCAPE, (button, v) -> System.exit(0)));
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

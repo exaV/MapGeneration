@@ -13,6 +13,7 @@ import org.lwjgl.glfw.GLFWScrollCallback;
 import org.lwjgl.glfw.GLFWWindowCloseCallback;
 import org.lwjgl.glfw.GLFWWindowFocusCallback;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GLContext;
 import org.lwjgl.system.MemoryUtil;
 
 import ch.fhnw.ether.controller.event.IKeyListener;
@@ -27,11 +28,11 @@ import ch.fhnw.ether.view.IView.Config;
 import ch.fhnw.ether.view.IWindow;
 import ch.fhnw.util.math.Vec2;
 
-// FIXME: framebuffer size vs window size
 public final class GLFWWindow implements IWindow {
 	private final long window;
+	private final GLContext context;
 
-	private IView view;
+	private final IView view;
 
 	private final ListenerList<IWindowListener> windowListeners = new ListenerList<>();
 	private final ListenerList<IKeyListener> keyListeners = new ListenerList<>();
@@ -56,12 +57,12 @@ public final class GLFWWindow implements IWindow {
 		}
 	};
 
-	private Vec2 size;
+	private Vec2 frameBufferSize = new Vec2(10, 10);
 
 	private final GLFWFramebufferSizeCallback sizeCallback = new GLFWFramebufferSizeCallback() {
 		@Override
 		public void invoke(long window, int width, int height) {
-			size = new Vec2(width, height);
+			frameBufferSize = new Vec2(width, height);
 			WindowEvent event = new WindowEvent(view);
 			windowListeners.post((l) -> l.windowResized(event));
 		}
@@ -75,13 +76,13 @@ public final class GLFWWindow implements IWindow {
 		}
 	};
 
-	private int modifiers;
+	private int keyModifiers;
 
 	private final GLFWKeyCallback keyCallback = new GLFWKeyCallback() {
 		@Override
 		public void invoke(long window, int key, int scancode, int action, int mods) {
-			modifiers = mods;
-			KeyEvent event = new KeyEvent(view, key, modifiers);
+			keyModifiers = mods;
+			KeyEvent event = new KeyEvent(view, key, keyModifiers);
 			if (action == GLFW.GLFW_PRESS)
 				keyListeners.post((l) -> l.keyPressed(event));
 			else
@@ -93,12 +94,12 @@ public final class GLFWWindow implements IWindow {
 	private float mouseY;
 	private float mouseLastX;
 	private float mouseLastY;
-	private int dragging;
+	private int mouseDragging;
 
 	private final GLFWCursorEnterCallback mouseEnterCallback = new GLFWCursorEnterCallback() {
 		@Override
 		public void invoke(long window, int entered) {
-			MouseEvent event = new MouseEvent(view, 0, mouseX, mouseY, mouseLastX, mouseLastY, modifiers);
+			MouseEvent event = new MouseEvent(view, 0, mouseX, mouseY, mouseLastX, mouseLastY, keyModifiers);
 			if (entered > 0)
 				mouseListeners.post((l) -> l.mouseEntered(event));
 			else
@@ -113,8 +114,8 @@ public final class GLFWWindow implements IWindow {
 			mouseLastY = mouseY;
 			mouseX = (float) xpos;
 			mouseY = (float) ypos;
-			MouseEvent event = new MouseEvent(view, 0, mouseX, mouseY, mouseLastX, mouseLastY, modifiers);
-			if (dragging > 0)
+			MouseEvent event = new MouseEvent(view, 0, mouseX, mouseY, mouseLastX, mouseLastY, keyModifiers);
+			if (mouseDragging > 0)
 				mouseListeners.post((l) -> l.mouseDragged(event));
 			else
 				mouseListeners.post((l) -> l.mouseMoved(event));
@@ -124,13 +125,13 @@ public final class GLFWWindow implements IWindow {
 	private final GLFWMouseButtonCallback mouseButtonCallback = new GLFWMouseButtonCallback() {
 		@Override
 		public void invoke(long window, int button, int action, int mods) {
-			modifiers = mods;
-			MouseEvent event = new MouseEvent(view, button, mouseX, mouseY, mouseLastX, mouseLastY, modifiers);
+			keyModifiers = mods;
+			MouseEvent event = new MouseEvent(view, button, mouseX, mouseY, mouseLastX, mouseLastY, keyModifiers);
 			if (action == GLFW.GLFW_PRESS) {
-				dragging++;
+				mouseDragging++;
 				mouseListeners.post((l) -> l.mouseButtonPressed(event));
 			} else {
-				dragging--;
+				mouseDragging--;
 				mouseListeners.post((l) -> l.mouseButtonReleased(event));
 			}
 		}
@@ -146,8 +147,8 @@ public final class GLFWWindow implements IWindow {
 	 * @param config
 	 *            The configuration.
 	 */
-	public GLFWWindow(int width, int height, Config config) {
-		this(width, height, null, config);
+	public GLFWWindow(IView view, int width, int height, Config config) {
+		this(view, width, height, null, config);
 	}
 
 	/**
@@ -162,7 +163,9 @@ public final class GLFWWindow implements IWindow {
 	 * @param config
 	 *            The configuration.
 	 */
-	public GLFWWindow(int width, int height, String title, Config config) {
+	public GLFWWindow(IView view, int width, int height, String title, Config config) {
+		// NOTE: make sure view is not used here in any way
+
 		GLFWInit.init();
 
 		GLFW.glfwDefaultWindowHints();
@@ -188,10 +191,45 @@ public final class GLFWWindow implements IWindow {
 		GLFW.glfwSetKeyCallback(window, keyCallback);
 		GLFW.glfwSetCursorEnterCallback(window, mouseEnterCallback);
 		GLFW.glfwSetCursorPosCallback(window, mousePositionCallback);
-		GLFW.glfwSetMouseButtonCallback(height, mouseButtonCallback);
+		GLFW.glfwSetMouseButtonCallback(window, mouseButtonCallback);
+
+		GLFW.glfwShowWindow(window);
+
+		makeContextCurrent(true);
+		context = GLContext.createFromCurrent();
+		makeContextCurrent(false);
+
+		this.view = view;
+	}
+
+	private GLFWWindow(GLFWWindow shared) {
+		GLFWInit.init();
+
+		GLFW.glfwDefaultWindowHints();
+
+		GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_CORE_PROFILE);
+		GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT, GL11.GL_TRUE);
+		GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3);
+		GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 2);
+
+		GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GL11.GL_FALSE);
+		GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GL11.GL_FALSE);
+		GLFW.glfwWindowHint(GLFW.GLFW_DECORATED, GL11.GL_FALSE);
+
+		window = GLFW.glfwCreateWindow(16, 16, "", MemoryUtil.NULL, shared != null ? shared.window : 0);
+		if (window == MemoryUtil.NULL) {
+			throw new AssertionError("Failed to create new GLFW window");
+		}
+		
+		makeContextCurrent(true);
+		context = GLContext.createFromCurrent();
+		makeContextCurrent(false);
+
+		view = null;
 	}
 
 	public void dispose() {
+		context.destroy();
 		GLFW.glfwDestroyWindow(window);
 	}
 
@@ -206,12 +244,20 @@ public final class GLFWWindow implements IWindow {
 		GLFW.glfwSetWindowPos(window, (int) position.x, (int) position.y);
 	}
 
-	public Vec2 getSize() {
-		return size;
+	public Vec2 getFrameBufferSize() {
+		return frameBufferSize;
 	}
 
-	public void makeContextCurrent(boolean current) {
-		GLFW.glfwMakeContextCurrent(current ? window : null);
+	public synchronized void makeContextCurrent(boolean current) {
+		GLFW.glfwMakeContextCurrent(current ? window : 0);
+	}
+
+	public static boolean hasContextCurrent() {
+		return GLFW.glfwGetCurrentContext() != 0;
+	}
+
+	public static GLFWWindow createDummyWindow(GLFWWindow sharedWindow) {
+		return new GLFWWindow(sharedWindow);
 	}
 
 }

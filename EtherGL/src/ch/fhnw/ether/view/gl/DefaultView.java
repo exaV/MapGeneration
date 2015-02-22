@@ -30,6 +30,7 @@
 package ch.fhnw.ether.view.gl;
 
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GLContext;
 
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.scene.camera.CameraMatrices;
@@ -68,7 +69,7 @@ public class DefaultView implements IView {
 		this.viewConfig = viewConfig;
 		setCamera(camera);
 
-		window = new GLFWWindow(w, h, title, viewConfig);
+		window = new GLFWWindow(this, w, h, title, viewConfig);
 
 		Vec2 p = window.getPosition();
 		if (x == -1)
@@ -175,6 +176,9 @@ public class DefaultView implements IView {
 	@Override
 	public void doRepaint() {
 		try {
+			window.makeContextCurrent(true);
+			GLContext context = GLContext.createFromCurrent();
+			
 			// FIXME: need to make this configurable and move to renderer
 			GL11.glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
 			GL11.glClearDepth(1.0f);
@@ -191,7 +195,7 @@ public class DefaultView implements IView {
 			if (!isEnabled())
 				return;
 
-			Vec2 size = window.getSize();
+			Vec2 size = window.getFrameBufferSize();
 			
 			GL11.glViewport(0, 0, (int)size.x, (int)size.y);
 			
@@ -201,14 +205,17 @@ public class DefaultView implements IView {
 				ui.update();
 
 			// render everything
-			getController().getRenderer().render(this);
+			//getController().getRenderer().render(this);
 
 			int error = GL11.glGetError();
 			if (error != 0)
 				System.err.println("renderer returned with exisiting GL error 0x" + Integer.toHexString(error));
-		
+
+			
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			window.makeContextCurrent(false);			
 		}
 	}
 }

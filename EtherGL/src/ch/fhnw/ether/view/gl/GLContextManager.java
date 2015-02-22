@@ -33,13 +33,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GLContext;
-
-import ch.fhnw.ether.view.IView;
-import ch.fhnw.ether.view.IView.Config;
-import ch.fhnw.ether.view.IWindow;
-
 public class GLContextManager {
 	public interface IGLContext {
 	}
@@ -48,10 +41,10 @@ public class GLContextManager {
 	}
 
 	private static final class TemporaryContext implements IGLContext {
-		private GLFWWindow window;
+		private final GLFWWindow window;
 
 		TemporaryContext() {
-			create window
+			window = GLFWWindow.createDummyWindow(getSharedWindow());
 		}
 
 		void makeCurrent() {
@@ -106,7 +99,7 @@ public class GLContextManager {
 	}
 
 	public static IGLContext acquireContext(boolean wait) {
-		if (GLContext.getCurrent() != null)
+		if (GLFWWindow.hasContextCurrent())
 			return VOID_CONTEXT;
 
 		return contexts.acquireContext(wait);
@@ -118,10 +111,8 @@ public class GLContextManager {
 	}
 
 	public synchronized static GLFWWindow getSharedWindow() {
-		if (theSharedWindow == null) {
-			
-			theSharedWindow = ...;
-		}
+		if (theSharedWindow == null)
+			theSharedWindow = GLFWWindow.createDummyWindow(null);
 		return theSharedWindow;
 	}
 }

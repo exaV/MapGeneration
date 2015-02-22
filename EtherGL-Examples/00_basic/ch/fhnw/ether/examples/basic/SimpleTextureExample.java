@@ -53,6 +53,7 @@ import ch.fhnw.util.math.Mat4;
 public final class SimpleTextureExample {
 
 	public static void main(String[] args) {
+		System.getenv();
 		new SimpleTextureExample();
 	}
 
