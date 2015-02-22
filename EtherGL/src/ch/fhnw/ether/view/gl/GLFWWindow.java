@@ -41,6 +41,7 @@ public final class GLFWWindow implements IWindow {
 	private final GLFWWindowCloseCallback closeCallback = new GLFWWindowCloseCallback() {
 		@Override
 		public void invoke(long window) {
+			System.out.println("window close");
 			WindowEvent event = new WindowEvent(view);
 			windowListeners.post((l) -> l.windowClosed(event));
 		}
@@ -49,6 +50,7 @@ public final class GLFWWindow implements IWindow {
 	private final GLFWWindowFocusCallback focusCallback = new GLFWWindowFocusCallback() {
 		@Override
 		public void invoke(long window, int focused) {
+			System.out.println("window focused " + focused);
 			WindowEvent event = new WindowEvent(view);
 			if (focused > 0)
 				windowListeners.post((l) -> l.windowGainedFocus(event));
@@ -62,6 +64,7 @@ public final class GLFWWindow implements IWindow {
 	private final GLFWFramebufferSizeCallback sizeCallback = new GLFWFramebufferSizeCallback() {
 		@Override
 		public void invoke(long window, int width, int height) {
+			System.out.println("window resized " + width + " " + height);
 			frameBufferSize = new Vec2(width, height);
 			WindowEvent event = new WindowEvent(view);
 			windowListeners.post((l) -> l.windowResized(event));
@@ -71,6 +74,7 @@ public final class GLFWWindow implements IWindow {
 	private final GLFWScrollCallback scrollCallback = new GLFWScrollCallback() {
 		@Override
 		public void invoke(long window, double xoffset, double yoffset) {
+			System.out.println("window scrolled " + xoffset + " " + yoffset);
 			WindowEvent event = new WindowEvent(view);
 			windowListeners.post((l) -> l.windowScrolled(event));
 		}
@@ -81,6 +85,7 @@ public final class GLFWWindow implements IWindow {
 	private final GLFWKeyCallback keyCallback = new GLFWKeyCallback() {
 		@Override
 		public void invoke(long window, int key, int scancode, int action, int mods) {
+			System.out.println("key " + key + " " + action + " " + mods);
 			keyModifiers = mods;
 			KeyEvent event = new KeyEvent(view, key, keyModifiers);
 			if (action == GLFW.GLFW_PRESS)
@@ -165,7 +170,8 @@ public final class GLFWWindow implements IWindow {
 	 */
 	public GLFWWindow(IView view, int width, int height, String title, Config config) {
 		// NOTE: make sure view is not used here in any way
-
+		GLFWWindow shared = GLContextManager.getSharedWindow();
+		
 		GLFWInit.init();
 
 		GLFW.glfwDefaultWindowHints();
@@ -177,10 +183,10 @@ public final class GLFWWindow implements IWindow {
 
 		GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GL11.GL_FALSE);
 		GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GL11.GL_TRUE);
-		GLFW.glfwWindowHint(GLFW.GLFW_DECORATED, title == null ? GL11.GL_TRUE : GL11.GL_FALSE);
+		GLFW.glfwWindowHint(GLFW.GLFW_DECORATED, title != null ? GL11.GL_TRUE : GL11.GL_FALSE);
 
-		window = GLFW.glfwCreateWindow(width, height, title, MemoryUtil.NULL, GLContextManager.getSharedWindow().window);
-		if (window == MemoryUtil.NULL) {
+		window = GLFW.glfwCreateWindow(width, height, title != null ? title : "", MemoryUtil.NULL, shared.window);
+		if (window == 0) {
 			throw new AssertionError("Failed to create new GLFW window");
 		}
 
@@ -193,11 +199,12 @@ public final class GLFWWindow implements IWindow {
 		GLFW.glfwSetCursorPosCallback(window, mousePositionCallback);
 		GLFW.glfwSetMouseButtonCallback(window, mouseButtonCallback);
 
-		GLFW.glfwShowWindow(window);
 
 		makeContextCurrent(true);
 		context = GLContext.createFromCurrent();
 		makeContextCurrent(false);
+
+		GLFW.glfwShowWindow(window);
 
 		this.view = view;
 	}

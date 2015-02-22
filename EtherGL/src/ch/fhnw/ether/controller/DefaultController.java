@@ -48,6 +48,8 @@ import ch.fhnw.ether.controller.tool.PickTool;
 import ch.fhnw.ether.render.IRenderer;
 import ch.fhnw.ether.render.forward.ForwardRenderer;
 import ch.fhnw.ether.scene.IScene;
+import ch.fhnw.ether.scene.light.ILight;
+import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.ui.UI;
 import ch.fhnw.ether.view.IView;
 

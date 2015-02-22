@@ -27,30 +27,34 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */package ch.fhnw.ether.examples.basic;
 
-import java.awt.event.KeyEvent;
-
 import org.lwjgl.glfw.GLFW;
 
 import ch.fhnw.ether.controller.DefaultController;
 import ch.fhnw.ether.controller.IController;
-import ch.fhnw.ether.scene.DefaultScene;
-import ch.fhnw.ether.scene.IScene;
-import ch.fhnw.ether.scene.camera.Camera;
-import ch.fhnw.ether.scene.mesh.MeshLibrary;
-import ch.fhnw.ether.ui.Button;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.gl.DefaultView;
-import ch.fhnw.util.math.Vec3;
+import ch.fhnw.ether.view.gl.GLFWWindow;
 
 public final class SimpleCubeExample {
 	public static void main(String[] args) {
+		System.setProperty("java.awt.headless", "true");
+		System.setProperty("org.lwjgl.util.Debug", "true");
 		System.out.println("hello");
 		GLFW.glfwInit();
-		new SimpleCubeExample();
+		new SimpleCubeExample().run();
 		System.out.println("done");
 	}
 
 	public SimpleCubeExample() {
+	}
+	
+	void run() {
+		System.out.println("hello 2");
+		IController controller = new DefaultController();
+		GLFWWindow window = new GLFWWindow(null, 100, 100, "Hello", IView.INTERACTIVE_VIEW);
+		IView view = new DefaultView(null, 100, 100, 500, 500, IView.INTERACTIVE_VIEW, "Simple Cube", null);
+
+		/*
 		// Create controller
 		IController controller = new DefaultController();
 
@@ -69,9 +73,12 @@ public final class SimpleCubeExample {
 		
 		// Add an exit button
 		controller.getUI().addWidget(new Button(0, 0, "Quit", "Quit", KeyEvent.VK_ESCAPE, (button, v) -> System.exit(0)));
+		*/
 		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e) {
+			while (true) {
+				GLFW.glfwWaitEvents();
+			}
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

@@ -179,6 +179,10 @@ public class DefaultView implements IView {
 			window.makeContextCurrent(true);
 			GLContext context = GLContext.createFromCurrent();
 			
+			System.out.println("do repaint");
+			if (true)
+				return;
+			
 			// FIXME: need to make this configurable and move to renderer
 			GL11.glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
 			GL11.glClearDepth(1.0f);

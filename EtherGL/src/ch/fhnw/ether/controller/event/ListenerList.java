@@ -5,7 +5,8 @@ import java.util.function.Consumer;
 import ch.fhnw.util.ArrayUtilities;
 
 public final class ListenerList<L> {
-	private volatile L[] listeners;
+	@SuppressWarnings("unchecked")
+	private volatile L[] listeners = (L[])new Object[0];
 
 	public void post(Consumer<L> action) {
 		for (L listener : listeners)
