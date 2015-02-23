@@ -270,7 +270,7 @@ public final class FloatFrame extends Frame {
 	}
 
 	@Override
-	protected void loadInternal(GL gl, int target, int textureId) {
+	protected void loadInternal(GL3 gl, int target, int textureId) {
 		gl.glTexImage2D(target, 0, GL3.GL_RED, dimI, dimJ, 0, GL3.GL_RED, GL.GL_FLOAT, pixels);
 	}	
 }
