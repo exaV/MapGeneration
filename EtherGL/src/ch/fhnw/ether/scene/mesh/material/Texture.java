@@ -31,7 +31,7 @@ package ch.fhnw.ether.scene.mesh.material;
 
 import java.net.URL;
 
-import javax.media.opengl.GL;
+import javax.media.opengl.GL3;
 
 import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.media.AbstractMediaTarget;
@@ -148,7 +148,7 @@ public class Texture extends AbstractMediaTarget<VideoFrame, IVideoRenderTarget>
 		updater.requestUpdate();
 	}
 
-	public void load(GL gl, int target, int textureId) {
+	public void load(GL3 gl, int target, int textureId) {
 		Frame frame = currentFrame();
 		if(frame != null)
 			frame.load(gl, target, textureId);

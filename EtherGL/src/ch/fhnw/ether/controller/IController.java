@@ -30,6 +30,7 @@
 import java.util.Collection;
 import java.util.List;
 
+import ch.fhnw.ether.controller.event.IScheduler;
 import ch.fhnw.ether.controller.tool.ITool;
 import ch.fhnw.ether.controller.tool.NavigationTool;
 import ch.fhnw.ether.render.IRenderer;
@@ -142,6 +143,13 @@ public interface IController {
 	 * @return the navigation tool
 	 */
 	NavigationTool getNavigationTool();
+
+	/**
+	 * Get scheduler.
+	 *
+	 * @return the scheduler
+	 */
+	IScheduler getScheduler();
 
 	/**
 	 * Get renderer.

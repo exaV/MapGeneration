@@ -31,7 +31,33 @@ package ch.fhnw.ether.controller.event;
 
 import javax.media.opengl.GLAutoDrawable;
 
+/*
+ * XXX Some thoughts here: Idea is to have a common scheduling mechanism for 
+ * timed events across different media types / render programs. Need to address many 
+ * issues though:
+ * - update handling after completion of an action
+ * - cancellation of an action
+ * - consistent execution of actions that are scheduled for the same time (i imagine
+ *   some sort of "timing slots" that can be created to which actions can collectively
+ *   be attached
+ * - framerate info / handling
+ * - etc
+ */
 public interface IScheduler {
+
+	interface IAction {
+		boolean run(double time, double interval);
+	}
+
+	void once(IAction action);
+
+	void once(double delay, IAction action);
+
+	void repeat(double interval, IAction action);
+
+	void repeat(double delay, double interval, IAction action);
+
+	// FIXME: stuff below doesn't belong here
 	void addDrawable(GLAutoDrawable drawable);
 
 	void removeDrawable(GLAutoDrawable drawable);
@@ -39,6 +65,4 @@ public interface IScheduler {
 	void requestUpdate(GLAutoDrawable drawable);
 
 	void invokeOnRenderThread(Runnable runnable);
-
-	void invokeOnModelThread(Runnable runnable);
 }

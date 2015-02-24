@@ -29,11 +29,9 @@
 
 package ch.fhnw.ether.examples.basic;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 import ch.fhnw.ether.controller.DefaultController;
 import ch.fhnw.ether.controller.IController;
+import ch.fhnw.ether.controller.event.IScheduler;
 import ch.fhnw.ether.scene.DefaultScene;
 import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.scene.camera.Camera;
@@ -61,7 +59,7 @@ public final class SimpleAnimationExample {
 
 		DefaultGeometry g = DefaultGeometry.createVC(Primitive.TRIANGLES, vertices, colors);
 
-		return new DefaultMesh(new ColorMaterial(RGBA.WHITE), g);
+		return new DefaultMesh(new ColorMaterial(RGBA.WHITE, true), g);
 	}
 
 	public SimpleAnimationExample() {
@@ -80,13 +78,11 @@ public final class SimpleAnimationExample {
 		IMesh mesh = makeColoredTriangle();
 		scene.add3DObject(mesh);
 
-		// Animate (Using event timer)
-		Timer timer = new Timer();
-		timer.scheduleAtFixedRate(new TimerTask() {
+		controller.getScheduler().repeat(0, 1.0/60.0, new IScheduler.IAction() {
 			private int c = 0;
 
 			@Override
-			public void run() {
+			public boolean run(double time, double interval) {
 
 				// make some heavy animation calculation
 				c += 4;
@@ -106,11 +102,13 @@ public final class SimpleAnimationExample {
 					}
 				});
 				mesh.requestUpdate(null);
-				
+
 				// update view, because we have no fix rendering loop but event-based rendering
 				if (view != null)
 					view.repaint();
+				
+				return true;
 			}
-		}, 1000, 50);
+		});
 	}
 }
