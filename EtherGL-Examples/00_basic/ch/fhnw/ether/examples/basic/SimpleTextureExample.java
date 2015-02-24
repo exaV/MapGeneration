@@ -29,11 +29,9 @@
 
 package ch.fhnw.ether.examples.basic;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 import ch.fhnw.ether.controller.DefaultController;
 import ch.fhnw.ether.controller.IController;
+import ch.fhnw.ether.controller.event.IScheduler;
 import ch.fhnw.ether.scene.DefaultScene;
 import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.scene.camera.Camera;
@@ -49,6 +47,7 @@ import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.ether.scene.mesh.material.Texture;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.gl.DefaultView;
+import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Mat4;
 
 public final class SimpleTextureExample {
@@ -64,7 +63,7 @@ public final class SimpleTextureExample {
 
 		
 		try {
-			IMaterial m = new ColorMapMaterial(new Texture(SimpleTextureExample.class.getResource("assets/fhnw_logo.jpg")));
+			IMaterial m = new ColorMapMaterial(RGBA.WHITE, new Texture(SimpleTextureExample.class.getResource("assets/fhnw_logo.jpg")), true);
 			IGeometry g = DefaultGeometry.createVCM(Primitive.TRIANGLES, vertices, colors, texCoords);
 			return new DefaultMesh(m, g);
 		} catch (Exception e) {
@@ -92,12 +91,11 @@ public final class SimpleTextureExample {
 		scene.add3DObject(mesh);
 
 		// Animate (Using event timer)
-		Timer timer = new Timer();
-		timer.scheduleAtFixedRate(new TimerTask() {
+		controller.getScheduler().repeat(0, 1.0/60.0, new IScheduler.IAction() {
 			private int c = 0;
 
 			@Override
-			public void run() {
+			public boolean run(double time, double interval) {
 
 				// make some heavy animation calculation
 				c += 4;
@@ -107,20 +105,23 @@ public final class SimpleTextureExample {
 
 				// apply changes to geometry
 				mesh.setTransform(Mat4.scale(f, f, f));
-				mesh.getGeometry().modify(1, (IGeometryAttribute id, float[] colors) -> {
-					for (int i = 0; i < colors.length; ++i) {
+				mesh.getGeometry().modify(1, (IGeometryAttribute id, float[] vertices) -> {
+					for (int i = 0; i < vertices.length; ++i) {
 						if (i % 4 == 3)
 							continue;
-						colors[i] -= 0.2f * (1 - f);
-						if (colors[i + 0] <= 0)
-							colors[i + 0] = 1;
+						vertices[i] -= 0.2f * (1 - f);
+						if (vertices[i + 0] <= 0)
+							vertices[i + 0] = 1;
 					}
 				});
+				mesh.requestUpdate(null);
 
 				// update view, because we have no fix rendering loop but event-based rendering
 				if (view != null)
 					view.repaint();
+				
+				return true;
 			}
-		}, 1000, 50);
+		});
 	}
 }

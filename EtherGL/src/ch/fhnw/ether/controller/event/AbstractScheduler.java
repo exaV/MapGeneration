@@ -32,20 +32,80 @@ package ch.fhnw.ether.controller.event;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.DelayQueue;
+import java.util.concurrent.Delayed;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import javax.media.opengl.GLAutoDrawable;
 
 abstract class AbstractScheduler implements IScheduler {
+	
+	private static final class DelayedAction implements Delayed {
+		private long delay;
+		private final long interval;
+		private final IAction action;
+		
+		public DelayedAction(long delay, long interval, IAction action) {
+			this.delay = delay;
+			this.interval = interval;
+			this.action = action;
+		}
+
+		boolean run(double time) {
+			if (action.run(time, interval / 1000000000.0) && interval > 0) {
+				delay += interval;
+				return true;
+			}
+			return false;
+		}
+		
+		@Override
+		public long getDelay(TimeUnit unit) {
+			return unit.convert(START_TIME - System.nanoTime() + this.delay, TimeUnit.NANOSECONDS);
+		}
+		
+		@Override
+		public int compareTo(Delayed o) {
+			long d0 = getDelay(TimeUnit.NANOSECONDS);
+			long d1 = o.getDelay(TimeUnit.NANOSECONDS);
+			System.out.println("compare delay: " + d0 + " " + d1);
+			return (d0 < d1) ? -1 : ((d0 == d1) ? 0 : 1);
+		}
+	}
+	
+	private static final long START_TIME = System.nanoTime();
+
+	private final DelayQueue<DelayedAction> modelQueue = new DelayQueue<>();
+
 
 	private final List<GLAutoDrawable> drawables = new ArrayList<>();
 
 	protected final BlockingQueue<Runnable> renderQueue = new LinkedBlockingQueue<>();
-	private final BlockingQueue<Runnable> modelQueue = new LinkedBlockingQueue<>();
-
+	
 	protected AbstractScheduler() {
-		new Thread(this::runRenderThread).start();
 		new Thread(this::runModelThread).start();
+		new Thread(this::runRenderThread).start();
+	}
+	
+	@Override
+	public void once(IAction action) {
+		once(0, action);
+	}
+	
+	@Override
+	public void once(double delay, IAction action) {
+		modelQueue.add(new DelayedAction(s2ns(delay), 0, action));
+	}
+	
+	@Override
+	public void repeat(double interval, IAction action) {
+		repeat(0, interval, action);
+	}
+	
+	@Override
+	public void repeat(double delay, double interval, IAction action) {
+		modelQueue.add(new DelayedAction(s2ns(delay), s2ns(interval), action));
 	}
 
 	@Override
@@ -61,11 +121,6 @@ abstract class AbstractScheduler implements IScheduler {
 	@Override
 	public void invokeOnRenderThread(Runnable runnable) {
 		renderQueue.add(runnable);
-	}
-
-	@Override
-	public void invokeOnModelThread(Runnable runnable) {
-		modelQueue.add(runnable);
 	}
 
 	protected abstract void runRenderThread();
@@ -84,7 +139,9 @@ abstract class AbstractScheduler implements IScheduler {
 		try {
 			while (true) {
 				try {
-					modelQueue.take().run();
+					DelayedAction action = modelQueue.take();
+					if (action.run(getTime()))
+						modelQueue.add(action);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -93,5 +150,14 @@ abstract class AbstractScheduler implements IScheduler {
 			e.printStackTrace();
 			System.exit(1);
 		}
+	}
+	
+	private double getTime() {
+		long elapsed = System.nanoTime() - START_TIME;
+		return elapsed / 1000000000.0;
+	}
+	
+	private long s2ns(double time) {
+		return (long)(time * 1000000000);
 	}
 }

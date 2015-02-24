@@ -44,7 +44,6 @@ import java.util.concurrent.Future;
 
 import javax.imageio.ImageIO;
 import javax.media.opengl.GL;
-import javax.media.opengl.GL2;
 import javax.media.opengl.GL3;
 
 import ch.fhnw.util.BufferUtilities;
@@ -187,16 +186,16 @@ public abstract class Frame {
 
 	public abstract Frame create(int width, int height);
 
-	public static Frame create(GL gl, int target, int textureId) {
+	public static Frame create(GL3 gl, int target, int textureId) {
 		Frame result = null;
 		int[] tmpi   = new int[1];
 		int width;
 		int height;
 		int internalFormat;
 		gl.glBindTexture(target, textureId);
-		gl.glGetTexParameteriv(target, GL2.GL_TEXTURE_COMPONENTS, tmpi, 0); internalFormat = tmpi[0];
-		gl.glGetTexParameteriv(target, GL3.GL_TEXTURE_WIDTH,      tmpi, 0); width          = tmpi[0];
-		gl.glGetTexParameteriv(target, GL3.GL_TEXTURE_HEIGHT,     tmpi, 0); height         = tmpi[0];
+		gl.glGetTexLevelParameteriv(target, 0, GL3.GL_TEXTURE_INTERNAL_FORMAT, tmpi, 0);	internalFormat = tmpi[0];
+		gl.glGetTexLevelParameteriv(target, 0, GL3.GL_TEXTURE_WIDTH,      tmpi, 0);			width          = tmpi[0];
+		gl.glGetTexLevelParameteriv(target, 0, GL3.GL_TEXTURE_HEIGHT,     tmpi, 0);			height         = tmpi[0];
 		switch(internalFormat) {
 		case GL.GL_RGB:
 			result = new RGB8Frame(width, height);
@@ -419,16 +418,16 @@ public abstract class Frame {
 		ImageIO.write(toBufferedImage(), format.toString(), out);
 	}
 
-	public void load(GL gl, int target, int textureId) {
+	public void load(GL3 gl, int target, int textureId) {
 		gl.glBindTexture(target, textureId);
-		gl.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
+		gl.glPixelStorei(GL3.GL_UNPACK_ALIGNMENT, 1);
 		pixels.rewind();
 		loadInternal(gl, target, textureId);
 		gl.glGenerateMipmap(target);
 		gl.glBindTexture(target, 0);
 	}
 
-	protected abstract void loadInternal(GL gl, int target, int textureId);
+	protected abstract void loadInternal(GL3 gl, int target, int textureId);
 
 	static final ExecutorService POOL       = Executors.newCachedThreadPool();
 	static final int             NUM_CHUNKS = Runtime.getRuntime().availableProcessors(); 

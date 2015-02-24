@@ -49,7 +49,8 @@ import ch.fhnw.util.math.Mat4;
 // TODO: deal with max vbo size & multiple vbos, memory optimization, handle non-float arrays
 
 public final class VertexBuffer implements IVertexBuffer {
-	private static FloatBuffer target = BufferUtilities.createDirectFloatBuffer(1024 * 1024);
+	private static final ThreadLocal<FloatBuffer> TARGET
+	= ThreadLocal.withInitial(() -> BufferUtilities.createDirectFloatBuffer(1024 * 1024));
 
 	private final FloatArrayBuffer buffer = new FloatArrayBuffer();
 
@@ -116,13 +117,16 @@ public final class VertexBuffer implements IVertexBuffer {
 				bufferIndex++;
 				size += source.length;
 			}
-			if (target.capacity() < size)
-				target = BufferUtilities.createDirectFloatBuffer(2 * size);
-			target.clear();
-			target.limit(size);
-			interleave(target, sources, sizes);
+			FloatBuffer buffer = TARGET.get();
+			if (buffer.capacity() < size) {
+				buffer = BufferUtilities.createDirectFloatBuffer(2 * size);
+				TARGET.set(buffer);
+			}
+			buffer.clear();
+			buffer.limit(size);
+			interleave(buffer, sources, sizes);
 		});
-		buffer.load(gl, target);
+		buffer.load(gl, TARGET.get());
 	}
 
 	@Override
