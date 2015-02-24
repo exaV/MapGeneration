@@ -25,52 +25,84 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */package ch.fhnw.ether.examples.visualizer;
+ */package ch.fhnw.ether.audio.fx;
 
-import java.util.Arrays;
-
-import ch.fhnw.ether.audio.AudioFrame;
+import ch.fhnw.ether.audio.FFT;
 import ch.fhnw.ether.audio.IAudioRenderTarget;
+import ch.fhnw.ether.audio.Smooth;
 import ch.fhnw.ether.media.AbstractRenderCommand;
 import ch.fhnw.ether.media.PerTargetState;
 import ch.fhnw.ether.media.RenderCommandException;
-import ch.fhnw.util.ClassUtilities;
+import ch.fhnw.ether.media.StateHandle;
 
-public class DCRemove extends AbstractRenderCommand<IAudioRenderTarget, DCRemove.State> {
-	final static float POLE = 0.9999f;
+public class Bands extends AbstractRenderCommand<IAudioRenderTarget,Bands.State> {
+	public enum Div {LINEAR, LOGARITHMIC};
 
-	static class State extends PerTargetState<IAudioRenderTarget> {
-		private float[] lastIn  = ClassUtilities.EMPTY_floatA;
-		private float[] lastOut = ClassUtilities.EMPTY_floatA;
+	private static final double          BASE = 1.2;
+	private final float[]                freqs;
+	private final float[]                scales;
+	private final StateHandle<FFT.State> spectrum;
+
+	public class State extends PerTargetState<IAudioRenderTarget> {
+		private final Smooth  smooth = new Smooth(freqs.length - 1, 0.05f);
+		private final float[] power  = new float[smooth.size()];
 
 		public State(IAudioRenderTarget target) {
 			super(target);
 		}
 
-		public void process(AudioFrame frame) {
-			if(lastIn.length < frame.nChannels) {
-				lastIn  = Arrays.copyOf(lastIn,  frame.nChannels);
-				lastOut = Arrays.copyOf(lastOut, frame.nChannels);
-			}
-			final float[] samples = frame.samples;
-			for(int i = 0; i < samples.length; i ++) {
-				final int   c      = i % frame.nChannels;
-				final float sample = samples[i];
-				final float diff   = sample - lastIn[c];
-				final float intg   = POLE * lastOut[c] + diff;
-				lastIn[c]          = sample;
-				lastOut[c]         = intg;
-				samples[i]         = lastOut[c];
-			}
+		void process() throws RenderCommandException {
+			final IAudioRenderTarget target = getTarget();
+			
+			for(int band = 0; band < power.length; band++)
+				power[band] = scales[band] * spectrum.get(target).power(freqs[band], freqs[band+1]);
+			
+			smooth.update(target.getTime(), power);
+		}
+
+		public float power(int i) {
+			return smooth.get(i);
+		}
+		
+		public float[] power(float[] values) {
+			return smooth.get(values);
 		}
 	}
-	
-	
+
+	public Bands(StateHandle<FFT.State> fftState, float low, float high, int nBands, Div bands) {
+		this.freqs    = new float[nBands+1];
+		this.scales   = new float[nBands];
+		this.spectrum = fftState;
+		switch(bands) {
+		case LINEAR:
+			float delta = (high - low) / nBands;
+			freqs[0] = low;
+			for(int i = 1; i < nBands+1; i++) {
+				low += delta;
+				freqs[i] = Math.min(low, high);
+			}
+			for(int i = 0; i < nBands; i++) {
+				float x = 2f * i / nBands;
+				x *= x;
+				scales[i] = 1f + x;
+			}
+			break;
+		case LOGARITHMIC:
+			double h = Math.pow(BASE, nBands) - 1;
+			double d = high - low;
+			for(int i = 0; i < nBands + 1; i++)
+				freqs[i] = Math.min(low + (float) ((d * (Math.pow(BASE, i)-1))   / h), high);
+			for(int i = 0; i < nBands; i++)
+				scales[i] = 1f;
+			break;
+		}
+	}
+
 	@Override
 	protected void run(State state) throws RenderCommandException {
-		state.process(state.getTarget().getFrame());
-	}
-	
+		state.process();
+	}	
+
 	@Override
 	protected State createState(IAudioRenderTarget target) throws RenderCommandException {
 		return new State(target);

@@ -39,7 +39,6 @@ import ch.fhnw.ether.audio.AudioUtilities.Window;
 import ch.fhnw.ether.media.AbstractRenderCommand;
 import ch.fhnw.ether.media.PerTargetState;
 import ch.fhnw.ether.media.RenderCommandException;
-import ch.fhnw.ether.media.StateHandle;
 import ch.fhnw.util.IModifier;
 import ch.fhnw.util.math.MathUtilities;
 
@@ -159,8 +158,8 @@ public class FFT extends AbstractRenderCommand<IAudioRenderTarget,FFT.State> {
 			}
 		}
 		
-		public void modifySpectrum(IModifier<float[]> modifier) {
-			for(float[] spectrum : getState(target).spectrum)
+		public void modifySpectrum(IModifier<float[]> modifier) throws RenderCommandException {
+			for(float[] spectrum : state().get(target).spectrum)
 				modifier.modify(spectrum);
 		}
 	}
@@ -180,7 +179,7 @@ public class FFT extends AbstractRenderCommand<IAudioRenderTarget,FFT.State> {
 		return new State(target);
 	}
 
-	public int size(IAudioRenderTarget target) {
-		return getState(target).size();
+	public int size(IAudioRenderTarget target) throws RenderCommandException {
+		return state().get(target).size();
 	}
 }

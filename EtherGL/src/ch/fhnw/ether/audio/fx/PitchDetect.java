@@ -25,70 +25,78 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */package ch.fhnw.ether.examples.visualizer;
+ */package ch.fhnw.ether.audio.fx;
 
-import ch.fhnw.ether.audio.AudioFrame;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
+
 import ch.fhnw.ether.audio.AudioUtilities;
 import ch.fhnw.ether.audio.IAudioRenderTarget;
+import ch.fhnw.ether.audio.FFT;
 import ch.fhnw.ether.media.AbstractRenderCommand;
 import ch.fhnw.ether.media.PerTargetState;
 import ch.fhnw.ether.media.RenderCommandException;
+import ch.fhnw.ether.media.StateHandle;
+import ch.fhnw.util.ClassUtilities;
+import ch.fhnw.util.math.Vec2;
 
-public class AutoGain extends AbstractRenderCommand<IAudioRenderTarget,AutoGain.State> {
-	private final static double MAX2AVG = 0.5;
+public class PitchDetect extends AbstractRenderCommand<IAudioRenderTarget,PitchDetect.State> {
+	private static final float THRESHOLD = 0.2f;
 
-	static class State extends PerTargetState<IAudioRenderTarget> {
-		private static final double SMOOTH_DELAY = 0.05;
-		private static final double MIN_LEVEL    = AudioUtilities.dbToLevel(-40.0);
-		private static final double SUSTAIN_TIME = 2.0;
-		private static final double ACCURACY     = AudioUtilities.dbToLevel(1.0); // Width of 'void' range, where no correction occurs
-		private static final double TARGET_UPPER = AudioUtilities.dbToLevel(-3.0);
-		private static final double TARGET_LOWER = TARGET_UPPER / ACCURACY;
-
-		private final double sampleRate;
-		private final double attackFactor;
-		private final double decayFactor;
-
-		private final int        historySize;
-		private final int        sustainSpeed;
-		private final GainEngine gainEngine;
+	private final StateHandle<FFT.State> spectrum;
+	private final int                    nHarmonics;
+	
+	public class State extends PerTargetState<IAudioRenderTarget> {
+		private final AtomicReference<float[]> pitch = new AtomicReference<>(ClassUtilities.EMPTY_floatA);
+		private final List<Vec2>               peaks = new ArrayList<>();
 
 		public State(IAudioRenderTarget target) {
 			super(target);
-			sampleRate   = target.getSampleRate();
-			attackFactor = AudioUtilities.dbToLevel(600.0 / sampleRate);
-			decayFactor  = AudioUtilities.dbToLevel(-6.0 / sampleRate);
-			historySize  = (int)(SMOOTH_DELAY * sampleRate + 0.5);
-			sustainSpeed = (int)(SUSTAIN_TIME * sampleRate + 0.5);
-			gainEngine   = new GainEngine(historySize, sustainSpeed, attackFactor, decayFactor, MIN_LEVEL);
 		}
 
-		public void process(AudioFrame frame) {
-			double thresholdLevel = MIN_LEVEL * MAX2AVG;
+		void process() throws RenderCommandException {
+			final IAudioRenderTarget target = getTarget();
+			final float[]            spec   = spectrum.get(target).power().clone();
+			
+			for(int h = 0; h < nHarmonics; h++) {
+				final int hop = h + 1;
+				final int lim = spec.length / hop;
+				for(int i = 0; i < lim; i++)
+					spec[i] *= spec[i * hop];
+			}
+			
+			final BitSet peaks  = AudioUtilities.peaks(spec, 3, THRESHOLD);
+			this.peaks.clear();
 
-			gainEngine.process(frame);
+			for (int i = peaks.nextSetBit(0); i >= 0; i = peaks.nextSetBit(i+1))
+				this.peaks.add(new Vec2(spec[i], spectrum.get(target).idx2f(i)));
 
-			double gain = gainEngine.getGain();
-			if (gain < thresholdLevel)
-				gain = thresholdLevel;
-
-			float correction = 1.0f;
-			if (gain < TARGET_LOWER)
-				correction = (float)(TARGET_LOWER / gain);
-			else if (gain > TARGET_UPPER)
-				correction = (float)(gain / TARGET_UPPER);
-
-			final float[] samples = frame.samples;
-			for (int i = 0; i < samples.length; i++)
-				samples[i] *= correction;
+			Collections.sort(this.peaks, (Vec2 v0, Vec2 v1)->v0.x < v1.x ? 1 : v0.x > v1.x ? -1 : 0);
+			
+			float[] pitch = new float[this.peaks.size()];
+			for(int i = 0; i < pitch.length; i++)
+				pitch[i] = this.peaks.get(i).y;
+			this.pitch.set(pitch);
 		}
+
+		public float[] pitch() {
+			return pitch.get();
+		}
+	}
+
+	public PitchDetect(StateHandle<FFT.State> fftState, int nHarmonics) {
+		this.spectrum   = fftState;
+		this.nHarmonics = nHarmonics;
 	}
 
 	@Override
-	protected void run(AutoGain.State state) throws RenderCommandException {
-		state.process(state.getTarget().getFrame());
-	}
-	
+	protected void run(State state) throws RenderCommandException {
+		state.process();
+	}	
+
 	@Override
 	protected State createState(IAudioRenderTarget target) throws RenderCommandException {
 		return new State(target);

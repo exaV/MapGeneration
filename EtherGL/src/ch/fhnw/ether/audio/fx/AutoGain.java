@@ -25,71 +25,70 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */package ch.fhnw.ether.examples.visualizer;
+ */package ch.fhnw.ether.audio.fx;
 
-import ch.fhnw.ether.audio.FFT;
+import ch.fhnw.ether.audio.AudioFrame;
+import ch.fhnw.ether.audio.AudioUtilities;
 import ch.fhnw.ether.audio.IAudioRenderTarget;
-import ch.fhnw.ether.audio.Smooth;
 import ch.fhnw.ether.media.AbstractRenderCommand;
 import ch.fhnw.ether.media.PerTargetState;
 import ch.fhnw.ether.media.RenderCommandException;
-import ch.fhnw.ether.media.StateHandle;
 
-public class Bands extends AbstractRenderCommand<IAudioRenderTarget,Bands.State> {
-	public enum Div {LINEAR, LOGARITHMIC};
+public class AutoGain extends AbstractRenderCommand<IAudioRenderTarget,AutoGain.State> {
+	private final static double MAX2AVG = 0.5;
 
-	private static final double          BASE = 1.2;
-	private final float[]                freqs;
-	private final StateHandle<FFT.State> spectrum;
+	static class State extends PerTargetState<IAudioRenderTarget> {
+		private static final double SMOOTH_DELAY = 0.05;
+		private static final double MIN_LEVEL    = AudioUtilities.dbToLevel(-40.0);
+		private static final double SUSTAIN_TIME = 2.0;
+		private static final double ACCURACY     = AudioUtilities.dbToLevel(1.0); // Width of 'void' range, where no correction occurs
+		private static final double TARGET_UPPER = AudioUtilities.dbToLevel(-3.0);
+		private static final double TARGET_LOWER = TARGET_UPPER / ACCURACY;
 
-	class State extends PerTargetState<IAudioRenderTarget> {
-		private final Smooth  smooth = new Smooth(freqs.length - 1, 0.05f);
-		private final float[] power  = new float[smooth.size()];
+		private final double sampleRate;
+		private final double attackFactor;
+		private final double decayFactor;
+
+		private final int        historySize;
+		private final int        sustainSpeed;
+		private final GainEngine gainEngine;
 
 		public State(IAudioRenderTarget target) {
 			super(target);
+			sampleRate   = target.getSampleRate();
+			attackFactor = AudioUtilities.dbToLevel(600.0 / sampleRate);
+			decayFactor  = AudioUtilities.dbToLevel(-6.0 / sampleRate);
+			historySize  = (int)(SMOOTH_DELAY * sampleRate + 0.5);
+			sustainSpeed = (int)(SUSTAIN_TIME * sampleRate + 0.5);
+			gainEngine   = new GainEngine(historySize, sustainSpeed, attackFactor, decayFactor, MIN_LEVEL);
 		}
 
-		void process() throws RenderCommandException {
-			final IAudioRenderTarget target = getTarget();
-			
-			for(int band = 0; band < power.length; band++)
-				power[band] = spectrum.get(target).power(freqs[band], freqs[band+1]);
-									
-			smooth.update(target.getTime(), power);
-		}
-	}
+		public void process(AudioFrame frame) {
+			double thresholdLevel = MIN_LEVEL * MAX2AVG;
 
-	public Bands(StateHandle<FFT.State> spectrum, float low, float high, int nBands, Div bands) {
-		this.freqs    = new float[nBands+1];
-		this.spectrum = spectrum;
-		switch(bands) {
-		case LINEAR:
-			float delta = (high - low) / nBands;
-			freqs[0] = low;
-			for(int i = 1; i < nBands+1; i++) {
-				low += delta;
-				freqs[i] = Math.min(low, high);
-			}
-			break;
-		case LOGARITHMIC:
-			double h = Math.pow(BASE, nBands) - 1;
-			double d = high - low;
-			for(int i = 0; i < nBands + 1; i++)
-				freqs[i] = Math.min(low + (float) ((d * (Math.pow(BASE, i)-1))   / h), high);
-			break;
+			gainEngine.process(frame);
+
+			double gain = gainEngine.getGain();
+			if (gain < thresholdLevel)
+				gain = thresholdLevel;
+
+			float correction = 1.0f;
+			if (gain < TARGET_LOWER)
+				correction = (float)(TARGET_LOWER / gain);
+			else if (gain > TARGET_UPPER)
+				correction = (float)(gain / TARGET_UPPER);
+
+			final float[] samples = frame.samples;
+			for (int i = 0; i < samples.length; i++)
+				samples[i] *= correction;
 		}
 	}
 
 	@Override
-	protected void run(State state) throws RenderCommandException {
-		state.process();
-	}	
-
-	public float power(IAudioRenderTarget target, int band) {
-		return getState(target).smooth.get(band);
+	protected void run(AutoGain.State state) throws RenderCommandException {
+		state.process(state.getTarget().getFrame());
 	}
-
+	
 	@Override
 	protected State createState(IAudioRenderTarget target) throws RenderCommandException {
 		return new State(target);

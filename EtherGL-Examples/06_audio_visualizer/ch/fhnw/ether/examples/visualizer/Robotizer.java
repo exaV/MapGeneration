@@ -37,8 +37,8 @@ import ch.fhnw.ether.media.Stateless;
 public class Robotizer extends AbstractRenderCommand<IAudioRenderTarget, Stateless<IAudioRenderTarget>> {
 	private final StateHandle<FFT.State> fft;
 	
-	public Robotizer(StateHandle<FFT.State> fft) {
-		this.fft = fft;
+	public Robotizer(StateHandle<FFT.State> fftState) {
+		this.fft = fftState;
 	}
 	
 	@Override

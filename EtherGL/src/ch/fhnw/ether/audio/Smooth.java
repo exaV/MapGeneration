@@ -66,4 +66,9 @@ public class Smooth {
 	public int size() {
 		return values.length;
 	}
+
+	public float[] get(float[] values) {
+		System.arraycopy(this.values, 0, values, 0, Math.min(values.length, this.values.length));
+		return values;
+	}
 }

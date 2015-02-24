@@ -42,6 +42,11 @@ import javax.swing.SwingUtilities;
 
 import ch.fhnw.ether.audio.AbstractAudioSource;
 import ch.fhnw.ether.audio.AudioUtilities.Window;
+import ch.fhnw.ether.audio.fx.AutoGain;
+import ch.fhnw.ether.audio.fx.Bands;
+import ch.fhnw.ether.audio.fx.DCRemove;
+import ch.fhnw.ether.audio.fx.PitchDetect;
+import ch.fhnw.ether.audio.fx.Bands.Div;
 import ch.fhnw.ether.audio.AudioUtilities;
 import ch.fhnw.ether.audio.IAudioRenderTarget;
 import ch.fhnw.ether.audio.InvFFT;
@@ -50,23 +55,22 @@ import ch.fhnw.ether.audio.SilenceAudioSource;
 import ch.fhnw.ether.audio.FFT;
 import ch.fhnw.ether.audio.SinGen;
 import ch.fhnw.ether.audio.URLAudioSource;
-import ch.fhnw.ether.examples.visualizer.Bands.Div;
 import ch.fhnw.ether.media.RenderCommandException;
 import ch.fhnw.ether.media.RenderProgram;
 import ch.fhnw.ether.ui.ParameterWindow;
 import ch.fhnw.util.TextUtilities;
 
 public class AudioVisualizer {
-	private static final int N_CUBES = 20;
-	
+	private static final int N_CUBES = 60;
+
 	public static void main(String[] args) throws RenderCommandException, MalformedURLException, IOException {
 		AbstractAudioSource<?>            src = new URLAudioSource(new File(args[0]).toURI().toURL());
 		//AbstractAudioSource<?>            src   = new SilenceAudioSource(1, 44100, 16);
 		SinGen                            sin   = new SinGen(0);
 		DCRemove                          dcrmv = new DCRemove();
 		AutoGain                          gain  = new AutoGain();
-		FFT                               fft   = new FFT(25, Window.HANN);
-		Bands                             bands = new Bands(fft.state(), 80, 10000, N_CUBES, Div.LOGARITHMIC);
+		FFT                               fft   = new FFT(20, Window.HANN);
+		Bands                             bands = new Bands(fft.state(), 40, 8000, N_CUBES, Div.LINEAR);
 		PitchDetect                       pitch = new PitchDetect(fft.state(), 2);
 		InvFFT                            ifft  = new InvFFT(fft.state());
 		Robotizer                         robo  = new Robotizer(fft.state());
@@ -79,13 +83,14 @@ public class AudioVisualizer {
 			@Override
 			public void paint(Graphics g) {
 				g.clearRect(0, 0, getWidth(), getHeight());
-				int w = getWidth() / N_CUBES;
-				for(int i = 0; i < N_CUBES; i++) {
-					int h = (int) (bands.power(audioOut, i) * getHeight());
-					g.fillRect(i * w, getHeight() - h, w, h);
-				}
-				g.drawString(TextUtilities.toString(pitch.pitch(audioOut)), 0, 20);
-				/*
+				try{
+					int w = getWidth() / N_CUBES;
+					for(int i = 0; i < N_CUBES; i++) {
+						int h = (int) (bands.state().get(audioOut).power(i) * getHeight());
+						g.fillRect(i * w, getHeight() - h, w, h);
+					}
+					g.drawString(TextUtilities.toString(pitch.state().get(audioOut).pitch()), 0, 20);
+					/*
 					g.setColor(Color.RED);
 					int count = 0;
 					for(float f : pitch.pitch(audioOut[0])) {
@@ -94,7 +99,11 @@ public class AudioVisualizer {
 						g.drawLine(x, 0, x, getHeight());
 						if(++count > 2) break;
 					}
-				 */
+					 */
+				} catch(Throwable t) {
+					g.setColor(Color.RED);
+					g.fillRect(0, 0, getWidth(), getHeight());
+				}
 				repaint(20);
 			}
 		};

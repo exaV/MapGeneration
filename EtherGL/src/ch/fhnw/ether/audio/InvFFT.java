@@ -37,8 +37,8 @@ import ch.fhnw.ether.media.Stateless;
 public class InvFFT extends AbstractRenderCommand<IAudioRenderTarget, Stateless<IAudioRenderTarget>> {
 	private final StateHandle<FFT.State> fft;
 	
-	public InvFFT(StateHandle<FFT.State> fft) {
-		this.fft = fft;
+	public InvFFT(StateHandle<FFT.State> fftState) {
+		this.fft = fftState;
 	}
 
 	@Override

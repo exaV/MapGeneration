@@ -27,10 +27,11 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.examples.visualizer;
+package ch.fhnw.ether.audio.fx;
 
 import ch.fhnw.ether.audio.AudioFrame;
 import ch.fhnw.ether.audio.AudioUtilities;
+import ch.fhnw.ether.examples.visualizer.AverageBuffer;
 
 /**
  * Get the level of a signal using averaging and attack/sustain/decay speeds
