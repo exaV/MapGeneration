@@ -40,10 +40,14 @@ import ch.fhnw.ether.audio.InvFFT;
 import ch.fhnw.ether.audio.JavaSoundTarget;
 import ch.fhnw.ether.audio.SilenceAudioSource;
 import ch.fhnw.ether.audio.SinGen;
+import ch.fhnw.ether.audio.fx.AutoGain;
+import ch.fhnw.ether.audio.fx.Bands;
+import ch.fhnw.ether.audio.fx.Bands.Div;
+import ch.fhnw.ether.audio.fx.DCRemove;
+import ch.fhnw.ether.audio.fx.PitchDetect;
 import ch.fhnw.ether.controller.DefaultController;
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.controller.event.IScheduler;
-import ch.fhnw.ether.examples.visualizer.Bands.Div;
 import ch.fhnw.ether.media.RenderCommandException;
 import ch.fhnw.ether.media.RenderProgram;
 import ch.fhnw.ether.scene.DefaultScene;
@@ -98,18 +102,23 @@ public class AudioVisualizerGL {
 		controller.getScheduler().repeat(0, 1.0/60.0, new IScheduler.IAction() {
 			@Override
 			public boolean run(double time, double interval) {
+				try {
 
-				for (int i = 0; i < N_CUBES; ++i) {
-					IMesh cube = cubes[i];
-					float scale = bands.power(audioOut, i);
-					cube.setTransform(Mat4.scale(0.5f, 0.5f, 0.1f + scale));
-					System.out.println(scale);
-					cube.requestUpdate(null);
+					for (int i = 0; i < N_CUBES; ++i) {
+						IMesh cube = cubes[i];
+						float scale = bands.state().get(audioOut).power(i) * 10;
+						cube.setTransform(Mat4.scale(0.5f, 0.5f, 0.1f + scale));
+						System.out.println(scale);
+						cube.requestUpdate(null);
+					}
+	
+					// update view, because we have no fix rendering loop but event-based rendering
+					if (view != null)
+						view.repaint();
+					
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
-
-				// update view, because we have no fix rendering loop but event-based rendering
-				if (view != null)
-					view.repaint();
 				
 				return true;
 			}
