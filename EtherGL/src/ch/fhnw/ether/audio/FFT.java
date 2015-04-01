@@ -100,6 +100,10 @@ public class FFT extends AbstractRenderCommand<IAudioRenderTarget,FFT.State> {
 		}
 
 		public float power(float fLow, float fHigh) {
+			return power(fLow, fHigh, power);
+		}
+		
+		public float power(final float fLow, final float fHigh, final float[] power) {
 			int iLow  = f2idx(fLow);
 			int iHigh = f2idx(fHigh);
 			if(iHigh <= iLow) iHigh = iLow + 1;
@@ -154,8 +158,10 @@ public class FFT extends AbstractRenderCommand<IAudioRenderTarget,FFT.State> {
 				}
 				float sample = (pcm0[pcm0rd++] + pcm1[pcm1rd++]) / 2;
 				for(int c = 0; c < nChannels; c++)
-					samples[i+c] = sample;
+					samples[i+c] = sample;				
 			}
+			
+			frame.modified();
 		}
 		
 		public void modifySpectrum(IModifier<float[]> modifier) throws RenderCommandException {

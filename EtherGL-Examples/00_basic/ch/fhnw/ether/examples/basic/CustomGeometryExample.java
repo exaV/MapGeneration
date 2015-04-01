@@ -49,12 +49,15 @@ public final class CustomGeometryExample {
 		new CustomGeometryExample();
 	}
 
-	private static IMesh makeColoredTriangle() {
-		float[] vertices = { 0, 0, 0, 0, 0, 0.5f, 0.5f, 0, 0.5f };
+	private static IMesh makeColoredTriangle(float off) {
+		float[] vertices = { off + 0, 0, 
+				off + 0, 0, 
+				off + 0, 0.5f, 
+				off + 0.5f, 0, 0.5f };
 		float[] colors = { 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1 };
 
-		DefaultGeometry g = DefaultGeometry.createVC(Primitive.TRIANGLES, vertices, colors);
-		return new DefaultMesh(new ColorMaterial(RGBA.WHITE), g);
+		DefaultGeometry g = DefaultGeometry.createV(Primitive.TRIANGLES, vertices); // , colors);
+		return new DefaultMesh(new ColorMaterial(new RGBA(1, 0, 0, 0.5f)), g, IMesh.Queue.TRANSPARENCY);
 	}
 
 	// Setup the whole thing
@@ -71,6 +74,7 @@ public final class CustomGeometryExample {
 		IScene scene = new DefaultScene(controller);
 		controller.setScene(scene);
 
-		scene.add3DObject(makeColoredTriangle());
+		scene.add3DObject(makeColoredTriangle(0));
+		scene.add3DObject(makeColoredTriangle(1));
 	}
 }

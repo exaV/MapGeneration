@@ -37,7 +37,7 @@ import ch.fhnw.ether.media.RenderCommandException;
 public class AutoGain extends AbstractRenderCommand<IAudioRenderTarget,AutoGain.State> {
 	private final static double MAX2AVG = 0.5;
 
-	static class State extends PerTargetState<IAudioRenderTarget> {
+	public static class State extends PerTargetState<IAudioRenderTarget> {
 		private static final double SMOOTH_DELAY = 0.05;
 		private static final double MIN_LEVEL    = AudioUtilities.dbToLevel(-40.0);
 		private static final double SUSTAIN_TIME = 2.0;
@@ -49,7 +49,6 @@ public class AutoGain extends AbstractRenderCommand<IAudioRenderTarget,AutoGain.
 		private final double attackFactor;
 		private final double decayFactor;
 
-		private final int        historySize;
 		private final int        sustainSpeed;
 		private final GainEngine gainEngine;
 
@@ -58,9 +57,8 @@ public class AutoGain extends AbstractRenderCommand<IAudioRenderTarget,AutoGain.
 			sampleRate   = target.getSampleRate();
 			attackFactor = AudioUtilities.dbToLevel(600.0 / sampleRate);
 			decayFactor  = AudioUtilities.dbToLevel(-6.0 / sampleRate);
-			historySize  = (int)(SMOOTH_DELAY * sampleRate + 0.5);
 			sustainSpeed = (int)(SUSTAIN_TIME * sampleRate + 0.5);
-			gainEngine   = new GainEngine(historySize, sustainSpeed, attackFactor, decayFactor, MIN_LEVEL);
+			gainEngine   = new GainEngine(target.getSampleRate(), target.getNumChannels(), SMOOTH_DELAY, sustainSpeed, attackFactor, decayFactor, MIN_LEVEL);
 		}
 
 		public void process(AudioFrame frame) {
@@ -81,6 +79,8 @@ public class AutoGain extends AbstractRenderCommand<IAudioRenderTarget,AutoGain.
 			final float[] samples = frame.samples;
 			for (int i = 0; i < samples.length; i++)
 				samples[i] *= correction;
+			
+			frame.modified();
 		}
 	}
 
@@ -90,7 +90,7 @@ public class AutoGain extends AbstractRenderCommand<IAudioRenderTarget,AutoGain.
 	}
 	
 	@Override
-	protected State createState(IAudioRenderTarget target) throws RenderCommandException {
+	public State createState(IAudioRenderTarget target) throws RenderCommandException {
 		return new State(target);
 	}
 }

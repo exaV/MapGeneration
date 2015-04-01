@@ -59,7 +59,7 @@ public class OBJReader extends AbstractModelReader {
 		super(resource);
 		decode(resource.getFile(), resource.openStream());
 	}
-
+	
 	@Override
 	public List<IMesh> getMeshes() {
 		return Collections.unmodifiableList(meshes);

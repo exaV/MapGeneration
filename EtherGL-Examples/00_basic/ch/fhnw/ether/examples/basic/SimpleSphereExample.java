@@ -48,6 +48,8 @@ import ch.fhnw.ether.ui.Button;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.gl.DefaultView;
 import ch.fhnw.util.color.RGBA;
+import ch.fhnw.util.math.Mat4;
+import ch.fhnw.util.math.Transform;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.GeodesicSphere;
 
@@ -80,15 +82,23 @@ public final class SimpleSphereExample {
 		transparentMeshT.setPosition(Vec3.X_NEG);
 		transparentMeshL.setPosition(Vec3.X_NEG);
 		transparentMeshP.setPosition(Vec3.X_NEG);
-		
+
+		transparentMeshT.setTransform(Transform.trs(0,0,0,0,0,0,0.1f,0.1f,0.1f));
+		transparentMeshL.setTransform(Transform.trs(0,0,0,0,0,0,0.1f,0.1f,0.1f));
+		transparentMeshP.setTransform(Transform.trs(0,0,0,0,0,0,0.1f,0.1f,0.1f));
+
 		IMesh solidMeshT = new DefaultMesh(new ColorMaterial(new RGBA(0.5f, 0.5f, 0.5f, 1)), DefaultGeometry.createV(Primitive.TRIANGLES, sphere.getTriangles()), Queue.DEPTH);
 		IMesh solidMeshL = new DefaultMesh(new ColorMaterial(new RGBA(1, 1, 1, 1)), DefaultGeometry.createV(Primitive.LINES, sphere.getLines()), Queue.DEPTH);
 		IMesh solidMeshP = new DefaultMesh(new PointMaterial(new RGBA(1, 1, 0, 1), 8), DefaultGeometry.createV(Primitive.POINTS, sphere.getPoints()), Queue.DEPTH);
-		
+
 		solidMeshT.setPosition(Vec3.X);
 		solidMeshL.setPosition(Vec3.X);
 		solidMeshP.setPosition(Vec3.X);
-		
+
+		solidMeshT.setTransform(Transform.trs(0,0,0,0,0,0,0.1f,0.1f,0.1f));
+		solidMeshL.setTransform(Transform.trs(0,0,0,0,0,0,0.1f,0.1f,0.1f));
+		solidMeshP.setTransform(Transform.trs(0,0,0,0,0,0,0.1f,0.1f,0.1f));
+
 		Texture t = new Texture(SimpleSphereExample.class.getResource("assets/earth_nasa.jpg"));
 		IMesh texturedMeshT = new DefaultMesh(new ColorMapMaterial(t), DefaultGeometry.createVM(Primitive.TRIANGLES, sphere.getTriangles(), sphere.getTexCoords()), Queue.DEPTH);
 		texturedMeshT.setPosition(Vec3.ZERO);

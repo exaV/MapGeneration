@@ -31,9 +31,21 @@ package ch.fhnw.ether.audio;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Comparator;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.MetaMessage;
+import javax.sound.midi.MidiEvent;
+import javax.sound.midi.MidiMessage;
+import javax.sound.midi.MidiSystem;
+import javax.sound.midi.Receiver;
+import javax.sound.midi.Sequence;
+import javax.sound.midi.ShortMessage;
+import javax.sound.midi.Track;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioFormat.Encoding;
 import javax.sound.sampled.AudioInputStream;
@@ -42,15 +54,26 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 
 import ch.fhnw.ether.media.PerTargetState;
 import ch.fhnw.ether.media.RenderCommandException;
+import ch.fhnw.util.TextUtilities;
 
 
 public class URLAudioSource extends AbstractAudioSource<URLAudioSource.State> {
-	private static final float S2F  = Short.MAX_VALUE;
-
-	private final URL         url;
-	private final AudioFormat fmt;       
-	private final int         numPlays;
-	private final long        frameCount;
+	private static final float       S2F    = Short.MAX_VALUE;
+	private static final double      SEC2US = 1000000;
+	private static final MidiEvent[] EMPTY_MidiEventA = new MidiEvent[0];
+	
+	private final URL                url;
+	private final AudioFormat        fmt;       
+	private final int                numPlays;
+	private final long               frameCount;
+	private int                      noteOn;
+	private final TreeSet<MidiEvent> notes = new TreeSet<>(new Comparator<MidiEvent>() {
+		@Override
+		public int compare(MidiEvent o1, MidiEvent o2) {
+			int   result  = (int) (o1.getTick() - o2.getTick());
+			return result == 0 ? o1.getMessage().getMessage()[1] - o2.getMessage().getMessage()[1] : result;
+		}
+	});
 
 	public URLAudioSource(URL url) throws IOException {
 		this(url, Integer.MAX_VALUE);
@@ -59,6 +82,29 @@ public class URLAudioSource extends AbstractAudioSource<URLAudioSource.State> {
 	public URLAudioSource(final URL url, final int numPlays) throws IOException {
 		this.url      = url;
 		this.numPlays = numPlays;
+
+		try {
+			if(TextUtilities.hasFileExtension(url.getPath(), "mid")) {
+				Sequence seq = MidiSystem.getSequence(url);
+								
+				send(seq, new Receiver() {
+					@Override
+					public void send(MidiMessage message, long timeStamp) {
+						if(message instanceof ShortMessage && (message.getMessage()[0] & 0xFF) == ShortMessage.NOTE_ON && (message.getMessage()[2] > 0))
+							noteOn++;
+						if(message instanceof ShortMessage && (
+								(message.getMessage()[0] & 0xFF) == ShortMessage.NOTE_ON ||
+								(message.getMessage()[0] & 0xFF) == ShortMessage.NOTE_OFF))
+							notes.add(new MidiEvent(message, timeStamp));
+					}
+
+					@Override
+					public void close() {}
+				});
+			}
+		} catch(InvalidMidiDataException e) {
+			throw new IOException(e);
+		}
 
 		try (AudioInputStream in = AudioSystem.getAudioInputStream(url)) {
 			this.fmt   = in.getFormat();
@@ -107,7 +153,7 @@ public class URLAudioSource extends AbstractAudioSource<URLAudioSource.State> {
 		@Override
 		public void run() {
 			try {
-				byte[] buffer = new byte[16 * 1024];
+				byte[] buffer = new byte[fmt.getChannels() * fmt.getSampleSizeInBits() / 8 * 1024];
 
 				while(--numPlays >= 0) {
 					try (AudioInputStream in = AudioSystem.getAudioInputStream(url)) {
@@ -154,6 +200,74 @@ public class URLAudioSource extends AbstractAudioSource<URLAudioSource.State> {
 		}
 	}
 
+	public MidiEvent[] getMidi(double time, double timeWindow) {
+		long timeT   = (long) (time * SEC2US);
+		long windowT = (long) (timeWindow * SEC2US);
+		SortedSet<MidiEvent> result = notes.subSet(noteOn(0, 0, timeT - windowT / 2), noteOn(0, 0, timeT + windowT / 2));
+		return result.isEmpty() ? EMPTY_MidiEventA : result.toArray(new MidiEvent[result.size()]);
+	}
+
+	private MidiEvent noteOn(int key, int velocity, long ticks) {
+		try {
+			return new MidiEvent(new ShortMessage(ShortMessage.NOTE_ON,  0, key, velocity), ticks);
+		} catch(InvalidMidiDataException e) {
+			return null;
+		}
+	}
+
+	private double send(Sequence seq, Receiver recv) {
+		float divtype = seq.getDivisionType();
+		assert (seq.getDivisionType() == Sequence.PPQ);
+		Track[] tracks = seq.getTracks();
+		int[] trackspos = new int[tracks.length];
+		int mpq = (int)SEC2US / 2;
+		int seqres = seq.getResolution();
+		long lasttick = 0;
+		long curtime = 0;
+		while (true) {
+			MidiEvent selevent = null;
+			int seltrack = -1;
+			for (int i = 0; i < tracks.length; i++) {
+				int trackpos = trackspos[i];
+				Track track = tracks[i];
+				if (trackpos < track.size()) {
+					MidiEvent event = track.get(trackpos);
+					if (selevent == null
+							|| event.getTick() < selevent.getTick()) {
+						selevent = event;
+						seltrack = i;
+					}
+				}
+			}
+			if (seltrack == -1)
+				break;
+			trackspos[seltrack]++;
+			long tick = selevent.getTick();
+			if (divtype == Sequence.PPQ)
+				curtime += ((tick - lasttick) * mpq) / seqres;
+			else
+				curtime = tick;
+			lasttick = tick;
+			MidiMessage msg = selevent.getMessage();
+			if (msg instanceof MetaMessage) {
+				if (divtype == Sequence.PPQ)
+					if (((MetaMessage) msg).getType() == 0x51) {
+						byte[] data = ((MetaMessage) msg).getData();
+						mpq = ((data[0] & 0xff) << 16)
+								| ((data[1] & 0xff) << 8) | (data[2] & 0xff);
+					}
+			} else {
+				if (recv != null)
+					recv.send(msg, curtime);
+			}
+		}
+		return curtime / SEC2US;
+	}
+
+	public int getNumNotes() {
+		return noteOn;
+	}
+	
 	@Override
 	protected State createState(IAudioRenderTarget target) {
 		return new State(target, numPlays);
@@ -172,5 +286,9 @@ public class URLAudioSource extends AbstractAudioSource<URLAudioSource.State> {
 	@Override
 	public int getNumChannels() {
 		return fmt.getChannels();
+	}
+
+	public double lengthInSeconds() {
+		return frameCount / fmt.getFrameRate();
 	}
 }

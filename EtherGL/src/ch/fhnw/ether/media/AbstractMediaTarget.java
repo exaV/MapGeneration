@@ -44,7 +44,7 @@ public abstract class AbstractMediaTarget<F extends AbstractFrame, T extends IRe
 	public static final double SEC2MS = 1000;
 
 	private   final int                                                priority;
-	private   RenderProgram<T>                                         program;
+	protected RenderProgram<T>                                         program;
 	protected final AtomicBoolean                                      isRendering  = new AtomicBoolean();
 	private   final Map<AbstractRenderCommand<T,?>, PerTargetState<T>> state        = new WeakHashMap<>();
 	private   final long                                               startTime    = System.nanoTime();
@@ -153,5 +153,10 @@ public abstract class AbstractMediaTarget<F extends AbstractFrame, T extends IRe
 
 	public F getCurrentFrame() {
 		return currentFrame;
+	}
+
+	@Override
+	public AbstractFrameSource<T, ?> getFrameSource() {
+		return program.getFrameSource();
 	}
 }
