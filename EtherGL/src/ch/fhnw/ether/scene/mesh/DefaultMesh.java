@@ -37,6 +37,7 @@ import ch.fhnw.util.UpdateRequest;
 import ch.fhnw.util.math.Mat4;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.BoundingBox;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry.IGeometryAttribute;
 
 // FIXME: we need some good mesh factory, this here is a mess
 public final class DefaultMesh implements IMesh {
@@ -46,6 +47,7 @@ public final class DefaultMesh implements IMesh {
 	private final IGeometry geometry;
 	private Vec3 position = Vec3.ZERO;
 	private Mat4 transform = Mat4.ID;
+	private BoundingBox bb;
 
 	private String name = "unnamed_mesh";
 
@@ -93,8 +95,25 @@ public final class DefaultMesh implements IMesh {
 
 	@Override
 	public BoundingBox getBounds() {
-		// TODO: calculate bounding box based on position, transform and geometry...
-		return new BoundingBox();
+		if(bb == null) {
+			// TODO: calculate bounding box based on position, transform and geometry...
+			bb = new BoundingBox();
+			float[] in  = new float[3];
+			float[] out = new float[3];
+			getGeometry().inspect(0, (IGeometryAttribute attribute, float[] data) -> {
+				for(int i = 0; i < data.length; i += 3) {
+					in[0] = data[i + 0];
+					in[1] = data[i + 1];
+					in[2] = data[i + 2];
+					transform.transform(in, out);
+					out[0] += position.x;
+					out[1] += position.y;
+					out[2] += position.z;
+					bb.add(out);
+				}
+			});
+		}
+		return bb;
 	}
 
 	@Override
@@ -105,6 +124,7 @@ public final class DefaultMesh implements IMesh {
 	@Override
 	public void setPosition(Vec3 position) {
 		this.position = position;
+		bb = null;
 	}
 
 	@Override
@@ -148,6 +168,7 @@ public final class DefaultMesh implements IMesh {
 	public void setTransform(Mat4 transform) {
 		if (this.transform != transform) {
 			this.transform = transform;
+			bb = null;
 		}
 	}
 
@@ -183,5 +204,6 @@ public final class DefaultMesh implements IMesh {
 
 	private void requestGeometryUpdate() {
 		geometryUpdater.requestUpdate();
+		bb = null;
 	}
 }
