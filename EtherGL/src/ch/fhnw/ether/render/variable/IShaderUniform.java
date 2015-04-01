@@ -31,9 +31,9 @@ package ch.fhnw.ether.render.variable;
 
 import java.util.function.Supplier;
 
-import javax.media.opengl.GL3;
-
 import ch.fhnw.ether.render.gl.Program;
+
+import com.jogamp.opengl.GL3;
 
 public interface IShaderUniform<T> extends IShaderVariable<T> {
 	boolean hasSupplier();

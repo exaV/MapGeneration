@@ -36,9 +36,9 @@ import java.awt.image.DataBufferInt;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
-import javax.media.opengl.GL3;
-
 import ch.fhnw.util.BufferUtilities;
+
+import com.jogamp.opengl.GL3;
 
 public class RGBA8Frame extends RGB8Frame {
 

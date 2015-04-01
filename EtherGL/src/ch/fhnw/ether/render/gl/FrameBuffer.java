@@ -29,7 +29,7 @@
 
 package ch.fhnw.ether.render.gl;
 
-import javax.media.opengl.GL3;
+import com.jogamp.opengl.GL3;
 
 public class FrameBuffer {
 	private GLObject fbo;

@@ -29,12 +29,12 @@
 
 package ch.fhnw.ether.render.forward;
 
-import javax.media.opengl.GL;
-import javax.media.opengl.GL3;
-
 import ch.fhnw.ether.render.AbstractRenderer;
 import ch.fhnw.ether.scene.mesh.IMesh.Queue;
 import ch.fhnw.ether.view.IView;
+
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL3;
 
 /*
  * General flow:

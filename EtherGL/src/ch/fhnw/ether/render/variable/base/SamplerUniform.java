@@ -31,14 +31,14 @@ package ch.fhnw.ether.render.variable.base;
 
 import java.util.function.Supplier;
 
-import javax.media.opengl.GL;
-import javax.media.opengl.GL3;
-
 import ch.fhnw.ether.render.gl.GLObject;
-import ch.fhnw.ether.render.gl.Program;
 import ch.fhnw.ether.render.gl.GLObject.Type;
+import ch.fhnw.ether.render.gl.Program;
 import ch.fhnw.ether.scene.attribute.ITypedAttribute;
 import ch.fhnw.ether.scene.mesh.material.Texture;
+
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL3;
 
 public class SamplerUniform extends AbstractUniform<Texture> {
 	private final int unit;

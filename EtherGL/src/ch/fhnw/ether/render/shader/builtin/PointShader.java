@@ -31,8 +31,6 @@ package ch.fhnw.ether.render.shader.builtin;
 
 import java.util.Collection;
 
-import javax.media.opengl.GL3;
-
 import ch.fhnw.ether.render.shader.IShader;
 import ch.fhnw.ether.render.shader.base.AbstractShader;
 import ch.fhnw.ether.render.variable.base.BooleanUniform;
@@ -48,6 +46,8 @@ import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.util.color.RGBA;
+
+import com.jogamp.opengl.GL3;
 
 public class PointShader extends AbstractShader {
 	public PointShader(Collection<IAttribute> attributes) {

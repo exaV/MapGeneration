@@ -29,15 +29,13 @@
 
 package ch.fhnw.ether.examples.raytracing;
 
-import javax.media.opengl.GL3;
-
 import ch.fhnw.ether.render.IRenderer;
 import ch.fhnw.ether.render.forward.ForwardRenderer;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
-import ch.fhnw.ether.scene.mesh.MeshLibrary;
 import ch.fhnw.ether.scene.mesh.IMesh.Queue;
+import ch.fhnw.ether.scene.mesh.MeshLibrary;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
@@ -45,6 +43,8 @@ import ch.fhnw.ether.scene.mesh.material.ColorMapMaterial;
 import ch.fhnw.ether.scene.mesh.material.Texture;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.util.Viewport;
+
+import com.jogamp.opengl.GL3;
 
 public class RayTracingRenderer implements IRenderer {
 	private final RayTracer       rayTracer;

@@ -29,9 +29,9 @@
 
 package ch.fhnw.ether.render.gl;
 
-import javax.media.opengl.GL3;
-
 import ch.fhnw.ether.render.gl.GLObject.Type;
+
+import com.jogamp.opengl.GL3;
 
 public class RenderBuffer {
 	private GLObject rbo;

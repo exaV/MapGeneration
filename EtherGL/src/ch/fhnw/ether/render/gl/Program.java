@@ -36,11 +36,11 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.media.opengl.GL3;
-import javax.media.opengl.GL4;
-
 import ch.fhnw.ether.render.gl.GLObject.Type;
 import ch.fhnw.ether.render.shader.IShader;
+
+import com.jogamp.opengl.GL3;
+import com.jogamp.opengl.GL4;
 
 /**
  * GLSL shader program abstraction.

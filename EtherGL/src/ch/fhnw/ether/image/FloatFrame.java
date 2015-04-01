@@ -35,10 +35,10 @@ import java.awt.image.DataBufferUShort;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
-import javax.media.opengl.GL;
-import javax.media.opengl.GL3;
-
 import ch.fhnw.util.BufferUtilities;
+
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL3;
 
 public final class FloatFrame extends Frame {
 	private static final float[] MIN_MAX_0_1 = { 0f, 1f };

@@ -29,12 +29,12 @@
 
 package ch.fhnw.ether.render.variable.base;
 
-import javax.media.opengl.GL3;
-
 import ch.fhnw.ether.render.IVertexBuffer;
 import ch.fhnw.ether.render.gl.Program;
 import ch.fhnw.ether.render.variable.IShaderArray;
 import ch.fhnw.ether.scene.attribute.ITypedAttribute;
+
+import com.jogamp.opengl.GL3;
 
 public abstract class AbstractArray<T> extends AbstractVariable<T> implements IShaderArray<T> {
 	private int bufferIndex;

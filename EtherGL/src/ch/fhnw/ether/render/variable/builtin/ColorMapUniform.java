@@ -31,11 +31,11 @@ package ch.fhnw.ether.render.variable.builtin;
 
 import java.util.function.Supplier;
 
-import javax.media.opengl.GL;
-
 import ch.fhnw.ether.render.variable.base.SamplerUniform;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.ether.scene.mesh.material.Texture;
+
+import com.jogamp.opengl.GL;
 
 public final class ColorMapUniform extends SamplerUniform {
 	private static final String DEFAULT_SHADER_NAME = "colorMap";

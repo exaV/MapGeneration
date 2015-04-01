@@ -29,7 +29,7 @@
 
 package ch.fhnw.ether.controller.event;
 
-import javax.media.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GLAutoDrawable;
 
 /*
  * XXX Some thoughts here: Idea is to have a common scheduling mechanism for 

@@ -29,11 +29,11 @@
 
 package ch.fhnw.ether.render.variable.base;
 
-import javax.media.opengl.GL3;
-
 import ch.fhnw.ether.render.gl.Program;
 import ch.fhnw.ether.render.variable.IShaderVariable;
 import ch.fhnw.ether.scene.attribute.ITypedAttribute;
+
+import com.jogamp.opengl.GL3;
 
 public abstract class AbstractVariable<T> implements IShaderVariable<T> {
 	private final String id;

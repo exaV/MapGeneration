@@ -31,8 +31,6 @@ package ch.fhnw.ether.scene.mesh.material;
 
 import java.net.URL;
 
-import javax.media.opengl.GL3;
-
 import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.media.AbstractMediaTarget;
 import ch.fhnw.ether.media.RenderCommandException;
@@ -43,6 +41,8 @@ import ch.fhnw.ether.video.URLVideoSource;
 import ch.fhnw.ether.video.VideoFrame;
 import ch.fhnw.util.Log;
 import ch.fhnw.util.UpdateRequest;
+
+import com.jogamp.opengl.GL3;
 
 /**
  * Texture data encapsulation (FIXME: needs extension/generalization, array tex, 3d tex etc)

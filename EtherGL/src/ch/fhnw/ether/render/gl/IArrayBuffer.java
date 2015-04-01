@@ -31,8 +31,8 @@ package ch.fhnw.ether.render.gl;
 
 import java.nio.Buffer;
 
-import javax.media.opengl.GL;
-import javax.media.opengl.GL3;
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL3;
 
 public interface IArrayBuffer {
 	void load(GL3 gl, Buffer data);

@@ -31,11 +31,11 @@ package ch.fhnw.ether.render.shader;
 
 import java.util.List;
 
-import javax.media.opengl.GL3;
-
 import ch.fhnw.ether.render.IVertexBuffer;
 import ch.fhnw.ether.render.variable.IShaderArray;
 import ch.fhnw.ether.render.variable.IShaderUniform;
+
+import com.jogamp.opengl.GL3;
 
 public interface IShader {
 	public static String VERSION_GL_3_1_GLSL_1_40 = "140";

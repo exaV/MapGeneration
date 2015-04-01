@@ -31,7 +31,7 @@ package ch.fhnw.ether.controller.event;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.media.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GLAutoDrawable;
 
 public final class EventDrivenScheduler extends AbstractScheduler {
 	private static final class RequestUpdate implements Runnable {

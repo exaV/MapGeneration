@@ -29,12 +29,12 @@
 
 package ch.fhnw.ether.render;
 
-import javax.media.opengl.GL3;
-
 import ch.fhnw.ether.scene.attribute.AbstractAttribute;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.view.IView;
+
+import com.jogamp.opengl.GL3;
 
 /**
  * Simple rendering interface.

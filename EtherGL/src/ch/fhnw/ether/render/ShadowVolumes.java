@@ -31,9 +31,6 @@ package ch.fhnw.ether.render;
 
 import java.util.List;
 
-import javax.media.opengl.GL;
-import javax.media.opengl.GL3;
-
 import ch.fhnw.ether.render.shader.builtin.ShadowVolumeShader;
 import ch.fhnw.ether.render.shader.builtin.TrivialDeviceSpaceShader;
 import ch.fhnw.ether.scene.attribute.IAttributeProvider;
@@ -46,6 +43,9 @@ import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.EmptyMaterial;
 import ch.fhnw.util.color.RGBA;
+
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL3;
 
 public final class ShadowVolumes {
 	private static final IMesh OVERLAY_MESH = new DefaultMesh(new EmptyMaterial(), DefaultGeometry.createV(Primitive.TRIANGLES,

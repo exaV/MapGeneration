@@ -35,13 +35,13 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.media.opengl.GL3;
-
 import ch.fhnw.ether.scene.attribute.IAttributeProvider;
 import ch.fhnw.ether.scene.light.GenericLight;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.IMesh.Flags;
 import ch.fhnw.util.UpdateRequest;
+
+import com.jogamp.opengl.GL3;
 
 // FIXME: the api needs to be revised in terms of synchronization, consistency etc.
 final class Renderables {

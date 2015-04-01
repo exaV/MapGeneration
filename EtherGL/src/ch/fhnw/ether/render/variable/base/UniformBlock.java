@@ -31,11 +31,11 @@ package ch.fhnw.ether.render.variable.base;
 
 import java.nio.FloatBuffer;
 
-import javax.media.opengl.GL3;
-
 import ch.fhnw.ether.render.IRenderer.RendererAttribute;
 import ch.fhnw.ether.render.gl.Program;
 import ch.fhnw.util.math.Mat3;
+
+import com.jogamp.opengl.GL3;
 
 public class UniformBlock extends AbstractUniform<Integer> {
 	private boolean canBind = true;

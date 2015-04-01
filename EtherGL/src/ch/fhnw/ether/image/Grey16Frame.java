@@ -42,9 +42,9 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.Arrays;
 
-import javax.media.opengl.GL3;
-
 import ch.fhnw.util.BufferUtilities;
+
+import com.jogamp.opengl.GL3;
 
 public final class Grey16Frame extends Frame {
 	public float[] originalMinMax = { 0.0f, 1.0f };

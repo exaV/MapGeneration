@@ -31,14 +31,14 @@ package ch.fhnw.ether.render.variable.builtin;
 
 import java.util.Collection;
 
-import javax.media.opengl.GL3;
-
 import ch.fhnw.ether.render.IRenderer.RendererAttribute;
 import ch.fhnw.ether.render.gl.FloatUniformBuffer;
 import ch.fhnw.ether.render.variable.base.UniformBlock;
 import ch.fhnw.ether.scene.camera.CameraMatrices;
 import ch.fhnw.ether.scene.light.GenericLight;
 import ch.fhnw.ether.scene.light.GenericLight.LightSource;
+
+import com.jogamp.opengl.GL3;
 
 public final class LightUniformBlock extends UniformBlock {
 	public static final RendererAttribute<Integer> ATTRIBUTE = new RendererAttribute<>("builtin.light_uniform_block");

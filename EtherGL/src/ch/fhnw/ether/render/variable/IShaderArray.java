@@ -29,10 +29,10 @@
 
 package ch.fhnw.ether.render.variable;
 
-import javax.media.opengl.GL3;
-
 import ch.fhnw.ether.render.IVertexBuffer;
 import ch.fhnw.ether.render.gl.Program;
+
+import com.jogamp.opengl.GL3;
 
 public interface IShaderArray<T> extends IShaderVariable<T> {
 	void setBufferIndex(int index);

@@ -31,12 +31,12 @@ package ch.fhnw.ether.render.gl;
 
 import java.lang.ref.ReferenceQueue;
 
-import javax.media.opengl.GL3;
-
 import ch.fhnw.ether.view.gl.GLContextManager;
 import ch.fhnw.ether.view.gl.GLContextManager.IGLContext;
 import ch.fhnw.util.AutoDisposer;
 import ch.fhnw.util.AutoDisposer.Reference;
+
+import com.jogamp.opengl.GL3;
 
 public class GLObject {
 	public enum Type {

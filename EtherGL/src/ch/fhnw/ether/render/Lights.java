@@ -33,8 +33,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.media.opengl.GL3;
-
 import ch.fhnw.ether.render.gl.FloatUniformBuffer;
 import ch.fhnw.ether.render.variable.builtin.LightUniformBlock;
 import ch.fhnw.ether.scene.attribute.IAttributeProvider;
@@ -44,6 +42,8 @@ import ch.fhnw.ether.scene.light.GenericLight;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.util.color.RGB;
 import ch.fhnw.util.math.Vec3;
+
+import com.jogamp.opengl.GL3;
 
 public final class Lights {
 	private static final GenericLight DEFAULT_LIGHT = new DirectionalLight(Vec3.Z, RGB.BLACK, RGB.WHITE);

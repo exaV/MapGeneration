@@ -32,10 +32,10 @@ package ch.fhnw.ether.render.variable.base;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
-import javax.media.opengl.GL3;
-
 import ch.fhnw.ether.render.gl.Program;
 import ch.fhnw.ether.render.variable.IShaderUniform;
+
+import com.jogamp.opengl.GL3;
 
 public final class StateInject extends AbstractVariable<GL3> implements IShaderUniform<GL3> {
 	private final BiConsumer<GL3, Program> enable;

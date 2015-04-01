@@ -34,10 +34,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import javax.media.opengl.GL3;
-
 import ch.fhnw.ether.render.gl.GLObject.Type;
 import ch.fhnw.util.BufferUtilities;
+
+import com.jogamp.opengl.GL3;
 
 /**
  * Basic uniform buffer object wrapper.

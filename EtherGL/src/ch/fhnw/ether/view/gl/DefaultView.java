@@ -29,12 +29,6 @@
 
 package ch.fhnw.ether.view.gl;
 
-import javax.media.nativewindow.util.Point;
-import javax.media.opengl.GL;
-import javax.media.opengl.GL3;
-import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.GLEventListener;
-
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.scene.camera.CameraMatrices;
 import ch.fhnw.ether.scene.camera.ICamera;
@@ -43,6 +37,7 @@ import ch.fhnw.ether.view.IView;
 import ch.fhnw.util.Viewport;
 import ch.fhnw.util.math.Mat4;
 
+import com.jogamp.nativewindow.util.Point;
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.KeyListener;
 import com.jogamp.newt.event.MouseEvent;
@@ -50,6 +45,10 @@ import com.jogamp.newt.event.MouseListener;
 import com.jogamp.newt.event.WindowAdapter;
 import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.newt.event.WindowListener;
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL3;
+import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GLEventListener;
 
 /**
  * Default view class that implements some basic functionality. Use as base for more complex implementations.

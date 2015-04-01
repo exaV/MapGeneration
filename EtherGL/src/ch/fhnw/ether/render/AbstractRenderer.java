@@ -32,8 +32,6 @@ package ch.fhnw.ether.render;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.media.opengl.GL3;
-
 import ch.fhnw.ether.render.gl.FloatUniformBuffer;
 import ch.fhnw.ether.render.variable.builtin.ViewUniformBlock;
 import ch.fhnw.ether.scene.attribute.IAttributeProvider;
@@ -42,6 +40,8 @@ import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.IMesh.Queue;
 import ch.fhnw.util.Viewport;
+
+import com.jogamp.opengl.GL3;
 
 public abstract class AbstractRenderer implements IRenderer {
 	protected static class Cameras {

@@ -31,13 +31,13 @@ package ch.fhnw.util.math.geometry;
 
 import java.util.List;
 
-import javax.media.opengl.glu.GLU;
-import javax.media.opengl.glu.GLUtessellator;
-import javax.media.opengl.glu.GLUtessellatorCallback;
-import javax.media.opengl.glu.GLUtessellatorCallbackAdapter;
-
 import ch.fhnw.util.IntList;
 import ch.fhnw.util.math.Vec3;
+
+import com.jogamp.opengl.glu.GLU;
+import com.jogamp.opengl.glu.GLUtessellator;
+import com.jogamp.opengl.glu.GLUtessellatorCallback;
+import com.jogamp.opengl.glu.GLUtessellatorCallbackAdapter;
 
 public class GeometryUtilities {
 	private static final IntList TRIANGLE = new IntList(new int[] { 0, 1, 2 });

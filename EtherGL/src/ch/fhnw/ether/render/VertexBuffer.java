@@ -32,9 +32,6 @@ package ch.fhnw.ether.render;
 import java.nio.FloatBuffer;
 import java.util.List;
 
-import javax.media.opengl.GL;
-import javax.media.opengl.GL3;
-
 import ch.fhnw.ether.render.gl.FloatArrayBuffer;
 import ch.fhnw.ether.render.gl.IArrayBuffer;
 import ch.fhnw.ether.render.shader.IShader;
@@ -45,6 +42,9 @@ import ch.fhnw.ether.scene.mesh.geometry.IGeometry.IGeometryAttribute;
 import ch.fhnw.util.BufferUtilities;
 import ch.fhnw.util.math.Mat3;
 import ch.fhnw.util.math.Mat4;
+
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL3;
 
 // TODO: deal with max vbo size & multiple vbos, memory optimization, handle non-float arrays
 

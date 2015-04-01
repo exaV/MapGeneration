@@ -29,7 +29,7 @@
 
 package ch.fhnw.ether.render.gl;
 
-import javax.media.opengl.GL;
+import com.jogamp.opengl.GL;
 
 public final class GLUtilities {
 	public static int getInteger(GL gl, int parameter) {

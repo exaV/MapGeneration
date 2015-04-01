@@ -31,11 +31,11 @@ package ch.fhnw.ether.render.variable.base;
 
 import java.util.function.Supplier;
 
-import javax.media.opengl.GL3;
-
 import ch.fhnw.ether.render.gl.Program;
 import ch.fhnw.ether.scene.attribute.ITypedAttribute;
 import ch.fhnw.util.math.Mat3;
+
+import com.jogamp.opengl.GL3;
 
 public class Mat3FloatUniform extends AbstractUniform<Mat3> {
 	private float[] value;

@@ -29,14 +29,14 @@
 
 package ch.fhnw.ether.render.variable.builtin;
 
-import javax.media.opengl.GL3;
-
 import ch.fhnw.ether.render.IRenderer.RendererAttribute;
 import ch.fhnw.ether.render.gl.FloatUniformBuffer;
 import ch.fhnw.ether.render.variable.base.UniformBlock;
 import ch.fhnw.ether.scene.camera.CameraMatrices;
 import ch.fhnw.util.Viewport;
 import ch.fhnw.util.math.Mat4;
+
+import com.jogamp.opengl.GL3;
 
 public final class ViewUniformBlock extends UniformBlock {
 	public static final RendererAttribute<Integer> ATTRIBUTE = new RendererAttribute<>("builtin.view_uniform_block");

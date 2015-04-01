@@ -29,14 +29,14 @@
 
 import java.util.EnumSet;
 
-import javax.media.opengl.GLAutoDrawable;
-
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.scene.camera.CameraMatrices;
 import ch.fhnw.ether.scene.camera.ICamera;
 import ch.fhnw.util.IUpdateListener;
 import ch.fhnw.util.Viewport;
 import ch.fhnw.util.math.Mat4;
+
+import com.jogamp.opengl.GLAutoDrawable;
 
 /**
  * A 'view' here is a view with some control functionality, i.e. it handles the rendering of the model and also the user

@@ -32,15 +32,15 @@ package ch.fhnw.ether.render.shader.base;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.media.opengl.GL;
-import javax.media.opengl.GL3;
-
 import ch.fhnw.ether.render.IVertexBuffer;
 import ch.fhnw.ether.render.gl.Program;
 import ch.fhnw.ether.render.shader.IShader;
 import ch.fhnw.ether.render.variable.IShaderArray;
 import ch.fhnw.ether.render.variable.IShaderUniform;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
+
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL3;
 
 public abstract class AbstractShader implements IShader {
 	

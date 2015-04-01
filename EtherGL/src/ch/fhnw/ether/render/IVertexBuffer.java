@@ -29,10 +29,10 @@
 
 package ch.fhnw.ether.render;
 
-import javax.media.opengl.GL3;
-
 import ch.fhnw.ether.render.shader.IShader;
 import ch.fhnw.ether.scene.mesh.IMesh;
+
+import com.jogamp.opengl.GL3;
 
 public interface IVertexBuffer {
 	

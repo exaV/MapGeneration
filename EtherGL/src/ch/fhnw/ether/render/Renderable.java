@@ -31,11 +31,11 @@ package ch.fhnw.ether.render;
 
 import java.util.List;
 
-import javax.media.opengl.GL3;
-
 import ch.fhnw.ether.render.shader.IShader;
 import ch.fhnw.ether.scene.attribute.IAttributeProvider;
 import ch.fhnw.ether.scene.mesh.IMesh;
+
+import com.jogamp.opengl.GL3;
 
 public final class Renderable {
 	private final IShader shader;
