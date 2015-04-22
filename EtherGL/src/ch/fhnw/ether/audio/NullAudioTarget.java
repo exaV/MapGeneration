@@ -7,7 +7,7 @@ public class NullAudioTarget extends AbstractMediaTarget<AudioFrame,IAudioRender
 	private final float sRate;
 	private double      sTime;
 
-	public NullAudioTarget(float sampleRate, int numChannels) {
+	public NullAudioTarget(int numChannels, float sampleRate) {
 		super(Thread.NORM_PRIORITY);
 		this.numChannels = numChannels;
 		this.sRate       = sampleRate;

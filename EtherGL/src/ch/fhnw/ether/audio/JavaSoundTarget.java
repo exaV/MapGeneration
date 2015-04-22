@@ -40,12 +40,13 @@ import ch.fhnw.ether.media.RenderProgram;
 public final class JavaSoundTarget extends AbstractMediaTarget<AudioFrame,IAudioRenderTarget> implements IAudioRenderTarget {
 	private static final float S2F = Short.MAX_VALUE;
 
-	private AudioFormat    fmt;
-	private SourceDataLine out;
-	private int            outChannels;
-	private int            bytesPerSample;
-	private double         sTime;
-
+	private AudioFormat            fmt;
+	private SourceDataLine         out;
+	private int                    outChannels;
+	private int                    bytesPerSample;
+	private double                 sTime;
+	private AbstractAudioSource<?> src;
+	
 	public JavaSoundTarget() {
 		super(Thread.MAX_PRIORITY);
 	}

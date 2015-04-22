@@ -80,6 +80,10 @@ import ch.fhnw.util.TextUtilities;
 		 public float[] power(float[] values) {
 			 return smooth.get(values);
 		 }
+
+		public int numBands() {
+			return centers.length;
+		}
 	 }
 
 	 public BandsButterworth(int strength, double minBandWidth, float ... freqs) {
