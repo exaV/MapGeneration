@@ -128,7 +128,7 @@ public class Vec4 implements IVec4 {
 	}
 
 	public float dot(Vec4 a) {
-		return MathUtilities.dot(x, y, z, z, a.x, a.y, a.z, a.w);
+		return MathUtilities.dot(x, y, z, w, a.x, a.y, a.z, a.w);
 	}
 
 	@Override
