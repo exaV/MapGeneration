@@ -47,12 +47,15 @@ import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.video.AbstractVideoSource;
 import ch.fhnw.ether.video.IVideoRenderTarget;
 import ch.fhnw.ether.video.VideoFrame;
+import ch.fhnw.util.Log;
 import ch.fhnw.util.color.RGB;
 import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.Line;
 
 public class RayTracer extends AbstractVideoSource<Stateless<IVideoRenderTarget>>{
+	private static final Log log = Log.create();
+	
 	private static final RGBA BACKGROUND_COLOR   = RGBA.WHITE;
 	private static final int  BACKGROUND_COLOR_I = RGBA.WHITE.toRGBA();
 
@@ -72,7 +75,10 @@ public class RayTracer extends AbstractVideoSource<Stateless<IVideoRenderTarget>
 	}
 
 	public void addMesh(IMesh mesh) {
-		meshes.add((RayTraceMesh) mesh);
+		if(mesh instanceof RayTraceMesh)
+			meshes.add((RayTraceMesh) mesh);
+		else
+			log.info("Ignored non-RayTraceMesh: " + mesh);
 	}
 
 	public void removeMesh(IMesh mesh) {
