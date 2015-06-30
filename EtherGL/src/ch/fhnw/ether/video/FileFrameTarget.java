@@ -29,8 +29,6 @@
 
 package ch.fhnw.ether.video;
 
-import java.awt.Graphics;
-import java.awt.image.BufferedImage;
 import java.io.File;
 
 import javax.imageio.ImageIO;
@@ -52,14 +50,7 @@ public class FileFrameTarget extends AbstractMediaTarget<VideoFrame,IVideoRender
 	@Override
 	public void render() throws RenderCommandException {
 		try {
-			System.out.println("Writing " + file);
-			BufferedImage img = getFrame().frame.toBufferedImage();
-			Graphics g = img.getGraphics();
-			g.drawLine(0, 0, 1000, 1000);
-			g.drawLine(0, 1000, 1000, 0);
-			g.dispose();
-			ImageIO.write(img, ext, file);
-			Thread.sleep(1000);
+			ImageIO.write(getFrame().frame.toBufferedImage(), ext, file);
 		} catch (Throwable e) {
 			throw new RenderCommandException(e);
 		}

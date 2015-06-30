@@ -39,6 +39,7 @@ import javax.swing.SwingUtilities;
 import ch.fhnw.ether.controller.DefaultController;
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.image.RGB8Frame;
+import ch.fhnw.ether.media.RenderProgram;
 import ch.fhnw.ether.scene.DefaultScene;
 import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.scene.camera.Camera;
@@ -60,24 +61,19 @@ import ch.fhnw.ether.view.gl.DefaultView;
 import ch.fhnw.util.math.Transform;
 
 public class SimplePlayerGL implements Runnable {
-	private static final double SEC2MS = 1000.0;
 	private static final float  SCALE  = 3.5f;
 
-	private final AbstractVideoSource<?>[] sources;
-	private final Texture                  texture = new Texture(new RGB8Frame(16, 16));
-	private       DefaultView              view;
+	private final AbstractVideoSource<?> source;
+	private final Texture                texture = new Texture(new RGB8Frame(16, 16));
+	private       DefaultView            view;
 
-	public SimplePlayerGL(AbstractVideoSource<?>[] sources) {
-		this.sources = sources;
-	}
-
-	private static void sleep(long ms) {
-		try {Thread.sleep(ms);} catch(InterruptedException e) {}
+	public SimplePlayerGL(AbstractVideoSource<?> source) {
+		this.source = source;
 	}
 
 	@Override
 	public void run() {
-		if(SwingUtilities.isEventDispatchThread()) {
+		try {
 			IController controller = new DefaultController();
 
 			view = new DefaultView(controller, 0, 10, 1024, 512, new Config(ViewType.INTERACTIVE_VIEW, 2), "SimplePlayerGL", new Camera());
@@ -88,41 +84,27 @@ public class SimplePlayerGL implements Runnable {
 
 			DefaultGeometry g = DefaultGeometry.createVM(Primitive.TRIANGLES, MeshLibrary.DEFAULT_QUAD_VERTICES, MeshLibrary.DEFAULT_QUAD_TEX_COORDS); 
 			IMesh mesh = new DefaultMesh(new ColorMapMaterial(texture), g, Queue.TRANSPARENCY);
-			mesh.setTransform(Transform.trs(0, 0, 0, 90, 0, 0, SCALE * sources[0].getWidth() / sources[0].getHeight(), SCALE, SCALE));			
+			mesh.setTransform(Transform.trs(0, 0, 0, 90, 0, 0, SCALE * source.getWidth() / source.getHeight(), SCALE, SCALE));			
 			scene.add3DObject(mesh);
 
-			new Thread(this).start();
-		} else {
-			texture.setData(sources[0]);
-			for(;;) {
-				long before = System.currentTimeMillis();
-				texture.update();
-				view.repaint();
-				long elapsed = System.currentTimeMillis() - before;
-				long sleep   = (long) ((SEC2MS / sources[0].getFrameRate()) - elapsed);
-				if(sleep > 0)
-					sleep(sleep);
-			}
+			texture.useProgram(new RenderProgram<>(source));
+			texture.start();
+		} catch(Throwable t) {
+			t.printStackTrace();
 		}
 	}
 
 	public static void main(String[] args) throws IOException {
-		AbstractVideoSource<?>[] sources = null;
-		if(args.length == 0) {
-			sources =  new AbstractVideoSource<?>[] {CameraSource.create(CameraInfo.getInfos()[0])};
-		}
+		AbstractVideoSource<?> source;
+		if(args.length == 0)
+			source =  CameraSource.create(CameraInfo.getInfos()[0]);
 		else {
-			sources = new AbstractVideoSource<?>[args.length];
-			int idx = 0;
-			for(String arg : args) {
-				try {
-					sources[idx] = new URLVideoSource(new URL(arg));
-				} catch(MalformedURLException e) {
-					sources[idx] = new URLVideoSource(new File(arg).toURI().toURL());
-				}
-				idx++;
+			try {
+				source = new URLVideoSource(new URL(args[0]));
+			} catch(MalformedURLException e) {
+				source = new URLVideoSource(new File(args[0]).toURI().toURL());
 			}
 		}
-		SwingUtilities.invokeLater(new SimplePlayerGL(sources));
+		SwingUtilities.invokeLater(new SimplePlayerGL(source));
 	}
 }

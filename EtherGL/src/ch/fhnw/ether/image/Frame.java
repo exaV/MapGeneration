@@ -29,6 +29,8 @@
 
 package ch.fhnw.ether.image;
 
+import java.awt.Graphics;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -46,9 +48,13 @@ import javax.imageio.ImageIO;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL3;
 
+import ch.fhnw.ether.media.AbstractMediaTarget;
+import ch.fhnw.ether.media.RenderCommandException;
+import ch.fhnw.ether.video.IVideoRenderTarget;
+import ch.fhnw.ether.video.VideoFrame;
 import ch.fhnw.util.BufferUtilities;
 
-public abstract class Frame {
+public abstract class Frame extends AbstractMediaTarget<VideoFrame,IVideoRenderTarget> implements IVideoRenderTarget {
 	public enum FileFormat {PNG,JPEG}
 
 	public static final byte        B0    = 0;
@@ -62,10 +68,12 @@ public abstract class Frame {
 	private int       modCount;
 
 	protected Frame(int pixelSize) {
+		super(Thread.MIN_PRIORITY);
 		this.pixelSize = pixelSize;
 	}
 
 	protected Frame(int dimI, int dimJ, byte[] frameBuffer, int pixelSize) {
+		super(Thread.MIN_PRIORITY);
 		this.pixels = BufferUtilities.createDirectByteBuffer(frameBuffer.length);
 		this.pixels.put(frameBuffer);
 		this.pixelSize = pixelSize;
@@ -73,6 +81,7 @@ public abstract class Frame {
 	}
 
 	protected Frame(int dimI, int dimJ, ByteBuffer frameBuffer, int pixelSize) {
+		super(Thread.MIN_PRIORITY);
 		if (frameBuffer.isDirect()) {
 			this.pixels = frameBuffer;
 		} else {
@@ -471,5 +480,14 @@ public abstract class Frame {
 
 	public final void position(ByteBuffer pixels, int i, int j) {
 		pixels.position((j * dimI + i) * pixelSize);
+	}
+
+	@Override
+	public void render() throws RenderCommandException {
+		VideoFrame vf = getFrame();
+		if(dimI != vf.frame.dimI || dimJ != vf.frame.dimJ) {
+			setPixels(0, 0, dimI, dimJ, ImageScaler.getScaledInstance(vf.frame.toBufferedImage(), dimI, dimJ, RenderingHints.VALUE_INTERPOLATION_BILINEAR, false));
+		} else
+			setSubframe(0, 0, vf.frame);
 	}
 }

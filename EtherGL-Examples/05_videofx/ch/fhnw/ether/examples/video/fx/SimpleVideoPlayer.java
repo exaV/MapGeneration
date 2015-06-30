@@ -33,10 +33,12 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.JComboBox;
 
+import ch.fhnw.ether.image.RGBA8Frame;
 import ch.fhnw.ether.media.RenderCommandException;
 import ch.fhnw.ether.media.RenderProgram;
 import ch.fhnw.ether.ui.ParameterWindow;
@@ -44,33 +46,41 @@ import ch.fhnw.ether.video.AWTFrameTarget;
 import ch.fhnw.ether.video.IVideoRenderTarget;
 import ch.fhnw.ether.video.URLVideoSource;
 import ch.fhnw.ether.video.fx.AbstractVideoFX;
+import ch.fhnw.util.CollectionUtilities;
 
 public class SimpleVideoPlayer {
 	public static void main(String[] args) throws MalformedURLException, IOException, InterruptedException, RenderCommandException {
-		URLVideoSource                    track    = new URLVideoSource(new File(args[0]).toURI().toURL());
-		AWTFrameTarget                    videoOut = new AWTFrameTarget();
-
-		AbstractVideoFX<?>[] fxs = {
+		URLVideoSource track    = new URLVideoSource(new File(args[0]).toURI().toURL());
+		URLVideoSource mask     = args.length > 1 ? new URLVideoSource(new File(args[1]).toURI().toURL()) : null;
+		AWTFrameTarget videoOut = new AWTFrameTarget();
+	
+		List<AbstractVideoFX<?>> fxs = CollectionUtilities.asList(
 				new AnalogTVFX(),
 				new BandPass(),
-				// new ChromaKey(mask, backdrop);
 				new Convolution(),
 				new FadeToColor(),
 				new FakeThermoCam(),
 				new MotionBlur(),
 				new Posterize(),
-				new RGBGain(),
-		};
+				new RGBGain());
+		
 		AtomicInteger current = new AtomicInteger(0);
 
-		final RenderProgram<IVideoRenderTarget> program = new RenderProgram<>(track, fxs[current.get()]);
+		if(mask != null) {
+			RGBA8Frame maskOut  = new RGBA8Frame(track.getWidth(), track.getHeight());
+			maskOut.useProgram(new RenderProgram<>(mask));
+			fxs.add(new ChromaKey(maskOut));
+			maskOut.start();
+		}
+		
+		final RenderProgram<IVideoRenderTarget> program = new RenderProgram<>(track, fxs.get(current.get()));
 
 		final JComboBox<AbstractVideoFX<?>> fxsUI = new JComboBox<>();
 		for(AbstractVideoFX<?> fx : fxs)
 			fxsUI.addItem(fx);
 		fxsUI.addActionListener((ActionEvent e)->{
 			int newIdx = fxsUI.getSelectedIndex();
-			program.replace(fxs[current.get()], fxs[newIdx]);
+			program.replace(fxs.get(current.get()), fxs.get(newIdx));
 			current.set(newIdx);
 		});
 		new ParameterWindow(fxsUI, program);
