@@ -271,6 +271,12 @@ public class CollectionUtilities {
 		return result;
 	}
 
+	public static <T> List<T> asList(T ... elements) {
+		ArrayList<T> result = new ArrayList<>(elements.length);
+		Collections.addAll(result, elements);
+		return result;
+	}
+
 	public static <T> boolean removeIdentity(Collection<T> c, T e) {
 		for(Iterator<T> i = c.iterator(); i.hasNext();) 
 			if(i.next() == e) {

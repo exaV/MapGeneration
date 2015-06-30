@@ -31,7 +31,7 @@ package ch.fhnw.ether.audio.fx;
 
 import ch.fhnw.ether.audio.AudioFrame;
 import ch.fhnw.ether.audio.AudioUtilities;
-import ch.fhnw.ether.examples.visualizer.AverageBuffer;
+import ch.fhnw.ether.audio.AverageBuffer;
 
 /**
  * Get the level of a signal using averaging and attack/sustain/decay speeds
@@ -40,30 +40,33 @@ public class GainEngine {
 	
 	private final static double MIN_LEVEL = AudioUtilities.dbToLevel(AudioUtilities.MIN_GAIN);
 	
-	private final AverageBuffer history; // Contains squared sample values
-	private int sustainSpeed; // Number of samples
-	private double attackSpeed; // Ratio to multiply by on each sample
-	private double decaySpeed;
-	private double smoothedGain;
-	private int sustainCountDown;
-	private double jumpLevel;
+	private final  AverageBuffer history; // Contains squared sample values
+	private int                  sustainSpeed; // Number of samples
+	private double               attackSpeed; // Ratio to multiply by on each sample
+	private double               decaySpeed;
+	private double               smoothedGain;
+	private int                  sustainCountDown;
+	private double               jumpLevel;
+	private final float          sRate;
+	private final int            numChannels;
 	
-	
-	public GainEngine(int historySize, int sustainSpeed, double attackSpeed, double decaySpeed, double jumpLevel) {
-		this.history = new AverageBuffer(historySize);
-		setSustainSpeed(sustainSpeed);
+	public GainEngine(float sampleRate, int numChannels, double historySizeInSeconds, double sustainSpeedInSeconds, double attackSpeed, double decaySpeed, double jumpLevel) {
+		this.history     = new AverageBuffer(sampleRate, numChannels, historySizeInSeconds);
+		this.sRate       = sampleRate;
+		this.numChannels = numChannels;
+		setSustainSpeed(sustainSpeedInSeconds);
 		setAttackSpeed(attackSpeed);
 		setDecaySpeed(decaySpeed);
 		setJumpLevel(jumpLevel);
 		this.smoothedGain = MIN_LEVEL;
 	}
 
-	public int getSustainSpeed() {
-		return sustainSpeed;
+	public double getSustainSpeed() {
+		return sustainSpeed / (sRate * numChannels);
 	}
 
-	public void setSustainSpeed(int sustainSpeed) {
-		this.sustainSpeed = sustainSpeed;
+	public void setSustainSpeed(double sustainSpeed) {
+		this.sustainSpeed = (int) (sustainSpeed * sRate * numChannels);
 	}
 
 	public double getAttackSpeed() {

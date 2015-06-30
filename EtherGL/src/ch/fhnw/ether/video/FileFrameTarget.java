@@ -25,59 +25,35 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */package ch.fhnw.ether.examples.visualizer;
+ */
 
-public class AverageBuffer {
-    private int     size;
-    private float[] values;
-    private int     index;
-    private float   sum = 0.0f;
-    
-    public AverageBuffer(int size) {
-        this.size = size;
-        this.values = new float[size];
-        this.index = 0;
-    }
-    
-    public void push(double value) {
-        push((float)value);
-    }
-    
-    public void push(float value) {
-        sum = sum - values[index];
-        values[index] = value;
-        sum = sum + value;
-        index = (index + 1) % size;
-    }
-    
-    public float getAverage() {
-        return sum / size;
-    }
-    
-    public int getSize() {
-        return this.size;
-    }
-    
-    public void setSize(int size) {
-        if (size == this.size)
-            return;
-        float[] old = values;
-        float average = getAverage();
-        this.size = size;
-        values = new float[size];
-        // Copy as much history as possible
-        int min = (size < old.length ? size : old.length);
-        int offset = size - min;
-        for (int i = 0; i < min; i++)
-            values[i + offset] = old[(index + i) % old.length];
-        // Fill too old history with avergae
-        for (int i = 0; i < offset; i++)
-            values[i] = average;
-        // Recompute sum
-        sum = 0.0f;
-        for (int i = 0; i < size; i++)
-            sum+= values[i];
-        // Reset index
-        index = 0;
-    }
+package ch.fhnw.ether.video;
+
+import java.io.File;
+
+import javax.imageio.ImageIO;
+
+import ch.fhnw.ether.media.AbstractMediaTarget;
+import ch.fhnw.ether.media.RenderCommandException;
+import ch.fhnw.util.TextUtilities;
+
+public class FileFrameTarget extends AbstractMediaTarget<VideoFrame,IVideoRenderTarget> implements IVideoRenderTarget {
+	private final File   file;
+	private final String ext;
+
+	public FileFrameTarget(File file) {
+		super(Thread.MIN_PRIORITY);
+		this.file = file;
+		this.ext  = TextUtilities.getFileExtensionWithoutDot(file.getName()).toUpperCase();
+	}
+
+	@Override
+	public void render() throws RenderCommandException {
+		try {
+			ImageIO.write(getFrame().frame.toBufferedImage(), ext, file);
+		} catch (Throwable e) {
+			throw new RenderCommandException(e);
+		}
+		sleepUntil(getFrame().playOutTime);
+	}
 }

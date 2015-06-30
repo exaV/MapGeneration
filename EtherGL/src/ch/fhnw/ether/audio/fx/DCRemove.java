@@ -62,6 +62,8 @@ public class DCRemove extends AbstractRenderCommand<IAudioRenderTarget, DCRemove
 				lastOut[c]         = intg;
 				samples[i]         = lastOut[c];
 			}
+			
+			frame.modified();
 		}
 	}
 	

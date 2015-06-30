@@ -59,9 +59,10 @@ public class SinGen extends AbstractRenderCommand<IAudioRenderTarget, Stateless<
 		final int        c         = channel % nChannels;
 		final float      sRate     = frame.sRate;
 		final long       sTime     = frame.sTime;
-		for(int i = 0; i < samples.length; i += nChannels) {
+		for(int i = 0; i < samples.length; i += nChannels)
 			samples[i+c] += gain * (float)Math.sin(phi + ((f * PI2 * ((sTime + i) / nChannels)) / sRate)); 
-		}
+		
+		frame.modified();
 	}
 }
 

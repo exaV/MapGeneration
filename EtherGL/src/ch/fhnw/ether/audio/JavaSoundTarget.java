@@ -45,9 +45,23 @@ public final class JavaSoundTarget extends AbstractMediaTarget<AudioFrame,IAudio
 	private int            outChannels;
 	private int            bytesPerSample;
 	private double         sTime;
-
+	private final int      bufferSize;
+	
+	/**
+	 * Create a new audio target using Java sound output.
+	 */
 	public JavaSoundTarget() {
+		this(2048);
+	}
+	
+	/**
+	 * Create a new audio target using Java sound output.
+	 *
+	 * @param bufferSize The output buffer size. Values below 2048 produce audio glitches on most platforms.
+	 */
+	public JavaSoundTarget(int bufferSize) {
 		super(Thread.MAX_PRIORITY);
+		this.bufferSize = bufferSize;
 	}
 
 	@Override
@@ -61,7 +75,7 @@ public final class JavaSoundTarget extends AbstractMediaTarget<AudioFrame,IAudio
 			fmt            = out.getFormat();
 			outChannels    = fmt.getChannels();
 			bytesPerSample = fmt.getSampleSizeInBits() / 8;
-			out.open(fmt, 2048);
+			out.open(fmt, bufferSize);
 			super.useProgram(program);
 		} catch(Throwable t) {
 			throw new RenderCommandException(t);

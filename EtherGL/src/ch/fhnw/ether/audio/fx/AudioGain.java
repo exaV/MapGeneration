@@ -48,5 +48,7 @@ public class AudioGain extends AbstractRenderCommand<IAudioRenderTarget,Stateles
 		final float[] samples = state.getTarget().getFrame().samples;
 		for(int i = 0; i < samples.length; i++)
 			samples[i] *= gain;
+		
+		state.getTarget().getFrame().modified();
 	}
 }

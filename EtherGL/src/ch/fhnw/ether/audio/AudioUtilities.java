@@ -32,7 +32,7 @@ package ch.fhnw.ether.audio;
 import java.util.BitSet;
 
 
-public class AudioUtilities {
+public final class AudioUtilities {
 	public enum Window {RECTANGLE, HANN, HAMMING}
 
 	public final static double MIN_GAIN = -100.0;
@@ -101,10 +101,10 @@ public class AudioUtilities {
 	}
 
 	public static float energy(float[] samples) {
-		float total = 0.0f;
+		double total = 0.0f;
 		for (float value : samples)
-			total += value * value;
-		return (float)Math.sqrt(total / samples.length);
+			total += value < 0 ? -value : value;
+		return (float)total / samples.length;
 	}
 
 	public static double gcd(double a, double b) {
@@ -227,5 +227,15 @@ public class AudioUtilities {
 		result.andNot(toPrune);
 
 		return result;
+	}
+
+	public static float[] multiplyHarmonics(float[] powerSpectrumInOut, int nHarmonics) {
+		for(int h = 0; h < nHarmonics; h++) {
+			final int hop = h + 1;
+			final int lim = powerSpectrumInOut.length / hop;
+			for(int i = 0; i < lim; i++)
+				powerSpectrumInOut[i] *= powerSpectrumInOut[i * hop];
+		}			
+		return powerSpectrumInOut;
 	}
 }

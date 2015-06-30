@@ -33,5 +33,9 @@ public abstract class AbstractFrameSource<T extends IRenderTarget, S extends Per
 	public static final double FRAMERATE_UNKNOWN  = -1;
 	public static final long   FRAMECOUNT_UNKNOWN = -1;
 
+	protected AbstractFrameSource(Parameter ... parameters) {
+		super(parameters);
+	}
+	
 	public abstract long getFrameCount();
 }

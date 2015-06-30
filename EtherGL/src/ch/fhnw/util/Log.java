@@ -30,30 +30,55 @@
 package ch.fhnw.util;
 
 import java.io.PrintStream;
+import java.io.Serializable;
+import java.util.Date;
 
-public class Log {
-	private final PrintStream out = System.err;
-
-	private Log() {}
+public class Log implements Serializable {
+	private static final long serialVersionUID = -4288206500724445427L;
+	private final transient PrintStream out = System.err;
+	
+	private Log() {
+	}
 	
 	public static Log create() {
 		return new Log();
 	}
 
-	public void severe(Throwable t) {
+	public void info(String msg) {
+		prefix();
+		out.println("INFO:" + msg);
+	}
+
+	public void info(String msg, Throwable t) {
+		prefix();
+		out.println("WARN:" + msg);
 		t.printStackTrace(out);
 	}
 
 	public void warning(Throwable t) {
+		prefix();
+		out.print("WARN:");
 		t.printStackTrace(out);
 	}
 
 	public void warning(String msg) {
-		out.println(msg);
+		prefix();
+		out.println("WARN:" + msg);
 	}
 
-	public void info(Throwable t) {
+	public void warning(String msg, Throwable t) {
+		prefix();
+		out.println("WARN:" + msg);
 		t.printStackTrace(out);
 	}
 
+	public void severe(Throwable t) {
+		prefix();
+		out.println("SEVERE:");
+		t.printStackTrace(out);
+	}
+	
+	private void prefix() {
+		out.print(new Date() + ":");
+	}
 }

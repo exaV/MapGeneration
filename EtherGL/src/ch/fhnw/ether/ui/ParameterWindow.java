@@ -145,7 +145,7 @@ public class ParameterWindow {
 			}
 
 			JComponent createUI(AbstractRenderCommand<?,?> cmd) {
-				if(cmd.getClass().getName().equals(cmd.toString())) {
+				if(cmd.getClass().getName().equals(cmd.toString()) && cmd.getParameters().length == 0) {
 					JLabel result = new JLabel(cmd.toString());
 					result.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
 					return result;

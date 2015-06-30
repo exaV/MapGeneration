@@ -47,6 +47,9 @@ public class AudioFrame extends AbstractFrame {
 	}
 
 	public float[] getMonoSamples() {
+		if(nChannels == 1)
+			return samples;
+		
 		if(monoSamples == null) {
 			monoSamples = new float[samples.length / nChannels];
 			for(int i = 0; i < samples.length; i++)
@@ -56,5 +59,13 @@ public class AudioFrame extends AbstractFrame {
 				monoSamples[i] /= cs;
 		}
 		return monoSamples;
+	}
+
+	public void modified() {
+		monoSamples = null;
+	}
+
+	public double lengthInSecs() {
+		return samples.length / nChannels / sRate;
 	}
 }

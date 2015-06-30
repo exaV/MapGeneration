@@ -60,13 +60,8 @@ public class PitchDetect extends AbstractRenderCommand<IAudioRenderTarget,PitchD
 		void process() throws RenderCommandException {
 			final IAudioRenderTarget target = getTarget();
 			final float[]            spec   = spectrum.get(target).power().clone();
-			
-			for(int h = 0; h < nHarmonics; h++) {
-				final int hop = h + 1;
-				final int lim = spec.length / hop;
-				for(int i = 0; i < lim; i++)
-					spec[i] *= spec[i * hop];
-			}
+
+			AudioUtilities.multiplyHarmonics(spec, nHarmonics);
 			
 			final BitSet peaks  = AudioUtilities.peaks(spec, 3, THRESHOLD);
 			this.peaks.clear();
