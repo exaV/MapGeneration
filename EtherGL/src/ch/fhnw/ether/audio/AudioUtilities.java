@@ -65,7 +65,7 @@ public final class AudioUtilities {
 	}
 
 	public static double dbToLevel(double value) {
-		return Math.pow(10.0, value / 20.0);
+		return Math.min(1, Math.pow(10.0, value / 20.0));
 	}
 
 	public static double levelToDb(double value) {
