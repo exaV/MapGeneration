@@ -29,6 +29,7 @@
 
 package ch.fhnw.ether.formats.obj;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -55,6 +56,10 @@ import ch.fhnw.util.math.geometry.GeometryUtilities;
 public class OBJReader extends AbstractModelReader {
 	private final List<IMesh> meshes = new ArrayList<>();
 
+	public OBJReader(File file) throws IOException {
+		this(file.toURI().toURL());
+	}
+	
 	public OBJReader(URL resource) throws IOException {
 		super(resource);
 		decode(resource.getFile(), resource.openStream());

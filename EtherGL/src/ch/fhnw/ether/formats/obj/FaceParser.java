@@ -55,7 +55,9 @@ public class FaceParser extends LineParser {
 
 			// save vertex
 			vIndices[i] = Integer.parseInt(rawFaces[0]) - 1;
-
+			if(vIndices[i] < 0) 
+				vIndices[i] = object.getVertices().size() + vIndices[i] + 1;
+			
 			if (rawFaces.length == 1)
 				continue;
 
@@ -71,6 +73,7 @@ public class FaceParser extends LineParser {
 						tIndices = new int[vertexCount];
 					tIndices[i] = currentValue - 1;
 				}
+				if(tIndices[i] < 0) tIndices[i] = object.getTexCoords().size() + tIndices[i] + 1;
 			}
 			
 			if (rawFaces.length == 2)
@@ -80,11 +83,12 @@ public class FaceParser extends LineParser {
 			if (nIndices == null)
 				nIndices = new int[vertexCount];
 			nIndices[i] = Integer.parseInt(rawFaces[2]) - 1;
+			if(nIndices[i] < 0) nIndices[i] = object.getNormals().size() + nIndices[i] + 1;
 		}
 	}
 
 	@Override
 	public void incoporateResults(WavefrontObject object) {
-		object.getCurrentGroup().addFace(new Face(vIndices, nIndices, tIndices));
+		object.getCurrentGroup().addFace(new Face(vIndices, tIndices, nIndices));
 	}
 }

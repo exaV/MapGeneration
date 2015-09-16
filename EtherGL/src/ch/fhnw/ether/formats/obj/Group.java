@@ -29,6 +29,7 @@
 
 package ch.fhnw.ether.formats.obj;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,5 +64,11 @@ public class Group {
 
 	public void addFace(Face face) {
 		faces.add(face);
+	}
+
+	public void write(PrintWriter out) {
+		out.println("g " + name);
+		for(Face f : faces)
+			f.write(out);
 	}
 }

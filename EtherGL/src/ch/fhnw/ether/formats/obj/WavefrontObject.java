@@ -32,6 +32,7 @@ package ch.fhnw.ether.formats.obj;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,11 +46,11 @@ public class WavefrontObject {
 	private final String fileName;
 	private final String contextFolder;
 
-	private List<Vec3> vertices = new ArrayList<>();
-	private List<Vec3> normals = new ArrayList<>();
+	private List<Vec3> vertices  = new ArrayList<>();
+	private List<Vec3> normals   = new ArrayList<>();
 	private List<Vec2> texCoords = new ArrayList<>();
 
-	private List<Group> groups = new ArrayList<>();
+	private List<Group> groups   = new ArrayList<>();
 
 	private Map<String, Material> materials = new HashMap<>();
 
@@ -60,22 +61,25 @@ public class WavefrontObject {
 	private Material currentMaterial;
 	private Group currentGroup;
 
-	public WavefrontObject(String fileName, InputStream in) {
-		this.fileName = fileName;
+	public WavefrontObject(String path) {
+		this.fileName = path;
 		String folder = "";
-		int lastSlashIndex = fileName.lastIndexOf('/');
+		int lastSlashIndex = path.lastIndexOf('/');
 		if (lastSlashIndex != -1)
-			folder = fileName.substring(0, lastSlashIndex + 1);
+			folder = path.substring(0, lastSlashIndex + 1);
 
-		lastSlashIndex = fileName.lastIndexOf('\\');
+		lastSlashIndex = path.lastIndexOf('\\');
 		if (lastSlashIndex != -1)
-			folder = fileName.substring(0, lastSlashIndex + 1);
+			folder = path.substring(0, lastSlashIndex + 1);
 		this.contextFolder = folder;
-
+	}
+	
+	public WavefrontObject(String path, InputStream in) {
+		this(path);
 		try {
 			parse(in);
 		} catch (Exception e) {
-			System.out.println("Error, could not load obj:" + fileName);
+			System.out.println("Error, could not load obj:" + path);
 		}
 	}
 
@@ -153,5 +157,16 @@ public class WavefrontObject {
 			parser.parse(this);
 			parser.incoporateResults(this);
 		}
+	}
+
+	public void write(PrintWriter out) {
+		for(Vec3 v : vertices)
+			out.println("v " + v.x + " " + v.y + " " + v.z);
+		for(Vec2 t : texCoords)
+			out.println("vt " + t.x + " " + t.y);
+		for(Vec3 n : normals)
+			out.println("vn " + n.x + " " + n.y + " " + n.z);
+		for(Group g : groups)
+			g.write(out);
 	}
 }

@@ -115,4 +115,8 @@ public abstract class AbstractRenderCommand<T extends IRenderTarget, S extends P
 	public StateHandle<S> state() {
 		return stateHandle; 
 	}
+	
+	public S state(IRenderTarget target) throws RenderCommandException {
+		return stateHandle.get(target); 
+	}
 }

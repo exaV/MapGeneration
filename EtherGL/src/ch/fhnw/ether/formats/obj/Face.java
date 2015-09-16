@@ -29,15 +29,34 @@
 
 package ch.fhnw.ether.formats.obj;
 
+import java.io.PrintWriter;
 
 public class Face {
 	final int[] vIndices;
-	final int[] nIndices;
 	final int[] tIndices;
+	final int[] nIndices;
 
-	public Face(int[] vIndices, int[] nIndices, int[] tIndices) {
+	public Face(int[] vIndices, int[] tIndices, int[] nIndices) {
 		this.vIndices = vIndices;
-		this.nIndices = nIndices;
 		this.tIndices = tIndices;
+		this.nIndices = nIndices;
+	}
+
+	public void write(PrintWriter out) {
+		StringBuilder result = new StringBuilder();
+		result.append("f ");
+		for(int i = 0; i < vIndices.length; i++) {
+			result.append(vIndices[i]);
+			if(tIndices != null) {
+				result.append('/');
+				result.append(tIndices[i]);
+			}
+			if(nIndices != null) {
+				result.append(tIndices == null ? "//" : "/");
+				result.append(nIndices[i]);
+			}
+			result.append(' ');
+		}
+		out.println(result.toString());
 	}
 }

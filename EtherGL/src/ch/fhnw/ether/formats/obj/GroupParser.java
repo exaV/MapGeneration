@@ -34,7 +34,7 @@ public class GroupParser extends LineParser {
 
 	@Override
 	public void parse(WavefrontObject object) {
-		String groupName = words[1];
+		String groupName = words.length == 1 ? "default" : words[1];
 		group = new Group(groupName);
 	}
 
