@@ -79,7 +79,6 @@ public final class NEWTWindow {
 		GLCapabilities capabilities = GLContextManager.getCapabilities(config);
 		if (sharedDrawable == null) {
 			sharedDrawable = GLContextManager.getSharedDrawable(capabilities);
-			sharedDrawable.display();			
 		}
 		numWindows++;
 		window = GLWindow.create(capabilities);

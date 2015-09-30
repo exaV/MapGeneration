@@ -33,16 +33,15 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import ch.fhnw.ether.view.IView;
-import ch.fhnw.ether.view.IView.Config;
-
-import com.jogamp.newt.opengl.GLWindow;
 import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLContext;
 import com.jogamp.opengl.GLDrawableFactory;
 import com.jogamp.opengl.GLProfile;
+
+import ch.fhnw.ether.view.IView;
+import ch.fhnw.ether.view.IView.Config;
 
 public class GLContextManager {
 	public interface IGLContext {
@@ -57,22 +56,18 @@ public class GLContextManager {
 	}
 
 	private static final class TemporaryContext implements IGLContext {
-		private GLWindow window;
+		private GLContext context;
 
 		TemporaryContext() {
-			window = GLWindow.create(theSharedDrawable.getChosenGLCapabilities());
-			window.setSharedAutoDrawable(theSharedDrawable);
-			window.setSize(16, 16);
-			window.setVisible(true);
-			window.setVisible(false, false);
+			context = theSharedDrawable.createContext(theSharedDrawable.getContext());
 		}
 
 		void makeCurrent() {
-			window.getContext().makeCurrent();
+			context.makeCurrent();
 		}
 
 		void release() {
-			window.getContext().release();
+			context.release();
 		}
 
 		@Override
@@ -141,6 +136,7 @@ public class GLContextManager {
 				capabilities = getCapabilities(IView.INTERACTIVE_VIEW);
 			theSharedDrawable = GLDrawableFactory.getFactory(capabilities.getGLProfile()).createDummyAutoDrawable(null, true, capabilities, null);
 		}
+		theSharedDrawable.display();					
 		return theSharedDrawable;
 	}
 
