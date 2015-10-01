@@ -35,15 +35,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 // note: position is always expected as first attribute
 public class DefaultGeometry extends AbstractGeometry {
-	/*
-	 * private class TransformCache { TransformCache() { data = new float[attributeTypes.length][]; for (int i = 0; i <
-	 * attributeTypes.length; ++i) { if (attributeTypes[i] == POSITION_ARRAY) { data[i] =
-	 * transform.transformVertices(DefaultGeometry.this.attributeData[i]); } else if (attributeTypes[i] == NORMAL_ARRAY)
-	 * { data[i] = transform.transformNormals(DefaultGeometry.this.attributeData[i]); } else { data[i] =
-	 * DefaultGeometry.this.attributeData[i]; } } bounds = new BoundingBox(); bounds.add(data[0]); }
-	 * 
-	 * final float[][] data; final BoundingBox bounds; }
-	 */
 
 	private final ReadWriteLock lock = new ReentrantReadWriteLock();
 

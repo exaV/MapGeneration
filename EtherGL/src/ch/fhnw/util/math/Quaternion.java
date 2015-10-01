@@ -392,7 +392,6 @@ public final class Quaternion {
 	 * 
 	 * @return the rotation around the x axis in degrees (between -90 and +90)
 	 */
-	// XXX do we really want this to be between -90 and +90?
 	public float getXRotation() {
 		int pole = getGimbalPole();
 		float rad = pole == 0 ? (float) Math.asin(MathUtilities.clamp(2f * (w * x - z * y), -1f, 1f)) : pole * MathUtilities.PI * 0.5f;

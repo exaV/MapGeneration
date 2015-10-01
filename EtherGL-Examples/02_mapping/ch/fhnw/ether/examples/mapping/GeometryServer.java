@@ -44,7 +44,7 @@ import ch.fhnw.util.net.UDPServer;
 import ch.fhnw.util.net.osc.OSCHandler;
 import ch.fhnw.util.net.osc.OSCServer;
 
-// XXX experimental and quite defunct at the moment
+// experimental and quite defunct at the moment...
 @SuppressWarnings("unused")
 public class GeometryServer {
 	private MappingController controller;
