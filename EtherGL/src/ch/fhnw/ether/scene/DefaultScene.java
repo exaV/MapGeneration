@@ -100,7 +100,7 @@ public class DefaultScene implements IScene {
 	@Override
 	public void remove3DObjects(I3DObject... objects) {
 		for (I3DObject object : objects)
-			add3DObject(object);
+			remove3DObject(object);
 	}
 
 
