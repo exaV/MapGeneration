@@ -25,18 +25,48 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ */package ch.fhnw.ether.audio.fx;
 
-package ch.fhnw.ether.audio;
+ import ch.fhnw.ether.audio.ButterworthFilter;
+ import ch.fhnw.ether.audio.IAudioRenderTarget;
+ import ch.fhnw.ether.media.AbstractRenderCommand;
+ import ch.fhnw.ether.media.Parameter;
+ import ch.fhnw.ether.media.RenderCommandException;
+ import ch.fhnw.ether.media.Stateless;
 
-import ch.fhnw.ether.media.IRenderTarget;
-import ch.fhnw.ether.media.RenderCommandException;
-import ch.fhnw.ether.media.RenderProgram;
+ public class BandPass extends AbstractRenderCommand<IAudioRenderTarget,Stateless<IAudioRenderTarget>> {
+	 private static final Parameter LOW  = new Parameter("low",  "Low",  0, 20000, 30);
+	 private static final Parameter HIGH = new Parameter("high", "High", 0, 20000, 20000);
 
-public interface IAudioRenderTarget extends IRenderTarget {
-	void                   setFrame(AudioFrame frame);
-	AudioFrame             getFrame();
-	int                    getNumChannels();
-	float                  getSampleRate();
-	void                   useProgram(RenderProgram<IAudioRenderTarget> program) throws RenderCommandException;
-}
+	 private ButterworthFilter[] bandPass;
+
+	 float lowOld  = -1;
+	 float highOld = -1;
+
+	 public BandPass() {
+		 super(LOW, HIGH);
+	 }
+
+	 @Override
+	 protected void run(Stateless<IAudioRenderTarget> state) throws RenderCommandException {
+		 final float              low       = getVal(LOW);
+		 final float              high      = getVal(HIGH);
+		 final IAudioRenderTarget target    = state.getTarget();
+		 final int                nChannels = target.getNumChannels();
+		 final float[]            samples   = target.getFrame().samples;
+
+		 if(low != lowOld || high != highOld) {
+			 bandPass = new ButterworthFilter[nChannels];
+			 for(int i = 0; i < nChannels; i++)
+				 bandPass[i] = ButterworthFilter.getBandpassFilter(target.getSampleRate(), low, high);
+			 lowOld  = low;
+			 highOld = high;
+		 }
+
+		 for(int i = 0; i < samples.length; i += nChannels)
+			 for(int j = 0; j < nChannels; j++)
+				 samples[i+j] = bandPass[j].process(samples[i+j]);
+		 
+		 target.getFrame().modified();
+	 }	
+ }

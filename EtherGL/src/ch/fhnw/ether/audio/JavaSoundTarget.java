@@ -114,7 +114,7 @@ public final class JavaSoundTarget extends AbstractMediaTarget<AudioFrame,IAudio
 	}
 
 	@Override
-	public void stop() {
+	public void stop() throws RenderCommandException {
 		super.stop();
 		out.drain();
 		out.flush();

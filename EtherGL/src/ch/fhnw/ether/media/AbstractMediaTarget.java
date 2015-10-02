@@ -31,6 +31,7 @@ package ch.fhnw.ether.media;
 
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -50,7 +51,8 @@ public abstract class AbstractMediaTarget<F extends AbstractFrame, T extends IRe
 	private   final long                                               startTime    = System.nanoTime();
 	private   final AtomicReference<F>                                 frame        = new AtomicReference<>();
 	private         F                                                  currentFrame;
-
+	private   final CountDownLatch                                     startLatch   = new CountDownLatch(1);
+	
 	protected AbstractMediaTarget(int threadPriority) {
 		this.priority = threadPriority;
 	}
@@ -69,8 +71,11 @@ public abstract class AbstractMediaTarget<F extends AbstractFrame, T extends IRe
 			Thread t = new Thread(()->{
 				try {
 					isRendering.set(true);
+					startLatch.countDown();
 					while(isRendering())
 						runOneCycle();
+				} catch(EndOfSourceException e) {
+					isRendering.set(false);
 				} catch(Throwable e) {
 					isRendering.set(false);
 					log.severe(e);
@@ -79,6 +84,11 @@ public abstract class AbstractMediaTarget<F extends AbstractFrame, T extends IRe
 			t.setDaemon(true);
 			t.setPriority(priority);
 			t.start();
+			try {
+				startLatch.await();
+			} catch (InterruptedException e) {
+				log.severe(e);
+			}
 		}
 	}
 
@@ -110,7 +120,7 @@ public abstract class AbstractMediaTarget<F extends AbstractFrame, T extends IRe
 	}
 
 	@Override
-	public void stop() {
+	public void stop() throws RenderCommandException {
 		isRendering.set(false);
 	}
 
@@ -158,5 +168,15 @@ public abstract class AbstractMediaTarget<F extends AbstractFrame, T extends IRe
 	@Override
 	public AbstractFrameSource<T, ?> getFrameSource() {
 		return program.getFrameSource();
+	}	
+
+	public void waitForSource() {
+		try {
+			while(isRendering()) {
+				Thread.sleep(5);
+			}
+		} catch(Throwable t) {
+			log.warning(t);
+		}
 	}
 }

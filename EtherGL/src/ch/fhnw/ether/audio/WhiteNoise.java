@@ -29,14 +29,31 @@
 
 package ch.fhnw.ether.audio;
 
-import ch.fhnw.ether.media.IRenderTarget;
-import ch.fhnw.ether.media.RenderCommandException;
-import ch.fhnw.ether.media.RenderProgram;
+import java.util.Random;
 
-public interface IAudioRenderTarget extends IRenderTarget {
-	void                   setFrame(AudioFrame frame);
-	AudioFrame             getFrame();
-	int                    getNumChannels();
-	float                  getSampleRate();
-	void                   useProgram(RenderProgram<IAudioRenderTarget> program) throws RenderCommandException;
+import ch.fhnw.ether.media.AbstractRenderCommand;
+import ch.fhnw.ether.media.Parameter;
+import ch.fhnw.ether.media.RenderCommandException;
+import ch.fhnw.ether.media.Stateless;
+import ch.fhnw.util.math.MathUtilities;
+
+public class WhiteNoise extends AbstractRenderCommand<IAudioRenderTarget,Stateless<IAudioRenderTarget>> {
+	private static final Parameter GAIN = new Parameter("gain", "Gain", 0, 1, 0);
+	private static final Random    RND  = new Random();
+	
+	public WhiteNoise() {
+		super(GAIN);
+	}
+		
+	@Override
+	protected void run(Stateless<IAudioRenderTarget> state) throws RenderCommandException {
+		final double   gain  = getVal(GAIN);
+		final float[] samples = state.getTarget().getFrame().samples;
+		
+		for(int i = 0 ; i < samples.length ; i++)
+			samples[i] += MathUtilities.clamp(((RND.nextFloat() * 2f) - 1f) * gain, -1, 1);
+		
+		state.getTarget().getFrame().modified();
+	}
+	
 }

@@ -114,7 +114,11 @@ public class Texture extends AbstractMediaTarget<VideoFrame, IVideoRenderTarget>
 	
 	public void setData(Frame frame) {
 		singleFrame = frame;
-		stop();
+		try {
+			stop();
+		} catch (RenderCommandException e) {
+			log.warning(e);
+		}
 		updater.requestUpdate();
 	}
 

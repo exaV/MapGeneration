@@ -28,13 +28,13 @@
  */package ch.fhnw.ether.audio.fx;
 
  import ch.fhnw.ether.audio.AudioFrame;
-import ch.fhnw.ether.audio.AudioUtilities;
-import ch.fhnw.ether.audio.ButterworthFilter;
-import ch.fhnw.ether.audio.IAudioRenderTarget;
-import ch.fhnw.ether.audio.Smooth;
-import ch.fhnw.ether.media.AbstractRenderCommand;
-import ch.fhnw.ether.media.PerTargetState;
-import ch.fhnw.ether.media.RenderCommandException;
+ import ch.fhnw.ether.audio.AudioUtilities;
+ import ch.fhnw.ether.audio.ButterworthFilter;
+ import ch.fhnw.ether.audio.IAudioRenderTarget;
+ import ch.fhnw.ether.audio.Smooth;
+ import ch.fhnw.ether.media.AbstractRenderCommand;
+ import ch.fhnw.ether.media.PerTargetState;
+ import ch.fhnw.ether.media.RenderCommandException;
 
  public class BandsButterworth extends AbstractRenderCommand<IAudioRenderTarget,BandsButterworth.State> {
 	 private final int     size;
@@ -80,27 +80,41 @@ import ch.fhnw.ether.media.RenderCommandException;
 			 return smooth.get(values);
 		 }
 
-		public int numBands() {
-			return centers.length;
-		}
+		 public int numBands() {
+			 return centers.length;
+		 }
 	 }
 
-	 public BandsButterworth(int strength, double minBandWidth, float ... freqs) {
+	 public BandsButterworth(int strength, double bandWidth, boolean centered, float ... freqs) {
 		 this.strength = strength;
-		 size = freqs.length - 1;
-		 centers = new double[size];
-		 center  = new boolean[size];  
-		 lowers  = new double[size];
-		 uppers  = new double[size];
-		 for(int i = 0; i < size; i++) {
-			 lowers[i]  = freqs[i];
-			 uppers[i]  = freqs[i+1];
-			 centers[i] = Math.exp((Math.log(lowers[i]) + Math.log(uppers[i])) / 2.0);
-			 double bw = uppers[i] - lowers[i]; 
-			 if(bw < minBandWidth) {
+		 if(centered) {
+			 size = freqs.length;
+			 centers = new double[size];
+			 center  = new boolean[size];  
+			 lowers  = new double[size];
+			 uppers  = new double[size];
+			 for(int i = 0; i < size; i++) {
+				 lowers[i]  = freqs[i] - bandWidth / 2;
+				 uppers[i]  = freqs[i] + bandWidth / 2;
+				 centers[i] = freqs[i];
 				 center[i] = true;
-				 lowers[i] = centers[i] - bw / 2;
-				 uppers[i] = centers[i] + bw / 2;
+			 }
+		 } else {
+			 size = freqs.length - 1;
+			 centers = new double[size];
+			 center  = new boolean[size];  
+			 lowers  = new double[size];
+			 uppers  = new double[size];
+			 for(int i = 0; i < size; i++) {
+				 lowers[i]  = freqs[i];
+				 uppers[i]  = freqs[i+1];
+				 centers[i] = Math.exp((Math.log(lowers[i]) + Math.log(uppers[i])) / 2.0);
+				 double bw = uppers[i] - lowers[i]; 
+				 if(bw < bandWidth) {
+					 center[i] = true;
+					 lowers[i] = centers[i] - bw / 2;
+					 uppers[i] = centers[i] + bw / 2;
+				 }
 			 }
 		 }
 	 }

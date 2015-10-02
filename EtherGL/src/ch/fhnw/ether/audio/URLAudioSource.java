@@ -36,6 +36,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MetaMessage;
@@ -52,6 +53,7 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
+import ch.fhnw.ether.media.EndOfSourceException;
 import ch.fhnw.ether.media.PerTargetState;
 import ch.fhnw.ether.media.RenderCommandException;
 import ch.fhnw.util.TextUtilities;
@@ -136,14 +138,14 @@ public class URLAudioSource extends AbstractAudioSource<URLAudioSource.State> {
 	class State extends PerTargetState<IAudioRenderTarget> implements Runnable {
 		private final BlockingQueue<float[]> data = new LinkedBlockingQueue<>();
 		private       double                 bufferSizeInSecs;
-		private       int                    numPlays;
+		private final AtomicInteger          numPlays;
 		private       double                 size2secs;
 		private       long                   samples;
 
 		public State(IAudioRenderTarget target, int numPlays) {
 			super(target);
 
-			this.numPlays = numPlays;
+			this.numPlays = new AtomicInteger(numPlays);
 			Thread t      = new Thread(this, "AudioReader:" + url.toExternalForm());
 			t.setDaemon(true);
 			t.setPriority(Thread.MIN_PRIORITY);
@@ -153,9 +155,9 @@ public class URLAudioSource extends AbstractAudioSource<URLAudioSource.State> {
 		@Override
 		public void run() {
 			try {
-				byte[] buffer = new byte[fmt.getChannels() * fmt.getSampleSizeInBits() / 8 * 1024];
+				byte[] buffer = new byte[fmt.getChannels() * fmt.getSampleSizeInBits() / 8 * 128];
 
-				while(--numPlays >= 0) {
+				do {
 					try (AudioInputStream in = AudioSystem.getAudioInputStream(url)) {
 						size2secs            = fmt.getSampleRate() * fmt.getChannels();
 						int   bytesPerSample = fmt.getSampleSizeInBits() / 8;
@@ -182,13 +184,14 @@ public class URLAudioSource extends AbstractAudioSource<URLAudioSource.State> {
 								Thread.sleep((long) (bufferSizeInSecs * 500));
 						}
 					}
-				}
+				} while(numPlays.decrementAndGet() > 0);
 			} catch(Throwable t) {
 				t.printStackTrace();
 			}
 		}
 
 		void runInternal() throws RenderCommandException {
+			if(data.isEmpty() && numPlays.get() <= 0) throw new EndOfSourceException(URLAudioSource.this);
 			try {
 				final float[] outData = data.take();
 				bufferSizeInSecs -= outData.length / size2secs;
@@ -288,7 +291,7 @@ public class URLAudioSource extends AbstractAudioSource<URLAudioSource.State> {
 		return fmt.getChannels();
 	}
 
-	public double lengthInSeconds() {
+	public double getLengthInSeconds() {
 		return frameCount / fmt.getFrameRate();
 	}
 }

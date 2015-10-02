@@ -47,6 +47,13 @@ public abstract class AbstractRenderCommand<T extends IRenderTarget, S extends P
 		}
 	}
 	
+	public Parameter getParameter(String name) {
+		for(Parameter p : parameters)
+			if(p.getName().equals(name))
+				return p;
+		return null;
+	}
+
 	public Parameter[] getParameters() {
 		return parameters;
 	}
@@ -73,6 +80,22 @@ public abstract class AbstractRenderCommand<T extends IRenderTarget, S extends P
 
 	public void setVal(Parameter p, float val) {
 		parameters[p.getIdx()].setVal(val);
+	}
+
+	public float getMin(String p) {
+		return parameters[getParameter(p).getIdx()].getMin();
+	}
+
+	public float getMax(String p) {
+		return parameters[getParameter(p).getIdx()].getMax();
+	}
+
+	public float getVal(String p) {
+		return parameters[getParameter(p).getIdx()].getVal();
+	}
+
+	public void setVal(String p, float val) {
+		parameters[getParameter(p).getIdx()].setVal(val);
 	}
 
 	protected abstract void run(S state) throws RenderCommandException;
