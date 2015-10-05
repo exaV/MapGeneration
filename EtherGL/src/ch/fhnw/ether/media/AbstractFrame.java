@@ -33,8 +33,22 @@ public abstract class AbstractFrame {
 	public static final double ASAP = -1;
 	
 	public final double playOutTime;
-
+	private boolean     last;
+	
 	public AbstractFrame(double playOutTime) {
+		this(playOutTime, false);
+	}
+
+	public AbstractFrame(double playOutTime, boolean last) {
 		this.playOutTime = playOutTime;
+		this.last      = last;
+	}
+
+	public final void setLast(boolean state) {
+		this.last = state;
+	}
+	
+	public final boolean isLast() {
+		return last;
 	}
 }

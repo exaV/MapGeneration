@@ -53,7 +53,6 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-import ch.fhnw.ether.media.EndOfSourceException;
 import ch.fhnw.ether.media.PerTargetState;
 import ch.fhnw.ether.media.RenderCommandException;
 import ch.fhnw.util.TextUtilities;
@@ -138,18 +137,13 @@ public class URLAudioSource extends AbstractAudioSource<URLAudioSource.State> {
 	class State extends PerTargetState<IAudioRenderTarget> implements Runnable {
 		private final BlockingQueue<float[]> data = new LinkedBlockingQueue<>();
 		private       double                 bufferSizeInSecs;
-		private final AtomicInteger          numPlays;
+		private final AtomicInteger          numPlays = new AtomicInteger();
 		private       double                 size2secs;
 		private       long                   samples;
 
-		public State(IAudioRenderTarget target, int numPlays) {
+		public State(IAudioRenderTarget target) {
 			super(target);
-
-			this.numPlays = new AtomicInteger(numPlays);
-			Thread t      = new Thread(this, "AudioReader:" + url.toExternalForm());
-			t.setDaemon(true);
-			t.setPriority(Thread.MIN_PRIORITY);
-			t.start();
+			rewind();
 		}
 
 		@Override
@@ -191,15 +185,24 @@ public class URLAudioSource extends AbstractAudioSource<URLAudioSource.State> {
 		}
 
 		void runInternal() throws RenderCommandException {
-			if(data.isEmpty() && numPlays.get() <= 0) throw new EndOfSourceException(URLAudioSource.this);
 			try {
 				final float[] outData = data.take();
 				bufferSizeInSecs -= outData.length / size2secs;
-				getTarget().setFrame(createAudioFrame(samples, outData));
+				AudioFrame frame = createAudioFrame(samples, outData);
+				frame.setLast(data.isEmpty() && numPlays.get() <= 0);
+				getTarget().setFrame(frame);
 				samples += outData.length;
 			} catch(Throwable t) {
 				throw new RenderCommandException(t);
 			}
+		}
+
+		public void rewind() {
+			numPlays.set(URLAudioSource.this.numPlays);
+			Thread t = new Thread(this, "AudioReader:" + url.toExternalForm());
+			t.setDaemon(true);
+			t.setPriority(Thread.MIN_PRIORITY);
+			t.start();
 		}
 	}
 
@@ -273,7 +276,7 @@ public class URLAudioSource extends AbstractAudioSource<URLAudioSource.State> {
 	
 	@Override
 	protected State createState(IAudioRenderTarget target) {
-		return new State(target, numPlays);
+		return new State(target);
 	}
 
 	@Override
@@ -293,5 +296,9 @@ public class URLAudioSource extends AbstractAudioSource<URLAudioSource.State> {
 
 	public double getLengthInSeconds() {
 		return frameCount / fmt.getFrameRate();
+	}
+
+	public void rewind(IAudioRenderTarget target) throws RenderCommandException {
+		state(target).rewind();
 	}
 }

@@ -51,8 +51,8 @@ public abstract class AbstractMediaTarget<F extends AbstractFrame, T extends IRe
 	private   final long                                               startTime    = System.nanoTime();
 	private   final AtomicReference<F>                                 frame        = new AtomicReference<>();
 	private         F                                                  currentFrame;
-	private   final CountDownLatch                                     startLatch   = new CountDownLatch(1);
-	
+	private         CountDownLatch                                     startLatch;
+
 	protected AbstractMediaTarget(int threadPriority) {
 		this.priority = threadPriority;
 	}
@@ -68,14 +68,13 @@ public abstract class AbstractMediaTarget<F extends AbstractFrame, T extends IRe
 			}
 			isRendering.set(false);
 		} else {
+			startLatch = new CountDownLatch(1);
 			Thread t = new Thread(()->{
 				try {
 					isRendering.set(true);
 					startLatch.countDown();
 					while(isRendering())
 						runOneCycle();
-				} catch(EndOfSourceException e) {
-					isRendering.set(false);
 				} catch(Throwable e) {
 					isRendering.set(false);
 					log.severe(e);
@@ -98,6 +97,8 @@ public abstract class AbstractMediaTarget<F extends AbstractFrame, T extends IRe
 		if(tmp != null) {
 			render();
 			currentFrame = frame.getAndSet(null);
+			if(currentFrame.isLast())
+				isRendering.set(false);
 		}
 	}
 
@@ -139,17 +140,23 @@ public abstract class AbstractMediaTarget<F extends AbstractFrame, T extends IRe
 
 	@Override
 	public void sleepUntil(double time) {
-		time *= SEC2NS;
-		long deadline = startTime + (long)time;
-		long wait     = deadline - System.nanoTime();
-		if(wait > 0) {
-			try {
-				Thread.sleep(wait / 1000000L, (int)(wait % 1000000L));
-			} catch(Throwable t) {
-				log.severe(t);
+		try {
+			if(time == NOT_RENDERING) {
+				while(isRendering()) {
+					Thread.sleep(2);
+				}
+			} else {
+				time *= SEC2NS;
+				long deadline = startTime + (long)time;
+				long wait     = deadline - System.nanoTime();
+				if(wait > 0) {
+					Thread.sleep(wait / 1000000L, (int)(wait % 1000000L));
+				} else {
+					//	log.warning("Missed deadline by " + -wait + "ns");
+				}
 			}
-		} else {
-			//	log.warning("Missed deadline by " + -wait + "ns");
+		} catch(Throwable t) {
+			log.severe(t);
 		}
 	}
 
@@ -169,14 +176,4 @@ public abstract class AbstractMediaTarget<F extends AbstractFrame, T extends IRe
 	public AbstractFrameSource<T, ?> getFrameSource() {
 		return program.getFrameSource();
 	}	
-
-	public void waitForSource() {
-		try {
-			while(isRendering()) {
-				Thread.sleep(5);
-			}
-		} catch(Throwable t) {
-			log.warning(t);
-		}
-	}
 }

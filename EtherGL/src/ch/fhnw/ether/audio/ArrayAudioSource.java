@@ -31,7 +31,6 @@ package ch.fhnw.ether.audio;
 
 import java.util.Arrays;
 
-import ch.fhnw.ether.media.EndOfSourceException;
 import ch.fhnw.ether.media.PerTargetState;
 import ch.fhnw.ether.media.RenderCommandException;
 import ch.fhnw.util.FloatList;
@@ -79,7 +78,6 @@ public class ArrayAudioSource extends AbstractAudioSource<ArrayAudioSource.State
 		}
 
 		void runInternal() throws RenderCommandException {
-			if(numPlays <= 0) throw new EndOfSourceException(ArrayAudioSource.this);
 			try {
 				int to = rdPtr + frameSz;
 				if(to >= data.length) {
@@ -87,7 +85,9 @@ public class ArrayAudioSource extends AbstractAudioSource<ArrayAudioSource.State
 					numPlays--;
 				}
 				final float[] outData = Arrays.copyOfRange(data, rdPtr, to);
-				getTarget().setFrame(createAudioFrame(samples, outData));
+				AudioFrame frame = createAudioFrame(samples, outData);
+				frame.setLast(numPlays <= 0);
+				getTarget().setFrame(frame);
 				samples += outData.length;
 				rdPtr = to % data.length;
 			} catch(Throwable t) {

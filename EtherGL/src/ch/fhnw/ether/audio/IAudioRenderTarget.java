@@ -34,9 +34,9 @@ import ch.fhnw.ether.media.RenderCommandException;
 import ch.fhnw.ether.media.RenderProgram;
 
 public interface IAudioRenderTarget extends IRenderTarget {
-	void                   setFrame(AudioFrame frame);
-	AudioFrame             getFrame();
-	int                    getNumChannels();
-	float                  getSampleRate();
-	void                   useProgram(RenderProgram<IAudioRenderTarget> program) throws RenderCommandException;
+	void       setFrame(AudioFrame frame);
+	AudioFrame getFrame();
+	int        getNumChannels();
+	float      getSampleRate();
+	void       useProgram(RenderProgram<IAudioRenderTarget> program) throws RenderCommandException;
 }
