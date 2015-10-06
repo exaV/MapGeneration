@@ -27,19 +27,33 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.media;
+package ch.fhnw.ether.audio;
 
+import java.util.Random;
 
+import ch.fhnw.ether.media.AbstractRenderCommand;
+import ch.fhnw.ether.media.Parameter;
+import ch.fhnw.ether.media.RenderCommandException;
+import ch.fhnw.ether.media.Stateless;
+import ch.fhnw.util.math.MathUtilities;
 
-public interface IRenderTarget {
-	public static final double NOT_RENDERING = -1;
-
-	boolean                   isRendering();
-	void                      start() throws RenderCommandException;
-	void                      render() throws RenderCommandException;
-	void                      stop() throws RenderCommandException;
-	PerTargetState<?>         getState(AbstractRenderCommand<?,?> cmd) throws RenderCommandException;
-	void                      sleepUntil(double time);
-	double                    getTime();
-	AbstractFrameSource<?, ?> getFrameSource();
+public class WhiteNoise extends AbstractRenderCommand<IAudioRenderTarget,Stateless<IAudioRenderTarget>> {
+	private static final Parameter GAIN = new Parameter("gain", "Gain", 0, 1, 0);
+	private static final Random    RND  = new Random();
+	
+	public WhiteNoise() {
+		super(GAIN);
+	}
+		
+	@Override
+	protected void run(Stateless<IAudioRenderTarget> state) throws RenderCommandException {
+		final double   gain  = getVal(GAIN);
+		final float[] samples = state.getTarget().getFrame().samples;
+		
+		for(int i = 0 ; i < samples.length ; i++)
+			samples[i] += MathUtilities.clamp(((RND.nextFloat() * 2f) - 1f) * gain, -1, 1);
+		
+		state.getTarget().getFrame().modified();
+	}
+	
 }

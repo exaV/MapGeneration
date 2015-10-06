@@ -31,6 +31,7 @@ package ch.fhnw.ether.media;
 
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -50,6 +51,7 @@ public abstract class AbstractMediaTarget<F extends AbstractFrame, T extends IRe
 	private   final long                                               startTime    = System.nanoTime();
 	private   final AtomicReference<F>                                 frame        = new AtomicReference<>();
 	private         F                                                  currentFrame;
+	private         CountDownLatch                                     startLatch;
 
 	protected AbstractMediaTarget(int threadPriority) {
 		this.priority = threadPriority;
@@ -66,9 +68,11 @@ public abstract class AbstractMediaTarget<F extends AbstractFrame, T extends IRe
 			}
 			isRendering.set(false);
 		} else {
+			startLatch = new CountDownLatch(1);
 			Thread t = new Thread(()->{
 				try {
 					isRendering.set(true);
+					startLatch.countDown();
 					while(isRendering())
 						runOneCycle();
 				} catch(Throwable e) {
@@ -79,6 +83,11 @@ public abstract class AbstractMediaTarget<F extends AbstractFrame, T extends IRe
 			t.setDaemon(true);
 			t.setPriority(priority);
 			t.start();
+			try {
+				startLatch.await();
+			} catch (InterruptedException e) {
+				log.severe(e);
+			}
 		}
 	}
 
@@ -88,6 +97,8 @@ public abstract class AbstractMediaTarget<F extends AbstractFrame, T extends IRe
 		if(tmp != null) {
 			render();
 			currentFrame = frame.getAndSet(null);
+			if(currentFrame.isLast())
+				isRendering.set(false);
 		}
 	}
 
@@ -110,7 +121,7 @@ public abstract class AbstractMediaTarget<F extends AbstractFrame, T extends IRe
 	}
 
 	@Override
-	public void stop() {
+	public void stop() throws RenderCommandException {
 		isRendering.set(false);
 	}
 
@@ -129,17 +140,23 @@ public abstract class AbstractMediaTarget<F extends AbstractFrame, T extends IRe
 
 	@Override
 	public void sleepUntil(double time) {
-		time *= SEC2NS;
-		long deadline = startTime + (long)time;
-		long wait     = deadline - System.nanoTime();
-		if(wait > 0) {
-			try {
-				Thread.sleep(wait / 1000000L, (int)(wait % 1000000L));
-			} catch(Throwable t) {
-				log.severe(t);
+		try {
+			if(time == NOT_RENDERING) {
+				while(isRendering()) {
+					Thread.sleep(2);
+				}
+			} else {
+				time *= SEC2NS;
+				long deadline = startTime + (long)time;
+				long wait     = deadline - System.nanoTime();
+				if(wait > 0) {
+					Thread.sleep(wait / 1000000L, (int)(wait % 1000000L));
+				} else {
+					//	log.warning("Missed deadline by " + -wait + "ns");
+				}
 			}
-		} else {
-			//	log.warning("Missed deadline by " + -wait + "ns");
+		} catch(Throwable t) {
+			log.severe(t);
 		}
 	}
 
@@ -158,5 +175,5 @@ public abstract class AbstractMediaTarget<F extends AbstractFrame, T extends IRe
 	@Override
 	public AbstractFrameSource<T, ?> getFrameSource() {
 		return program.getFrameSource();
-	}
+	}	
 }
