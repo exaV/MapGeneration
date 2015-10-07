@@ -91,8 +91,6 @@ public class GLContextManager {
 					try {
 						context = contexts.take();
 					} catch (InterruptedException e) {
-						// XXX what to do in this case?
-						e.printStackTrace();
 					}
 				}
 			}
@@ -141,7 +139,7 @@ public class GLContextManager {
 	}
 
 	public static GLCapabilities getCapabilities(Config config) {
-		// FIXME: make this configurable
+		// TODO: make this configurable
 		GLProfile profile = GLProfile.get(GLProfile.GL3);
 		GLCapabilities caps = new GLCapabilities(profile);
 		caps.setAlphaBits(8);

@@ -234,7 +234,7 @@ public class TUIO {
 
 	private void handleSwipeOrPinch2(float swipeX, float swipeY, float pinch) {
 		DefaultCameraControl control = new DefaultCameraControl(view.getCamera());
-		// XXX do we really need to discriminate between swipe and pinch, or just let both go at once?
+		// do we really need to discriminate between swipe and pinch, or just let both go at once?
 		if (Math.abs(pinch) > 0.001) {
 			control.addToDistance(-SCALE_DISTANCE * pinch);
 		} else {
