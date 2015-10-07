@@ -38,13 +38,15 @@
 	 private static final Parameter LOW  = new Parameter("low",  "Low",  0, 20000, 30);
 	 private static final Parameter HIGH = new Parameter("high", "High", 0, 20000, 20000);
 
-	 private ButterworthFilter[] bandPass;
+	 private ButterworthFilter[][] bandPass;
 
 	 float lowOld  = -1;
 	 float highOld = -1;
+	 private final int strength;
 
-	 public BandPass() {
+	 public BandPass(int strength) {
 		 super(LOW, HIGH);
+		 this.strength = strength;
 	 }
 
 	 @Override
@@ -56,17 +58,19 @@
 		 final float[]            samples   = target.getFrame().samples;
 
 		 if(low != lowOld || high != highOld) {
-			 bandPass = new ButterworthFilter[nChannels];
+			 bandPass = new ButterworthFilter[nChannels][strength];
 			 for(int i = 0; i < nChannels; i++)
-				 bandPass[i] = ButterworthFilter.getBandpassFilter(target.getSampleRate(), low, high);
+				 for(int j = 0; j < strength; j++)
+					 bandPass[i][j] = ButterworthFilter.getBandpassFilter(target.getSampleRate(), low, high);
 			 lowOld  = low;
 			 highOld = high;
 		 }
 
 		 for(int i = 0; i < samples.length; i += nChannels)
-			 for(int j = 0; j < nChannels; j++)
-				 samples[i+j] = bandPass[j].process(samples[i+j]);
-		 
+			 for(int c = 0; c < nChannels; c++)
+				 for(int j = 0; j < strength; j++)
+					 samples[i+c] = bandPass[c][j].process(samples[i+c]);
+
 		 target.getFrame().modified();
 	 }	
  }
