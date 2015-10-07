@@ -30,10 +30,10 @@
 package ch.fhnw.util.math;
 
 public final class MathUtilities {
-	static public final float FLOAT_ROUNDING_ERROR = 0.000001f; // 32 bits
-	static public final float PI = (float) Math.PI;
-	static public final float RADIANS_TO_DEGREES = 180f / PI;
-	static public final float DEGREES_TO_RADIANS = PI / 180;
+	public static final float FLOAT_ROUNDING_ERROR = 0.000001f; // 32 bits
+	public static final float PI = (float) Math.PI;
+	public static final float RADIANS_TO_DEGREES = 180f / PI;
+	public static final float DEGREES_TO_RADIANS = PI / 180;
 
 	public static float map(float value, float sourceMin, float sourceMax, float targetMin, float targetMax) {
 		if (sourceMax - sourceMin == 0)

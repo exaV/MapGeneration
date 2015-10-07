@@ -255,7 +255,7 @@ public final class Mat3 implements IFloatArrayCopyProvider {
 	}
 
 	/**
-	 * Multiplies an arbitrary sequence matrices (result = a * b * c * d * ...).
+	 * Multiplies an arbitrary sequence of matrices (result = a * b * c * d * ...).
 	 *
 	 * @param a
 	 *            Sequence of 3x3 matrices in column-major order

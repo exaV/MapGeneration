@@ -40,32 +40,4 @@ public final class Transform {
 	public static Mat4 trs(Vec3 t, Vec3 r, Vec3 s) {
 		return trs(t.x, t.y, t.z, r.x, r.y, r.z, s.x, s.y, s.z);
 	}
-	
-/*
-
-	public float[] transformVertices(float[] vertices) {
-		validateVertexTransform(origin);
-		return vertexTransform.transform(vertices);
-	}
-
-	public float[] transformNormals(float[] normals) {
-		validateNormalTransform();
-		return normalTransform.transform(normals);
-	}
-
-	private void validateVertexTransform(Vec3 origin) {
-		if (vertexTransform == null) {
-			vertexTransform = Mat4.multiply(Mat4.translate(translation), Mat4.rotate(rotation.x, Vec3.X), Mat4.rotate(rotation.y, Vec3.Y),
-					Mat4.rotate(rotation.z, Vec3.Z), Mat4.scale(scale), Mat4.translate(origin.negate()));
-		}
-	}
-
-	private void validateNormalTransform() {
-		if (normalTransform == null) {
-			normalTransform = Mat3.multiply(Mat3.rotate(rotation.x, Vec3.X), Mat3.rotate(rotation.y, Vec3.Y), Mat3.rotate(rotation.z, Vec3.Z),
-					Mat3.scale(scale));
-			normalTransform = normalTransform.inverse().transpose();
-		}
-	}
-*/
 }

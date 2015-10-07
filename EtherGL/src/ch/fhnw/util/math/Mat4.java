@@ -343,7 +343,7 @@ public final class Mat4 implements IFloatArrayCopyProvider {
 	}
 
 	/**
-	 * Multiplies an arbitrary sequence matrices (result = a * b * c * d * ...).
+	 * Multiplies an arbitrary sequence of matrices (result = a * b * c * d * ...).
 	 *
 	 * @param a
 	 *            Sequence of 4x4 matrices in column-major order
