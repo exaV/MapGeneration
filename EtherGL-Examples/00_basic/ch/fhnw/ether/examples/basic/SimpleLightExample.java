@@ -81,6 +81,7 @@ public final class SimpleLightExample {
 	}
 
 	private static final boolean ADD_BUNNY = true;
+	private static final boolean REMOVE_BUNNY = false;
 
 	private static final float INC_XY = 0.25f;
 	private static final float INC_Z = 0.25f;
@@ -213,19 +214,21 @@ public final class SimpleLightExample {
 
 		controller.repaintViews();
 		
-		// test auto disposer
-		try {
-			Thread.sleep(1000);
-			scene.remove3DObject(solidBunnyT);
-			solidBunnyT = null;
-			controller.repaintViews();
-			Thread.sleep(1000);
-			AutoDisposer.runGC();
-			Thread.sleep(1000);
-			AutoDisposer.runGC();
-			Thread.sleep(1000);
-			AutoDisposer.runGC();
-		} catch (Exception e) {
+		if (REMOVE_BUNNY) {
+			// test auto disposer
+			try {
+				Thread.sleep(1000);
+				scene.remove3DObject(solidBunnyT);
+				solidBunnyT = null;
+				controller.repaintViews();
+				Thread.sleep(1000);
+				AutoDisposer.runGC();
+				Thread.sleep(1000);
+				AutoDisposer.runGC();
+				Thread.sleep(1000);
+				AutoDisposer.runGC();
+			} catch (Exception e) {
+			}
 		}
 	}
 }
