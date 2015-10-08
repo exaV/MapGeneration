@@ -72,6 +72,7 @@ public class Slider extends AbstractWidget {
 
 	@Override
 	public boolean hit(int x, int y, IView view) {
+		y = view.getViewport().h - y;
 		UI ui = getUI();
 		float bx = ui.getX() + getX() * (SLIDER_GAP + SLIDER_WIDTH);
 		float by = ui.getY() + getY() * (SLIDER_GAP + SLIDER_HEIGHT);

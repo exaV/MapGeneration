@@ -103,6 +103,7 @@ public class Button extends AbstractWidget {
 
 	@Override
 	public boolean hit(int x, int y, IView view) {
+		y = view.getViewport().h - y;
 		UI ui = getUI();
 		float bx = ui.getX() + getX() * (BUTTON_GAP + BUTTON_WIDTH);
 		float by = ui.getY() + getY() * (BUTTON_GAP + BUTTON_HEIGHT);

@@ -43,7 +43,7 @@ import com.jogamp.newt.event.MouseEvent;
 
 public final class UI {
 	private final IController controller;
-	private final GraphicsPlane text = new GraphicsPlane(0, 0, 512, 512);
+	private final GraphicsPlane plane = new GraphicsPlane(0, 0, 512, 512);
 	private final UpdateRequest updater = new UpdateRequest();
 
 	private final List<IWidget> widgets = new ArrayList<>();
@@ -56,28 +56,30 @@ public final class UI {
 	}
 
 	public void enable() {
-		controller.getRenderer().addMesh(text.getMesh());
+		controller.getRenderer().addMesh(plane.getMesh());
 		requestUpdate();
 	}
 
 	public void disable() {
-		controller.getRenderer().removeMesh(text.getMesh());
+		controller.getRenderer().removeMesh(plane.getMesh());
 	}
 
 	public void update() {
 		if (!updater.needsUpdate())
 			return;
 
-		text.clear();
+		plane.clear();
 
-		for (IWidget widget : widgets) {
-			widget.draw(text);
+		synchronized (widgets) {
+			for (IWidget widget : widgets) {
+				widget.draw(plane);
+			}
+	
+			if (message != null)
+				plane.drawString(message, 256, plane.getHeight() - 8);
 		}
-
-		if (message != null)
-			text.drawString(message, 256, text.getHeight() - 8);
 		
-		text.update();
+		plane.update();
 	}
 
 	public List<IWidget> getWidgets() {
@@ -86,7 +88,9 @@ public final class UI {
 
 	public void addWidget(IWidget widget) {
 		widget.setUI(this);
-		widgets.add(widget);
+		synchronized (widgets) {
+			widgets.add(widget);
+		}
 		requestUpdate();
 	}
 
@@ -95,26 +99,28 @@ public final class UI {
 	}
 
 	public void setMessage(String message) {
-		if (this.message != null && this.message.equals(message))
-			return;
-		this.message = message;
+		synchronized (widgets) {
+		 	if (this.message != null && this.message.equals(message))
+				return;
+			this.message = message;
+		}
 		requestUpdate();
 	}
 
 	public int getX() {
-		return text.getX();
+		return plane.getX();
 	}
 
 	public int getY() {
-		return text.getX();
+		return plane.getX();
 	}
 
 	public int getWidth() {
-		return text.getWidth();
+		return plane.getWidth();
 	}
 
 	public int getHeight() {
-		return text.getHeight();
+		return plane.getHeight();
 	}
 
 	public void requestUpdate() {
@@ -173,6 +179,7 @@ public final class UI {
 					return;
 				}
 			}
+			setMessage(null);
 		}
 	}
 

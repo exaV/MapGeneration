@@ -51,9 +51,10 @@ import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLEventListener;
 
 /**
- * Default view class that implements some basic functionality. Use as base for more complex implementations.
+ * Default view class that implements some basic functionality. Use as base for
+ * more complex implementations.
  * 
- * Thread safety: getCameraMatrices & getViewport are thread safe.
+ * Thread safety: setCamera, getCameraMatrices, setCameraMatrices, getViewport are thread safe.
  *
  * @author radar
  */
@@ -94,7 +95,7 @@ public class DefaultView implements IView {
 
 	@Override
 	public void dispose() {
-		// nothing else to be done here, the gl event listener below will deal with disposing
+		// the gl event listener below will deal with disposing
 		window.dispose();
 	}
 
@@ -129,7 +130,8 @@ public class DefaultView implements IView {
 		synchronized (this) {
 			ICamera c = camera;
 			if (cameraMatrices == null)
-				cameraMatrices = new CameraMatrices(c.getPosition(), c.getTarget(), c.getUp(), c.getFov(), c.getNear(), c.getFar(), viewport.getAspect());
+				cameraMatrices = new CameraMatrices(c.getPosition(), c.getTarget(), c.getUp(), 
+													c.getFov(), c.getNear(), c.getFar(), viewport.getAspect());
 			return cameraMatrices;
 		}
 	}
@@ -195,7 +197,6 @@ public class DefaultView implements IView {
 	// GLEventListener implementation
 
 	private GLEventListener glEventListener = new GLEventListener() {
-
 		@Override
 		public final void init(GLAutoDrawable drawable) {
 			try {
@@ -204,8 +205,8 @@ public class DefaultView implements IView {
 				// FIXME: need to make this configurable and move to renderer
 				gl.glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
 				gl.glClearDepth(1.0f);
-				
-				if(viewConfig.has(ViewFlag.SMOOTH_LINES)) {
+
+				if (viewConfig.has(ViewFlag.SMOOTH_LINES)) {
 					gl.glEnable(GL.GL_LINE_SMOOTH);
 					gl.glHint(GL.GL_LINE_SMOOTH_HINT, GL.GL_NICEST);
 				}
@@ -227,11 +228,12 @@ public class DefaultView implements IView {
 				gl3.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT | GL.GL_STENCIL_BUFFER_BIT);
 
 				gl3.glEnable(GL.GL_MULTISAMPLE);
-				
+
 				if (!isEnabled())
 					return;
-				
-				// repaint UI surface to texture if necessary (FIXME: should this be done on model or render thread?)
+
+				// repaint UI surface to texture if necessary
+				// FIXME: should this be done on model or render thread?
 				UI ui = getController().getUI();
 				if (ui != null)
 					ui.update();
@@ -296,7 +298,6 @@ public class DefaultView implements IView {
 	// key listener
 
 	private KeyListener keyListener = new KeyListener() {
-
 		@Override
 		public void keyPressed(KeyEvent e) {
 			try {
@@ -319,7 +320,6 @@ public class DefaultView implements IView {
 	// mouse listener
 
 	private MouseListener mouseListener = new MouseListener() {
-
 		@Override
 		public void mouseEntered(MouseEvent e) {
 			try {
