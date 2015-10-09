@@ -101,7 +101,7 @@ public class NavigationTool extends AbstractTool {
 		float turnFactor = 0.2f;
 		if (button == MouseEvent.BUTTON1) {
 			control.addToAzimuth(turnFactor * dx);
-			control.addToElevation(-turnFactor * dy);
+			control.addToElevation(turnFactor * dy);
 		} else if (button == MouseEvent.BUTTON2 || button == MouseEvent.BUTTON3) {
 			control.track(moveFactor * dx, moveFactor * dy);
 		}

@@ -63,7 +63,7 @@ public class DefaultCameraControl {
 	// track, pan, dolly, roll (in camera coordinate system, updates target)
 
 	public void track(float deltaX, float deltaY) {
-		Vec3 d = getCameraXAxis().scale(deltaX).add(getCameraYAxis().scale(deltaY));
+		Vec3 d = camera.getCameraXAxis().scale(deltaX).add(camera.getCameraYAxis().scale(deltaY));
 		camera.setPosition(camera.getPosition().add(d));
 		camera.setTarget(camera.getTarget().add(d));
 	}
@@ -86,7 +86,7 @@ public class DefaultCameraControl {
 	// orbiting mode with respect to X-Y plane (keeps target in position)
 
 	/**
-	 * Orbit around target with world-z axis
+	 * Orbit around target with world-z axis. Positive value orbits counter-clock-wise around z axis.
 	 * @param delta relative angle in degrees
 	 */
 	public void addToAzimuth(float delta) {
@@ -100,11 +100,11 @@ public class DefaultCameraControl {
 	}
 
 	/**
-	 * Orbit around target on camera-x axis
+	 * Orbit around target on camera-x axis. Positive value orbits clock-wise around camera-x axis, i.e. moves camera "up"
 	 * @param delta relative angle in degrees
 	 */
 	public void addToElevation(float delta) {
-		Mat4 m = Mat4.multiply(Mat4.translate(camera.getTarget()), Mat4.rotate(delta, getCameraXAxis()), Mat4.translate(camera.getTarget().negate()));
+		Mat4 m = Mat4.multiply(Mat4.translate(camera.getTarget()), Mat4.rotate(-delta, camera.getCameraXAxis()), Mat4.translate(camera.getTarget().negate()));
 		
 		Vec3 p = m.transform(camera.getPosition());
 		Vec3 u = m.transform(camera.getPosition().add(camera.getUp())).subtract(p);
@@ -124,36 +124,18 @@ public class DefaultCameraControl {
 	
 	public void setDistance(float distance) {
 		Vec3 t = camera.getTarget();
-		Vec3 z = getCameraZAxis().scale(distance);
+		Vec3 z = camera.getCameraZAxis().scale(distance);
 		camera.setPosition(t.add(z));
 	}
 
 	public void addToDistance(float delta) {
 		Vec3 p = camera.getPosition();
 		Vec3 t = camera.getTarget();
-		Vec3 z = getCameraZAxis().scale(delta);
+		Vec3 z = camera.getCameraZAxis().scale(delta);
 		p = p.add(z);
 		if (delta < 0 && (p.distance(t) < MIN_DISTANCE || p.subtract(t).dot(z) > 0))
 			setDistance(MIN_DISTANCE);	
 		else
 			camera.setPosition(p);
-	}
-	
-	private Vec3 getCameraXAxis() {
-		Vec3 u = camera.getUp();
-		Vec3 z = getCameraZAxis();
-		return u.cross(z).normalize();
-	}
-	
-	private Vec3 getCameraYAxis() {
-		Vec3 x = getCameraXAxis();
-		Vec3 z = getCameraZAxis();
-		return z.cross(x).normalize();
-	}
-
-	private Vec3 getCameraZAxis() {
-		Vec3 p = camera.getPosition();
-		Vec3 t = camera.getTarget();
-		return p.subtract(t).normalize();
 	}
 }

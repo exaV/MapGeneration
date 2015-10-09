@@ -133,6 +133,21 @@ public final class Camera implements ICamera {
 	}
 	
 	@Override
+	public Vec3 getCameraXAxis() {
+		return up.cross(getCameraZAxis()).normalize();
+	}
+	
+	@Override
+	public Vec3 getCameraYAxis() {
+		return getCameraZAxis().cross(getCameraXAxis()).normalize();
+	}
+
+	@Override
+	public Vec3 getCameraZAxis() {
+		return position.subtract(target).normalize();
+	}
+
+	@Override
 	public String getName() {
 		return name;
 	}
@@ -151,6 +166,11 @@ public final class Camera implements ICamera {
 	@Override
 	public void removeUpdateListener(IUpdateListener listener) {
 		listeners.removeListener(listener);
+	}
+	
+	@Override
+	public String toString() {
+		return "camera '" + getName() + "' [" + position + target + up + "][" + getCameraXAxis() + getCameraYAxis() + getCameraZAxis() + "]";
 	}
 	
 	private void requestUpdate() {

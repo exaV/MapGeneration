@@ -58,14 +58,14 @@ public final class TransformExample {
 		camera.setPosition(new Vec3(0, 5, 0));
 		camera.setUp(new Vec3(0, 0, 1));
 		IView view = new DefaultView(controller, 100, 100, 500, 500, IView.INTERACTIVE_VIEW, "Simple Cube", camera);
-		controller.addView(view);
+		controller.addView(view);		
 
 		// Create scene and add a cube
 		IScene scene = new DefaultScene(controller);
 		controller.setScene(scene);
 
 		IMesh mesh = MeshLibrary.createCube();
-		scene.add3DObject(mesh);
+		scene.add3DObject(mesh);		
 		
 		// Add an exit button
 		controller.getUI().addWidget(new Button(0, 0, "Quit", "Quit", KeyEvent.VK_ESCAPE, (button, v) -> System.exit(0)));
