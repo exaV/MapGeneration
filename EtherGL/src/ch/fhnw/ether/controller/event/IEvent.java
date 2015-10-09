@@ -27,61 +27,44 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.examples.mapping;
+package ch.fhnw.ether.controller.event;
 
-import ch.fhnw.ether.controller.DefaultController;
-import ch.fhnw.ether.controller.event.IKeyEvent;
-import ch.fhnw.ether.controller.tool.AbstractTool;
-import ch.fhnw.ether.controller.tool.ITool;
-import ch.fhnw.ether.mapping.BoxCalibrationModel;
-import ch.fhnw.ether.mapping.tool.CalibrationTool;
-import ch.fhnw.ether.mapping.tool.FillTool;
-import ch.fhnw.util.math.Vec3;
+import ch.fhnw.ether.view.IView;
 
-public class MappingController extends DefaultController {
-	private static final String[] HELP = { "Simple Mapping Example (Without Content)", "", "[1] Default Tool / View", "[2] Mapping Calibration",
-			"[3] Projector Adjustment", "", "Use Mouse Buttons + Shift or Mouse Wheel to Navigate" };
+public interface IEvent {
+	static final int SHIFT_MASK = 1 << 0;
+	static final int CONTROL_MASK = 1 << 1;
+	static final int META_MASK = 1 << 2;
+	static final int ALT_MASK = 1 << 3;
+	static final int ALT_GRAPH_MASK = 1 << 4;
+	
+	static final int MODIFIER_MASK = SHIFT_MASK | CONTROL_MASK | META_MASK | ALT_MASK | ALT_GRAPH_MASK;
 
-	private final ITool defaultTool = new AbstractTool(this) {
-	};
+	IView getView();
 
-	private final CalibrationTool calibrationTool = new CalibrationTool(this, new BoxCalibrationModel(0.5f, 0.5f, 0.5f, 0.8f, 0.8f));
-	private final FillTool fillTool = new FillTool(this);
-
-	public MappingController() {
+	int getModifiers();
+	
+	default boolean isModifierDown() {
+		return getModifiers() != 0;
+	}
+	
+	default boolean isShiftDown() {
+		return (getModifiers() & SHIFT_MASK) != 0;
 	}
 
-	public void modelChanged() {
-		repaintViews();
+	default boolean isControlDown() {
+		return (getModifiers() & CONTROL_MASK) != 0;
 	}
 
-	@Override
-	public void keyPressed(IKeyEvent e) {
-		switch (e.getKey()) {
-		case IKeyEvent.VK_0:
-		case IKeyEvent.VK_1:
-			setCurrentTool(defaultTool);
-			break;
-		case IKeyEvent.VK_2:
-			setCurrentTool(calibrationTool);
-			break;
-		case IKeyEvent.VK_3:
-			setCurrentTool(fillTool);
-			break;
-		case IKeyEvent.VK_H:
-			printHelp(HELP);
-			break;
-		default:
-			super.keyPressed(e);
-		}
-		repaintViews();
+	default boolean isMetaDown() {
+		return (getModifiers() & META_MASK) != 0;
 	}
 
-	public Vec3 getLightPosition() {
-		return Vec3.Z;
+	default boolean isAltDown() {
+		return (getModifiers() & ALT_MASK) != 0;
 	}
 
-	public void setLightPosition(Vec3 position) {
-		// unimplemented
+	default boolean isAltGraphDown() {
+		return (getModifiers() & ALT_GRAPH_MASK) != 0;
 	}
 }

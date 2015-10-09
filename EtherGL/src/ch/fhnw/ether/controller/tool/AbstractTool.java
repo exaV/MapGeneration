@@ -30,10 +30,9 @@
 package ch.fhnw.ether.controller.tool;
 
 import ch.fhnw.ether.controller.IController;
+import ch.fhnw.ether.controller.event.IKeyEvent;
+import ch.fhnw.ether.controller.event.IPointerEvent;
 import ch.fhnw.ether.view.IView;
-
-import com.jogamp.newt.event.KeyEvent;
-import com.jogamp.newt.event.MouseEvent;
 
 public abstract class AbstractTool implements ITool {
 	private static final int SNAP_SIZE = 4;
@@ -63,33 +62,33 @@ public abstract class AbstractTool implements ITool {
 	// key listener
 
 	@Override
-	public void keyPressed(KeyEvent e, IView view) {
+	public void keyPressed(IKeyEvent e) {
 	}
 
 	// mouse listener
 
 	@Override
-	public void mousePressed(MouseEvent e, IView view) {
+	public void pointerPressed(IPointerEvent e) {
 	}
 
 	@Override
-	public void mouseReleased(MouseEvent e, IView view) {
+	public void pointerReleased(IPointerEvent e) {
 	}
 
 	// mouse motion listener
 
 	@Override
-	public void mouseMoved(MouseEvent e, IView view) {
+	public void pointerMoved(IPointerEvent e) {
 	}
 
 	@Override
-	public void mouseDragged(MouseEvent e, IView view) {
+	public void pointerDragged(IPointerEvent e) {
 	}
 
 	// mouse wheel listener
 
 	@Override
-	public void mouseWheelMoved(MouseEvent e, IView view) {
+	public void pointerScrolled(IPointerEvent e) {
 	}
 
 	// FIXME: get rid of this or move to PickUtil

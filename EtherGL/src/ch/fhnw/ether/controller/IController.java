@@ -30,6 +30,8 @@
 import java.util.Collection;
 import java.util.List;
 
+import ch.fhnw.ether.controller.event.IKeyEvent;
+import ch.fhnw.ether.controller.event.IPointerEvent;
 import ch.fhnw.ether.controller.event.IScheduler;
 import ch.fhnw.ether.controller.tool.ITool;
 import ch.fhnw.ether.controller.tool.NavigationTool;
@@ -37,9 +39,6 @@ import ch.fhnw.ether.render.IRenderer;
 import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.ui.UI;
 import ch.fhnw.ether.view.IView;
-
-import com.jogamp.newt.event.KeyEvent;
-import com.jogamp.newt.event.MouseEvent;
 
 /**
  * A controller that coordinates both model and associated views. It also handles the relevant events coming from
@@ -167,29 +166,29 @@ public interface IController {
 
 	// key listener
 
-	void keyPressed(KeyEvent e, IView view);
+	void keyPressed(IKeyEvent e);
 
-	void keyReleased(KeyEvent e, IView view);
+	void keyReleased(IKeyEvent e);
 
-	// mouse listener
+	// pointer listener
 
-	void mouseEntered(MouseEvent e, IView view);
+	void pointerEntered(IPointerEvent e);
 
-	void mouseExited(MouseEvent e, IView view);
+	void pointerExited(IPointerEvent e);
 
-	void mousePressed(MouseEvent e, IView view);
+	void pointerPressed(IPointerEvent e);
 
-	void mouseReleased(MouseEvent e, IView view);
+	void pointerReleased(IPointerEvent e);
 
-	void mouseClicked(MouseEvent e, IView view);
+	void pointerClicked(IPointerEvent e);
 
-	// mouse motion listener
+	// pointer motion listener
 
-	void mouseMoved(MouseEvent e, IView view);
+	void pointerMoved(IPointerEvent e);
 
-	void mouseDragged(MouseEvent e, IView view);
+	void pointerDragged(IPointerEvent e);
 
-	// mouse wheel listener
+	// pointer scroll listener
 
-	void mouseWheelMoved(MouseEvent e, IView view);
+	void pointerScrolled(IPointerEvent e);
 }

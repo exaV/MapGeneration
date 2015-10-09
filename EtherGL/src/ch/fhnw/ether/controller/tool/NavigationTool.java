@@ -32,7 +32,10 @@ package ch.fhnw.ether.controller.tool;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.jogamp.newt.event.MouseEvent;
+
 import ch.fhnw.ether.controller.IController;
+import ch.fhnw.ether.controller.event.IPointerEvent;
 import ch.fhnw.ether.scene.camera.DefaultCameraControl;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
@@ -45,8 +48,6 @@ import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.IView.ViewFlag;
 import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Vec3;
-
-import com.jogamp.newt.event.MouseEvent;
 
 public class NavigationTool extends AbstractTool {
 	public static final RGBA GRID_COLOR = RGBA.GRAY;
@@ -77,45 +78,46 @@ public class NavigationTool extends AbstractTool {
 	}
 
 	@Override
-	public void mousePressed(MouseEvent e, IView view) {
+	public void pointerPressed(IPointerEvent e) {
 		mouseX = e.getX();
 		mouseY = e.getY();
 		button = e.getButton();
-		view.repaint();
+		e.getView().repaint();
 	}
 
 	@Override
-	public void mouseMoved(MouseEvent e, IView view) {
+	public void pointerMoved(IPointerEvent e) {
 		mouseX = e.getX();
 		mouseY = e.getY();
 		button = e.getButton();
 	}
 
 	@Override
-	public void mouseDragged(MouseEvent e, IView view) {
-		DefaultCameraControl control = new DefaultCameraControl(view.getCamera());
-		float dx = e.getX() - mouseX;
-		float dy = e.getY() - mouseY;
-		float moveFactor = -0.001f * control.getDistance();
-		float turnFactor = -0.2f;
+	public void pointerDragged(IPointerEvent e) {
+		DefaultCameraControl control = new DefaultCameraControl(e.getView().getCamera());
+		float dx = mouseX - e.getX();
+		float dy = mouseY - e.getY();
+		float moveFactor = 0.001f * control.getDistance();
+		float turnFactor = 0.2f;
 		if (button == MouseEvent.BUTTON1) {
 			control.addToAzimuth(turnFactor * dx);
-			control.addToElevation(turnFactor * dy);
+			control.addToElevation(-turnFactor * dy);
 		} else if (button == MouseEvent.BUTTON2 || button == MouseEvent.BUTTON3) {
-			control.track(moveFactor * dx, -moveFactor * dy);
+			control.track(moveFactor * dx, moveFactor * dy);
 		}
 		mouseX = e.getX();
 		mouseY = e.getY();
 	}
 
 	@Override
-	public void mouseWheelMoved(MouseEvent e, IView view) {
-		DefaultCameraControl control = new DefaultCameraControl(view.getCamera());
-		float zoomFactor = -0.1f;
+	public void pointerScrolled(IPointerEvent e) {
+		DefaultCameraControl control = new DefaultCameraControl(e.getView().getCamera());
+		float zoomFactor = 0.1f;
+		control.addToAzimuth(-e.getScrollX());
 		if (e.isControlDown()) {
-			control.dolly(e.getRotation()[1] * zoomFactor);
+			control.dolly(e.getScrollY() * zoomFactor);
 		} else {
-			control.addToDistance(e.getRotation()[1] * zoomFactor);
+			control.addToDistance(e.getScrollY() * zoomFactor);
 		}
 	}
 

@@ -32,11 +32,9 @@ package ch.fhnw.ether.controller.tool;
 import java.util.Map;
 
 import ch.fhnw.ether.controller.IController;
+import ch.fhnw.ether.controller.event.IPointerEvent;
 import ch.fhnw.ether.controller.tool.PickUtilities.PickMode;
 import ch.fhnw.ether.scene.I3DObject;
-import ch.fhnw.ether.view.IView;
-
-import com.jogamp.newt.event.MouseEvent;
 
 public class PickTool extends AbstractTool {
 	public PickTool(IController controller) {
@@ -44,10 +42,10 @@ public class PickTool extends AbstractTool {
 	}
 
 	@Override
-	public void mousePressed(MouseEvent e, IView view) {
+	public void pointerPressed(IPointerEvent e) {
 		int x = e.getX();
-		int y = view.getViewport().h - e.getY();
-		Map<Float, I3DObject> pickables = PickUtilities.pickFromScene(PickMode.POINT, x, y, 0, 0, view);
+		int y = e.getY();
+		Map<Float, I3DObject> pickables = PickUtilities.pickFromScene(PickMode.POINT, x, y, 0, 0, e.getView());
 		if (pickables.isEmpty())
 			System.out.println("no pick");
 		else

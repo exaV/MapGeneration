@@ -29,14 +29,6 @@
 
 package ch.fhnw.ether.view.gl;
 
-import ch.fhnw.ether.controller.IController;
-import ch.fhnw.ether.scene.camera.CameraMatrices;
-import ch.fhnw.ether.scene.camera.ICamera;
-import ch.fhnw.ether.ui.UI;
-import ch.fhnw.ether.view.IView;
-import ch.fhnw.util.Viewport;
-import ch.fhnw.util.math.Mat4;
-
 import com.jogamp.nativewindow.util.Point;
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.KeyListener;
@@ -49,6 +41,17 @@ import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLEventListener;
+
+import ch.fhnw.ether.controller.IController;
+import ch.fhnw.ether.controller.event.IEvent;
+import ch.fhnw.ether.controller.event.IKeyEvent;
+import ch.fhnw.ether.controller.event.IPointerEvent;
+import ch.fhnw.ether.scene.camera.CameraMatrices;
+import ch.fhnw.ether.scene.camera.ICamera;
+import ch.fhnw.ether.ui.UI;
+import ch.fhnw.ether.view.IView;
+import ch.fhnw.util.Viewport;
+import ch.fhnw.util.math.Mat4;
 
 /**
  * Default view class that implements some basic functionality. Use as base for
@@ -296,12 +299,50 @@ public class DefaultView implements IView {
 	};
 
 	// key listener
+	private class ViewKeyEvent implements IKeyEvent {
+		final int modifiers;
+		final short key;
+		final short keyCode;
+		final char keyChar;
+		
+		ViewKeyEvent(KeyEvent e) {
+			modifiers = e.getModifiers() & IEvent.MODIFIER_MASK;
+			key = e.getKeySymbol();
+			keyCode = e.getKeyCode();
+			keyChar = e.getKeyChar();
+		}
+
+		@Override
+		public IView getView() {
+			return DefaultView.this;
+		}
+
+		@Override
+		public int getModifiers() {
+			return modifiers;
+		}
+
+		@Override
+		public short getKey() {
+			return key;
+		}
+
+		@Override
+		public short getKeyCode() {
+			return keyCode;
+		}
+
+		@Override
+		public char getKeyChar() {
+			return keyChar;
+		}
+	}
 
 	private KeyListener keyListener = new KeyListener() {
 		@Override
 		public void keyPressed(KeyEvent e) {
 			try {
-				controller.keyPressed(e, DefaultView.this);
+				controller.keyPressed(new ViewKeyEvent(e));
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
@@ -310,7 +351,7 @@ public class DefaultView implements IView {
 		@Override
 		public void keyReleased(KeyEvent e) {
 			try {
-				controller.keyReleased(e, DefaultView.this);
+				controller.keyReleased(new ViewKeyEvent(e));
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
@@ -318,12 +359,77 @@ public class DefaultView implements IView {
 	};
 
 	// mouse listener
+	
+	private class ViewPointerEvent implements IPointerEvent {
+		final int modifiers;
+		final int button;
+		final int clickCount;
+		final int x;
+		final int y;
+		final float scrollX;
+		final float scrollY;
+		
+		ViewPointerEvent(MouseEvent e) {
+			modifiers = e.getModifiers() & IEvent.MODIFIER_MASK;
+			button = e.getButton();
+			clickCount = e.getClickCount();
+			x = e.getX();
+			y = getViewport().h - e.getY();
+			if (e.getPointerCount() > 0) {
+				scrollX = e.getRotationScale() * e.getRotation()[0];
+				scrollY = -e.getRotationScale() * e.getRotation()[1];
+			} else {
+				scrollX = 0;
+				scrollY = 0;
+			}
+		}
+
+		@Override
+		public IView getView() {
+			return DefaultView.this;
+		}
+
+		@Override
+		public int getModifiers() {
+			return modifiers;
+		}
+
+		@Override
+		public int getButton() {
+			return button;
+		}
+
+		@Override
+		public int getClickCount() {
+			return clickCount;
+		}
+
+		@Override
+		public int getX() {
+			return x;
+		}
+
+		@Override
+		public int getY() {
+			return y;
+		}
+		
+		@Override
+		public float getScrollX() {
+			return scrollX;
+		}
+		
+		@Override
+		public float getScrollY() {
+			return scrollY;
+		}
+	}
 
 	private MouseListener mouseListener = new MouseListener() {
 		@Override
 		public void mouseEntered(MouseEvent e) {
 			try {
-				controller.mouseEntered(e, DefaultView.this);
+				controller.pointerEntered(new ViewPointerEvent(e));
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
@@ -332,7 +438,7 @@ public class DefaultView implements IView {
 		@Override
 		public void mouseExited(MouseEvent e) {
 			try {
-				controller.mouseExited(e, DefaultView.this);
+				controller.pointerExited(new ViewPointerEvent(e));
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
@@ -342,7 +448,7 @@ public class DefaultView implements IView {
 		public void mousePressed(MouseEvent e) {
 			try {
 				window.requestFocus();
-				controller.mousePressed(e, DefaultView.this);
+				controller.pointerPressed(new ViewPointerEvent(e));
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
@@ -351,7 +457,7 @@ public class DefaultView implements IView {
 		@Override
 		public void mouseReleased(MouseEvent e) {
 			try {
-				controller.mouseReleased(e, DefaultView.this);
+				controller.pointerReleased(new ViewPointerEvent(e));
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
@@ -360,7 +466,7 @@ public class DefaultView implements IView {
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			try {
-				controller.mouseClicked(e, DefaultView.this);
+				controller.pointerClicked(new ViewPointerEvent(e));
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
@@ -369,7 +475,7 @@ public class DefaultView implements IView {
 		@Override
 		public void mouseMoved(MouseEvent e) {
 			try {
-				controller.mouseMoved(e, DefaultView.this);
+				controller.pointerMoved(new ViewPointerEvent(e));
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
@@ -378,7 +484,7 @@ public class DefaultView implements IView {
 		@Override
 		public void mouseDragged(MouseEvent e) {
 			try {
-				controller.mouseDragged(e, DefaultView.this);
+				controller.pointerDragged(new ViewPointerEvent(e));
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
@@ -387,7 +493,7 @@ public class DefaultView implements IView {
 		@Override
 		public void mouseWheelMoved(MouseEvent e) {
 			try {
-				controller.mouseWheelMoved(e, DefaultView.this);
+				controller.pointerScrolled(new ViewPointerEvent(e));
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}

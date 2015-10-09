@@ -28,11 +28,9 @@
 package ch.fhnw.ether.examples.objloader;
 
 import ch.fhnw.ether.controller.DefaultController;
+import ch.fhnw.ether.controller.event.IKeyEvent;
 import ch.fhnw.ether.scene.camera.ICamera;
-import ch.fhnw.ether.view.IView;
 import ch.fhnw.util.math.Vec3;
-
-import com.jogamp.newt.event.KeyEvent;
 
 public class ObjLoaderController extends DefaultController {
 	private static final String[] HELP = { 
@@ -65,24 +63,24 @@ public class ObjLoaderController extends DefaultController {
 	}
 
 	@Override
-	public void keyPressed(KeyEvent e, IView view) {
-		switch (e.getKeyCode()) {
-		case KeyEvent.VK_1:
-		case KeyEvent.VK_2:
-		case KeyEvent.VK_3:
-		case KeyEvent.VK_4:
-		case KeyEvent.VK_5:
-		case KeyEvent.VK_6:
-			Vec3[] params = CAM_PARAMS[e.getKeyCode() - KeyEvent.VK_1];
+	public void keyPressed(IKeyEvent e) {
+		switch (e.getKey()) {
+		case IKeyEvent.VK_1:
+		case IKeyEvent.VK_2:
+		case IKeyEvent.VK_3:
+		case IKeyEvent.VK_4:
+		case IKeyEvent.VK_5:
+		case IKeyEvent.VK_6:
+			Vec3[] params = CAM_PARAMS[e.getKey() - IKeyEvent.VK_1];
 			ICamera cam = getCurrentView().getCamera();
 			cam.setPosition(params[0]);
 			cam.setUp(params[1]);
 			break;
-		case KeyEvent.VK_H:
+		case IKeyEvent.VK_H:
 			printHelp(HELP);
 			break;
 		default:
-			super.keyPressed(e, view);
+			super.keyPressed(e);
 		}
 		repaintViews();
 	}

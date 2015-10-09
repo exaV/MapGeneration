@@ -31,10 +31,9 @@ package ch.fhnw.ether.ui;
 
 import java.awt.Color;
 
+import ch.fhnw.ether.controller.event.IKeyEvent;
+import ch.fhnw.ether.controller.event.IPointerEvent;
 import ch.fhnw.ether.view.IView;
-
-import com.jogamp.newt.event.KeyEvent;
-import com.jogamp.newt.event.MouseEvent;
 
 public class Button extends AbstractWidget {
 	public interface IButtonAction extends IWidgetAction<Button> {
@@ -102,8 +101,9 @@ public class Button extends AbstractWidget {
 	}
 
 	@Override
-	public boolean hit(int x, int y, IView view) {
-		y = view.getViewport().h - y;
+	public boolean hit(IPointerEvent e) {
+		int x = e.getX();
+		int y = e.getY();
 		UI ui = getUI();
 		float bx = ui.getX() + getX() * (BUTTON_GAP + BUTTON_WIDTH);
 		float by = ui.getY() + getY() * (BUTTON_GAP + BUTTON_HEIGHT);
@@ -135,20 +135,20 @@ public class Button extends AbstractWidget {
 	}
 
 	@Override
-	public boolean keyPressed(KeyEvent e, IView view) {
-		if (getKey() == e.getKeyCode()) {
-			fire(view);
-			view.getController().repaintViews();
+	public boolean keyPressed(IKeyEvent e) {
+		if (getKey() == e.getKey()) {
+			fire(e.getView());
+			e.getView().getController().repaintViews();
 			return true;
 		}
 		return false;
 	}
 
 	@Override
-	public boolean mousePressed(MouseEvent e, IView view) {
-		if (hit(e.getX(), e.getY(), view)) {
-			fire(view);
-			view.getController().repaintViews();
+	public boolean pointerPressed(IPointerEvent e) {
+		if (hit(e)) {
+			fire(e.getView());
+			e.getView().getController().repaintViews();
 			return true;
 		}
 		return false;

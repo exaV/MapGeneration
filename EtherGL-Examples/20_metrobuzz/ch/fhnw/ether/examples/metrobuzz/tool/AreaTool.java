@@ -30,6 +30,8 @@
 package ch.fhnw.ether.examples.metrobuzz.tool;
 
 import ch.fhnw.ether.controller.IController;
+import ch.fhnw.ether.controller.event.IKeyEvent;
+import ch.fhnw.ether.controller.event.IPointerEvent;
 import ch.fhnw.ether.controller.tool.AbstractTool;
 import ch.fhnw.ether.controller.tool.PickUtilities;
 import ch.fhnw.ether.controller.tool.PickUtilities.PickMode;
@@ -39,16 +41,12 @@ import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
-import ch.fhnw.ether.view.IView;
-import ch.fhnw.ether.view.ProjectionUtil;
+import ch.fhnw.ether.view.ProjectionUtilities;
 import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Mat4;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.Line;
 import ch.fhnw.util.math.geometry.Plane;
-
-import com.jogamp.newt.event.KeyEvent;
-import com.jogamp.newt.event.MouseEvent;
 
 public final class AreaTool extends AbstractTool {
 	private static final RGBA TOOL_COLOR = RGBA.YELLOW;
@@ -80,52 +78,52 @@ public final class AreaTool extends AbstractTool {
 	}
 
 	@Override
-	public void keyPressed(KeyEvent e, IView view) {
-		switch (e.getKeyCode()) {
-		case KeyEvent.VK_UP:
+	public void keyPressed(IKeyEvent e) {
+		switch (e.getKey()) {
+		case IKeyEvent.VK_UP:
 			yOffset += KEY_INCREMENT;
 			break;
-		case KeyEvent.VK_DOWN:
+		case IKeyEvent.VK_DOWN:
 			yOffset -= KEY_INCREMENT;
 			break;
-		case KeyEvent.VK_LEFT:
+		case IKeyEvent.VK_LEFT:
 			xOffset -= KEY_INCREMENT;
 			break;
-		case KeyEvent.VK_RIGHT:
+		case IKeyEvent.VK_RIGHT:
 			xOffset += KEY_INCREMENT;
 			break;
 		}
 
 		mesh.setPosition(new Vec3(xOffset, yOffset, 0));
-		view.getController().repaintViews();
+		e.getView().getController().repaintViews();
 	}
 
 	@Override
-	public void mousePressed(MouseEvent e, IView view) {
+	public void pointerPressed(IPointerEvent e) {
 		int x = e.getX();
-		int y = view.getViewport().h - e.getY();
-		float d = PickUtilities.pickBoundingBox(PickMode.POINT, x, y, 0, 0, view, mesh.getBounds());
+		int y = e.getY();
+		float d = PickUtilities.pickBoundingBox(PickMode.POINT, x, y, 0, 0, e.getView(), mesh.getBounds());
 		if (d < Float.POSITIVE_INFINITY)
 			moving = true;
 	}
 
 	@Override
-	public void mouseDragged(MouseEvent e, IView view) {
+	public void pointerDragged(IPointerEvent e) {
 		if (moving) {
-			Line line = ProjectionUtil.getRay(view, e.getX(), view.getViewport().h - e.getY());
+			Line line = ProjectionUtilities.getRay(e.getView(), e.getX(), e.getY());
 			Plane plane = new Plane(new Vec3(0, 0, 1));
 			Vec3 p = plane.intersection(line);
 			if (p != null) {
 				xOffset = p.x;
 				yOffset = p.y;
 				mesh.setPosition(new Vec3(xOffset, yOffset, 0));
-				view.getController().repaintViews();
+				e.getView().getController().repaintViews();
 			}
 		}
 	}
 
 	@Override
-	public void mouseReleased(MouseEvent e, IView view) {
+	public void pointerReleased(IPointerEvent e) {
 		moving = false;
 	}
 }

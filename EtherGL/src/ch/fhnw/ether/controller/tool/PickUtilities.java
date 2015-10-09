@@ -37,7 +37,7 @@ import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.IGeometryAttribute;
 import ch.fhnw.ether.view.IView;
-import ch.fhnw.ether.view.ProjectionUtil;
+import ch.fhnw.ether.view.ProjectionUtilities;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.BoundingBox;
 import ch.fhnw.util.math.geometry.GeometryUtilities;
@@ -103,7 +103,7 @@ public final class PickUtilities {
 
 		float[] v = new float[] { xmin, ymin, zmin, xmin, ymin, zmax, xmin, ymax, zmin, xmin, ymax, zmax, xmax, ymin, zmin, xmax, ymin, zmax, xmax, ymax, zmin,
 				xmax, ymax, zmax, };
-		b.add(ProjectionUtil.projectToScreen(view.getCameraMatrices().getViewProjMatrix(), view.getViewport(), v));
+		b.add(ProjectionUtilities.projectToScreen(view.getCameraMatrices().getViewProjMatrix(), view.getViewport(), v));
 		b.grow(PICK_DISTANCE, PICK_DISTANCE, 0);
 
 		if (b.getMaxZ() > 0 && x > b.getMinX() && x < b.getMaxX() && y > b.getMinY() && y < b.getMaxY())
@@ -113,7 +113,7 @@ public final class PickUtilities {
 	}
 
 	public static float pickTriangles(PickMode mode, int x, int y, int w, int h, IView view, float[] triangles) {
-		triangles = ProjectionUtil.projectToScreen(view, triangles);
+		triangles = ProjectionUtilities.projectToScreen(view, triangles);
 
 		Vec3 o = new Vec3(x, y, 0);
 		Vec3 d = Vec3.Z;
@@ -126,7 +126,7 @@ public final class PickUtilities {
 	}
 
 	public static float pickEdges(PickMode mode, int x, int y, int w, int h, IView view, float[] edges) {
-		edges = ProjectionUtil.projectToScreen(view, edges);
+		edges = ProjectionUtilities.projectToScreen(view, edges);
 
 		float zMin = Float.POSITIVE_INFINITY;
 		for (int i = 0; i < edges.length; i += 6) {
@@ -157,7 +157,7 @@ public final class PickUtilities {
 	}
 
 	public static float pickPoints(PickMode mode, int x, int y, int w, int h, IView view, float[] points) {
-		points = ProjectionUtil.projectToScreen(view, points);
+		points = ProjectionUtilities.projectToScreen(view, points);
 
 		float zMin = Float.POSITIVE_INFINITY;
 		for (int i = 0; i < points.length; i += 3) {

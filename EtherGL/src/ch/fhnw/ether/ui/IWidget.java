@@ -31,10 +31,9 @@ package ch.fhnw.ether.ui;
 
 import java.awt.Color;
 
+import ch.fhnw.ether.controller.event.IKeyEvent;
+import ch.fhnw.ether.controller.event.IPointerEvent;
 import ch.fhnw.ether.view.IView;
-
-import com.jogamp.newt.event.KeyEvent;
-import com.jogamp.newt.event.MouseEvent;
 
 public interface IWidget {
 	Color TEXT_COLOR = Color.WHITE;
@@ -55,7 +54,7 @@ public interface IWidget {
 
 	String getHelp();
 
-	boolean hit(int x, int y, IView view);
+	boolean hit(IPointerEvent e);
 
 	void draw(GraphicsPlane surface);
 
@@ -65,13 +64,13 @@ public interface IWidget {
 
 	void fire(IView view);
 
-	boolean keyPressed(KeyEvent e, IView view);
+	boolean keyPressed(IKeyEvent e);
 
-	boolean mousePressed(MouseEvent e, IView view);
+	boolean pointerPressed(IPointerEvent e);
 
-	boolean mouseReleased(MouseEvent e, IView view);
+	boolean pointerReleased(IPointerEvent e);
 
-	boolean mouseMoved(MouseEvent e, IView view);
+	boolean pointerMoved(IPointerEvent e);
 
-	boolean mouseDragged(MouseEvent e, IView view);
+	boolean pointerDragged(IPointerEvent e);
 }

@@ -36,7 +36,7 @@ import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.Vec4;
 import ch.fhnw.util.math.geometry.Line;
 
-public final class ProjectionUtil {
+public final class ProjectionUtilities {
 	public static Vec3 projectToDevice(IView view, Vec3 v) {
 		return projectToDevice(view, new Vec4(v));
 	}

@@ -27,61 +27,48 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.examples.mapping;
+package ch.fhnw.ether.controller.event;
 
-import ch.fhnw.ether.controller.DefaultController;
-import ch.fhnw.ether.controller.event.IKeyEvent;
-import ch.fhnw.ether.controller.tool.AbstractTool;
-import ch.fhnw.ether.controller.tool.ITool;
-import ch.fhnw.ether.mapping.BoxCalibrationModel;
-import ch.fhnw.ether.mapping.tool.CalibrationTool;
-import ch.fhnw.ether.mapping.tool.FillTool;
-import ch.fhnw.util.math.Vec3;
+/**
+ * Pointer (mouse) event, aligned with the underlying windowing framework.
+ * 
+ * Main difference to AWT or NEWT is the right handed coordinate system used,
+ * i.e. (0, 0) refers to the bottom-left corner of the client window.
+ * 
+ * @author radar
+ */
+public interface IPointerEvent extends IEvent {
+	int BUTTON_1 = 1;
+	int BUTTON_2 = 2;
+	int BUTTON_3 = 3;
 
-public class MappingController extends DefaultController {
-	private static final String[] HELP = { "Simple Mapping Example (Without Content)", "", "[1] Default Tool / View", "[2] Mapping Calibration",
-			"[3] Projector Adjustment", "", "Use Mouse Buttons + Shift or Mouse Wheel to Navigate" };
+	/**
+	 * Returns the button pressed for this event.
+	 */
+	int getButton();
 
-	private final ITool defaultTool = new AbstractTool(this) {
-	};
+	/**
+	 * Returns the button's click count.
+	 */
+	int getClickCount();
 
-	private final CalibrationTool calibrationTool = new CalibrationTool(this, new BoxCalibrationModel(0.5f, 0.5f, 0.5f, 0.8f, 0.8f));
-	private final FillTool fillTool = new FillTool(this);
+	/**
+	 * Returns the pointer's x coordinate.
+	 */
+	int getX();
 
-	public MappingController() {
-	}
-
-	public void modelChanged() {
-		repaintViews();
-	}
-
-	@Override
-	public void keyPressed(IKeyEvent e) {
-		switch (e.getKey()) {
-		case IKeyEvent.VK_0:
-		case IKeyEvent.VK_1:
-			setCurrentTool(defaultTool);
-			break;
-		case IKeyEvent.VK_2:
-			setCurrentTool(calibrationTool);
-			break;
-		case IKeyEvent.VK_3:
-			setCurrentTool(fillTool);
-			break;
-		case IKeyEvent.VK_H:
-			printHelp(HELP);
-			break;
-		default:
-			super.keyPressed(e);
-		}
-		repaintViews();
-	}
-
-	public Vec3 getLightPosition() {
-		return Vec3.Z;
-	}
-
-	public void setLightPosition(Vec3 position) {
-		// unimplemented
-	}
+	/**
+	 * Returns the pointer's y coordinate.
+	 */
+	int getY();
+	
+	/**
+	 * Returns scroll amount in x direction.
+	 */
+	float getScrollX();
+	
+	/**
+	 * Returns scroll amount in y direction.
+	 */
+	float getScrollY();
 }

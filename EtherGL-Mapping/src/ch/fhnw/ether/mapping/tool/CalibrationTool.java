@@ -38,6 +38,8 @@ import java.util.prefs.Preferences;
 
 import ch.fhnw.ether.controller.DefaultController;
 import ch.fhnw.ether.controller.IController;
+import ch.fhnw.ether.controller.event.IKeyEvent;
+import ch.fhnw.ether.controller.event.IPointerEvent;
 import ch.fhnw.ether.controller.tool.AbstractTool;
 import ch.fhnw.ether.mapping.BimberRaskarCalibrator;
 import ch.fhnw.ether.mapping.ICalibrationModel;
@@ -52,14 +54,11 @@ import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.scene.mesh.material.PointMaterial;
 import ch.fhnw.ether.view.IView;
-import ch.fhnw.ether.view.ProjectionUtil;
+import ch.fhnw.ether.view.ProjectionUtilities;
 import ch.fhnw.util.PreferencesStore;
 import ch.fhnw.util.Viewport;
 import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Vec3;
-
-import com.jogamp.newt.event.KeyEvent;
-import com.jogamp.newt.event.MouseEvent;
 
 // FIXME: need possibility to disable current 3d scene when tool is active
 public final class CalibrationTool extends AbstractTool {
@@ -132,34 +131,35 @@ public final class CalibrationTool extends AbstractTool {
 	}
 
 	@Override
-	public void keyPressed(KeyEvent e, IView view) {
-		switch (e.getKeyCode()) {
-		case KeyEvent.VK_L:
+	public void keyPressed(IKeyEvent e) {
+		IView view = e.getView();
+		switch (e.getKey()) {
+		case IKeyEvent.VK_L:
 			loadCalibration(view);
 			break;
-		case KeyEvent.VK_S:
+		case IKeyEvent.VK_S:
 			saveCalibration(view);
 			break;
-		case KeyEvent.VK_UP:
+		case IKeyEvent.VK_UP:
 			cursorAdjust(view, 0, 1);
 			break;
-		case KeyEvent.VK_DOWN:
+		case IKeyEvent.VK_DOWN:
 			cursorAdjust(view, 0, -1);
 			break;
-		case KeyEvent.VK_LEFT:
+		case IKeyEvent.VK_LEFT:
 			cursorAdjust(view, -1, 0);
 			break;
-		case KeyEvent.VK_RIGHT:
+		case IKeyEvent.VK_RIGHT:
 			cursorAdjust(view, 1, 0);
 			break;
-		case KeyEvent.VK_C:
+		case IKeyEvent.VK_C:
 			clearCalibration(view);
 			break;
-		case KeyEvent.VK_H:
+		case IKeyEvent.VK_H:
 			DefaultController.printHelp(HELP);
 			break;
-		case KeyEvent.VK_BACK_SPACE:
-		case KeyEvent.VK_DELETE:
+		case IKeyEvent.VK_BACK_SPACE:
+		case IKeyEvent.VK_DELETE:
 			deleteCurrent(view);
 			break;
 		}
@@ -167,9 +167,10 @@ public final class CalibrationTool extends AbstractTool {
 	}
 
 	@Override
-	public void mousePressed(MouseEvent e, IView view) {
+	public void pointerPressed(IPointerEvent e) {
+		IView view = e.getView();
 		int mx = e.getX();
-		int my = view.getViewport().h - e.getY();
+		int my = e.getY();
 		CalibrationContext context = getContext(view);
 
 		// reset first
@@ -177,8 +178,8 @@ public final class CalibrationTool extends AbstractTool {
 
 		// first, try to hit calibration point
 		for (int i = 0; i < context.projectedVertices.size(); ++i) {
-			int x = ProjectionUtil.deviceToScreenX(view, context.projectedVertices.get(i).x);
-			int y = ProjectionUtil.deviceToScreenY(view, context.projectedVertices.get(i).y);
+			int x = ProjectionUtilities.deviceToScreenX(view, context.projectedVertices.get(i).x);
+			int y = ProjectionUtilities.deviceToScreenY(view, context.projectedVertices.get(i).y);
 			if (snap2D(mx, my, x, y)) {
 				// we got a point to move!
 				context.currentSelection = i;
@@ -190,7 +191,7 @@ public final class CalibrationTool extends AbstractTool {
 		// second, try to hit model point
 		float[] mv = model.getCalibrationPoints();
 		for (int i = 0; i < mv.length; i += 3) {
-			Vec3 vv = ProjectionUtil.projectToScreen(view, new Vec3(mv[i], mv[i + 1], mv[i + 2]));
+			Vec3 vv = ProjectionUtilities.projectToScreen(view, new Vec3(mv[i], mv[i + 1], mv[i + 2]));
 			if (vv == null)
 				continue;
 			if (snap2D(mx, my, (int) vv.x, (int) vv.y)) {
@@ -199,7 +200,7 @@ public final class CalibrationTool extends AbstractTool {
 				if (index != -1) {
 					context.currentSelection = index;
 				} else {
-					Vec3 p = new Vec3(ProjectionUtil.screenToDeviceX(view, (int) vv.x), ProjectionUtil.screenToDeviceY(view, (int) vv.y), 0);
+					Vec3 p = new Vec3(ProjectionUtilities.screenToDeviceX(view, (int) vv.x), ProjectionUtilities.screenToDeviceY(view, (int) vv.y), 0);
 					context.currentSelection = context.modelVertices.size();
 					context.modelVertices.add(m);
 					context.projectedVertices.add(p);
@@ -211,13 +212,14 @@ public final class CalibrationTool extends AbstractTool {
 	}
 
 	@Override
-	public void mouseDragged(MouseEvent e, IView view) {
+	public void pointerDragged(IPointerEvent e) {
+		IView view = e.getView();
 		int mx = e.getX();
-		int my = view.getViewport().h - e.getY();
+		int my = e.getY();
 		CalibrationContext context = getContext(view);
 
 		if (context.currentSelection != -1) {
-			Vec3 a = new Vec3(ProjectionUtil.screenToDeviceX(view, mx), ProjectionUtil.screenToDeviceY(view, my), 0);
+			Vec3 a = new Vec3(ProjectionUtilities.screenToDeviceX(view, mx), ProjectionUtilities.screenToDeviceY(view, my), 0);
 			context.projectedVertices.set(context.currentSelection, a);
 			calibrate(view);
 		}
@@ -310,7 +312,7 @@ public final class CalibrationTool extends AbstractTool {
 		List<Vec3> v = new ArrayList<>();
 		for (int i = 0; i < context.projectedVertices.size(); ++i) {
 			Vec3 a = context.modelVertices.get(i);
-			Vec3 aa = ProjectionUtil.projectToDevice(view, a);
+			Vec3 aa = ProjectionUtilities.projectToDevice(view, a);
 			if (aa == null)
 				continue;
 			a = context.projectedVertices.get(i);
