@@ -96,14 +96,6 @@ public interface IController {
 	IView getCurrentView();
 
 	/**
-	 * Set the current view.
-	 * 
-	 * @param view
-	 *            the current view
-	 */
-	void setCurrentView(IView view);
-
-	/**
 	 * Enable a list of views for rendering.
 	 *
 	 * @param views
@@ -164,6 +156,12 @@ public interface IController {
 	 */
 	UI getUI();
 
+	// view listener
+	
+	void viewGainedFocus(IView view);
+
+	void viewLostFocus(IView view);
+
 	// key listener
 
 	void keyPressed(IKeyEvent e);
@@ -191,4 +189,5 @@ public interface IController {
 	// pointer scroll listener
 
 	void pointerScrolled(IPointerEvent e);
+
 }

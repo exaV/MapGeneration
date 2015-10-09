@@ -126,17 +126,6 @@ public class DefaultController implements IController {
 	}
 
 	@Override
-	public void setCurrentView(IView view) {
-		if (DBG)
-			System.out.println("set current view");
-		if (currentView != view) {
-			currentView = view;
-			getCurrentTool().refresh(currentView);
-			repaintViews();
-		}
-	}
-
-	@Override
 	public final void enableViews(Collection<IView> views) {
 		if (views != null) {
 			for (IView view : this.views) {
@@ -198,6 +187,17 @@ public class DefaultController implements IController {
 	@Override
 	public final UI getUI() {
 		return ui;
+	}
+	
+	// view listener
+	
+	@Override
+	public void viewGainedFocus(IView view) {
+		setCurrentView(view);
+	}
+	
+	@Override
+	public void viewLostFocus(IView view) {
 	}
 
 	// key listener
@@ -337,10 +337,21 @@ public class DefaultController implements IController {
 		navigationTool.pointerScrolled(e);
 	}
 
-	// private stuff
 
 	public static void printHelp(String[] help) {
 		for (String s : help)
 			System.out.println(s);
+	}
+	
+	// private stuff
+
+	private void setCurrentView(IView view) {
+		if (DBG)
+			System.out.println("set current view");
+		if (currentView != view) {
+			currentView = view;
+			getCurrentTool().refresh(currentView);
+			repaintViews();
+		}
 	}
 }

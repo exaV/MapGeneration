@@ -282,7 +282,6 @@ public class DefaultView implements IView {
 				e.printStackTrace();
 			}
 		}
-
 	};
 
 	// window listener
@@ -291,11 +290,20 @@ public class DefaultView implements IView {
 		@Override
 		public void windowGainedFocus(WindowEvent e) {
 			try {
-				controller.setCurrentView(DefaultView.this);
+				controller.viewGainedFocus(DefaultView.this);
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
-		};
+		}
+		
+		@Override
+		public void windowLostFocus(WindowEvent e) {
+			try {
+				controller.viewLostFocus(DefaultView.this);
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}			
+		}
 	};
 
 	// key listener
