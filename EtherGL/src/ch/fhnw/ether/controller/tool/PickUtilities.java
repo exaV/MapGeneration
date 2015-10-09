@@ -38,6 +38,7 @@ import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.IGeometryAttribute;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.ProjectionUtilities;
+import ch.fhnw.util.math.Mat4;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.BoundingBox;
 import ch.fhnw.util.math.geometry.GeometryUtilities;
@@ -57,8 +58,10 @@ public final class PickUtilities {
 
 	public static Map<Float, I3DObject> pickFromScene(PickMode mode, int x, int y, int w, int h, IView view) {
 		final Map<Float, I3DObject> pickables = new TreeMap<>();
+		float[][] transformedData = new float[1][0];
 		for (I3DObject object : view.getController().getScene().get3DObjects()) {
 			BoundingBox b = object.getBounds();
+			
 			if (b == null)
 				continue;
 			float d = pickBoundingBox(mode, x, y, w, h, view, b);
@@ -69,10 +72,17 @@ public final class PickUtilities {
 				pickables.put(d, object);
 				continue;
 			}
-
-			// FIXME: we need to apply the mesh's transform/position
-			IGeometry geometry = ((IMesh) object).getGeometry();
-			geometry.inspect(0, (IGeometryAttribute attribute, float[] data) -> {
+			
+			IMesh mesh = (IMesh)object;
+			IGeometry geometry = mesh.getGeometry();
+			Mat4 transform = mesh.getTransform();
+			mesh.getGeometry().inspect(0, (IGeometryAttribute attribute, float[] data) -> {
+				if (transform != Mat4.ID) {
+					if (data.length > transformedData[0].length)
+						transformedData[0] = new float[data.length];
+					data = transform.transform(data, transformedData[0]);
+				}
+				
 				float dd = Float.POSITIVE_INFINITY;
 				switch (geometry.getType()) {
 				case LINES:

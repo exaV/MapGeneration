@@ -39,7 +39,6 @@ import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.BoundingBox;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.IGeometryAttribute;
 
-// FIXME: we need some good mesh factory, this here is a mess
 public final class DefaultMesh implements IMesh {
 	private final Queue queue;
 	private final EnumSet<Flags> flags;
@@ -95,21 +94,27 @@ public final class DefaultMesh implements IMesh {
 
 	@Override
 	public BoundingBox getBounds() {
-		if(bb == null) {
-			// TODO: calculate bounding box based on position, transform and geometry...
+		if (bb == null) {
 			bb = new BoundingBox();
-			float[] in  = new float[3];
+			float[] in = new float[3];
 			float[] out = new float[3];
 			getGeometry().inspect(0, (IGeometryAttribute attribute, float[] data) -> {
-				for(int i = 0; i < data.length; i += 3) {
-					in[0] = data[i + 0];
-					in[1] = data[i + 1];
-					in[2] = data[i + 2];
-					transform.transform(in, out);
-					out[0] += position.x;
-					out[1] += position.y;
-					out[2] += position.z;
-					bb.add(out);
+				if (transform != Mat4.ID) {
+					for (int i = 0; i < data.length; i += 3) {
+						in[0] = data[i + 0];
+						in[1] = data[i + 1];
+						in[2] = data[i + 2];
+						transform.transform(in, out);
+						out[0] += position.x;
+						out[1] += position.y;
+						out[2] += position.z;
+						bb.add(out);
+					}
+
+				} else {
+					for (int i = 0; i < data.length; i += 3) {
+						bb.add(data[i + 0] + position.x, data[i + 1] + position.y, data[i + 2] + position.z);
+					}
 				}
 			});
 		}

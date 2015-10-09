@@ -76,7 +76,12 @@ public class DefaultGeometry extends AbstractGeometry {
 	 * @return the copy
 	 */
 	public DefaultGeometry copy() {
-		return new DefaultGeometry(getType(), attributeTypes, attributeData);
+		try {
+			lock.readLock().lock();
+			return new DefaultGeometry(getType(), attributeTypes, attributeData);
+		} finally {
+			lock.readLock().unlock();
+		}
 	}
 
 	@Override
