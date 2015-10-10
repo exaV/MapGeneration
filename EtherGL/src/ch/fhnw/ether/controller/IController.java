@@ -65,23 +65,6 @@ public interface IController {
 	void setScene(IScene model);
 
 	/**
-	 * Add a view to the controller.
-	 *
-	 * @param view
-	 *            the view to add
-	 */
-	void addView(IView view);
-
-	/**
-	 * Remove a view from the controller. Do not call this method directly, it will be called by the view itself when it
-	 * is disposed.
-	 *
-	 * @param view
-	 *            the view to remove
-	 */
-	void removeView(IView view);
-
-	/**
 	 * Get a list of all views.
 	 *
 	 * @return list of views
@@ -157,6 +140,10 @@ public interface IController {
 	UI getUI();
 
 	// view listener
+	
+	void viewCreated(IView view);
+	
+	void viewDisposed(IView view);
 	
 	void viewGainedFocus(IView view);
 

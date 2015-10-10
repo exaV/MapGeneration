@@ -57,7 +57,8 @@ import ch.fhnw.util.math.Mat4;
  * Default view class that implements some basic functionality. Use as base for
  * more complex implementations.
  * 
- * Thread safety: setCamera, getCameraMatrices, setCameraMatrices, getViewport are thread safe.
+ * Thread safety: setCamera, getCameraMatrices, setCameraMatrices, getViewport
+ * are thread safe.
  *
  * @author radar
  */
@@ -94,6 +95,13 @@ public class DefaultView implements IView {
 		if (y != -1)
 			p.setY(y);
 		window.setPosition(p);
+
+		// note: the order here is quite important. the view starts sending
+		// events after setVisible(), and we're still in the view's constructor.
+		// need to see if this doesn't get us into trouble in the long run.
+		controller.viewCreated(this);
+		window.setVisible();
+		controller.repaintView(this);
 	}
 
 	@Override
@@ -133,8 +141,8 @@ public class DefaultView implements IView {
 		synchronized (this) {
 			ICamera c = camera;
 			if (cameraMatrices == null)
-				cameraMatrices = new CameraMatrices(c.getPosition(), c.getTarget(), c.getUp(), 
-													c.getFov(), c.getNear(), c.getFar(), viewport.getAspect());
+				cameraMatrices = new CameraMatrices(c.getPosition(), c.getTarget(), c.getUp(), c.getFov(), c.getNear(),
+						c.getFar(), viewport.getAspect());
 			return cameraMatrices;
 		}
 	}
@@ -273,7 +281,7 @@ public class DefaultView implements IView {
 		@Override
 		public final void dispose(GLAutoDrawable drawable) {
 			try {
-				controller.removeView(DefaultView.this);
+				controller.viewDisposed(DefaultView.this);
 				setCamera(null);
 				window = null;
 				controller = null;
@@ -295,14 +303,14 @@ public class DefaultView implements IView {
 				ex.printStackTrace();
 			}
 		}
-		
+
 		@Override
 		public void windowLostFocus(WindowEvent e) {
 			try {
 				controller.viewLostFocus(DefaultView.this);
 			} catch (Exception ex) {
 				ex.printStackTrace();
-			}			
+			}
 		}
 	};
 
@@ -312,7 +320,7 @@ public class DefaultView implements IView {
 		final short key;
 		final short keyCode;
 		final char keyChar;
-		
+
 		ViewKeyEvent(KeyEvent e) {
 			modifiers = e.getModifiers() & IEvent.MODIFIER_MASK;
 			key = e.getKeySymbol();
@@ -367,7 +375,7 @@ public class DefaultView implements IView {
 	};
 
 	// mouse listener
-	
+
 	private class ViewPointerEvent implements IPointerEvent {
 		final int modifiers;
 		final int button;
@@ -376,7 +384,7 @@ public class DefaultView implements IView {
 		final int y;
 		final float scrollX;
 		final float scrollY;
-		
+
 		ViewPointerEvent(MouseEvent e) {
 			modifiers = e.getModifiers() & IEvent.MODIFIER_MASK;
 			button = e.getButton();
@@ -421,12 +429,12 @@ public class DefaultView implements IView {
 		public int getY() {
 			return y;
 		}
-		
+
 		@Override
 		public float getScrollX() {
 			return scrollX;
 		}
-		
+
 		@Override
 		public float getScrollY() {
 			return scrollY;

@@ -57,8 +57,7 @@ public class RaytracerExample1 {
 		controller.setScene(scene);
 
 		ICamera camera = new Camera(new Vec3(0, -2, 1), Vec3.ZERO, Vec3.Z, 2.5f, 0.5f, Float.POSITIVE_INFINITY);
-		IView view = new DefaultView(controller, 100, 100, 100, 100, IView.INTERACTIVE_VIEW, "Raytracing", camera);
-		controller.addView(view);
+		new DefaultView(controller, 100, 100, 100, 100, IView.INTERACTIVE_VIEW, "Raytracing", camera);
 		
 		// setup scene
 		ILight light = new PointLight(new Vec3(0, 0, 3), RGB.BLACK, RGB.WHITE);

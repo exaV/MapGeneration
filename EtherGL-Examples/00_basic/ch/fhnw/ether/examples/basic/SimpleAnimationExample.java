@@ -68,8 +68,7 @@ public final class SimpleAnimationExample {
 
 		// Create view
 		ICamera camera = new Camera();
-		IView view = new DefaultView(controller, 100, 100, 500, 500, IView.INTERACTIVE_VIEW, "Test", camera);
-		controller.addView(view);
+		new DefaultView(controller, 100, 100, 500, 500, IView.INTERACTIVE_VIEW, "Test", camera);
 
 		// Create scene and add triangle
 		IScene scene = new DefaultScene(controller);
@@ -103,10 +102,7 @@ public final class SimpleAnimationExample {
 				});
 				mesh.requestUpdate(null);
 
-				// update view, because we have no fix rendering loop but event-based rendering
-				if (view != null)
-					view.repaint();
-				
+				controller.repaintViews();				
 				return true;
 			}
 		});

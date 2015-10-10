@@ -58,8 +58,8 @@ public class MetroBuzz {
 		MetroBuzzController controller = new MetroBuzzController();
 
 		Camera camera = new Camera();
-		controller.addView(new View(controller, 0, 10, 512, 512, IView.INTERACTIVE_VIEW, camera));
-		controller.addView(new View(controller, 512, 10, 512, 512, IView.MAPPED_VIEW, camera));
+		new View(controller, 0, 10, 512, 512, IView.INTERACTIVE_VIEW, camera);
+		new View(controller, 512, 10, 512, 512, IView.MAPPED_VIEW, camera);
 
 		Scene scene = new Scene(controller);
 		System.out.println("Loading Data");

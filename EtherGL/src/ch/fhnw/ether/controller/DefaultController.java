@@ -54,7 +54,7 @@ import ch.fhnw.ether.view.IView;
  */
 // FIXME: PickTool doesn't really belong here (any tools at all?)
 public class DefaultController implements IController {
-	private static final boolean DBG = false;
+	private static final boolean DBG = true;
 
 	private final IScheduler scheduler;
 	private final IRenderer renderer;
@@ -93,26 +93,6 @@ public class DefaultController implements IController {
 	@Override
 	public final void setScene(IScene scene) {
 		this.scene = scene;
-	}
-
-	@Override
-	public final void addView(IView view) {
-		views.add(view);
-		if (currentView == null)
-			currentView = view;
-
-		scheduler.addDrawable(view.getDrawable());
-
-		view.repaint();
-	}
-
-	@Override
-	public void removeView(IView view) {
-		views.remove(view);
-		if (currentView == view)
-			currentView = null;
-
-		scheduler.removeDrawable(view.getDrawable());
 	}
 
 	@Override
@@ -192,12 +172,37 @@ public class DefaultController implements IController {
 	// view listener
 	
 	@Override
+	public final void viewCreated(IView view) {
+		if (DBG)
+			System.out.println("view created");
+
+		views.add(view);
+		scheduler.addDrawable(view.getDrawable());
+	}
+
+	@Override
+	public void viewDisposed(IView view) {
+		if (DBG)
+			System.out.println("view disposed");
+
+		views.remove(view);
+		if (currentView == view)
+			currentView = null;
+		scheduler.removeDrawable(view.getDrawable());
+	}
+
+	@Override
 	public void viewGainedFocus(IView view) {
+		if (DBG)
+			System.out.println("view gained focus");
+
 		setCurrentView(view);
 	}
 	
 	@Override
 	public void viewLostFocus(IView view) {
+		if (DBG)
+			System.out.println("view lost focus");
 	}
 
 	// key listener
@@ -206,6 +211,7 @@ public class DefaultController implements IController {
 	public void keyPressed(IKeyEvent e) {
 		if (DBG)
 			System.out.println("key pressed");
+	
 		setCurrentView(e.getView());
 
 		// ui has precedence over everything else
@@ -229,7 +235,7 @@ public class DefaultController implements IController {
 	@Override
 	public void pointerEntered(IPointerEvent e) {
 		if (DBG)
-			System.out.println("mouse entered");
+			System.out.println("pointer entered");
 		hoverView = e.getView();
 		navigationTool.activate();
 		if (ui != null)
@@ -239,7 +245,7 @@ public class DefaultController implements IController {
 	@Override
 	public void pointerExited(IPointerEvent e) {
 		if (DBG)
-			System.out.println("mouse exited");
+			System.out.println("pointer exited");
 
 		if (ui != null)
 			ui.pointerExited(e);
@@ -250,7 +256,7 @@ public class DefaultController implements IController {
 	@Override
 	public void pointerPressed(IPointerEvent e) {
 		if (DBG)
-			System.out.println("mouse pressed");
+			System.out.println("pointer pressed");
 		
 		if (hoverView == null)
 			pointerEntered(e);
@@ -271,7 +277,7 @@ public class DefaultController implements IController {
 	@Override
 	public void pointerReleased(IPointerEvent e) {
 		if (DBG)
-			System.out.println("released");
+			System.out.println("pointer released");
 
 		if (hoverView == null)
 			pointerEntered(e);
@@ -288,7 +294,7 @@ public class DefaultController implements IController {
 	@Override
 	public void pointerClicked(IPointerEvent e) {
 		if (DBG)
-			System.out.println("clicked");
+			System.out.println("pointer clicked");
 		
 		if (hoverView == null)
 			pointerEntered(e);
@@ -298,8 +304,8 @@ public class DefaultController implements IController {
 
 	@Override
 	public void pointerMoved(IPointerEvent e) {
-		if (DBG)
-			System.out.println("moved");
+		//if (DBG)
+		//	System.out.println("pointer moved");
 		
 		if (hoverView == null)
 			pointerEntered(e);
@@ -312,8 +318,9 @@ public class DefaultController implements IController {
 
 	@Override
 	public void pointerDragged(IPointerEvent e) {
-		if (DBG)
-			System.out.println("dragged");
+		//if (DBG)
+		//	System.out.println("pointer dragged");
+		
 		if (hoverView == null)
 			pointerEntered(e);
 
@@ -331,6 +338,9 @@ public class DefaultController implements IController {
 
 	@Override
 	public void pointerScrolled(IPointerEvent e) {
+		//if (DBG)
+		//	System.out.println("pointer scrolled");
+
 		if (hoverView == null)
 			pointerEntered(e);
 

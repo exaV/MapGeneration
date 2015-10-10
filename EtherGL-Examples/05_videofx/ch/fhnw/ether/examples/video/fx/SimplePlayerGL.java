@@ -65,7 +65,6 @@ public class SimplePlayerGL implements Runnable {
 
 	private final AbstractVideoSource<?> source;
 	private final Texture                texture = new Texture(new RGB8Frame(16, 16));
-	private       DefaultView            view;
 
 	public SimplePlayerGL(AbstractVideoSource<?> source) {
 		this.source = source;
@@ -76,8 +75,7 @@ public class SimplePlayerGL implements Runnable {
 		try {
 			IController controller = new DefaultController();
 
-			view = new DefaultView(controller, 0, 10, 1024, 512, new Config(ViewType.INTERACTIVE_VIEW, 2), "SimplePlayerGL", new Camera());
-			controller.addView(view);
+			new DefaultView(controller, 0, 10, 1024, 512, new Config(ViewType.INTERACTIVE_VIEW, 2), "SimplePlayerGL", new Camera());
 
 			IScene scene = new DefaultScene(controller);
 			controller.setScene(scene);

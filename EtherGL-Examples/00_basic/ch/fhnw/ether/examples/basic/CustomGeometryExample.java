@@ -67,8 +67,7 @@ public final class CustomGeometryExample {
 
 		// Create view
 		ICamera camera = new Camera();
-		IView view = new DefaultView(controller, 100, 100, 500, 500, IView.INTERACTIVE_VIEW, "Test", camera);
-		controller.addView(view);
+		new DefaultView(controller, 100, 100, 500, 500, IView.INTERACTIVE_VIEW, "Test", camera);
 
 		// Create scene and add triangle
 		IScene scene = new DefaultScene(controller);
