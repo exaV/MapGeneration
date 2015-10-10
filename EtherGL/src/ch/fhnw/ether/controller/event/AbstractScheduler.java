@@ -37,23 +37,25 @@ import java.util.concurrent.Delayed;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import com.jogamp.opengl.GLAutoDrawable;
+import ch.fhnw.ether.view.IView;
 
 abstract class AbstractScheduler implements IScheduler {
 
 	private static final class DelayedAction implements Delayed {
-		private long delay;
-		private final long interval;
-		private final IAction action;
+		final boolean repeat;
+		long delay;
+		final long interval;
+		final IAction action;
 
-		public DelayedAction(long delay, long interval, IAction action) {
+		DelayedAction(boolean repeat, long delay, long interval, IAction action) {
+			this.repeat = repeat;
 			this.delay = delay;
 			this.interval = interval;
 			this.action = action;
 		}
 
 		boolean run(double time) {
-			if (action.run(time, interval / 1000000000.0) && interval > 0) {
+			if (action.run(time, interval / 1000000000.0) && repeat) {
 				delay += interval;
 				return true;
 			}
@@ -69,7 +71,6 @@ abstract class AbstractScheduler implements IScheduler {
 		public int compareTo(Delayed o) {
 			long d0 = getDelay(TimeUnit.NANOSECONDS);
 			long d1 = o.getDelay(TimeUnit.NANOSECONDS);
-			// System.out.println("compare delay: " + d0 + " " + d1);
 			return (d0 < d1) ? -1 : ((d0 == d1) ? 0 : 1);
 		}
 	}
@@ -78,7 +79,7 @@ abstract class AbstractScheduler implements IScheduler {
 
 	private final DelayQueue<DelayedAction> modelQueue = new DelayQueue<>();
 
-	private final List<GLAutoDrawable> drawables = new ArrayList<>();
+	private final List<IView> views = new ArrayList<>();
 
 	protected final BlockingQueue<Runnable> renderQueue = new LinkedBlockingQueue<>();
 
@@ -94,7 +95,7 @@ abstract class AbstractScheduler implements IScheduler {
 
 	@Override
 	public void once(double delay, IAction action) {
-		modelQueue.add(new DelayedAction(s2ns(delay), 0, action));
+		modelQueue.add(new DelayedAction(false, s2ns(delay), 0, action));
 	}
 
 	@Override
@@ -104,30 +105,29 @@ abstract class AbstractScheduler implements IScheduler {
 
 	@Override
 	public void repeat(double delay, double interval, IAction action) {
-		modelQueue.add(new DelayedAction(s2ns(delay), s2ns(interval), action));
+		modelQueue.add(new DelayedAction(true, s2ns(delay), s2ns(interval), action));
 	}
 
 	@Override
-	public void addDrawable(GLAutoDrawable drawable) {
-		invokeOnRenderThread(() -> drawables.add(drawable));
+	public void addView(IView view) {
+		invokeOnRenderThread(() -> views.add(view));
 	}
 
 	@Override
-	public void removeDrawable(GLAutoDrawable drawable) {
-		invokeOnRenderThread(() -> drawables.remove(drawable));
+	public void removeView(IView view) {
+		invokeOnRenderThread(() -> views.remove(view));
 	}
 
-	@Override
-	public void invokeOnRenderThread(Runnable runnable) {
+	protected final void invokeOnRenderThread(Runnable runnable) {
 		renderQueue.add(runnable);
 	}
 
 	protected abstract void runRenderThread();
 
-	protected void displayDrawables() {
-		for (GLAutoDrawable drawable : drawables) {
+	protected void displayViews() {
+		for (IView view : views) {
 			try {
-				drawable.display();
+				view.display();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -138,7 +138,7 @@ abstract class AbstractScheduler implements IScheduler {
 		while (true) {
 			try {
 				DelayedAction action = modelQueue.take();
-				if (action.run(getTime()))
+				if (action.interval > 0 && action.run(getTime()))
 					modelQueue.add(action);
 			} catch (Exception e) {
 				e.printStackTrace();

@@ -29,40 +29,80 @@
 
 package ch.fhnw.ether.controller.event;
 
-import com.jogamp.opengl.GLAutoDrawable;
+import ch.fhnw.ether.view.IView;
 
-/*
- * XXX Some thoughts here: Idea is to have a common scheduling mechanism for 
- * timed events across different media types / render programs. Need to address many 
- * issues though:
- * - update handling after completion of an action
- * - cancellation of an action
- * - consistent execution of actions that are scheduled for the same time (i imagine
- *   some sort of "timing slots" that can be created to which actions can collectively
- *   be attached
- * - framerate info / handling
- * - etc
- */
 public interface IScheduler {
 
 	interface IAction {
+		/**
+		 * Action to be run, implemented by client.
+		 * 
+		 * @param time
+		 *            time since application start, in seconds
+		 * @param interval
+		 *            interval of repeated action, in seconds
+		 * @return false to stop repeated action, true otherwise.
+		 */
 		boolean run(double time, double interval);
 	}
 
+	/**
+	 * Run an action on model thread once.
+	 * 
+	 * @param action
+	 *            Action to be run
+	 */
 	void once(IAction action);
 
+	/**
+	 * Run an action on model thread once, with given delay.
+	 * 
+	 * @param delay
+	 *            Delay before action is run, in seconds
+	 * @param action
+	 *            Action to be run
+	 */
 	void once(double delay, IAction action);
 
+	/**
+	 * Run an action on model thread repeatedly.
+	 * 
+	 * @param interval
+	 *            Repeat interval in seconds
+	 * @param action
+	 *            Action to be run
+	 */
 	void repeat(double interval, IAction action);
 
+	/**
+	 * Run an action on model thread repeatedly, with given delay.
+	 * 
+	 * @param delay
+	 *            Delay before action is run, in seconds
+	 * @param interval
+	 *            Repeat interval, in seconds
+	 * @param action
+	 *            Action to be run
+	 */
 	void repeat(double delay, double interval, IAction action);
 
-	// FIXME: stuff below doesn't belong here
-	void addDrawable(GLAutoDrawable drawable);
+	/**
+	 * Add a view to the scheduler. To be called by controller only.
+	 */
+	void addView(IView view);
 
-	void removeDrawable(GLAutoDrawable drawable);
+	/**
+	 * Remove a view from the scheduler. To be called by controller only.
+	 */
+	void removeView(IView view);
 
-	void requestUpdate(GLAutoDrawable drawable);
-
-	void invokeOnRenderThread(Runnable runnable);
+	/**
+	 * Request to repaint a view (i.e. schedule it for rendering on render
+	 * thread). To be called by controller only.
+	 * 
+	 * @param view
+	 *            the view to be repainted, or NULL for all views to be
+	 *            repainted
+	 */
+	void repaintView(IView view);
 }

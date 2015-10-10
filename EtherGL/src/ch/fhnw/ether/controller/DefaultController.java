@@ -125,7 +125,7 @@ public class DefaultController implements IController {
 
 	@Override
 	public final void repaintViews() {
-		scheduler.requestUpdate(null);
+		scheduler.repaintView(null);
 	}
 
 	@Override
@@ -177,7 +177,7 @@ public class DefaultController implements IController {
 			System.out.println("view created");
 
 		views.add(view);
-		scheduler.addDrawable(view.getDrawable());
+		scheduler.addView(view);
 	}
 
 	@Override
@@ -188,7 +188,7 @@ public class DefaultController implements IController {
 		views.remove(view);
 		if (currentView == view)
 			currentView = null;
-		scheduler.removeDrawable(view.getDrawable());
+		scheduler.removeView(view);
 	}
 
 	@Override

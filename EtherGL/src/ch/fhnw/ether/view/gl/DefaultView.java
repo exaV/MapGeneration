@@ -50,6 +50,7 @@ import ch.fhnw.ether.scene.camera.CameraMatrices;
 import ch.fhnw.ether.scene.camera.ICamera;
 import ch.fhnw.ether.ui.UI;
 import ch.fhnw.ether.view.IView;
+import ch.fhnw.util.IUpdateListener;
 import ch.fhnw.util.Viewport;
 import ch.fhnw.util.math.Mat4;
 
@@ -111,8 +112,13 @@ public class DefaultView implements IView {
 	}
 
 	@Override
-	public GLAutoDrawable getDrawable() {
-		return window.getWindow();
+	public final void repaint() {
+		getController().repaintView(this);
+	}
+
+	@Override
+	public final void display() {
+		window.getWindow().display();
 	}
 
 	@Override
@@ -129,10 +135,10 @@ public class DefaultView implements IView {
 	public final void setCamera(ICamera camera) {
 		synchronized (this) {
 			if (this.camera != null)
-				this.camera.removeUpdateListener(this);
+				this.camera.removeUpdateListener(updateListener);
 			this.camera = camera;
 			if (camera != null)
-				this.camera.addUpdateListener(this);
+				this.camera.addUpdateListener(updateListener);
 		}
 	}
 
@@ -186,24 +192,23 @@ public class DefaultView implements IView {
 	public final boolean isCurrent() {
 		return getController().getCurrentView() == this;
 	}
+	
+	// IUpdate listener implementation (e.g. for camera)
 
-	@Override
-	public final void repaint() {
-		getController().repaintView(this);
-	}
-
-	@Override
-	public void requestUpdate(Object source) {
-		if (source instanceof ICamera) {
-			synchronized (this) {
-				if (!cameraLocked)
-					cameraMatrices = null;
+	private IUpdateListener updateListener = new IUpdateListener() {
+		@Override
+		public void requestUpdate(Object source) {
+			if (source instanceof ICamera) {
+				synchronized (this) {
+					if (!cameraLocked)
+						cameraMatrices = null;
+				}
+				if (isCurrent())
+					getController().getCurrentTool().refresh(DefaultView.this);
+				repaint();
 			}
-			if (isCurrent())
-				getController().getCurrentTool().refresh(this);
-			repaint();
 		}
-	}
+	};
 
 	// GLEventListener implementation
 

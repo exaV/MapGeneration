@@ -32,47 +32,43 @@ import java.util.EnumSet;
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.scene.camera.CameraMatrices;
 import ch.fhnw.ether.scene.camera.ICamera;
-import ch.fhnw.util.IUpdateListener;
 import ch.fhnw.util.Viewport;
 import ch.fhnw.util.math.Mat4;
 
-import com.jogamp.opengl.GLAutoDrawable;
-
 /**
- * A 'view' here is a view with some control functionality, i.e. it handles the rendering of the model and also the user
- * input specific to the view.
+ * A 'view' here is a view with some control functionality, i.e. it handles the
+ * rendering of the model and also the user input specific to the view.
  * 
  * @author radar
  */
-public interface IView extends IUpdateListener {
+public interface IView {
 	enum ViewType {
 		INTERACTIVE_VIEW, MAPPED_VIEW
 	}
-	
+
 	enum ViewFlag {
 		/** Grid visibility in navigation tool. */
-		GRID, 
-		/** Enable line smoothing. */
+		GRID, /** Enable line smoothing. */
 		SMOOTH_LINES,
 	}
 
 	public static final class Config {
-		private final ViewType          viewType;
-		private final int               fsaaSamples;
+		private final ViewType viewType;
+		private final int fsaaSamples;
 		private final EnumSet<ViewFlag> flags;
-		
-		public Config(ViewType viewType, int fsaaSamples, ViewFlag ...flags) {
-			this.viewType    = viewType;
+
+		public Config(ViewType viewType, int fsaaSamples, ViewFlag... flags) {
+			this.viewType = viewType;
 			this.fsaaSamples = fsaaSamples;
 			this.flags = EnumSet.noneOf(ViewFlag.class);
-			for(ViewFlag flag : flags)
+			for (ViewFlag flag : flags)
 				this.flags.add(flag);
 		}
-		
+
 		public ViewType getViewType() {
 			return viewType;
 		}
-		
+
 		public int getFSAASamples() {
 			return fsaaSamples;
 		}
@@ -81,20 +77,24 @@ public interface IView extends IUpdateListener {
 			return flags.contains(flag);
 		}
 	}
-	
+
 	Config INTERACTIVE_VIEW = new Config(ViewType.INTERACTIVE_VIEW, 0, ViewFlag.GRID);
-	Config MAPPED_VIEW      = new Config(ViewType.MAPPED_VIEW,      0, ViewFlag.GRID);
-	
+	Config MAPPED_VIEW = new Config(ViewType.MAPPED_VIEW, 0, ViewFlag.GRID);
+
 	/**
 	 * Dispose this view and release all associated resources
 	 */
 	void dispose();
-	
+
 	/**
-	 * Get the drawable associated to this view.
-	 * @return the drawable
+	 * Request to repaint this view.
 	 */
-	GLAutoDrawable getDrawable();
+	void repaint();
+
+	/**
+	 * Display (i.e. render) this view. Must be run from render thread.
+	 */
+	void display();
 
 	/**
 	 * Get the controller this view belongs to.
@@ -126,8 +126,9 @@ public interface IView extends IUpdateListener {
 	CameraMatrices getCameraMatrices();
 
 	/**
-	 * Set camera matrices to given fixed view and projection matrix. Will lock matrices and disable camera control. Use
-	 * setCameraMatrices(null, null) to unlock and re-enable camera control.
+	 * Set camera matrices to given fixed view and projection matrix. Will lock
+	 * matrices and disable camera control. Use setCameraMatrices(null, null) to
+	 * unlock and re-enable camera control.
 	 * 
 	 * @param viewMatrix
 	 *            the view matrix to be set
@@ -171,9 +172,4 @@ public interface IView extends IUpdateListener {
 	 * @return true if view receives events, false otherwise
 	 */
 	boolean isCurrent();
-
-	/**
-	 * Request to repaint this view.
-	 */
-	void repaint();
 }

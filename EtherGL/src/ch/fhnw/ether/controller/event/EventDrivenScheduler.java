@@ -31,7 +31,7 @@ package ch.fhnw.ether.controller.event;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import com.jogamp.opengl.GLAutoDrawable;
+import ch.fhnw.ether.view.IView;
 
 public final class EventDrivenScheduler extends AbstractScheduler {
 	private static final class RequestUpdate implements Runnable {
@@ -51,30 +51,25 @@ public final class EventDrivenScheduler extends AbstractScheduler {
 
 	@Override
 	protected void runRenderThread() {
-		try {
-			while (true) {
-				try {
+		while (true) {
+			try {
+				renderQueue.take().run();
+				while (renderQueue.peek() != null)
 					renderQueue.take().run();
-					while (renderQueue.peek() != null)
-						renderQueue.take().run();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				try {
-					displayDrawables();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.exit(1);
+			try {
+				displayViews();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
 	@Override
-	public void requestUpdate(GLAutoDrawable drawable) {
-		// note: currently drawable is ignored and we simply update all of them
+	public void repaintView(IView view) {
+		// note: currently view is ignored and we simply update all of them
 		if (!update.scheduled.getAndSet(true)) {
 			invokeOnRenderThread(update);
 		}
