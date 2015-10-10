@@ -79,7 +79,8 @@ public class DefaultView implements IView {
 
 	private boolean enabled = true;
 
-	public DefaultView(IController controller, int x, int y, int w, int h, Config viewConfig, String title, ICamera camera) {
+	public DefaultView(IController controller, int x, int y, int w, int h, Config viewConfig, String title,
+			ICamera camera) {
 		this.controller = controller;
 		this.viewConfig = viewConfig;
 		setCamera(camera);
@@ -192,7 +193,7 @@ public class DefaultView implements IView {
 	public final boolean isCurrent() {
 		return getController().getCurrentView() == this;
 	}
-	
+
 	// IUpdate listener implementation (e.g. for camera)
 
 	private IUpdateListener updateListener = new IUpdateListener() {
@@ -236,6 +237,13 @@ public class DefaultView implements IView {
 		@Override
 		public final void display(GLAutoDrawable drawable) {
 			try {
+				// XXX: make sure we only render on render thread (e.g. jogl
+				// will do repaints on other threads when resizing windows...)
+				if (!getController().getScheduler().isRenderThread()) {
+					getController().repaintView(DefaultView.this);
+					return;
+				}
+
 				GL gl = drawable.getGL();
 				GL3 gl3 = gl.getGL3();
 				// gl3 = new TraceGL3(gl3, System.out);

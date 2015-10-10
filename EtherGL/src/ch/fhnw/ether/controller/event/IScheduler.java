@@ -105,4 +105,9 @@ public interface IScheduler {
 	 *            repainted
 	 */
 	void repaintView(IView view);
+
+	
+	boolean isModelThread();
+	
+	boolean isRenderThread();
 }

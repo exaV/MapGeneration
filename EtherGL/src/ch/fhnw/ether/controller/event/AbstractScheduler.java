@@ -77,6 +77,9 @@ abstract class AbstractScheduler implements IScheduler {
 
 	private static final long START_TIME = System.nanoTime();
 
+	private final Thread modelThread;
+	private final Thread renderThread;
+	
 	private final DelayQueue<DelayedAction> modelQueue = new DelayQueue<>();
 
 	private final List<IView> views = new ArrayList<>();
@@ -84,8 +87,10 @@ abstract class AbstractScheduler implements IScheduler {
 	protected final BlockingQueue<Runnable> renderQueue = new LinkedBlockingQueue<>();
 
 	protected AbstractScheduler() {
-		new Thread(this::runModelThread).start();
-		new Thread(this::runRenderThread).start();
+		modelThread = new Thread(this::runModelThread, "modelthread");
+		modelThread.start();
+		renderThread = new Thread(this::runRenderThread, "renderthread");
+		renderThread.start();
 	}
 
 	@Override
@@ -117,7 +122,17 @@ abstract class AbstractScheduler implements IScheduler {
 	public void removeView(IView view) {
 		invokeOnRenderThread(() -> views.remove(view));
 	}
+	
+	@Override
+	public boolean isModelThread() {
+		return Thread.currentThread().equals(modelThread);
+	}
 
+	@Override
+	public boolean isRenderThread() {
+		return Thread.currentThread().equals(renderThread);
+	}
+	
 	protected final void invokeOnRenderThread(Runnable runnable) {
 		renderQueue.add(runnable);
 	}
