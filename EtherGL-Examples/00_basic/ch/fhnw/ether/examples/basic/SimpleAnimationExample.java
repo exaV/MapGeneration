@@ -77,7 +77,7 @@ public final class SimpleAnimationExample {
 		IMesh mesh = makeColoredTriangle();
 		scene.add3DObject(mesh);
 
-		controller.getScheduler().repeat(0, 1.0/60.0, new IScheduler.IAction() {
+		controller.getScheduler().repeat(0, 1.0/60.0, new IScheduler.IRepeatedAction() {
 			private int c = 0;
 
 			@Override

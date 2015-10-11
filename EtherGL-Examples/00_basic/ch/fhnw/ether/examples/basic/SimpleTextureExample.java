@@ -90,7 +90,7 @@ public final class SimpleTextureExample {
 		scene.add3DObject(mesh);
 
 		// Animate (Using event timer)
-		controller.getScheduler().repeat(0, 1.0/60.0, new IScheduler.IAction() {
+		controller.getScheduler().repeat(0, 1.0/60.0, new IScheduler.IRepeatedAction() {
 			private int c = 0;
 
 			@Override

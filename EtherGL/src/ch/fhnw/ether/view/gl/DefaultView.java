@@ -169,9 +169,7 @@ public class DefaultView implements IView {
 
 	@Override
 	public final Viewport getViewport() {
-		synchronized (this) {
-			return viewport;
-		}
+		return viewport;
 	}
 
 	@Override

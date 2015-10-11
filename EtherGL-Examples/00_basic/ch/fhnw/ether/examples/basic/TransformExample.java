@@ -69,7 +69,7 @@ public final class TransformExample {
 		// Add an exit button
 		controller.getUI().addWidget(new Button(0, 0, "Quit", "Quit", KeyEvent.VK_ESCAPE, (button, v) -> System.exit(0)));
 		
-		controller.getScheduler().repeat(0, 1.0/60.0, new IScheduler.IAction() {
+		controller.getScheduler().repeat(0, 1.0/60.0, new IScheduler.IRepeatedAction() {
 			private float angle = 0;
 
 			@Override

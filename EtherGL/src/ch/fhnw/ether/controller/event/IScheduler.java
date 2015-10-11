@@ -39,9 +39,19 @@ public interface IScheduler {
 		 * 
 		 * @param time
 		 *            time since application start, in seconds
+		 */
+		void run(double time);
+	}
+
+	interface IRepeatedAction {
+		/**
+		 * Repeated action to be run, implemented by client.
+		 * 
+		 * @param time
+		 *            time since application start, in seconds
 		 * @param interval
 		 *            interval of repeated action, in seconds
-		 * @return false to stop repeated action, true otherwise.
+		 * @return false to stop repeated execution of action, true otherwise.
 		 */
 		boolean run(double time, double interval);
 	}
@@ -72,7 +82,7 @@ public interface IScheduler {
 	 * @param action
 	 *            Action to be run
 	 */
-	void repeat(double interval, IAction action);
+	void repeat(double interval, IRepeatedAction action);
 
 	/**
 	 * Run an action on model thread repeatedly, with given delay.
@@ -84,7 +94,7 @@ public interface IScheduler {
 	 * @param action
 	 *            Action to be run
 	 */
-	void repeat(double delay, double interval, IAction action);
+	void repeat(double delay, double interval, IRepeatedAction action);
 
 	/**
 	 * Add a view to the scheduler. To be called by controller only.
@@ -106,8 +116,7 @@ public interface IScheduler {
 	 */
 	void repaintView(IView view);
 
-	
 	boolean isModelThread();
-	
+
 	boolean isRenderThread();
 }

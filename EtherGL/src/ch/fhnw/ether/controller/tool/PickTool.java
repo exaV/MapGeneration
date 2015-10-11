@@ -43,12 +43,16 @@ public class PickTool extends AbstractTool {
 
 	@Override
 	public void pointerPressed(IPointerEvent e) {
-		int x = e.getX();
-		int y = e.getY();
-		Map<Float, I3DObject> pickables = PickUtilities.pickFromScene(PickMode.POINT, x, y, 0, 0, e.getView());
-		if (pickables.isEmpty())
-			System.out.println("no pick");
-		else
-			System.out.println(pickables.values().iterator().next());
+		// XXX this might be removed as soon as we decide if generally tool
+		// commands should be executed on model thread
+		getController().getScheduler().once((time) -> {
+			int x = e.getX();
+			int y = e.getY();
+			Map<Float, I3DObject> pickables = PickUtilities.pickFromScene(PickMode.POINT, x, y, 0, 0, e.getView());
+			if (pickables.isEmpty())
+				System.out.println("no pick");
+			else
+				System.out.println(pickables.values().iterator().next());
+		});
 	}
 }

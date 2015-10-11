@@ -45,10 +45,23 @@ abstract class AbstractScheduler implements IScheduler {
 		final boolean repeat;
 		long delay;
 		final long interval;
-		final IAction action;
+		final IRepeatedAction action;
 
-		DelayedAction(boolean repeat, long delay, long interval, IAction action) {
-			this.repeat = repeat;
+		DelayedAction(long delay, IAction action) {
+			this.repeat = false;
+			this.delay = delay;
+			this.interval = 0;
+			this.action = new IRepeatedAction() {
+				@Override
+				public boolean run(double time, double interval) {
+					action.run(time);
+					return false;
+				}
+			};
+		}
+		
+		DelayedAction(long delay, long interval, IRepeatedAction action) {
+			this.repeat = true;
 			this.delay = delay;
 			this.interval = interval;
 			this.action = action;
@@ -100,17 +113,17 @@ abstract class AbstractScheduler implements IScheduler {
 
 	@Override
 	public void once(double delay, IAction action) {
-		modelQueue.add(new DelayedAction(false, s2ns(delay), 0, action));
+		modelQueue.add(new DelayedAction(s2ns(delay), action));
 	}
 
 	@Override
-	public void repeat(double interval, IAction action) {
+	public void repeat(double interval, IRepeatedAction action) {
 		repeat(0, interval, action);
 	}
 
 	@Override
-	public void repeat(double delay, double interval, IAction action) {
-		modelQueue.add(new DelayedAction(true, s2ns(delay), s2ns(interval), action));
+	public void repeat(double delay, double interval, IRepeatedAction action) {
+		modelQueue.add(new DelayedAction(s2ns(delay), s2ns(interval), action));
 	}
 
 	@Override
@@ -153,7 +166,7 @@ abstract class AbstractScheduler implements IScheduler {
 		while (true) {
 			try {
 				DelayedAction action = modelQueue.take();
-				if (action.interval > 0 && action.run(getTime()))
+				if (action.run(getTime()))
 					modelQueue.add(action);
 			} catch (Exception e) {
 				e.printStackTrace();
