@@ -142,12 +142,6 @@ public final class UI {
 
 	// pointer listener
 
-	public void pointerEntered(IPointerEvent e) {
-	}
-
-	public void pointerExited(IPointerEvent e) {
-	}
-
 	public boolean pointerPressed(IPointerEvent e) {
 		if (isInteractive(e)) {
 			for (IWidget widget : getWidgets()) {

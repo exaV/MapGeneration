@@ -204,8 +204,7 @@ public class DefaultView implements IView {
 					if (!cameraLocked)
 						cameraMatrices = null;
 				}
-				if (isCurrent())
-					getController().getCurrentTool().refresh(DefaultView.this);
+				getController().viewChanged(DefaultView.this);
 				repaint();
 			}
 		}

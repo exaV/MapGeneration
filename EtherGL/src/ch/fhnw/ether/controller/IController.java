@@ -148,6 +148,8 @@ public interface IController {
 	void viewGainedFocus(IView view);
 
 	void viewLostFocus(IView view);
+	
+	void viewChanged(IView view);
 
 	// key listener
 

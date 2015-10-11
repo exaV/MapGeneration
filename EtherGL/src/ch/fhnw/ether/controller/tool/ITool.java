@@ -35,7 +35,8 @@ import ch.fhnw.ether.view.IView;
 
 public interface ITool {
 	/**
-	 * Called when tool is activated. Note that this call is always followed by
+	 * Called when tool is activated (e.g. a new tool is selected). Note that
+	 * this call is always followed by
 	 * {@link #refresh(ch.fhnw.ether.view.IView)}.
 	 */
 	void activate();
@@ -46,7 +47,8 @@ public interface ITool {
 	void deactivate();
 
 	/**
-	 * Called when current view or camera has changed. Tools should use this to update view-dependent geometry.
+	 * Called when current view has changed (e.g. its camera). Tools should use this to
+	 * update view-dependent geometry.
 	 *
 	 * @param view
 	 *            the current view

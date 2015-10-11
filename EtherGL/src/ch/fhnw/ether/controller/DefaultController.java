@@ -48,13 +48,14 @@ import ch.fhnw.ether.ui.UI;
 import ch.fhnw.ether.view.IView;
 
 /**
- * Default controller that implements some basic common functionality. Use as base for more complex implementations.
+ * Default controller that implements some basic common functionality. Use as
+ * base for more complex implementations.
  *
  * @author radar
  */
 // FIXME: PickTool doesn't really belong here (any tools at all?)
 public class DefaultController implements IController {
-	private static final boolean DBG = true;
+	private static final boolean DBG = false;
 
 	private final IScheduler scheduler;
 	private final IRenderer renderer;
@@ -68,8 +69,7 @@ public class DefaultController implements IController {
 	private final PickTool pickTool;
 
 	private IView currentView;
-	private IView hoverView;
-	private ITool activeTool;
+	private ITool currentTool;
 
 	public DefaultController() {
 		this(new EventDrivenScheduler(), new ForwardRenderer());
@@ -82,7 +82,8 @@ public class DefaultController implements IController {
 		this.navigationTool = new NavigationTool(this);
 		this.pickTool = new PickTool(this);
 
-		activeTool = pickTool;
+		currentView = null;
+		currentTool = pickTool;
 	}
 
 	@Override
@@ -130,7 +131,7 @@ public class DefaultController implements IController {
 
 	@Override
 	public final ITool getCurrentTool() {
-		return activeTool;
+		return currentTool;
 	}
 
 	@Override
@@ -138,13 +139,13 @@ public class DefaultController implements IController {
 		if (tool == null)
 			tool = pickTool;
 
-		if (activeTool == tool)
+		if (currentTool == tool)
 			return;
 
-		activeTool.deactivate();
-		activeTool = tool;
-		activeTool.activate();
-		activeTool.refresh(getCurrentView());
+		currentTool.deactivate();
+		currentTool = tool;
+		currentTool.activate();
+		currentTool.refresh(getCurrentView());
 
 		repaintViews();
 	}
@@ -153,7 +154,7 @@ public class DefaultController implements IController {
 	public final NavigationTool getNavigationTool() {
 		return navigationTool;
 	}
-	
+
 	@Override
 	public IScheduler getScheduler() {
 		return scheduler;
@@ -168,9 +169,9 @@ public class DefaultController implements IController {
 	public final UI getUI() {
 		return ui;
 	}
-	
+
 	// view listener
-	
+
 	@Override
 	public final void viewCreated(IView view) {
 		if (DBG)
@@ -187,7 +188,7 @@ public class DefaultController implements IController {
 
 		views.remove(view);
 		if (currentView == view)
-			currentView = null;
+			setCurrentView(null);
 		scheduler.removeView(view);
 	}
 
@@ -197,12 +198,27 @@ public class DefaultController implements IController {
 			System.out.println("view gained focus");
 
 		setCurrentView(view);
+		navigationTool.activate();
 	}
-	
+
 	@Override
 	public void viewLostFocus(IView view) {
 		if (DBG)
 			System.out.println("view lost focus");
+
+		if (view == currentView) {
+			navigationTool.deactivate();
+			setCurrentView(null);
+		}
+	}
+
+	@Override
+	public void viewChanged(IView view) {
+		if (DBG)
+			System.out.println("view changed");
+
+		currentTool.refresh(view);
+		navigationTool.refresh(view);
 	}
 
 	// key listener
@@ -211,7 +227,7 @@ public class DefaultController implements IController {
 	public void keyPressed(IKeyEvent e) {
 		if (DBG)
 			System.out.println("key pressed");
-	
+
 		setCurrentView(e.getView());
 
 		// ui has precedence over everything else
@@ -223,7 +239,7 @@ public class DefaultController implements IController {
 			System.exit(0);
 
 		// finally, pass on to tool
-		activeTool.keyPressed(e);
+		currentTool.keyPressed(e);
 	}
 
 	@Override
@@ -234,32 +250,20 @@ public class DefaultController implements IController {
 
 	@Override
 	public void pointerEntered(IPointerEvent e) {
-		if (DBG)
-			System.out.println("pointer entered");
-		hoverView = e.getView();
-		navigationTool.activate();
-		if (ui != null)
-			ui.pointerEntered(e);
+		// if (DBG)
+		// System.out.println("pointer entered");
 	}
 
 	@Override
 	public void pointerExited(IPointerEvent e) {
-		if (DBG)
-			System.out.println("pointer exited");
-
-		if (ui != null)
-			ui.pointerExited(e);
-		navigationTool.deactivate();
-		hoverView = null;
+		// if (DBG)
+		// System.out.println("pointer exited");
 	}
 
 	@Override
 	public void pointerPressed(IPointerEvent e) {
 		if (DBG)
 			System.out.println("pointer pressed");
-		
-		if (hoverView == null)
-			pointerEntered(e);
 
 		setCurrentView(e.getView());
 
@@ -269,7 +273,7 @@ public class DefaultController implements IController {
 
 		// handle tools (with active navigation when modifier is pressed)
 		if (!e.isModifierDown())
-			activeTool.pointerPressed(e);
+			currentTool.pointerPressed(e);
 		else
 			navigationTool.pointerPressed(e);
 	}
@@ -279,57 +283,45 @@ public class DefaultController implements IController {
 		if (DBG)
 			System.out.println("pointer released");
 
-		if (hoverView == null)
-			pointerEntered(e);
-
 		if (ui != null && ui.pointerReleased(e))
 			return;
 
 		if (!e.isModifierDown())
-			activeTool.pointerReleased(e);
+			currentTool.pointerReleased(e);
 		else
 			navigationTool.pointerReleased(e);
 	}
 
 	@Override
 	public void pointerClicked(IPointerEvent e) {
-		if (DBG)
-			System.out.println("pointer clicked");
-		
-		if (hoverView == null)
-			pointerEntered(e);
+		// if (DBG)
+		// System.out.println("pointer clicked");
 	}
 
 	// pointer motion listener
 
 	@Override
 	public void pointerMoved(IPointerEvent e) {
-		//if (DBG)
-		//	System.out.println("pointer moved");
-		
-		if (hoverView == null)
-			pointerEntered(e);
+		// if (DBG)
+		// System.out.println("pointer moved");
 
 		if (ui != null)
 			ui.pointerMoved(e);
-		activeTool.pointerMoved(e);
+		currentTool.pointerMoved(e);
 		navigationTool.pointerMoved(e);
 	}
 
 	@Override
 	public void pointerDragged(IPointerEvent e) {
-		//if (DBG)
-		//	System.out.println("pointer dragged");
-		
-		if (hoverView == null)
-			pointerEntered(e);
+		// if (DBG)
+		// System.out.println("pointer dragged");
 
 		// ui has precedence over everything else
 		if (ui != null && ui.pointerDragged(e))
 			return;
-		
+
 		if (!e.isModifierDown())
-			activeTool.pointerDragged(e);
+			currentTool.pointerDragged(e);
 		else
 			navigationTool.pointerDragged(e);
 	}
@@ -338,21 +330,18 @@ public class DefaultController implements IController {
 
 	@Override
 	public void pointerScrolled(IPointerEvent e) {
-		//if (DBG)
-		//	System.out.println("pointer scrolled");
-
-		if (hoverView == null)
-			pointerEntered(e);
-
+		// if (DBG)
+		// System.out.println("pointer scrolled");
+		
+		// currently, only navigation tool receives scroll events
 		navigationTool.pointerScrolled(e);
 	}
-
 
 	public static void printHelp(String[] help) {
 		for (String s : help)
 			System.out.println(s);
 	}
-	
+
 	// private stuff
 
 	private void setCurrentView(IView view) {
@@ -360,7 +349,8 @@ public class DefaultController implements IController {
 			System.out.println("set current view");
 		if (currentView != view) {
 			currentView = view;
-			getCurrentTool().refresh(currentView);
+			if (currentView != null)
+				getCurrentTool().refresh(currentView);
 			repaintViews();
 		}
 	}
