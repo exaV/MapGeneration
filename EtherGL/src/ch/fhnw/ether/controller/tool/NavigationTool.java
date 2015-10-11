@@ -57,24 +57,30 @@ public class NavigationTool extends AbstractTool {
 	private int mouseY;
 
 	private IMesh grid;
+	private IMesh axes;
 
 	public NavigationTool(IController controller) {
 		super(controller);
 		grid = makeGrid();
+		axes = makeAxes();
 	}
 
 	@Override
 	public void activate() {
 		IView view = getController().getCurrentView();
-		if (view != null && view.getConfig().has(ViewFlag.GRID))
+		if (view != null && view.getConfig().has(ViewFlag.GRID)) {
 			getController().getRenderer().addMesh(grid);
+			getController().getRenderer().addMesh(axes);
+		}
 	}
 
 	@Override
 	public void deactivate() {
 		IView view = getController().getCurrentView();
-		if (view != null && getController().getCurrentView().getConfig().has(ViewFlag.GRID))
+		if (view != null && getController().getCurrentView().getConfig().has(ViewFlag.GRID)) {
 			getController().getRenderer().removeMesh(grid);
+			getController().getRenderer().removeMesh(axes);
+		}
 	}
 
 	@Override
@@ -121,7 +127,7 @@ public class NavigationTool extends AbstractTool {
 		}
 	}
 
-	private static DefaultMesh makeGrid() {
+	private static IMesh makeGrid() {
 		List<Vec3> lines = new ArrayList<>();
 
 		int gridNumLines = 12;
@@ -142,5 +148,20 @@ public class NavigationTool extends AbstractTool {
 		}
 
 		return new DefaultMesh(new ColorMaterial(RGBA.GRAY), DefaultGeometry.createV(Primitive.LINES, Vec3.toArray(lines)), Queue.TRANSPARENCY);
+	}
+	
+	private static IMesh makeAxes() {
+		float[] lines = {
+			0, 0, 0, 1, 0, 0, 
+			0, 0, 0, 0, 1, 0,
+			0, 0, 0, 0, 0, 1 
+		};
+		float[] colors = {
+			1, 0, 0, 1, 1, 0, 0, 1,
+			0, 1, 0, 1, 0, 1, 0, 1,
+			0, 0, 1, 1, 0, 0, 1, 1
+		};
+
+		return new DefaultMesh(new ColorMaterial(RGBA.WHITE, true), DefaultGeometry.createVC(Primitive.LINES, lines, colors));
 	}
 }
