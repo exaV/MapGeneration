@@ -31,31 +31,39 @@ package ch.fhnw.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 public interface IUpdateRequester {
 	
 	final class UpdateListeners implements IUpdateListener {
-		private final List<IUpdateListener> listeners = new ArrayList<>();
+		private final AtomicReference<List<IUpdateListener>> listeners = new AtomicReference<>(new ArrayList<>());
 		
 		public UpdateListeners() {
-			
 		}
 		
 		public void addListener(IUpdateListener listener) {
-			listeners.add(listener);
+			synchronized (listeners) {
+				List<IUpdateListener> l = new ArrayList<>(listeners.get());
+				l.add(listener);
+				listeners.set(l);
+			}
 		}
 
 		public void removeListener(IUpdateListener listener) {
-			listeners.remove(listener);
+			synchronized (listeners) {
+				List<IUpdateListener> l = new ArrayList<>(listeners.get());
+				l.remove(listener);
+				listeners.set(l);
+			}
 		}
 		
 		public void clear() {
-			listeners.clear();
+			listeners.set(new ArrayList<>());
 		}
 		
 		@Override
 		public void requestUpdate(Object source) {
-			for (IUpdateListener listener : listeners)
+			for (IUpdateListener listener : listeners.get())
 				listener.requestUpdate(source);
 		}
 	}

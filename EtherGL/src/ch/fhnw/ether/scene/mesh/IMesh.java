@@ -73,6 +73,10 @@ public interface IMesh extends I3DObject, IUpdateListener {
 	
 	void setTransform(Mat4 transform);
 
+	
+
+	// XXX below methods are to be used from the renderer thread only. subject to change / cleanup
+	
 	/**
 	 * @return true if material was modified since last call to this method.
 	 */
