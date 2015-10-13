@@ -317,7 +317,8 @@ public class DefaultView implements IView {
 		@Override
 		public void windowLostFocus(WindowEvent e) {
 			try {
-				controller.viewLostFocus(DefaultView.this);
+				if(controller != null)
+					controller.viewLostFocus(DefaultView.this);
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
