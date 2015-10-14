@@ -41,6 +41,7 @@ import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Hashtable;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -51,6 +52,7 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
@@ -66,6 +68,8 @@ public class ParameterWindow {
 
 	private static NumberFormat FMT = new DecimalFormat("#.##");
 
+	AtomicReference<JFrame> frame = new AtomicReference<>();
+
 	static class ParamUI implements ChangeListener, ActionListener {
 		JLabel                     label;
 		JSlider                    slider;
@@ -73,6 +77,7 @@ public class ParameterWindow {
 		AbstractRenderCommand<?,?> cmd;
 		Parameter                  p;
 		float                      def;
+		Timer                      t;
 
 		ParamUI(AbstractRenderCommand<?,?> cmd, Parameter param) {
 			Hashtable<Integer, JLabel> labels = new Hashtable<>();
@@ -92,11 +97,15 @@ public class ParameterWindow {
 				this.slider.setPaintTicks(true);
 				this.slider.setLabelTable(labels);
 				this.slider.addChangeListener(this);
+				t = new Timer(40, this);
+				t.start();
 				break;
 			case ITEMS:
 				this.combo = new JComboBox<>(param.getItems());
 				this.combo.addActionListener(this);
 				this.combo.setSelectedIndex((int)(cmd.getVal(p)));
+				t = new Timer(40, this);
+				t.start();
 				break;
 			}
 		}
@@ -122,7 +131,23 @@ public class ParameterWindow {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			cmd.setVal(p, combo.getSelectedIndex());
+			if(e.getSource() == t) {
+				if(this.slider != null) {
+					float val =  slider.getValue() / S;
+					if(cmd.getVal(p) != val) {
+						slider.setValue((int) (cmd.getVal(p) * S));
+						cmd.setVal(p, slider.getValue() / S);
+					}
+				}
+				if(this.combo != null) {
+					float val =  combo.getSelectedIndex();
+					if(cmd.getVal(p) != val) {
+						combo.setSelectedIndex((int) cmd.getVal(p));
+						cmd.setVal(p, combo.getSelectedIndex());
+					}
+				}
+			} else
+				cmd.setVal(p, combo.getSelectedIndex());
 		}
 	}
 
@@ -134,14 +159,15 @@ public class ParameterWindow {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				JFrame frame  = new JFrame("Parameters");
-				frame.setLayout(new BorderLayout());
+				JFrame f= new JFrame("Parameters"); 
+				f.setLayout(new BorderLayout());
 				if(addOn != null)
-					frame.add(addOn, BorderLayout.NORTH);
-				frame.add(createUIRecr(src), BorderLayout.CENTER);
-				frame.pack();
-				frame.setLocation(Toolkit.getDefaultToolkit().getScreenSize().width - frame.getSize().width, frame.getLocation().y);
-				frame.setVisible(true);
+					f.add(addOn, BorderLayout.NORTH);
+				f.add(createUIRecr(src), BorderLayout.CENTER);
+				f.pack();
+				f.setLocation(Toolkit.getDefaultToolkit().getScreenSize().width - f.getSize().width, f.getLocation().y);
+				f.setVisible(true);
+				frame.set(f);
 			}
 
 			JComponent createUI(AbstractRenderCommand<?,?> cmd) {
@@ -150,7 +176,7 @@ public class ParameterWindow {
 					result.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
 					return result;
 				}
-				
+
 				JPanel result = new JPanel();
 				result.setBorder(new TitledBorder(cmd.getClass().getName()));
 				Parameter[] params = cmd.getParameters();
@@ -224,5 +250,13 @@ public class ParameterWindow {
 			}
 		});
 
+	}
+
+	public boolean isVisible() {
+		while(frame.get() == null)
+			try {
+				Thread.sleep(1);
+			} catch (InterruptedException e) {}
+		return frame.get().isVisible();
 	}
 }

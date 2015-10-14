@@ -25,35 +25,48 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ */package ch.fhnw.ether.audio.fx;
 
-package ch.fhnw.ether.audio;
+ import ch.fhnw.ether.audio.ButterworthFilter;
+ import ch.fhnw.ether.audio.IAudioRenderTarget;
+ import ch.fhnw.ether.media.AbstractRenderCommand;
+ import ch.fhnw.ether.media.Parameter;
+ import ch.fhnw.ether.media.RenderCommandException;
+ import ch.fhnw.ether.media.Stateless;
 
-import java.util.Random;
+ public class LowPass extends AbstractRenderCommand<IAudioRenderTarget,Stateless<IAudioRenderTarget>> {
+	 private static final Parameter FREQ = new Parameter("f",  "Frequency",  0, 20000, 30);
 
-import ch.fhnw.ether.media.AbstractRenderCommand;
-import ch.fhnw.ether.media.Parameter;
-import ch.fhnw.ether.media.RenderCommandException;
-import ch.fhnw.ether.media.Stateless;
-import ch.fhnw.util.math.MathUtilities;
+	 private ButterworthFilter[][] lowPass;
 
-public class WhiteNoise extends AbstractRenderCommand<IAudioRenderTarget,Stateless<IAudioRenderTarget>> {
-	private static final Parameter GAIN = new Parameter("gain", "Gain", 0, 1, 0);
-	private static final Random    RND  = new Random();
-	
-	public WhiteNoise() {
-		super(GAIN);
-	}
-		
-	@Override
-	protected void run(Stateless<IAudioRenderTarget> state) throws RenderCommandException {
-		final double  gain    = getVal(GAIN);
-		final float[] samples = state.getTarget().getFrame().samples;
-		
-		for(int i = 0 ; i < samples.length ; i++)
-			samples[i] += MathUtilities.clamp(((RND.nextFloat() * 2f) - 1f) * gain, -1, 1);
-		
-		state.getTarget().getFrame().modified();
-	}
-	
-}
+	 float freqOld  = -1;
+	 private final int strength;
+
+	 public LowPass(int strength) {
+		 super(FREQ);
+		 this.strength = strength;
+	 }
+
+	 @Override
+	 protected void run(Stateless<IAudioRenderTarget> state) throws RenderCommandException {
+		 final float              freq      = getVal(FREQ);
+		 final IAudioRenderTarget target    = state.getTarget();
+		 final int                nChannels = target.getNumChannels();
+		 final float[]            samples   = target.getFrame().samples;
+
+		 if(freq != freqOld) {
+			 lowPass = new ButterworthFilter[nChannels][strength];
+			 for(int i = 0; i < nChannels; i++)
+				 for(int j = 0; j < strength; j++)
+					 lowPass[i][j] = ButterworthFilter.getLowpassFilter(target.getSampleRate(), freq);
+			 freqOld  = freq;
+		 }
+
+		 for(int i = 0; i < samples.length; i += nChannels)
+			 for(int c = 0; c < nChannels; c++)
+				 for(int j = 0; j < strength; j++)
+					 samples[i+c] = lowPass[c][j].process(samples[i+c]);
+
+		 target.getFrame().modified();
+	 }	
+ }
