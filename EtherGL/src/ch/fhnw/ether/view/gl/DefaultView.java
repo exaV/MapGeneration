@@ -37,6 +37,7 @@ import com.jogamp.newt.event.MouseListener;
 import com.jogamp.newt.event.WindowAdapter;
 import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.newt.event.WindowListener;
+import com.jogamp.newt.opengl.GLWindow;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.GLAutoDrawable;
@@ -119,7 +120,14 @@ public class DefaultView implements IView {
 
 	@Override
 	public final void display() {
-		window.getWindow().display();
+		// XXX locking madness... not sure if this helps, need to try
+		if (window.getWindow().lockSurface() == GLWindow.LOCK_SURFACE_NOT_READY)
+			return;
+		try {
+			window.getWindow().display();
+		} finally {
+			window.getWindow().unlockSurface();
+		}
 	}
 
 	@Override

@@ -97,7 +97,6 @@ public final class NEWTWindow {
 			window.setTitle(title);
 		else
 			window.setUndecorated(true);
-		//window.setVisible(true);
 	}
 	
 	public void setVisible() {
