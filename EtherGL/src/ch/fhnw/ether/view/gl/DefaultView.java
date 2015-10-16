@@ -245,7 +245,6 @@ public class DefaultView implements IView {
 				// XXX: make sure we only render on render thread (e.g. jogl
 				// will do repaints on other threads when resizing windows...)
 				if (!getController().getScheduler().isRenderThread()) {
-					getController().repaintView(DefaultView.this);
 					return;
 				}
 
@@ -331,6 +330,12 @@ public class DefaultView implements IView {
 				ex.printStackTrace();
 			}
 		}
+		
+		// resize event, because the glEventListener doesn't get the resize events on all platforms (AMD & Win10)
+		@Override
+		public void windowResized(WindowEvent e) {
+			getController().repaintView(DefaultView.this);
+		};
 	};
 
 	// key listener
