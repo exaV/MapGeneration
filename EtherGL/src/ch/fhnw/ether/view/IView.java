@@ -172,4 +172,13 @@ public interface IView {
 	 * @return true if view receives events, false otherwise
 	 */
 	boolean isCurrent();
+	
+	/**
+	 * Enable or disable this as a fullscreen view.
+	 * 
+	 * @param enabled
+	 * 			enables fullscreen if true, disables otherwise
+	 */
+	
+	void setFullscreen(boolean enabled);
 }

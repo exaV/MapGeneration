@@ -29,14 +29,14 @@
 
 package ch.fhnw.ether.view.gl;
 
-import ch.fhnw.ether.view.IView.Config;
-
 import com.jogamp.nativewindow.util.Point;
 import com.jogamp.newt.event.WindowAdapter;
 import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.newt.opengl.GLWindow;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLCapabilities;
+
+import ch.fhnw.ether.view.IView.Config;
 
 /**
  * OpenGL frame class (i.e. an OpenGL window) that combines a GLCanvas and a JFrame.
@@ -121,5 +121,9 @@ public final class NEWTWindow {
 
 	public GLWindow getWindow() {
 		return window;
+	}
+	
+	public void setFullscreen(boolean enabled){
+		window.setFullscreen(enabled);
 	}
 }

@@ -539,4 +539,10 @@ public class DefaultView implements IView {
 			}
 		}
 	};
+
+	@Override
+	public void setFullscreen(boolean enabled) {
+		window.setFullscreen(enabled);
+		
+	}
 }
