@@ -60,6 +60,14 @@ public interface IKeyEvent extends IEvent {
 	 * @see com.jogamp.newt.event.KeyEvent#getKeyChar();
 	 */
 	char getKeyChar();
+	
+	/**
+	 * Shows if this event is an auto repeated key event
+	 * 
+	 * @return true if this is an auto repeated event
+	 * @see com.jogamp.newt.event.KeyEvent#isAutoRepeat();
+	 */
+	boolean isAutoRepeat();
 
 	//// NOTE: The virtual key codes below are a 1:1 copy from Jogl's KeyEvent
 

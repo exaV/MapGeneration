@@ -32,6 +32,7 @@ import java.util.EnumSet;
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.scene.camera.CameraMatrices;
 import ch.fhnw.ether.scene.camera.ICamera;
+import ch.fhnw.ether.view.gl.PointerConfig;
 import ch.fhnw.util.Viewport;
 import ch.fhnw.util.math.Mat4;
 
@@ -179,6 +180,12 @@ public interface IView {
 	 * @param enabled
 	 * 			enables fullscreen if true, disables otherwise
 	 */
-	
 	void setFullscreen(boolean enabled);
+	
+	/**
+	 * Returns the PointerConfig for manipulation the pointer settings
+	 * 
+	 * @return the pointerConfig of this view
+	 */
+	PointerConfig getPointerConfig();
 }

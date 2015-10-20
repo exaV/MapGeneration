@@ -126,4 +126,8 @@ public final class NEWTWindow {
 	public void setFullscreen(boolean enabled){
 		window.setFullscreen(enabled);
 	}
+	
+	public PointerConfig getPointerConfig(){
+		return new PointerConfig(window);
+	}
 }

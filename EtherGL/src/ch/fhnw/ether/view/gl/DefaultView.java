@@ -85,13 +85,13 @@ public class DefaultView implements IView {
 		this.controller = controller;
 		this.viewConfig = viewConfig;
 		setCamera(camera);
-
+		
 		window = new NEWTWindow(w, h, title, viewConfig);
 		window.getWindow().addGLEventListener(glEventListener);
 		window.getWindow().addWindowListener(windowListener);
 		window.getWindow().addMouseListener(mouseListener);
 		window.getWindow().addKeyListener(keyListener);
-
+		
 		Point p = window.getPosition();
 		if (x != -1)
 			p.setX(x);
@@ -344,12 +344,14 @@ public class DefaultView implements IView {
 		final short key;
 		final short keyCode;
 		final char keyChar;
+		final boolean isAutoRepeat;
 
 		ViewKeyEvent(KeyEvent e) {
 			modifiers = e.getModifiers() & IEvent.MODIFIER_MASK;
 			key = e.getKeySymbol();
 			keyCode = e.getKeyCode();
 			keyChar = e.getKeyChar();
+			isAutoRepeat = e.isAutoRepeat();
 		}
 
 		@Override
@@ -375,6 +377,11 @@ public class DefaultView implements IView {
 		@Override
 		public char getKeyChar() {
 			return keyChar;
+		}
+
+		@Override
+		public boolean isAutoRepeat() {
+			return isAutoRepeat;
 		}
 	}
 
@@ -543,6 +550,11 @@ public class DefaultView implements IView {
 	@Override
 	public void setFullscreen(boolean enabled) {
 		window.setFullscreen(enabled);
-		
 	}
+	
+	@Override
+	public PointerConfig getPointerConfig(){
+		return window.getPointerConfig();
+	}
+	
 }
