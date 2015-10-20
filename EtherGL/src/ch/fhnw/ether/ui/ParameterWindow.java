@@ -64,7 +64,7 @@ import ch.fhnw.ether.media.RenderProgram;
 
 public class ParameterWindow {
 	public enum Flag {EXIT_ON_CLOSE}
-	
+
 	static final float S         = 1000f;
 	static final int   NUM_TICKS = 5;
 
@@ -94,13 +94,18 @@ public class ParameterWindow {
 			this.label  = new JLabel(param.getDescription());
 			switch(p.getType()) {
 			case RANGE:
-				this.slider = new JSlider((int)(param.getMin() * S), (int)(param.getMax() * S), (int)(cmd.getVal(p) * S));
-				this.slider.setPaintLabels(true);
-				this.slider.setPaintTicks(true);
-				this.slider.setLabelTable(labels);
-				this.slider.addChangeListener(this);
-				t = new Timer(40, this);
-				t.start();
+				try {
+					this.slider = new JSlider((int)(param.getMin() * S), (int)(param.getMax() * S), (int)(cmd.getVal(p) * S));
+					this.slider.setPaintLabels(true);
+					this.slider.setPaintTicks(true);
+					this.slider.setLabelTable(labels);
+					this.slider.addChangeListener(this);
+					t = new Timer(40, this);
+					t.start();
+				} catch(Throwable t) {
+					System.err.println(param);
+					t.printStackTrace();
+				}
 				break;
 			case ITEMS:
 				this.combo = new JComboBox<>(param.getItems());
@@ -163,7 +168,7 @@ public class ParameterWindow {
 				return true;
 		return false;
 	}
-	
+
 	public ParameterWindow(final JComponent addOn, final AbstractRenderCommand<?,?> src, Flag ... flags) {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
@@ -273,6 +278,6 @@ public class ParameterWindow {
 
 	public void exitOnClose() {
 		// TODO Auto-generated method stub
-		
+
 	}
 }
