@@ -40,9 +40,12 @@ import ch.fhnw.ether.media.AbstractRenderCommand;
 import ch.fhnw.ether.media.PerTargetState;
 import ch.fhnw.ether.media.RenderCommandException;
 import ch.fhnw.util.IModifier;
+import ch.fhnw.util.Log;
 import ch.fhnw.util.math.MathUtilities;
 
 public class FFT extends AbstractRenderCommand<IAudioRenderTarget,FFT.State> {
+	private static final Log log = Log.create();
+	
 	private final float  minFreq;
 	private final Window windowType;
 
@@ -63,7 +66,7 @@ public class FFT extends AbstractRenderCommand<IAudioRenderTarget,FFT.State> {
 			super(target);
 			sRate   = target.getSampleRate();
 			fftSize = MathUtilities.nextPowerOfTwo((int)(sRate / minFreq));
-			System.out.println("Using FFT of " + fftSize + " at " + sRate + " Hz");
+			log.info("FFT of " + fftSize + " at " + sRate + " Hz");
 			fft      = new FloatFFT_1D(fftSize);
 			buffer   = new BlockBuffer(fftSize, true, windowType);
 			block    = new float[fftSize];
@@ -187,5 +190,13 @@ public class FFT extends AbstractRenderCommand<IAudioRenderTarget,FFT.State> {
 
 	public int size(IAudioRenderTarget target) throws RenderCommandException {
 		return state().get(target).size();
+	}
+	
+	public Window getWindowType() {
+		return windowType;
+	}
+
+	public float getMinFreq() {
+		return minFreq;
 	}
 }

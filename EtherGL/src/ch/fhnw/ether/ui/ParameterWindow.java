@@ -63,6 +63,8 @@ import ch.fhnw.ether.media.Parameter;
 import ch.fhnw.ether.media.RenderProgram;
 
 public class ParameterWindow {
+	public enum Flag {EXIT_ON_CLOSE}
+	
 	static final float S         = 1000f;
 	static final int   NUM_TICKS = 5;
 
@@ -151,15 +153,24 @@ public class ParameterWindow {
 		}
 	}
 
-	public ParameterWindow(final AbstractRenderCommand<?,?> src) {
-		this(null, src);
+	public ParameterWindow(final AbstractRenderCommand<?,?> src, Flag ... flags) {
+		this(null, src, flags);
 	}
 
-	public ParameterWindow(final JComponent addOn, final AbstractRenderCommand<?,?> src) {
+	private boolean hasFlag(Flag flag, Flag[] flags) {
+		for(Flag f : flags)
+			if(f == flag)
+				return true;
+		return false;
+	}
+	
+	public ParameterWindow(final JComponent addOn, final AbstractRenderCommand<?,?> src, Flag ... flags) {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				JFrame f= new JFrame("Parameters"); 
+				JFrame f= new JFrame("Parameters");
+				if(hasFlag(Flag.EXIT_ON_CLOSE, flags))
+					f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 				f.setLayout(new BorderLayout());
 				if(addOn != null)
 					f.add(addOn, BorderLayout.NORTH);
@@ -258,5 +269,10 @@ public class ParameterWindow {
 				Thread.sleep(1);
 			} catch (InterruptedException e) {}
 		return frame.get().isVisible();
+	}
+
+	public void exitOnClose() {
+		// TODO Auto-generated method stub
+		
 	}
 }

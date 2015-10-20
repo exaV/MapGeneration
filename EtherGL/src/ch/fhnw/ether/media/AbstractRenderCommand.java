@@ -39,14 +39,14 @@ public abstract class AbstractRenderCommand<T extends IRenderTarget, S extends P
 	private   final StateHandle<S> stateHandle;
 	
 	protected AbstractRenderCommand(Parameter ... parameters) {
-		this.parameters  = new Parameter[parameters.length];
 		this.stateHandle = new StateHandle<>(this);
+		this.parameters  = new Parameter[parameters.length];
 		for(int i = 0; i < parameters.length; i++) {
 			parameters[i].setIdx(i);
 			this.parameters[i] = parameters[i].copy();
 		}
 	}
-	
+		
 	public Parameter getParameter(String name) {
 		for(Parameter p : parameters)
 			if(p.getName().equals(name))
@@ -121,12 +121,12 @@ public abstract class AbstractRenderCommand<T extends IRenderTarget, S extends P
 	}
 	
 	@SuppressWarnings("unchecked")
-	final void runInternal(IRenderTarget target) throws RenderCommandException {
+	public final void runInternal(IRenderTarget target) throws RenderCommandException {
 		run((S)target.getState(this));
 	}
 	
 	@SuppressWarnings("unchecked")
-	final <TS extends PerTargetState<?>> TS createStateInternal(IRenderTarget target) throws RenderCommandException {
+	public final <TS extends PerTargetState<?>> TS createStateInternal(IRenderTarget target) throws RenderCommandException {
 		return (TS)createState((T) target);
 	}
 	

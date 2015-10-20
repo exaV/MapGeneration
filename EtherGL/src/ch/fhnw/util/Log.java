@@ -34,51 +34,51 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class Log implements Serializable {
+	enum Level {
+		SEVERE, WARN, INFO,
+	}
+	
 	private static final long serialVersionUID = -4288206500724445427L;
 	private final transient PrintStream out = System.err;
+	private final transient String      id;  
 	
-	private Log() {
+	private Log(String id) {
+		this.id = id;
 	}
 	
 	public static Log create() {
-		return new Log();
+		return new Log(ClassUtilities.getCallerClassName());
 	}
 
+	private String format(Level lvl, String msg) {
+		return new Date() + ":" + lvl.toString() + '(' + id + ')' + ':' + msg;
+	}
+	
 	public void info(String msg) {
-		prefix();
-		out.println("INFO:" + msg);
+		out.println(format(Level.INFO, msg));
 	}
 
 	public void info(String msg, Throwable t) {
-		prefix();
-		out.println("WARN:" + msg);
+		out.println(format(Level.INFO, msg));
 		t.printStackTrace(out);
 	}
 
 	public void warning(Throwable t) {
-		prefix();
-		out.print("WARN:");
+		out.print(format(Level.WARN, ClassUtilities.EMPTY_String));
 		t.printStackTrace(out);
 	}
 
 	public void warning(String msg) {
-		prefix();
-		out.println("WARN:" + msg);
+		out.println(format(Level.WARN, msg));
 	}
 
 	public void warning(String msg, Throwable t) {
-		prefix();
-		out.println("WARN:" + msg);
+		out.println(format(Level.WARN, msg));
 		t.printStackTrace(out);
 	}
 
 	public void severe(Throwable t) {
-		prefix();
-		out.println("SEVERE:");
+		out.println(format(Level.SEVERE, ClassUtilities.EMPTY_String));
 		t.printStackTrace(out);
-	}
-	
-	private void prefix() {
-		out.print(new Date() + ":");
 	}
 }
