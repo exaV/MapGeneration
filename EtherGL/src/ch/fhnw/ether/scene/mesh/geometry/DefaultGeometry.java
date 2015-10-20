@@ -39,11 +39,13 @@ public class DefaultGeometry extends AbstractGeometry {
 	private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
 	private final IGeometryAttribute[] attributeTypes;
-	private final float[][] attributeData; // first dimension is attribute, second data
+	private final float[][] attributeData; // first dimension is attribute,
+											// second data
 
 	/**
-	 * Generates geometry from the given data with the given attribute-layout. All data is copied. Changes on the passed
-	 * arrays will not affect this geometry.
+	 * Generates geometry from the given data with the given attribute-layout.
+	 * All data is copied. Changes on the passed arrays will not affect this
+	 * geometry.
 	 * 
 	 * @param type
 	 *            Primitive type of this geometry (points, lines, triangles)
@@ -61,6 +63,7 @@ public class DefaultGeometry extends AbstractGeometry {
 			throw new IllegalArgumentException("First attribute must be position");
 		if (attributes.length != data.length)
 			throw new IllegalArgumentException("# attribute type != # attribute data");
+		checkAttributeConsistency(attributes, data);
 
 		this.attributeTypes = Arrays.copyOf(attributes, attributes.length);
 
@@ -119,8 +122,25 @@ public class DefaultGeometry extends AbstractGeometry {
 		try {
 			lock.writeLock().lock();
 			visitor.visit(attributeTypes, attributeData);
+			checkAttributeConsistency(attributeTypes, attributeData);
 		} finally {
 			lock.writeLock().unlock();
+		}
+	}
+
+	private static void checkAttributeConsistency(IGeometryAttribute[] attributes, float[][] data) {
+		// check for correct individual lengths
+		for (int i = 0; i < attributes.length; ++i) {
+			if (data[i].length % attributes[i].getNumComponents() != 0)
+				throw new IllegalArgumentException(attributes[i].id() + ": size " + data[i].length + " is not a multiple of attribute size " + attributes[i].getNumComponents());
+		}
+
+		// check for correct overall lengths
+		int numElements = data[0].length / attributes[0].getNumComponents();
+		for (int i = 1; i < attributes.length; ++i) {
+			int ne = data[i].length / attributes[i].getNumComponents();
+			if (ne != numElements)
+				throw new IllegalArgumentException(attributes[i].id() + ": size " + ne + " does not match size of position attribute (" + numElements + ")");
 		}
 	}
 
@@ -168,7 +188,8 @@ public class DefaultGeometry extends AbstractGeometry {
 		return new DefaultGeometry(type, attributes, data);
 	}
 
-	public static DefaultGeometry createVNCM(Primitive type, float[] vertices, float[] normals, float[] colors, float[] texCoords) {
+	public static DefaultGeometry createVNCM(Primitive type, float[] vertices, float[] normals, float[] colors,
+			float[] texCoords) {
 		IGeometryAttribute[] attributes = { POSITION_ARRAY, NORMAL_ARRAY, COLOR_ARRAY, COLOR_MAP_ARRAY };
 		float[][] data = { vertices, normals, colors, texCoords };
 		return new DefaultGeometry(type, attributes, data);

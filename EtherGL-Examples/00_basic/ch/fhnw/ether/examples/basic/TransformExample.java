@@ -57,7 +57,7 @@ public final class TransformExample {
 		Camera camera = new Camera();
 		camera.setPosition(new Vec3(0, -5, 0));
 		camera.setUp(new Vec3(0, 0, 1));
-		new DefaultView(controller, 100, 100, 500, 500, IView.INTERACTIVE_VIEW, "Simple Cube", camera);
+		new DefaultView(controller, 100, 100, 500, 500, IView.INTERACTIVE_VIEW, "Transform Example", camera);
 
 		// Create scene and add a cube
 		IScene scene = new DefaultScene(controller);

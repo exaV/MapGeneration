@@ -38,11 +38,9 @@ import ch.fhnw.util.IUpdateListener;
 import ch.fhnw.util.math.Mat4;
 
 /**
- * Basic mesh abstraction. A mesh is a light weight structure that combines render pass, scene/view/render flags,
- * material and geometry.
+ * Basic mesh abstraction. A mesh is a light weight structure that combines
+ * render pass, scene/view/render flags, material, geometry, and a transform.
  * 
- * Thread safety: Meshes are designed to be immutable and are thus thread safe. Should a particular implementation
- * violate this contract, corresponding measured need to be taken from client side.
  * 
  * @author radar
  *
@@ -55,8 +53,7 @@ public interface IMesh extends I3DObject, IUpdateListener {
 
 	// FIXME: DONT_CAST_SHADOW should go to material, including CULL_FACE / DONT_CULL_FACE
 	enum Flags {
-		DONT_CAST_SHADOW,
-		INTERACTIVE_VIEWS_ONLY
+		DONT_CAST_SHADOW, INTERACTIVE_VIEWS_ONLY
 	}
 
 	EnumSet<Flags> NO_FLAGS = EnumSet.noneOf(Flags.class);
@@ -68,20 +65,20 @@ public interface IMesh extends I3DObject, IUpdateListener {
 	IMaterial getMaterial();
 
 	IGeometry getGeometry();
-	
+
 	Mat4 getTransform();
-	
+
 	void setTransform(Mat4 transform);
 
 	
 
 	// XXX below methods are to be used from the renderer thread only. subject to change / cleanup
-	
+
 	/**
 	 * @return true if material was modified since last call to this method.
 	 */
 	boolean needsMaterialUpdate();
-	
+
 	/**
 	 * @return true if geometry was modified since last call to this method.
 	 */

@@ -38,14 +38,14 @@ public interface IGeometry extends IUpdateRequester {
 		int getNumComponents();
 	}
 
-	final class GeometryAttribute extends AbstractAttribute<float[]> implements IGeometryAttribute {
+	final class GeometryAttribute extends AbstractAttribute<float[]>implements IGeometryAttribute {
 		private final int numComponents;
-		
+
 		public GeometryAttribute(String id, int numComponents) {
 			super(id);
 			this.numComponents = numComponents;
 		}
-		
+
 		@Override
 		public int getNumComponents() {
 			return numComponents;
@@ -63,9 +63,11 @@ public interface IGeometry extends IUpdateRequester {
 	@FunctionalInterface
 	interface IAttributesVisitor {
 		/**
-		 * Inspect or modify attributes of a geometry through visitor. Note that in the current implementation, the
-		 * attributes must not be changed, otherwise the mesh will result in an undefined state. It is however ok to
-		 * replace all attribute data arrays with new arrays, e.g. of different size.
+		 * Inspect or modify attributes of a geometry through visitor. Note that
+		 * in the current implementation, the attributes must not be changed,
+		 * otherwise the mesh will result in an undefined state. It is however
+		 * ok to replace all attribute data arrays with new arrays, e.g. of
+		 * different size.
 		 */
 		void visit(IGeometryAttribute[] attributes, float[][] data);
 	}
@@ -120,8 +122,8 @@ public interface IGeometry extends IUpdateRequester {
 	void inspect(IAttributesVisitor visitor);
 
 	/**
-	 * Modify specific attribute of this geometry through visitor. If geometry is modified, {@link #requestUpdate()}
-	 * needs to be called explicitly.
+	 * Modify specific attribute of this geometry through visitor. If geometry
+	 * is modified, {@link #requestUpdate()} needs to be called explicitly.
 	 * 
 	 * @param index
 	 *            index of attribute to be visited
@@ -134,8 +136,8 @@ public interface IGeometry extends IUpdateRequester {
 	void modify(int index, IAttributeVisitor visitor);
 
 	/**
-	 * Modify all attributes of this geometry through visitor. If geometry is modified, {@link #requestUpdate()} needs
-	 * to be called explicitly.
+	 * Modify all attributes of this geometry through visitor. If geometry is
+	 * modified, {@link #requestUpdate()} needs to be called explicitly.
 	 * 
 	 * @param visitor
 	 *            attributes visitor used for modification
