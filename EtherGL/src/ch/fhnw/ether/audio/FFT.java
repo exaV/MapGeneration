@@ -40,9 +40,12 @@ import ch.fhnw.ether.media.AbstractRenderCommand;
 import ch.fhnw.ether.media.PerTargetState;
 import ch.fhnw.ether.media.RenderCommandException;
 import ch.fhnw.util.IModifier;
+import ch.fhnw.util.Log;
 import ch.fhnw.util.math.MathUtilities;
 
 public class FFT extends AbstractRenderCommand<IAudioRenderTarget,FFT.State> {
+	private static final Log log = Log.create();
+
 	private final float  minFreq;
 	private final Window windowType;
 
@@ -63,7 +66,7 @@ public class FFT extends AbstractRenderCommand<IAudioRenderTarget,FFT.State> {
 			super(target);
 			sRate   = target.getSampleRate();
 			fftSize = MathUtilities.nextPowerOfTwo((int)(sRate / minFreq));
-			System.out.println("Using FFT of " + fftSize + " at " + sRate + " Hz");
+			log.info("FFT of " + fftSize + " at " + sRate + " Hz");
 			fft      = new FloatFFT_1D(fftSize);
 			buffer   = new BlockBuffer(fftSize, true, windowType);
 			block    = new float[fftSize];
@@ -102,7 +105,7 @@ public class FFT extends AbstractRenderCommand<IAudioRenderTarget,FFT.State> {
 		public float power(float fLow, float fHigh) {
 			return power(fLow, fHigh, power);
 		}
-		
+
 		public float power(final float fLow, final float fHigh, final float[] power) {
 			int iLow  = f2idx(fLow);
 			int iHigh = f2idx(fHigh);
@@ -112,7 +115,7 @@ public class FFT extends AbstractRenderCommand<IAudioRenderTarget,FFT.State> {
 			double result = 0;
 			for(int i = iLow; i < iHigh; i++)
 				result += power[i];
-						
+
 			return (float) result;
 		}
 
@@ -136,7 +139,7 @@ public class FFT extends AbstractRenderCommand<IAudioRenderTarget,FFT.State> {
 		}
 
 		public void inverse() {
-			final AudioFrame frame   = getTarget().getFrame(); 
+			final AudioFrame frame   = getTarget().getFrame();
 			final float[]    samples = frame.samples;
 
 			if(spectrum.size() < Math.max(1, 2 * (frame.samples.length / frame.nChannels) / fftSize)) {
@@ -145,25 +148,39 @@ public class FFT extends AbstractRenderCommand<IAudioRenderTarget,FFT.State> {
 			}
 
 			final int nChannels = frame.nChannels;
-			for(int i = 0; i < samples.length; i += nChannels) {
-				if(pcm0rd >= fftSize) {
-					pcm0  = spectrum.remove(0);
-					fft.realInverse(pcm0, true);
-					pcm0rd = 0;
+			if(frame.isModified()) {
+				for(int i = 0; i < samples.length; i += nChannels) {
+					if(pcm0rd >= fftSize) {
+						pcm0  = spectrum.remove(0);
+						pcm0rd = 0;
+					}
+					if(pcm1rd >= fftSize) {
+						pcm1  = spectrum.remove(0);
+						pcm1rd = 0;
+					}
+					pcm0rd++;
+					pcm1rd++;
 				}
-				if(pcm1rd >= fftSize) {
-					pcm1  = spectrum.remove(0);
-					fft.realInverse(pcm1, true);
-					pcm1rd = 0;
+			} else {
+				for(int i = 0; i < samples.length; i += nChannels) {
+					if(pcm0rd >= fftSize) {
+						pcm0  = spectrum.remove(0);
+						fft.realInverse(pcm0, true);
+						pcm0rd = 0;
+					}
+					if(pcm1rd >= fftSize) {
+						pcm1  = spectrum.remove(0);
+						fft.realInverse(pcm1, true);
+						pcm1rd = 0;
+					}
+					float sample = (pcm0[pcm0rd++] + pcm1[pcm1rd++]) / 2;
+					for(int c = 0; c < nChannels; c++)
+						samples[i+c] = sample;
 				}
-				float sample = (pcm0[pcm0rd++] + pcm1[pcm1rd++]) / 2;
-				for(int c = 0; c < nChannels; c++)
-					samples[i+c] = sample;				
+				frame.modified();
 			}
-			
-			frame.modified();
 		}
-		
+
 		public void modifySpectrum(IModifier<float[]> modifier) throws RenderCommandException {
 			for(float[] spectrum : state().get(target).spectrum)
 				modifier.modify(spectrum);
@@ -187,5 +204,13 @@ public class FFT extends AbstractRenderCommand<IAudioRenderTarget,FFT.State> {
 
 	public int size(IAudioRenderTarget target) throws RenderCommandException {
 		return state().get(target).size();
+	}
+
+	public Window getWindowType() {
+		return windowType;
+	}
+
+	public float getMinFreq() {
+		return minFreq;
 	}
 }

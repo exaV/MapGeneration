@@ -60,9 +60,9 @@ class ArrayListSpatialIndex implements ISpatialIndex {
 	@Override
 	public List<I3DObject> getIntersectingGeometries(BoundingBox bb) {
 		List<I3DObject> result = new ArrayList<>();
-		for (I3DObject objects : objects) {
-			if (bb.intersects(objects.getBounds()))
-				result.add(objects);
+		for (I3DObject object : objects) {
+			if (bb.intersects(object.getBounds()))
+				result.add(object);
 		}
 		return result;
 	}

@@ -57,7 +57,7 @@ public final class CustomGeometryExample {
 		float[] colors = { 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1 };
 
 		DefaultGeometry g = DefaultGeometry.createVC(Primitive.TRIANGLES, vertices, colors);
-		return new DefaultMesh(new ColorMaterial(RGBA.WHITE, true), g, IMesh.Queue.TRANSPARENCY);
+		return new DefaultMesh(new ColorMaterial(RGBA.WHITE, true), g, IMesh.Queue.DEPTH);
 	}
 
 	// Setup the whole thing

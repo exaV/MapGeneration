@@ -36,6 +36,8 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.sound.midi.InvalidMidiDataException;
@@ -55,14 +57,18 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 
 import ch.fhnw.ether.media.PerTargetState;
 import ch.fhnw.ether.media.RenderCommandException;
+import ch.fhnw.util.IDisposable;
+import ch.fhnw.util.Log;
 import ch.fhnw.util.TextUtilities;
 
 
 public class URLAudioSource extends AbstractAudioSource<URLAudioSource.State> {
+	private static final Log log = Log.create();
+
 	private static final float       S2F    = Short.MAX_VALUE;
 	private static final double      SEC2US = 1000000;
 	private static final MidiEvent[] EMPTY_MidiEventA = new MidiEvent[0];
-	
+
 	private final URL                url;
 	private final AudioFormat        fmt;       
 	private final int                numPlays;
@@ -87,7 +93,7 @@ public class URLAudioSource extends AbstractAudioSource<URLAudioSource.State> {
 		try {
 			if(TextUtilities.hasFileExtension(url.getPath(), "mid")) {
 				Sequence seq = MidiSystem.getSequence(url);
-								
+
 				send(seq, new Receiver() {
 					@Override
 					public void send(MidiMessage message, long timeStamp) {
@@ -134,12 +140,11 @@ public class URLAudioSource extends AbstractAudioSource<URLAudioSource.State> {
 		return fmt.getSampleRate();
 	}
 
-	class State extends PerTargetState<IAudioRenderTarget> implements Runnable {
+	class State extends PerTargetState<IAudioRenderTarget> implements Runnable, IDisposable {
 		private final BlockingQueue<float[]> data = new LinkedBlockingQueue<>();
-		private       double                 bufferSizeInSecs;
-		private final AtomicInteger          numPlays = new AtomicInteger();
-		private       double                 size2secs;
+		private final AtomicInteger          numPlays     = new AtomicInteger();
 		private       long                   samples;
+		private       Semaphore              bufSemaphore = new Semaphore(512);
 
 		public State(IAudioRenderTarget target) {
 			super(target);
@@ -153,7 +158,6 @@ public class URLAudioSource extends AbstractAudioSource<URLAudioSource.State> {
 
 				do {
 					try (AudioInputStream in = AudioSystem.getAudioInputStream(url)) {
-						size2secs            = fmt.getSampleRate() * fmt.getChannels();
 						int   bytesPerSample = fmt.getSampleSizeInBits() / 8;
 
 						for(;;) {
@@ -173,9 +177,7 @@ public class URLAudioSource extends AbstractAudioSource<URLAudioSource.State> {
 								}
 							}
 							data.add(fbuffer);
-							bufferSizeInSecs += fbuffer.length / size2secs;
-							while(bufferSizeInSecs > 5)
-								Thread.sleep((long) (bufferSizeInSecs * 500));
+							bufSemaphore.acquire();
 						}
 					}
 				} while(numPlays.decrementAndGet() > 0);
@@ -187,13 +189,26 @@ public class URLAudioSource extends AbstractAudioSource<URLAudioSource.State> {
 		void runInternal() throws RenderCommandException {
 			try {
 				final float[] outData = data.take();
-				bufferSizeInSecs -= outData.length / size2secs;
+				bufSemaphore.release();
 				AudioFrame frame = createAudioFrame(samples, outData);
 				frame.setLast(data.isEmpty() && numPlays.get() <= 0);
 				getTarget().setFrame(frame);
 				samples += outData.length;
 			} catch(Throwable t) {
 				throw new RenderCommandException(t);
+			}
+		}
+
+		@Override
+		public void dispose() {
+			try {
+				numPlays.set(0);
+				while(numPlays.get() >= 0) {
+					if(data.poll(10, TimeUnit.MILLISECONDS) != null)
+						bufSemaphore.release();
+				}
+			} catch(Throwable t) {
+				log.warning(t);
 			}
 		}
 
@@ -273,7 +288,7 @@ public class URLAudioSource extends AbstractAudioSource<URLAudioSource.State> {
 	public int getNumNotes() {
 		return noteOn;
 	}
-	
+
 	@Override
 	protected State createState(IAudioRenderTarget target) {
 		return new State(target);

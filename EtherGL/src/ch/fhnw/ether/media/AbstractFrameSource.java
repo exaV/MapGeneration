@@ -37,5 +37,5 @@ public abstract class AbstractFrameSource<T extends IRenderTarget, S extends Per
 		super(parameters);
 	}
 	
-	public abstract long getFrameCount();
+	public abstract long getFrameCount();	
 }

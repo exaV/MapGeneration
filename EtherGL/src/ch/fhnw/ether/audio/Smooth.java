@@ -37,9 +37,9 @@ public class Smooth {
 	private double        lastUpdate = -1;
 	private double        max;
 	
-	public Smooth(int nChannels, float decay) {
+	public Smooth(int nChannels, double decayInSecs) {
 		this.values = new float[nChannels];
-		this.decay  = decay;
+		this.decay  = decayInSecs;
 	}
 
 	public void update(double time, float ... values) {
@@ -59,7 +59,7 @@ public class Smooth {
 			lastUpdate = time;
 		}
 	}
-
+	
 	public float get(int band) {
 		return values[band];
 	}

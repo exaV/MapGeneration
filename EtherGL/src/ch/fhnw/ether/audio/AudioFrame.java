@@ -68,4 +68,8 @@ public class AudioFrame extends AbstractFrame {
 	public double lengthInSecs() {
 		return samples.length / nChannels / sRate;
 	}
+
+	public boolean isModified() {
+		return monoSamples == null;
+	}
 }

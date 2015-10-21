@@ -271,6 +271,7 @@ public class CollectionUtilities {
 		return result;
 	}
 
+	@SafeVarargs
 	public static <T> List<T> asList(T ... elements) {
 		ArrayList<T> result = new ArrayList<>(elements.length);
 		Collections.addAll(result, elements);

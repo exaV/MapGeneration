@@ -49,7 +49,8 @@ public interface IView {
 
 	enum ViewFlag {
 		/** Grid visibility in navigation tool. */
-		GRID, /** Enable line smoothing. */
+		GRID, 
+		/** Enable line smoothing. */
 		SMOOTH_LINES,
 	}
 

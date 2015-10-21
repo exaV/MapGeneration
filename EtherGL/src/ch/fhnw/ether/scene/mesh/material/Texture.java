@@ -142,13 +142,13 @@ public class Texture extends AbstractMediaTarget<VideoFrame, IVideoRenderTarget>
 	}
 
 	public void update() {
-		isRendering.set(true);
+		setRendering(true);
 		try {
 			runOneCycle();
 		} catch (RenderCommandException e) {
 			log.warning(e);
 		}
-		isRendering.set(false);
+		setRendering(false);
 		updater.requestUpdate();
 	}
 

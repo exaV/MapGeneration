@@ -27,36 +27,34 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.scene.mesh.geometry;
+package ch.fhnw.ether.audio.fx;
 
-import ch.fhnw.util.IUpdateListener;
+import java.util.Random;
 
-public abstract class AbstractGeometry implements IGeometry {
-	private final Primitive type;
+import ch.fhnw.ether.audio.IAudioRenderTarget;
+import ch.fhnw.ether.media.AbstractRenderCommand;
+import ch.fhnw.ether.media.Parameter;
+import ch.fhnw.ether.media.RenderCommandException;
+import ch.fhnw.ether.media.Stateless;
+import ch.fhnw.util.math.MathUtilities;
 
-	private final UpdateListeners listeners = new UpdateListeners();
-
-	protected AbstractGeometry(Primitive type) {
-		this.type = type;
+public class WhiteNoise extends AbstractRenderCommand<IAudioRenderTarget,Stateless<IAudioRenderTarget>> {
+	private static final Parameter GAIN = new Parameter("gain", "Gain", 0, 1, 0);
+	private static final Random    RND  = new Random();
+	
+	public WhiteNoise() {
+		super(GAIN);
 	}
-
+		
 	@Override
-	public final Primitive getType() {
-		return type;
+	protected void run(Stateless<IAudioRenderTarget> state) throws RenderCommandException {
+		final double  gain    = getVal(GAIN);
+		final float[] samples = state.getTarget().getFrame().samples;
+		
+		for(int i = 0 ; i < samples.length ; i++)
+			samples[i] += MathUtilities.clamp(((RND.nextFloat() * 2f) - 1f) * gain, -1, 1);
+		
+		state.getTarget().getFrame().modified();
 	}
-
-	@Override
-	public final void addUpdateListener(IUpdateListener listener) {
-		listeners.addListener(listener);
-	}
-
-	@Override
-	public final void removeUpdateListener(IUpdateListener listener) {
-		listeners.removeListener(listener);
-	}
-
-	@Override
-	public void requestUpdate() {
-		listeners.requestUpdate(this);
-	}
+	
 }

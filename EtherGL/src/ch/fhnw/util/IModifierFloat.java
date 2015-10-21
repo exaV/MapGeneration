@@ -27,36 +27,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.scene.mesh.geometry;
+package ch.fhnw.util;
 
-import ch.fhnw.util.IUpdateListener;
-
-public abstract class AbstractGeometry implements IGeometry {
-	private final Primitive type;
-
-	private final UpdateListeners listeners = new UpdateListeners();
-
-	protected AbstractGeometry(Primitive type) {
-		this.type = type;
-	}
-
-	@Override
-	public final Primitive getType() {
-		return type;
-	}
-
-	@Override
-	public final void addUpdateListener(IUpdateListener listener) {
-		listeners.addListener(listener);
-	}
-
-	@Override
-	public final void removeUpdateListener(IUpdateListener listener) {
-		listeners.removeListener(listener);
-	}
-
-	@Override
-	public void requestUpdate() {
-		listeners.requestUpdate(this);
-	}
+public interface IModifierFloat {
+	float modify(float in, int idx);
 }

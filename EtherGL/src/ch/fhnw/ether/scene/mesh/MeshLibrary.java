@@ -97,12 +97,17 @@ public class MeshLibrary {
 		-0.5f, -0.5f, -0.5f, -0.5f, +0.5f, -0.5f, 
 		+0.5f, +0.5f, -0.5f, +0.5f, -0.5f, -0.5f,
 		+0.5f, -0.5f, +0.5f, +0.5f, +0.5f, +0.5f, 
-		-0.5f, +0.5f, +0.5f, -0.5f, -0.5f, +0.5f, 
+		-0.5f, +0.5f, +0.5f, -0.5f, -0.5f, +0.5f
 	};
 
-	public static final float[] DEFAULT_QUAD_VERTICES = { 
+	public static final float[] DEFAULT_QUAD_TRIANGLES = { 
 		-1, -1, 0,   1, -1, 0,    1, 1, 0,
 		-1, -1, 0,   1,  1, 0,   -1, 1, 0 
+	};
+
+	public static final float[] DEFAULT_QUAD_NORMALS = { 
+		0, 0, 1, 0, 0, 1, 0, 0, 1,
+		0, 0, 1, 0, 0, 1, 0, 0, 1
 	};
 
 	public static final float[] DEFAULT_QUAD_TEX_COORDS = { 

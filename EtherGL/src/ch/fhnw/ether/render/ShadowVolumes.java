@@ -49,7 +49,7 @@ import com.jogamp.opengl.GL3;
 
 public final class ShadowVolumes {
 	private static final IMesh OVERLAY_MESH = new DefaultMesh(new EmptyMaterial(), DefaultGeometry.createV(Primitive.TRIANGLES,
-			MeshLibrary.DEFAULT_QUAD_VERTICES));
+			MeshLibrary.DEFAULT_QUAD_TRIANGLES));
 
 	private ShadowVolumeShader volumeShader;
 	private Renderable overlay;
