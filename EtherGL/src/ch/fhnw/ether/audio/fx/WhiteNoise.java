@@ -27,15 +27,34 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.media;
+package ch.fhnw.ether.audio.fx;
 
-public abstract class AbstractFrameSource<T extends IRenderTarget, S extends PerTargetState<T>> extends AbstractRenderCommand<T, S> {
-	public static final double FRAMERATE_UNKNOWN  = -1;
-	public static final long   FRAMECOUNT_UNKNOWN = -1;
+import java.util.Random;
 
-	protected AbstractFrameSource(Parameter ... parameters) {
-		super(parameters);
+import ch.fhnw.ether.audio.IAudioRenderTarget;
+import ch.fhnw.ether.media.AbstractRenderCommand;
+import ch.fhnw.ether.media.Parameter;
+import ch.fhnw.ether.media.RenderCommandException;
+import ch.fhnw.ether.media.Stateless;
+import ch.fhnw.util.math.MathUtilities;
+
+public class WhiteNoise extends AbstractRenderCommand<IAudioRenderTarget,Stateless<IAudioRenderTarget>> {
+	private static final Parameter GAIN = new Parameter("gain", "Gain", 0, 1, 0);
+	private static final Random    RND  = new Random();
+	
+	public WhiteNoise() {
+		super(GAIN);
+	}
+		
+	@Override
+	protected void run(Stateless<IAudioRenderTarget> state) throws RenderCommandException {
+		final double  gain    = getVal(GAIN);
+		final float[] samples = state.getTarget().getFrame().samples;
+		
+		for(int i = 0 ; i < samples.length ; i++)
+			samples[i] += MathUtilities.clamp(((RND.nextFloat() * 2f) - 1f) * gain, -1, 1);
+		
+		state.getTarget().getFrame().modified();
 	}
 	
-	public abstract long getFrameCount();	
 }

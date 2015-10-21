@@ -27,8 +27,10 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.audio;
+package ch.fhnw.ether.audio.fx;
 
+import ch.fhnw.ether.audio.AudioFrame;
+import ch.fhnw.ether.audio.IAudioRenderTarget;
 import ch.fhnw.ether.media.AbstractRenderCommand;
 import ch.fhnw.ether.media.Parameter;
 import ch.fhnw.ether.media.RenderCommandException;

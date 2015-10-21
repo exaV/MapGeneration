@@ -25,7 +25,7 @@ public class SpectrumAudioTarget implements IAudioRenderTarget {
 	private double                                                                                     sTime;
 	private RenderProgram<IAudioRenderTarget>                                                          program;
 	private final AtomicReference<AudioFrame>                                                          frame = new AtomicReference<>();
-	private final Map<AbstractRenderCommand<IAudioRenderTarget,?>, PerTargetState<IAudioRenderTarget>> state  = new WeakHashMap<>();
+	private final Map<AbstractRenderCommand<IAudioRenderTarget,?>, PerTargetState<IAudioRenderTarget>> state = new WeakHashMap<>();
 	private final FloatFFT_1D                                                                          fft;
 	private final BlockBuffer                                                                          buffer;
 	private final int                                                                                  fftSize;
@@ -143,6 +143,7 @@ public class SpectrumAudioTarget implements IAudioRenderTarget {
 
 	@Override
 	public void useProgram(RenderProgram<IAudioRenderTarget> program) throws RenderCommandException {
-		this.program = program;	
+		this.program = program;
+		program.addTarget(this);
 	}
 }

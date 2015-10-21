@@ -27,15 +27,43 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.media;
+package ch.fhnw.ether.audio.fx;
 
-public abstract class AbstractFrameSource<T extends IRenderTarget, S extends PerTargetState<T>> extends AbstractRenderCommand<T, S> {
-	public static final double FRAMERATE_UNKNOWN  = -1;
-	public static final long   FRAMECOUNT_UNKNOWN = -1;
+import ch.fhnw.ether.audio.AudioFrame;
+import ch.fhnw.ether.audio.IAudioRenderTarget;
+import ch.fhnw.ether.media.AbstractRenderCommand;
+import ch.fhnw.ether.media.Parameter;
+import ch.fhnw.ether.media.RenderCommandException;
+import ch.fhnw.ether.media.Stateless;
 
-	protected AbstractFrameSource(Parameter ... parameters) {
-		super(parameters);
+/**
+ * This is an empty template for an audio command without state. 
+ * @author sschubiger
+ *
+ */
+public class TemplateStateless extends AbstractRenderCommand<IAudioRenderTarget,Stateless<IAudioRenderTarget>> {
+	/* Expose a runtime parameter */
+	private static final Parameter PARAM = new Parameter("p", "Some Param", 0, 1, 0);
+
+	public TemplateStateless() {
+		/* Pass all your params to the super class. */
+		super(PARAM);
 	}
 	
-	public abstract long getFrameCount();	
+	@SuppressWarnings("unused")
+	@Override
+	protected void run(Stateless<IAudioRenderTarget> state) throws RenderCommandException {
+		final float      param     = getVal(PARAM);                // Get the param value
+		final AudioFrame frame     = state.getTarget().getFrame(); // Get audio frame to process
+		final float[]    samples   = frame.samples;                // Get the samples in the frame
+		final int        nChannels = frame.nChannels;              // Get the number of channels (1=Mono, 2=Stereo, ...)
+		for(int i = 0; i < samples.length; i += nChannels)
+			for(int c = 0; c < nChannels; c++) {
+				// do some audio processing here
+			}
+		/* If you modified the frame, signal it to the system.
+		 * It updates internal data structures and caches if necessary. 
+		 */
+		frame.modified();
+	}
 }

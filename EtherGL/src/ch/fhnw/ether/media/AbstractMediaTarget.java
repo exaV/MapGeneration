@@ -61,22 +61,22 @@ public abstract class AbstractMediaTarget<F extends AbstractFrame, T extends IRe
 	public final void start() {
 		if(program.getFrameSource().getFrameCount() == 1) {
 			try {
-				isRendering.set(true);
+				setRendering(true);
 				runOneCycle();
 			} catch(Throwable e) {
 				log.severe(e);
 			}
-			isRendering.set(false);
+			setRendering(false);
 		} else {
 			startLatch = new CountDownLatch(1);
 			Thread t = new Thread(()->{
 				try {
-					isRendering.set(true);
+					setRendering(true);
 					startLatch.countDown();
 					while(isRendering())
 						runOneCycle();
 				} catch(Throwable e) {
-					isRendering.set(false);
+					setRendering(false);
 					log.severe(e);
 				}
 			}, getClass().getName());
@@ -98,7 +98,7 @@ public abstract class AbstractMediaTarget<F extends AbstractFrame, T extends IRe
 			render();
 			currentFrame = frame.getAndSet(null);
 			if(currentFrame.isLast())
-				isRendering.set(false);
+				setRendering(false);
 		}
 	}
 
@@ -118,11 +118,12 @@ public abstract class AbstractMediaTarget<F extends AbstractFrame, T extends IRe
 	@SuppressWarnings("unused")
 	public void useProgram(RenderProgram<T> program) throws RenderCommandException {
 		this.program = program;	
+		program.addTarget(this);
 	}
 
 	@Override
 	public void stop() throws RenderCommandException {
-		isRendering.set(false);
+		setRendering(false);
 	}
 
 	@Override
@@ -131,6 +132,10 @@ public abstract class AbstractMediaTarget<F extends AbstractFrame, T extends IRe
 	@Override
 	public boolean isRendering() {
 		return isRendering.get();
+	}
+
+	protected void setRendering(boolean state) {
+		isRendering.set(state);
 	}
 
 	@Override
