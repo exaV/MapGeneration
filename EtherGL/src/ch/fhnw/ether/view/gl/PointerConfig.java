@@ -5,15 +5,16 @@ import java.io.IOException;
 
 import com.jogamp.common.util.IOUtil;
 import com.jogamp.newt.Display;
-import com.jogamp.newt.NewtFactory;
 import com.jogamp.newt.opengl.GLWindow;
 
 public class PointerConfig {
 	
 	private GLWindow window;	
+	private Display display;
 	
-	public PointerConfig(GLWindow w){
+	public PointerConfig(GLWindow w, Display d){
 		window = w;
+		display = d;
 	}
 	
 	public void warpPointer(int x, int y){
@@ -29,13 +30,11 @@ public class PointerConfig {
 	}
 	
 	public void setPointerIcon(File CursorLocation, int hotSpotX, int hotSpotY){
-		
-		Display disp = NewtFactory.createDisplay("");
-		
+				
 		String[] resources = {CursorLocation.toString()};
 		
 		try {
-			window.setPointerIcon(disp.createPointerIcon(new IOUtil.ClassResources(resources, null, null), hotSpotX, hotSpotY));
+			window.setPointerIcon(display.createPointerIcon(new IOUtil.ClassResources(resources, null, null), hotSpotX, hotSpotY));
 		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

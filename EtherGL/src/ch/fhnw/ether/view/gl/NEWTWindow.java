@@ -30,6 +30,9 @@
 package ch.fhnw.ether.view.gl;
 
 import com.jogamp.nativewindow.util.Point;
+import com.jogamp.newt.Display;
+import com.jogamp.newt.NewtFactory;
+import com.jogamp.newt.Screen;
 import com.jogamp.newt.event.WindowAdapter;
 import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.newt.opengl.GLWindow;
@@ -48,6 +51,7 @@ public final class NEWTWindow {
 	private static int numWindows = 0;
 
 	private GLWindow window;
+	private Display display;
 
 	/**
 	 * Creates undecorated frame.
@@ -81,7 +85,11 @@ public final class NEWTWindow {
 			sharedDrawable = GLContextManager.getSharedDrawable(capabilities);
 		}
 		numWindows++;
-		window = GLWindow.create(capabilities);
+		
+		display = NewtFactory.createDisplay(null);
+		Screen screen = NewtFactory.createScreen(display, numWindows);
+		
+		window = GLWindow.create(screen, capabilities);		
 		window.setSharedAutoDrawable(sharedDrawable);
 		window.setSize(width, height);
 
@@ -128,6 +136,6 @@ public final class NEWTWindow {
 	}
 	
 	public PointerConfig getPointerConfig(){
-		return new PointerConfig(window);
+		return new PointerConfig(window, display);
 	}
 }
