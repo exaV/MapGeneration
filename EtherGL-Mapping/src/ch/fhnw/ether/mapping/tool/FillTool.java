@@ -68,7 +68,7 @@ public final class FillTool extends AbstractTool {
 
 	@Override
 	public void refresh(IView view) {
-		getController().enableViews(Collections.singleton(view));
+		getController().enableViews(Collections.singleton(getController().getCurrentView()));
 	}
 
 	private static DefaultMesh makeQuads() {

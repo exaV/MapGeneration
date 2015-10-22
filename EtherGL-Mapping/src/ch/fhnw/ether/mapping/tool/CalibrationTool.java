@@ -126,7 +126,7 @@ public final class CalibrationTool extends AbstractTool {
 
 	@Override
 	public void refresh(IView view) {
-		getController().enableViews(Collections.singleton(view));
+		getController().enableViews(Collections.singleton(getController().getCurrentView()));
 		updateCalibratedGeometry(view);
 	}
 
