@@ -155,7 +155,7 @@ abstract class AbstractScheduler implements IScheduler {
 	protected void displayViews() {
 		for (IView view : views) {
 			try {
-				view.display();
+				view.getWindow().display();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

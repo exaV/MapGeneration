@@ -29,8 +29,13 @@
 
 package ch.fhnw.ether.view.gl;
 
+import java.io.File;
+
+import com.jogamp.common.util.IOUtil;
+import com.jogamp.common.util.IOUtil.ClassResources;
 import com.jogamp.nativewindow.util.Point;
 import com.jogamp.newt.Display;
+import com.jogamp.newt.Display.PointerIcon;
 import com.jogamp.newt.NewtFactory;
 import com.jogamp.newt.Screen;
 import com.jogamp.newt.event.WindowAdapter;
@@ -40,13 +45,14 @@ import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLCapabilities;
 
 import ch.fhnw.ether.view.IView.Config;
+import ch.fhnw.ether.view.IWindow;
 
 /**
- * OpenGL frame class (i.e. an OpenGL window) that combines a GLCanvas and a JFrame.
+ * JOGL/NEWT window class.
  *
  * @author radar
  */
-public final class NEWTWindow {
+final class NEWTWindow implements IWindow {
 	private static GLAutoDrawable sharedDrawable = null;
 	private static int numWindows = 0;
 
@@ -60,7 +66,7 @@ public final class NEWTWindow {
 	 *            the frame's width
 	 * @param height
 	 *            the frame's height
-	 * @param config 
+	 * @param config
 	 *            The configuration.
 	 */
 	public NEWTWindow(int width, int height, Config config) {
@@ -76,7 +82,7 @@ public final class NEWTWindow {
 	 *            the frame's height
 	 * @param title
 	 *            the frame's title, nor null for an undecorated frame
-	 * @param config 
+	 * @param config
 	 *            The configuration.
 	 */
 	public NEWTWindow(int width, int height, String title, Config config) {
@@ -85,11 +91,11 @@ public final class NEWTWindow {
 			sharedDrawable = GLContextManager.getSharedDrawable(capabilities);
 		}
 		numWindows++;
-		
+
 		display = NewtFactory.createDisplay(null);
 		Screen screen = NewtFactory.createScreen(display, numWindows);
-		
-		window = GLWindow.create(screen, capabilities);		
+
+		window = GLWindow.create(screen, capabilities);
 		window.setSharedAutoDrawable(sharedDrawable);
 		window.setSize(width, height);
 
@@ -106,36 +112,80 @@ public final class NEWTWindow {
 		else
 			window.setUndecorated(true);
 	}
-	
-	public void setVisible() {
-		window.setVisible(true);
-	}
 
 	public void dispose() {
 		window.destroy();
+	}
+
+	public GLWindow getWindow() {
+		return window;
 	}
 
 	public void requestFocus() {
 		window.requestFocus();
 	}
 
+	@Override
+	public void setVisible(boolean visible) {
+		window.setVisible(visible);
+	}
+
 	public Point getPosition() {
 		return window.getLocationOnScreen(null);
 	}
 
-	public void setPosition(Point position) {
-		window.setPosition(position.getX(), position.getY());
+	@Override
+	public void setPosition(int x, int y) {
+		window.setPosition(x, y);
 	}
 
-	public GLWindow getWindow() {
-		return window;
+	@Override
+	public void setSize(int width, int height) {
+		window.setSize(width, height);
 	}
-	
-	public void setFullscreen(boolean enabled){
+
+	@Override
+	public void setFullscreen(boolean enabled) {
 		window.setFullscreen(enabled);
 	}
-	
-	public PointerConfig getPointerConfig(){
-		return new PointerConfig(window, display);
+
+	@Override
+	public void setPointerVisible(boolean visible) {
+		window.setPointerVisible(visible);
+	}
+
+	@Override
+	public void setPointerConfined(boolean confined) {
+		window.confinePointer(confined);
+	}
+
+	@Override
+	public void setPointerIcon(File pngImage, int hotspotX, int hotspotY) {
+		String[] path = { pngImage.getPath() };
+
+		try {
+			ClassResources res = new IOUtil.ClassResources(path, null, null);
+			Display display = window.getScreen().getDisplay();
+			PointerIcon icon = display.createPointerIcon(res, hotspotX, hotspotY);
+			window.setPointerIcon(icon);
+		} catch (Exception e) {
+		} 
+	}
+
+	@Override
+	public void warpPointer(int x, int y) {
+		window.warpPointer(x, y);
+	}
+
+	@Override
+	public void display() {
+		// XXX locking madness... not sure if this helps, need to try
+		if (window.lockSurface() == GLWindow.LOCK_SURFACE_NOT_READY)
+			return;
+		try {
+			window.display();
+		} finally {
+			window.unlockSurface();
+		}
 	}
 }

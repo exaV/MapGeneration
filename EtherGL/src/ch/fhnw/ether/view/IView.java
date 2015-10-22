@@ -32,7 +32,6 @@ import java.util.EnumSet;
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.scene.camera.CameraMatrices;
 import ch.fhnw.ether.scene.camera.ICamera;
-import ch.fhnw.ether.view.gl.PointerConfig;
 import ch.fhnw.util.Viewport;
 import ch.fhnw.util.math.Mat4;
 
@@ -49,7 +48,7 @@ public interface IView {
 
 	enum ViewFlag {
 		/** Grid visibility in navigation tool. */
-		GRID, 
+		GRID,
 		/** Enable line smoothing. */
 		SMOOTH_LINES,
 	}
@@ -94,9 +93,11 @@ public interface IView {
 	void repaint();
 
 	/**
-	 * Display (i.e. render) this view. Must be run from render thread.
+	 * Get the underlying window of this view.
+	 * 
+	 * @return the window
 	 */
-	void display();
+	IWindow getWindow();
 
 	/**
 	 * Get the controller this view belongs to.
@@ -174,19 +175,4 @@ public interface IView {
 	 * @return true if view receives events, false otherwise
 	 */
 	boolean isCurrent();
-	
-	/**
-	 * Enable or disable this as a fullscreen view.
-	 * 
-	 * @param enabled
-	 * 			enables fullscreen if true, disables otherwise
-	 */
-	void setFullscreen(boolean enabled);
-	
-	/**
-	 * Returns the PointerConfig for manipulation the pointer settings
-	 * 
-	 * @return the pointerConfig of this view
-	 */
-	PointerConfig getPointerConfig();
 }

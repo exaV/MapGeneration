@@ -37,7 +37,6 @@ import com.jogamp.newt.event.MouseListener;
 import com.jogamp.newt.event.WindowAdapter;
 import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.newt.event.WindowListener;
-import com.jogamp.newt.opengl.GLWindow;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.GLAutoDrawable;
@@ -51,6 +50,7 @@ import ch.fhnw.ether.scene.camera.CameraMatrices;
 import ch.fhnw.ether.scene.camera.ICamera;
 import ch.fhnw.ether.ui.UI;
 import ch.fhnw.ether.view.IView;
+import ch.fhnw.ether.view.IWindow;
 import ch.fhnw.util.IUpdateListener;
 import ch.fhnw.util.Viewport;
 import ch.fhnw.util.math.Mat4;
@@ -97,13 +97,13 @@ public class DefaultView implements IView {
 			p.setX(x);
 		if (y != -1)
 			p.setY(y);
-		window.setPosition(p);
+		window.setPosition(p.getX(), p.getY());
 
 		// note: the order here is quite important. the view starts sending
 		// events after setVisible(), and we're still in the view's constructor.
 		// need to see if this doesn't get us into trouble in the long run.
 		controller.viewCreated(this);
-		window.setVisible();
+		window.setVisible(true);
 		controller.repaintView(this);
 	}
 
@@ -117,17 +117,10 @@ public class DefaultView implements IView {
 	public final void repaint() {
 		getController().repaintView(this);
 	}
-
+	
 	@Override
-	public final void display() {
-		// XXX locking madness... not sure if this helps, need to try
-		if (window.getWindow().lockSurface() == GLWindow.LOCK_SURFACE_NOT_READY)
-			return;
-		try {
-			window.getWindow().display();
-		} finally {
-			window.getWindow().unlockSurface();
-		}
+	public IWindow getWindow() {
+		return window;
 	}
 
 	@Override
@@ -546,15 +539,4 @@ public class DefaultView implements IView {
 			}
 		}
 	};
-
-	@Override
-	public void setFullscreen(boolean enabled) {
-		window.setFullscreen(enabled);
-	}
-	
-	@Override
-	public PointerConfig getPointerConfig(){
-		return window.getPointerConfig();
-	}
-	
 }
