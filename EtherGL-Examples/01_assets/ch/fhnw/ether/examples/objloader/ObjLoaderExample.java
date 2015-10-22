@@ -29,8 +29,6 @@ package ch.fhnw.ether.examples.objloader;
 
 import java.io.IOException;
 
-import javax.swing.SwingUtilities;
-
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.formats.obj.OBJReader;
 import ch.fhnw.ether.scene.DefaultScene;
@@ -42,20 +40,10 @@ import ch.fhnw.ether.view.gl.DefaultView;
 
 public class ObjLoaderExample {
 	public static void main(String[] args) {
-		// Make sure everything runs on GUI thread...
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					new ObjLoaderExample();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		});
+		new ObjLoaderExample();
 	}
 
-	public ObjLoaderExample() throws IOException {
+	public ObjLoaderExample() {
 		IController controller = new ObjLoaderController();
 
 		ICamera camera = new Camera();
@@ -64,8 +52,12 @@ public class ObjLoaderExample {
 		IScene scene = new DefaultScene(controller);
 		controller.setScene(scene);
 
-		new OBJReader(getClass().getResource("fhnw.obj")).getMeshes().forEach((mesh) -> {
-			scene.add3DObject(mesh);
-		});
+		try {
+			new OBJReader(getClass().getResource("fhnw.obj")).getMeshes().forEach((mesh) -> {
+				scene.add3DObject(mesh);
+			});
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

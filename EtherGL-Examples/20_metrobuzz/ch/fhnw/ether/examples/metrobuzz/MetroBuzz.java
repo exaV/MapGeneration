@@ -31,8 +31,6 @@ package ch.fhnw.ether.examples.metrobuzz;
 
 import java.io.IOException;
 
-import javax.swing.SwingUtilities;
-
 import ch.fhnw.ether.examples.metrobuzz.controller.MetroBuzzController;
 import ch.fhnw.ether.examples.metrobuzz.controller.View;
 import ch.fhnw.ether.examples.metrobuzz.io.matsim.Loader;
@@ -42,13 +40,7 @@ import ch.fhnw.ether.view.IView;
 
 public class MetroBuzz {
 	public static void main(final String[] args) {
-		// Make sure everything runs on GUI thread...
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				new MetroBuzz(args);
-			}
-		});
+		new MetroBuzz(args);
 	}
 
 	public MetroBuzz(String[] args) {
