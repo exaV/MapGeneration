@@ -174,7 +174,17 @@ final class NEWTWindow implements IWindow {
 
 	@Override
 	public void warpPointer(int x, int y) {
-		window.warpPointer(x, y);
+		window.warpPointer(x, window.getSurfaceHeight() - y);
+	}
+	
+	@Override
+	public int convertFromPixelToWindowUnits(int value) {
+		return window.convertToWindowUnits(new int[] { value })[0];
+	}
+	
+	@Override
+	public int convertFromWindowToPixelUnits(int value) {
+		return window.convertToPixelUnits(new int[] { value })[0];
 	}
 
 	@Override
