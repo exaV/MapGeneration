@@ -39,12 +39,15 @@ import ch.fhnw.ether.scene.camera.Camera;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.MeshLibrary;
 import ch.fhnw.ether.ui.Button;
+import ch.fhnw.ether.ui.Slider;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.gl.DefaultView;
 import ch.fhnw.util.math.Mat4;
 import ch.fhnw.util.math.Vec3;
 
 public final class TransformExample {
+	private float angle = 0;
+	private float speed = 0.3f;
 	public static void main(String[] args) {
 		new TransformExample();
 	}
@@ -68,13 +71,14 @@ public final class TransformExample {
 		
 		// Add an exit button
 		controller.getUI().addWidget(new Button(0, 0, "Quit", "Quit", KeyEvent.VK_ESCAPE, (button, v) -> System.exit(0)));
+		controller.getUI().addWidget(new Slider(0, 1, "Speed", "Rotation Speed", speed, (slider, view) -> speed = slider.getValue()));
 		
 		controller.getScheduler().repeat(0, 1.0/60.0, new IScheduler.IRepeatedAction() {
-			private float angle = 0;
 
 			@Override
 			public boolean run(double time, double interval) {
-				angle += 1;
+				angle += speed;
+				System.out.println(speed);
 
 				Mat4 transform = Mat4.multiply(Mat4.rotate(angle, Vec3.Z), Mat4.translate(1, 1, 1));
 				mesh.setTransform(transform);

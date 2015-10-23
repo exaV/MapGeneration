@@ -41,8 +41,8 @@ public class Slider extends AbstractWidget {
 		void execute(Slider slider, IView view);
 	}
 
-	private static final int SLIDER_WIDTH = 96;
-	private static final int SLIDER_HEIGHT = 24;
+	private static final int SLIDER_WIDTH = 144;
+	private static final int SLIDER_HEIGHT = 48;
 
 	private static final int SLIDER_GAP = 8;
 
@@ -86,12 +86,11 @@ public class Slider extends AbstractWidget {
 		int bg = Slider.SLIDER_GAP;
 		int bx = getX() * (bg + bw);
 		int by = getY() * (bg + bh);
-		surface.fillRect(SLIDER_BG, bx, by, bw, bh);
-		surface.fillRect(SLIDER_FG, bx, by, (int) (value * bw), bh);
+		surface.fillRect(SLIDER_BG, bx + 4, surface.getHeight() - by - bh - 4, bw, bh);
+		surface.fillRect(SLIDER_FG, bx + 4, surface.getHeight() - by - bh - 4, (int) (value * bw), bh);
 		String label = getLabel();
 		if (label != null)
-			surface.drawString(TEXT_COLOR, label, bx + 2, by + bh - 4);
-
+			surface.drawString(TEXT_COLOR, label, bx + 6, surface.getHeight() - by - 8);
 	}
 
 	@Override
