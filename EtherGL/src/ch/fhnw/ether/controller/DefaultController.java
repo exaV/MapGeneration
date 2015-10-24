@@ -34,7 +34,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import ch.fhnw.ether.controller.event.EventDrivenScheduler;
+import ch.fhnw.ether.controller.event.DefaultScheduler;
 import ch.fhnw.ether.controller.event.IKeyEvent;
 import ch.fhnw.ether.controller.event.IPointerEvent;
 import ch.fhnw.ether.controller.event.IScheduler;
@@ -57,7 +57,7 @@ import ch.fhnw.ether.view.IView;
 public class DefaultController implements IController {
 	private static final boolean DBG = false;
 
-	private final IScheduler scheduler;
+	private final DefaultScheduler scheduler;
 	private final IRenderer renderer;
 
 	private IScene scene;
@@ -72,11 +72,15 @@ public class DefaultController implements IController {
 	private ITool currentTool;
 
 	public DefaultController() {
-		this(new EventDrivenScheduler(), new ForwardRenderer());
+		this(new ForwardRenderer());
 	}
 
-	public DefaultController(IScheduler scheduler, IRenderer renderer) {
-		this.scheduler = scheduler;
+	public DefaultController(IRenderer renderer) {
+		this(renderer, 80);
+	}
+
+	public DefaultController(IRenderer renderer, float fps) {
+		this.scheduler = new DefaultScheduler(fps);
 		this.renderer = renderer;
 		this.ui = new UI(this);
 		this.navigationTool = new NavigationTool(this);
@@ -120,16 +124,6 @@ public class DefaultController implements IController {
 	}
 
 	@Override
-	public final void repaintView(IView view) {
-		repaintViews();
-	}
-
-	@Override
-	public final void repaintViews() {
-		scheduler.repaintView(null);
-	}
-
-	@Override
 	public final ITool getCurrentTool() {
 		return currentTool;
 	}
@@ -146,18 +140,11 @@ public class DefaultController implements IController {
 		currentTool = tool;
 		currentTool.activate();
 		currentTool.refresh(getCurrentView());
-
-		repaintViews();
 	}
 
 	@Override
 	public final NavigationTool getNavigationTool() {
 		return navigationTool;
-	}
-
-	@Override
-	public IScheduler getScheduler() {
-		return scheduler;
 	}
 
 	@Override
@@ -168,6 +155,16 @@ public class DefaultController implements IController {
 	@Override
 	public final UI getUI() {
 		return ui;
+	}
+
+	@Override
+	public IScheduler getScheduler() {
+		return scheduler;
+	}
+
+	@Override
+	public void repaint() {
+		scheduler.repaint();
 	}
 
 	// view listener
@@ -219,6 +216,7 @@ public class DefaultController implements IController {
 
 		currentTool.refresh(view);
 		navigationTool.refresh(view);
+		repaint();
 	}
 
 	// key listener
@@ -332,7 +330,7 @@ public class DefaultController implements IController {
 	public void pointerScrolled(IPointerEvent e) {
 		// if (DBG)
 		// System.out.println("pointer scrolled");
-		
+
 		// currently, only navigation tool receives scroll events
 		navigationTool.pointerScrolled(e);
 	}
@@ -351,7 +349,6 @@ public class DefaultController implements IController {
 			currentView = view;
 			if (currentView != null)
 				getCurrentTool().refresh(currentView);
-			repaintViews();
 		}
 	}
 }

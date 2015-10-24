@@ -138,7 +138,6 @@ public class Button extends AbstractWidget {
 	public boolean keyPressed(IKeyEvent e) {
 		if (getKey() == e.getKey()) {
 			fire(e.getView());
-			e.getView().getController().repaintViews();
 			return true;
 		}
 		return false;
@@ -148,7 +147,6 @@ public class Button extends AbstractWidget {
 	public boolean pointerPressed(IPointerEvent e) {
 		if (hit(e)) {
 			fire(e.getView());
-			e.getView().getController().repaintViews();
 			return true;
 		}
 		return false;

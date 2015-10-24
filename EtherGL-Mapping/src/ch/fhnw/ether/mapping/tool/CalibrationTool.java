@@ -163,7 +163,6 @@ public final class CalibrationTool extends AbstractTool {
 			deleteCurrent(view);
 			break;
 		}
-		view.getController().repaintViews();
 	}
 
 	@Override
@@ -296,9 +295,6 @@ public final class CalibrationTool extends AbstractTool {
 
 		// need to update VBOs
 		refresh(view);
-
-		// lazily repaint all views
-		view.getController().repaintViews();
 	}
 
 	private void updateCalibratedGeometry(IView view) {

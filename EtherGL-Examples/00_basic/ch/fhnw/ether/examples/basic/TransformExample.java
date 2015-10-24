@@ -48,6 +48,7 @@ import ch.fhnw.util.math.Vec3;
 public final class TransformExample {
 	private float angle = 0;
 	private float speed = 0.3f;
+
 	public static void main(String[] args) {
 		new TransformExample();
 	}
@@ -67,25 +68,22 @@ public final class TransformExample {
 		controller.setScene(scene);
 
 		IMesh mesh = MeshLibrary.createCube();
-		scene.add3DObject(mesh);		
-		
+		scene.add3DObject(mesh);
+
 		// Add an exit button
 		controller.getUI().addWidget(new Button(0, 0, "Quit", "Quit", KeyEvent.VK_ESCAPE, (button, v) -> System.exit(0)));
 		controller.getUI().addWidget(new Slider(0, 1, "Speed", "Rotation Speed", speed, (slider, view) -> speed = slider.getValue()));
-		
-		controller.getScheduler().repeat(0, 1.0/60.0, new IScheduler.IRepeatedAction() {
 
+		controller.getScheduler().animate(new IScheduler.IAnimationAction() {
 			@Override
 			public boolean run(double time, double interval) {
 				angle += speed;
-				System.out.println(speed);
 
 				Mat4 transform = Mat4.multiply(Mat4.rotate(angle, Vec3.Z), Mat4.translate(1, 1, 1));
 				mesh.setTransform(transform);
 				mesh.requestUpdate(transform);
-				controller.repaintViews();
 				return true;
 			}
-		});		
+		});
 	}
 }

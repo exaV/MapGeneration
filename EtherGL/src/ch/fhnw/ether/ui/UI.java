@@ -51,7 +51,6 @@ public final class UI {
 
 	public UI(IController controller) {
 		this.controller = controller;
-
 		enable();
 	}
 
@@ -125,7 +124,7 @@ public final class UI {
 
 	public void requestUpdate() {
 		updater.requestUpdate();
-		controller.repaintViews();
+		controller.repaint();
 	}
 
 	// key listener

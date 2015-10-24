@@ -105,7 +105,7 @@ public class GeometryServer {
 					Vec3 p = controller.getLightPosition();
 					Vec3 q = new Vec3(sunPosition.x - p.x, sunPosition.y - p.y, 0).scale(0.1f);
 					controller.setLightPosition(q);
-					controller.repaintViews();
+					controller.repaint();
 				}
 			});
 
@@ -171,7 +171,7 @@ public class GeometryServer {
 						if (vertices.length > 0) {
 							System.out.println("udp: model updated");
 							// ---> update scene
-							controller.modelChanged();
+							controller.repaint();
 						} else {
 							System.out.println("udp: no data received");
 						}

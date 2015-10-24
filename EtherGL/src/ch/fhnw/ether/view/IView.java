@@ -88,11 +88,6 @@ public interface IView {
 	void dispose();
 
 	/**
-	 * Request to repaint this view.
-	 */
-	void repaint();
-
-	/**
 	 * Get the underlying window of this view.
 	 * 
 	 * @return the window
@@ -168,11 +163,4 @@ public interface IView {
 	 *            enables view if true, disables otherwise
 	 */
 	void setEnabled(boolean enabled);
-
-	/**
-	 * Check whether view currently receives events.
-	 * 
-	 * @return true if view receives events, false otherwise
-	 */
-	boolean isCurrent();
 }

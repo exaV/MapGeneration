@@ -41,8 +41,11 @@ import ch.fhnw.ether.ui.UI;
 import ch.fhnw.ether.view.IView;
 
 /**
- * A controller that coordinates both model and associated views. It also handles the relevant events coming from
- * individual views.
+ * A controller that coordinates both model and associated views. It also
+ * handles the relevant events coming from individual views.
+ * 
+ * Thread-safety: Unless otherwise stated, methods are not thread-safe and
+ * should be called only from scene thread.
  *
  * @author radar
  */
@@ -55,8 +58,9 @@ public interface IController {
 	IScene getScene();
 
 	/**
-	 * Set the controller's model. This effectively unhooks the current model from the controller and replaces it with
-	 * the new one. If a controller implementation does not implement such behavior it will throw an
+	 * Set the controller's model. This effectively unhooks the current model
+	 * from the controller and replaces it with the new one. If a controller
+	 * implementation does not implement such behavior it will throw an
 	 * {@link java.lang.UnsupportedOperationException}.
 	 *
 	 * @param model
@@ -82,29 +86,20 @@ public interface IController {
 	 * Enable a list of views for rendering.
 	 *
 	 * @param views
-	 *            list of views to be enabled for rendering or NULL to enable all views
+	 *            list of views to be enabled for rendering or NULL to enable
+	 *            all views
 	 */
 	void enableViews(Collection<IView> views);
 
 	/**
-	 * Request specific view to repaint.
-	 */
-	void repaintView(IView view);
-
-	/**
-	 * Request all views to repaint.
-	 */
-	void repaintViews();
-
-	/**
-	 * Get current tool.
+	 * Get the current tool.
 	 *
 	 * @return the current tool
 	 */
 	ITool getCurrentTool();
 
 	/**
-	 * Set current tool.
+	 * Set the current tool.
 	 *
 	 * @param tool
 	 *            the tool to be set as current tool
@@ -112,43 +107,51 @@ public interface IController {
 	void setCurrentTool(ITool tool);
 
 	/**
-	 * Get navigation tool.
+	 * Get the navigation tool.
 	 *
 	 * @return the navigation tool
 	 */
 	NavigationTool getNavigationTool();
 
 	/**
-	 * Get scheduler.
-	 *
-	 * @return the scheduler
-	 */
-	IScheduler getScheduler();
-
-	/**
-	 * Get renderer.
+	 * Get the renderer.
 	 *
 	 * @return the renderer
 	 */
 	IRenderer getRenderer();
 
 	/**
-	 * Get UI.
+	 * Get the UI.
 	 *
 	 * @return the ui
 	 */
 	UI getUI();
 
+	/**
+	 * Get the scheduler.
+	 *
+	 * @return the scheduler
+	 */
+	IScheduler getScheduler();
+	
+	/**
+	 * Request repaint of all views
+	 */
+	void repaint();
+
+	// a long list of events, redirected from the view. the view will make sure
+	// that these methods are all run on the scene thread.
+
 	// view listener
-	
+
 	void viewCreated(IView view);
-	
+
 	void viewDisposed(IView view);
-	
+
 	void viewGainedFocus(IView view);
 
 	void viewLostFocus(IView view);
-	
+
 	void viewChanged(IView view);
 
 	// key listener

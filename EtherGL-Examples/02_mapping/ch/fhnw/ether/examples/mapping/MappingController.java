@@ -51,10 +51,6 @@ public class MappingController extends DefaultController {
 	public MappingController() {
 	}
 
-	public void modelChanged() {
-		repaintViews();
-	}
-
 	@Override
 	public void keyPressed(IKeyEvent e) {
 		switch (e.getKey()) {
@@ -74,7 +70,7 @@ public class MappingController extends DefaultController {
 		default:
 			super.keyPressed(e);
 		}
-		repaintViews();
+		repaint();
 	}
 
 	public Vec3 getLightPosition() {

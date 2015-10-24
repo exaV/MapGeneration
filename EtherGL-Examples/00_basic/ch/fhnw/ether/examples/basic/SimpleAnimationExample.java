@@ -77,12 +77,11 @@ public final class SimpleAnimationExample {
 		IMesh mesh = makeColoredTriangle();
 		scene.add3DObject(mesh);
 
-		controller.getScheduler().repeat(0, 1.0/60.0, new IScheduler.IRepeatedAction() {
+		controller.getScheduler().animate(new IScheduler.IAnimationAction() {
 			private int c = 0;
 
 			@Override
 			public boolean run(double time, double interval) {
-
 				// make some heavy animation calculation
 				c += 4;
 				if (c >= 360)
@@ -101,8 +100,6 @@ public final class SimpleAnimationExample {
 					}
 				});
 				mesh.requestUpdate(null);
-
-				controller.repaintViews();				
 				return true;
 			}
 		});

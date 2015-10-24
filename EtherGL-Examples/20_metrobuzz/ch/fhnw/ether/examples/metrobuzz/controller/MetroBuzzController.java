@@ -48,7 +48,7 @@ public class MetroBuzzController extends DefaultController {
 		getUI().addWidget(new Button(0, 1, "F", "Frame Scene (F)", KeyEvent.VK_F, (button, view) -> {
 			// FIXME: enable framing
 			// view.getCamera().frame(getScene().getBounds());
-				repaintViews();
+				repaint();
 			}));
 		getUI().addWidget(new Button(1, 1, "Quit", "Quit", KeyEvent.VK_ESCAPE, (button, view) -> System.exit(0)));
 		getUI().addWidget(new Slider(2, 0, "Slider", "Slider", 0.3f, (slider, view) -> System.out.println("I slide... " + slider.getValue())));

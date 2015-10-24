@@ -37,7 +37,7 @@ import ch.fhnw.ether.view.IView;
 public abstract class AbstractTool implements ITool {
 	private static final int SNAP_SIZE = 4;
 
-	private IController controller;
+	private final IController controller;
 
 	protected AbstractTool(IController controller) {
 		this.controller = controller;
@@ -45,6 +45,10 @@ public abstract class AbstractTool implements ITool {
 
 	protected final IController getController() {
 		return controller;
+	}
+	
+	protected final void repaint() {
+		controller.repaint();
 	}
 
 	@Override

@@ -58,10 +58,6 @@ public class ObjLoaderController extends DefaultController {
 		getUI().setMessage("Use 0-6 on keyboard to set camera");
 	}
 
-	public void modelChanged() {
-		repaintViews();
-	}
-
 	@Override
 	public void keyPressed(IKeyEvent e) {
 		switch (e.getKey()) {
@@ -82,6 +78,6 @@ public class ObjLoaderController extends DefaultController {
 		default:
 			super.keyPressed(e);
 		}
-		repaintViews();
+		repaint();
 	}
 }

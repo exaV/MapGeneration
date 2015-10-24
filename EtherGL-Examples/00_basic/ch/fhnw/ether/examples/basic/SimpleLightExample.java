@@ -137,10 +137,10 @@ public final class SimpleLightExample {
 				default:
 					super.keyPressed(e);
 				}
-				controller.getUI().setMessage("light position: " + lightMesh.getPosition());
+				getUI().setMessage("light position: " + lightMesh.getPosition());
 				light.setPosition(lightMesh.getPosition());
 				lightMesh.requestUpdate(null);
-				repaintViews();
+				repaint();
 			};
 		};
 
@@ -210,15 +210,12 @@ public final class SimpleLightExample {
 			}
 		}
 
-		controller.repaintViews();
-		
 		if (REMOVE_BUNNY) {
 			// test auto disposer
 			try {
 				Thread.sleep(1000);
 				scene.remove3DObject(solidBunnyT);
 				solidBunnyT = null;
-				controller.repaintViews();
 				Thread.sleep(1000);
 				AutoDisposer.runGC();
 				Thread.sleep(1000);

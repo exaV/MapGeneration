@@ -95,7 +95,7 @@ public final class AreaTool extends AbstractTool {
 		}
 
 		mesh.setPosition(new Vec3(xOffset, yOffset, 0));
-		e.getView().getController().repaintViews();
+		repaint();
 	}
 
 	@Override
@@ -117,7 +117,7 @@ public final class AreaTool extends AbstractTool {
 				xOffset = p.x;
 				yOffset = p.y;
 				mesh.setPosition(new Vec3(xOffset, yOffset, 0));
-				e.getView().getController().repaintViews();
+				repaint();
 			}
 		}
 	}
