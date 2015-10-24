@@ -309,6 +309,13 @@ public class DefaultView implements IView {
 				controller.viewLostFocus(DefaultView.this);
 			});
 		}
+		
+		@Override
+		public void windowResized(WindowEvent e) {
+			runOnSceneThread((time) -> {
+				controller.viewChanged(DefaultView.this);
+			});			
+		}
 	};
 
 	// key listener

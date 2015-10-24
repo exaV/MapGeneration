@@ -55,7 +55,7 @@ import ch.fhnw.ether.view.IView;
  */
 // FIXME: PickTool doesn't really belong here (any tools at all?)
 public class DefaultController implements IController {
-	private static final boolean DBG = true;
+	private static final boolean DBG = false;
 
 	private final DefaultScheduler scheduler;
 	private final IRenderer renderer;
@@ -216,6 +216,7 @@ public class DefaultController implements IController {
 
 		currentTool.refresh(view);
 		navigationTool.refresh(view);
+		repaint();
 	}
 
 	// key listener

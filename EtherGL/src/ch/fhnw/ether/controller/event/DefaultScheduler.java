@@ -60,7 +60,7 @@ public class DefaultScheduler implements IScheduler {
 
 	public DefaultScheduler(float fps) {
 		this.interval = 1 / fps;
-		this.sceneThread = new Thread(this::runSceneThread, "modelthread");
+		this.sceneThread = new Thread(this::runSceneThread, "scenethread");
 		this.renderThread = new Thread(this::runRenderThread, "renderthread");
 
 		sceneThread.start();
@@ -172,7 +172,7 @@ public class DefaultScheduler implements IScheduler {
 			double remaining = interval - elapsed;
 			if (remaining > 0) {
 				try {
-					//System.out.println("sleep for " + remaining);
+					// System.out.println("sleep for " + remaining);
 					Thread.sleep((long) (remaining * 1000));
 				} catch (Exception e) {
 				}
@@ -183,11 +183,7 @@ public class DefaultScheduler implements IScheduler {
 	}
 
 	private void runRenderThread() {
-		double time = getTime();
 		while (true) {
-			double now = getTime();
-			System.out.println(renderQueue.size() + " elapsed = " + (now - time));
-			time = now;
 			try {
 				renderQueue.take().run();
 				while (renderQueue.peek() != null)

@@ -51,7 +51,6 @@ public final class UI {
 
 	public UI(IController controller) {
 		this.controller = controller;
-
 		enable();
 	}
 
