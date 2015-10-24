@@ -29,10 +29,14 @@
 
 package ch.fhnw.ether.controller.event;
 
-import ch.fhnw.ether.view.IView;
-
+/**
+ * Scheduler interface for execution of actions on model thread and animation.
+ * 
+ * Thread-safety: All methods are thread safe and can be called from any thread.
+ * 
+ * @author radar
+ */
 public interface IScheduler {
-
 	interface IAction {
 		/**
 		 * Action to be run, implemented by client.
@@ -43,9 +47,9 @@ public interface IScheduler {
 		void run(double time);
 	}
 
-	interface IRepeatedAction {
+	interface IAnimationAction {
 		/**
-		 * Repeated action to be run, implemented by client.
+		 * Repeated animation action to be run, implemented by client.
 		 * 
 		 * @param time
 		 *            time since application start, in seconds
@@ -57,12 +61,21 @@ public interface IScheduler {
 	}
 
 	/**
-	 * Run an action on model thread once.
+	 * Add an action to the model animation loop until it removes itself.
+	 * Thread-safe.
 	 * 
 	 * @param action
 	 *            Action to be run
 	 */
-	void once(IAction action);
+	void animate(IAnimationAction action);
+
+	/**
+	 * Run an action on model thread once. Thread-safe.
+	 * 
+	 * @param action
+	 *            Action to be run
+	 */
+	void run(IAction action);
 
 	/**
 	 * Run an action on model thread once, with given delay.
@@ -72,51 +85,20 @@ public interface IScheduler {
 	 * @param action
 	 *            Action to be run
 	 */
-	void once(double delay, IAction action);
+	void run(double delay, IAction action);
+	
+	/**
+	 * Request repaint.
+	 */
+	void repaint();
 
 	/**
-	 * Run an action on model thread repeatedly.
-	 * 
-	 * @param interval
-	 *            Repeat interval in seconds
-	 * @param action
-	 *            Action to be run
+	 * Returns true if caller calls from scene thread.
 	 */
-	void repeat(double interval, IRepeatedAction action);
+	boolean isSceneThread();
 
 	/**
-	 * Run an action on model thread repeatedly, with given delay.
-	 * 
-	 * @param delay
-	 *            Delay before action is run, in seconds
-	 * @param interval
-	 *            Repeat interval, in seconds
-	 * @param action
-	 *            Action to be run
+	 * Returns true if caller calls from render thread.
 	 */
-	void repeat(double delay, double interval, IRepeatedAction action);
-
-	/**
-	 * Add a view to the scheduler. To be called by controller only.
-	 */
-	void addView(IView view);
-
-	/**
-	 * Remove a view from the scheduler. To be called by controller only.
-	 */
-	void removeView(IView view);
-
-	/**
-	 * Request to repaint a view (i.e. schedule it for rendering on render
-	 * thread). To be called by controller only.
-	 * 
-	 * @param view
-	 *            the view to be repainted, or NULL for all views to be
-	 *            repainted
-	 */
-	void repaintView(IView view);
-
-	boolean isModelThread();
-
 	boolean isRenderThread();
 }

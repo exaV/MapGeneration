@@ -29,7 +29,6 @@
 
 import ch.fhnw.ether.controller.DefaultController;
 import ch.fhnw.ether.controller.IController;
-import ch.fhnw.ether.controller.event.EventDrivenScheduler;
 import ch.fhnw.ether.examples.raytracing.surface.Plane;
 import ch.fhnw.ether.examples.raytracing.surface.Sphere;
 import ch.fhnw.ether.scene.DefaultScene;
@@ -51,7 +50,7 @@ public class RaytracerExample1 {
 
 	public RaytracerExample1() {
 		// create controller, camera, scene and view
-		IController controller = new DefaultController(new EventDrivenScheduler(), new RayTracingRenderer(new RayTracer()));
+		IController controller = new DefaultController(new RayTracingRenderer(new RayTracer()));
 
 		IScene scene = new DefaultScene(controller);
 		controller.setScene(scene);

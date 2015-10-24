@@ -46,6 +46,7 @@ import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.controller.event.IEvent;
 import ch.fhnw.ether.controller.event.IKeyEvent;
 import ch.fhnw.ether.controller.event.IPointerEvent;
+import ch.fhnw.ether.controller.event.IScheduler.IAction;
 import ch.fhnw.ether.scene.camera.CameraMatrices;
 import ch.fhnw.ether.scene.camera.ICamera;
 import ch.fhnw.ether.ui.UI;
@@ -68,9 +69,9 @@ public class DefaultView implements IView {
 
 	private final Config viewConfig;
 
-	private NEWTWindow window;
+	private final IController controller;
 
-	private IController controller;
+	private NEWTWindow window;
 
 	private ICamera camera;
 	private CameraMatrices cameraMatrices = null;
@@ -80,18 +81,17 @@ public class DefaultView implements IView {
 
 	private boolean enabled = true;
 
-	public DefaultView(IController controller, int x, int y, int w, int h, Config viewConfig, String title,
-			ICamera camera) {
+	public DefaultView(IController controller, int x, int y, int w, int h, Config viewConfig, String title, ICamera camera) {
 		this.controller = controller;
 		this.viewConfig = viewConfig;
 		setCamera(camera);
-		
+
 		window = new NEWTWindow(w, h, title, viewConfig);
 		window.getWindow().addGLEventListener(glEventListener);
 		window.getWindow().addWindowListener(windowListener);
 		window.getWindow().addMouseListener(mouseListener);
 		window.getWindow().addKeyListener(keyListener);
-		
+
 		Point p = window.getPosition();
 		if (x != -1)
 			p.setX(x);
@@ -104,7 +104,6 @@ public class DefaultView implements IView {
 		// need to see if this doesn't get us into trouble in the long run.
 		controller.viewCreated(this);
 		window.setVisible(true);
-		controller.repaintView(this);
 	}
 
 	@Override
@@ -113,11 +112,6 @@ public class DefaultView implements IView {
 		window.dispose();
 	}
 
-	@Override
-	public final void repaint() {
-		getController().repaintView(this);
-	}
-	
 	@Override
 	public IWindow getWindow() {
 		return window;
@@ -188,9 +182,8 @@ public class DefaultView implements IView {
 		this.enabled = enabled;
 	}
 
-	@Override
-	public final boolean isCurrent() {
-		return getController().getCurrentView() == this;
+	private void runOnSceneThread(IAction action) {
+		controller.getScheduler().run(action);
 	}
 
 	// IUpdate listener implementation (e.g. for camera)
@@ -203,8 +196,9 @@ public class DefaultView implements IView {
 					if (!cameraLocked)
 						cameraMatrices = null;
 				}
-				getController().viewChanged(DefaultView.this);
-				repaint();
+				runOnSceneThread((time) -> {
+					controller.viewChanged(DefaultView.this);
+				});
 			}
 		}
 	};
@@ -290,15 +284,12 @@ public class DefaultView implements IView {
 
 		@Override
 		public final void dispose(GLAutoDrawable drawable) {
-			try {
+			runOnSceneThread((time) -> {
 				controller.viewDisposed(DefaultView.this);
 				setCamera(null);
 				window = null;
-				controller = null;
 				camera = null;
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			});
 		}
 	};
 
@@ -307,28 +298,17 @@ public class DefaultView implements IView {
 	private WindowListener windowListener = new WindowAdapter() {
 		@Override
 		public void windowGainedFocus(WindowEvent e) {
-			try {
+			runOnSceneThread((time) -> {
 				controller.viewGainedFocus(DefaultView.this);
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
+			});
 		}
 
 		@Override
 		public void windowLostFocus(WindowEvent e) {
-			try {
-				if(controller != null)
-					controller.viewLostFocus(DefaultView.this);
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
+			runOnSceneThread((time) -> {
+				controller.viewLostFocus(DefaultView.this);
+			});
 		}
-		
-		// resize event, because the glEventListener doesn't get the resize events on all platforms (AMD & Win10)
-		@Override
-		public void windowResized(WindowEvent e) {
-			getController().repaintView(DefaultView.this);
-		};
 	};
 
 	// key listener
@@ -381,20 +361,16 @@ public class DefaultView implements IView {
 	private KeyListener keyListener = new KeyListener() {
 		@Override
 		public void keyPressed(KeyEvent e) {
-			try {
+			runOnSceneThread((time) -> {
 				controller.keyPressed(new ViewKeyEvent(e));
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
+			});
 		}
 
 		@Override
 		public void keyReleased(KeyEvent e) {
-			try {
+			runOnSceneThread((time) -> {
 				controller.keyReleased(new ViewKeyEvent(e));
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
+			});
 		}
 	};
 
@@ -468,75 +444,59 @@ public class DefaultView implements IView {
 	private MouseListener mouseListener = new MouseListener() {
 		@Override
 		public void mouseEntered(MouseEvent e) {
-			try {
+			runOnSceneThread((time) -> {
 				controller.pointerEntered(new ViewPointerEvent(e));
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
+			});
 		}
 
 		@Override
 		public void mouseExited(MouseEvent e) {
-			try {
+			runOnSceneThread((time) -> {
 				controller.pointerExited(new ViewPointerEvent(e));
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
+			});
 		}
 
 		@Override
 		public void mousePressed(MouseEvent e) {
-			try {
-				window.requestFocus();
+			window.requestFocus();
+			runOnSceneThread((time) -> {
 				controller.pointerPressed(new ViewPointerEvent(e));
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
+			});
 		}
 
 		@Override
 		public void mouseReleased(MouseEvent e) {
-			try {
+			runOnSceneThread((time) -> {
 				controller.pointerReleased(new ViewPointerEvent(e));
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
+			});
 		}
 
 		@Override
 		public void mouseClicked(MouseEvent e) {
-			try {
+			runOnSceneThread((time) -> {
 				controller.pointerClicked(new ViewPointerEvent(e));
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
+			});
 		}
 
 		@Override
 		public void mouseMoved(MouseEvent e) {
-			try {
+			runOnSceneThread((time) -> {
 				controller.pointerMoved(new ViewPointerEvent(e));
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
+			});
 		}
 
 		@Override
 		public void mouseDragged(MouseEvent e) {
-			try {
+			runOnSceneThread((time) -> {
 				controller.pointerDragged(new ViewPointerEvent(e));
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
+			});
 		}
 
 		@Override
 		public void mouseWheelMoved(MouseEvent e) {
-			try {
+			runOnSceneThread((time) -> {
 				controller.pointerScrolled(new ViewPointerEvent(e));
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
+			});
 		}
 	};
 }

@@ -27,12 +27,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */package ch.fhnw.ether.examples.raytracing;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 import ch.fhnw.ether.controller.DefaultController;
 import ch.fhnw.ether.controller.IController;
-import ch.fhnw.ether.controller.event.EventDrivenScheduler;
 import ch.fhnw.ether.examples.raytracing.surface.Plane;
 import ch.fhnw.ether.examples.raytracing.surface.Sphere;
 import ch.fhnw.ether.scene.DefaultScene;
@@ -49,6 +45,7 @@ import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Vec3;
 
 public class RaytracerExample2 {
+	private float n = 0;
 
 	public static void main(String[] args) {
 		new RaytracerExample2();
@@ -58,7 +55,7 @@ public class RaytracerExample2 {
 		RayTracer rt = new RayTracer();
 
 		// create controller, camera, scene and view
-		IController controller = new DefaultController(new EventDrivenScheduler(), new RayTracingRenderer(rt));
+		IController controller = new DefaultController(new RayTracingRenderer(rt));
 		
 		IScene scene = new DefaultScene(controller);
 		controller.setScene(scene);
@@ -88,18 +85,12 @@ public class RaytracerExample2 {
 		scene.add3DObject(wand);
 		scene.add3DObject(henderi_wand);		
 		
-		Timer t = new Timer();
-		t.scheduleAtFixedRate(new TimerTask() {
-			private float n = 0;
-
-			@Override
-			public void run() {
-				chugeli.setPosition(Vec3.Z.scale((float) Math.sin(n) + 0.5f));
-				n += 0.1;
-				if (n >= Math.PI)
-					n = 0;
-				controller.repaintViews();;
-			}
-		}, 1000, 50);
+		controller.getScheduler().animate((time, interval) -> {
+			chugeli.setPosition(Vec3.Z.scale((float) Math.sin(n) + 0.5f));
+			n += 0.1;
+			if (n >= Math.PI)
+				n = 0;
+			return true;
+		});
 	}
 }

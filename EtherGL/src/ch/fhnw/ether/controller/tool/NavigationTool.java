@@ -88,7 +88,7 @@ public class NavigationTool extends AbstractTool {
 		mouseX = e.getX();
 		mouseY = e.getY();
 		button = e.getButton();
-		e.getView().repaint();
+		repaint();
 	}
 
 	@Override
