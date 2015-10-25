@@ -53,7 +53,7 @@ public class MappingController extends DefaultController {
 
 	@Override
 	public void keyPressed(IKeyEvent e) {
-		switch (e.getKey()) {
+		switch (e.getKeyCode()) {
 		case IKeyEvent.VK_0:
 		case IKeyEvent.VK_1:
 			setCurrentTool(defaultTool);

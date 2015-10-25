@@ -60,14 +60,14 @@ public class ObjLoaderController extends DefaultController {
 
 	@Override
 	public void keyPressed(IKeyEvent e) {
-		switch (e.getKey()) {
+		switch (e.getKeyCode()) {
 		case IKeyEvent.VK_1:
 		case IKeyEvent.VK_2:
 		case IKeyEvent.VK_3:
 		case IKeyEvent.VK_4:
 		case IKeyEvent.VK_5:
 		case IKeyEvent.VK_6:
-			Vec3[] params = CAM_PARAMS[e.getKey() - IKeyEvent.VK_1];
+			Vec3[] params = CAM_PARAMS[e.getKeySym() - IKeyEvent.VK_1];
 			ICamera cam = getCurrentView().getCamera();
 			cam.setPosition(params[0]);
 			cam.setUp(params[1]);
