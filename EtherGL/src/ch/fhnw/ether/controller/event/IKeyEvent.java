@@ -42,7 +42,7 @@ public interface IKeyEvent extends IEvent {
 	 * @return key code
 	 * @see com.jogamp.newt.event.KeyEvent#getKeySymbol();
 	 */
-	short getKey();
+	short getKeySym();
 
 	/**
 	 * Returns (physical) key code for the event.

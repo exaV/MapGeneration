@@ -79,7 +79,7 @@ public final class AreaTool extends AbstractTool {
 
 	@Override
 	public void keyPressed(IKeyEvent e) {
-		switch (e.getKey()) {
+		switch (e.getKeyCode()) {
 		case IKeyEvent.VK_UP:
 			yOffset += KEY_INCREMENT;
 			break;

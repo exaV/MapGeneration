@@ -97,7 +97,7 @@ public final class SimpleLightExample {
 		controller = new DefaultController() {
 			@Override
 			public void keyPressed(IKeyEvent e) {
-				switch (e.getKey()) {
+				switch (e.getKeyCode()) {
 				case IKeyEvent.VK_1:
 					scene.remove3DObject(light);
 					light = new DirectionalLight(light.getPosition(), AMBIENT, COLOR);

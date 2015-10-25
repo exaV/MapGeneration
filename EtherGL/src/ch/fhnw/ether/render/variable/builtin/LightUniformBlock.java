@@ -45,11 +45,11 @@ public final class LightUniformBlock extends UniformBlock {
 
 	public static final int MAX_LIGHTS = 8;
 
-	public static final int BLOCK_SIZE = MAX_LIGHTS * 32; // 20;
+	public static final int BLOCK_SIZE = MAX_LIGHTS * 20;
 
 	private static final String DEFAULT_SHADER_NAME = "lightBlock";
 
-	private static final float[] OFF_LIGHT = new float[32 /* 20 */];
+	private static final float[] OFF_LIGHT = new float[20];
 
 	public LightUniformBlock() {
 		super(ATTRIBUTE, DEFAULT_SHADER_NAME);

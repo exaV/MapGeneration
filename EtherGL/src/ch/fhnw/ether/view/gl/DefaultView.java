@@ -323,14 +323,14 @@ public class DefaultView implements IView {
 	// key listener
 	private class ViewKeyEvent implements IKeyEvent {
 		final int modifiers;
-		final short key;
+		final short keySym;
 		final short keyCode;
 		final char keyChar;
 		final boolean isAutoRepeat;
 
 		ViewKeyEvent(KeyEvent e) {
 			modifiers = e.getModifiers() & IEvent.MODIFIER_MASK;
-			key = e.getKeySymbol();
+			keySym = e.getKeySymbol();
 			keyCode = e.getKeyCode();
 			keyChar = e.getKeyChar();
 			isAutoRepeat = e.isAutoRepeat();
@@ -347,8 +347,8 @@ public class DefaultView implements IView {
 		}
 
 		@Override
-		public short getKey() {
-			return key;
+		public short getKeySym() {
+			return keySym;
 		}
 
 		@Override

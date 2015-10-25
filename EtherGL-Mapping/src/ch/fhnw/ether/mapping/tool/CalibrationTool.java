@@ -133,7 +133,7 @@ public final class CalibrationTool extends AbstractTool {
 	@Override
 	public void keyPressed(IKeyEvent e) {
 		IView view = e.getView();
-		switch (e.getKey()) {
+		switch (e.getKeyCode()) {
 		case IKeyEvent.VK_L:
 			loadCalibration(view);
 			break;

@@ -229,7 +229,7 @@ public class DefaultController implements IController {
 			return;
 
 		// always handle ESC (if not handled by button)
-		if (e.getKey() == IKeyEvent.VK_ESCAPE)
+		if (e.getKeyCode() == IKeyEvent.VK_ESCAPE)
 			System.exit(0);
 
 		// finally, pass on to tool
