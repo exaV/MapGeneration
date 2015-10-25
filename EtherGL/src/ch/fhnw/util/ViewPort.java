@@ -27,29 +27,27 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.scene.attribute;
+package ch.fhnw.util;
 
-public abstract class AbstractAttribute<T> implements ITypedAttribute<T> {
-	private final String id;
+/**
+ * Viewport frame for use with OpenGL.
+ *
+ * @author radar
+ */
+public final class ViewPort {
+	public final int x;
+	public final int y;
+	public final int w;
+	public final int h;
 
-	protected AbstractAttribute(String id) {
-		this.id = id;
+	public ViewPort(int x, int y, int w, int h) {
+		this.x = x;
+		this.y = y;
+		this.w = w;
+		this.h = h;
 	}
-
-	@Override
-	public final String id() {
-		return id;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof AbstractAttribute<?> && id.equals(((AbstractAttribute<?>) obj).id))
-			return true;
-		return false;
-	}
-
-	@Override
-	public String toString() {
-		return id;
+	
+	public float getAspect() {
+		return (float)w / (float)h;
 	}
 }

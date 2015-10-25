@@ -29,12 +29,9 @@
 
 package ch.fhnw.ether.render;
 
-import ch.fhnw.ether.scene.attribute.AbstractAttribute;
-import ch.fhnw.ether.scene.light.ILight;
-import ch.fhnw.ether.scene.mesh.IMesh;
-import ch.fhnw.ether.view.IView;
-
 import com.jogamp.opengl.GL3;
+
+import ch.fhnw.ether.scene.attribute.AbstractAttribute;
 
 /**
  * Simple rendering interface.
@@ -49,33 +46,8 @@ public interface IRenderer {
 	}
 
 	/**
-	 * Add mesh to renderer. Allocates all renderer-dependent resources. Thread-safe.
-	 * 
-	 * @param mesh
-	 *            mesh to be added
-	 * @throws IllegalArgumentException
-	 *             if mesh already in renderer.
+	 * Called view from render thread to render the meshes. Do not call this
+	 * method otherwise.
 	 */
-	void addMesh(IMesh mesh);
-
-	// FIXME: we could use a special flag (or similar) to prevent deallocation of resources for cases where meshes are
-	// added and removed quickly.
-	/**
-	 * Remove mesh from renderer. Releases all renderer-dependent resources. Thread-safe.
-	 * 
-	 * @param mesh
-	 *            mesh to be removed
-	 * @throws IllegalArgumentException
-	 *             if mesh not in renderer.
-	 */
-	void removeMesh(IMesh mesh);
-
-	void addLight(ILight light);
-
-	void removeLight(ILight light);
-
-	/**
-	 * Called view from render thread to render the meshes. Do not call this method otherwise.
-	 */
-	void render(GL3 gl, IView view);
+	void render(GL3 gl, IRenderProgram program);
 }

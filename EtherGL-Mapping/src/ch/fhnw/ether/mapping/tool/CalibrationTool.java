@@ -44,7 +44,7 @@ import ch.fhnw.ether.controller.tool.AbstractTool;
 import ch.fhnw.ether.mapping.BimberRaskarCalibrator;
 import ch.fhnw.ether.mapping.ICalibrationModel;
 import ch.fhnw.ether.mapping.ICalibrator;
-import ch.fhnw.ether.render.IRenderer;
+import ch.fhnw.ether.render.IRenderManager;
 import ch.fhnw.ether.scene.camera.ICamera;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh.Queue;
@@ -56,7 +56,7 @@ import ch.fhnw.ether.scene.mesh.material.PointMaterial;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.ProjectionUtilities;
 import ch.fhnw.util.PreferencesStore;
-import ch.fhnw.util.Viewport;
+import ch.fhnw.util.ViewPort;
 import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Vec3;
 
@@ -107,21 +107,21 @@ public final class CalibrationTool extends AbstractTool {
 	@Override
 	public void activate() {
 		getController().enableViews(Collections.singleton(getController().getCurrentView()));
-		IRenderer render = getController().getRenderer();
-		render.addMesh(lines);
-		render.addMesh(points);
-		render.addMesh(calibratedLines);
-		render.addMesh(calibratedPoints);
+		IRenderManager rm = getController().getRenderManager();
+		rm.addMesh(lines);
+		rm.addMesh(points);
+		rm.addMesh(calibratedLines);
+		rm.addMesh(calibratedPoints);
 	}
 
 	@Override
 	public void deactivate() {
 		getController().enableViews(null);
-		IRenderer render = getController().getRenderer();
-		render.removeMesh(lines);
-		render.removeMesh(points);
-		render.removeMesh(calibratedLines);
-		render.removeMesh(calibratedPoints);
+		IRenderManager rm = getController().getRenderManager();
+		rm.removeMesh(lines);
+		rm.removeMesh(points);
+		rm.removeMesh(calibratedLines);
+		rm.removeMesh(calibratedPoints);
 	}
 
 	@Override
@@ -237,7 +237,7 @@ public final class CalibrationTool extends AbstractTool {
 		CalibrationContext context = getContext(view);
 		if (context.currentSelection != -1) {
 			Vec3 p = context.projectedVertices.get(context.currentSelection);
-			Vec3 a = new Vec3(p.x + dx / view.getViewport().w, p.y + dy / view.getViewport().h, 0);
+			Vec3 a = new Vec3(p.x + dx / view.getViewPort().w, p.y + dy / view.getViewPort().h, 0);
 			context.projectedVertices.set(context.currentSelection, a);
 			calibrate(view);
 		}
@@ -274,7 +274,7 @@ public final class CalibrationTool extends AbstractTool {
 
 	private void clearCalibration(IView view) {
 		contexts.put(view, new CalibrationContext());
-		view.setCameraMatrices(null, null);
+		view.setViewMatrices(null, null);
 		calibrate(view);
 	}
 
@@ -290,7 +290,7 @@ public final class CalibrationTool extends AbstractTool {
 		} catch (Throwable ignored) {
 		}
 		if (context.calibrated) {
-			view.setCameraMatrices(calibrator.getViewMatrix(), calibrator.getProjMatrix());
+			view.setViewMatrices(calibrator.getViewMatrix(), calibrator.getProjMatrix());
 		}
 
 		// need to update VBOs
@@ -315,7 +315,7 @@ public final class CalibrationTool extends AbstractTool {
 			MeshLibrary.addLine(v, a.x, a.y, a.z, aa.x, aa.y, aa.z);
 
 			if (i == context.currentSelection) {
-				Viewport viewport = view.getViewport();
+				ViewPort viewport = view.getViewPort();
 				MeshLibrary.addLine(v, a.x - CROSSHAIR_SIZE / viewport.w, a.y, a.z, a.x + CROSSHAIR_SIZE / viewport.w, a.y, a.z);
 				MeshLibrary.addLine(v, a.x, a.y - CROSSHAIR_SIZE / viewport.h, a.z, a.x, a.y + CROSSHAIR_SIZE / viewport.h, a.z);
 			}

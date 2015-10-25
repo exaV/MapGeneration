@@ -29,24 +29,8 @@
 
 package ch.fhnw.ether.examples.raytracing;
 
-import ch.fhnw.ether.render.IRenderer;
-import ch.fhnw.ether.render.forward.ForwardRenderer;
-import ch.fhnw.ether.scene.light.ILight;
-import ch.fhnw.ether.scene.mesh.DefaultMesh;
-import ch.fhnw.ether.scene.mesh.IMesh;
-import ch.fhnw.ether.scene.mesh.IMesh.Queue;
-import ch.fhnw.ether.scene.mesh.MeshLibrary;
-import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
-import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
-import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
-import ch.fhnw.ether.scene.mesh.material.ColorMapMaterial;
-import ch.fhnw.ether.scene.mesh.material.Texture;
-import ch.fhnw.ether.view.IView;
-import ch.fhnw.util.Viewport;
-
-import com.jogamp.opengl.GL3;
-
-public class RayTracingRenderer implements IRenderer {
+public class RayTracingRenderer /*implements IRenderer*/ {
+/*
 	private final RayTracer       rayTracer;
 	private final ForwardRenderer renderer      = new ForwardRenderer();
 	private final Texture         screenTexture;
@@ -61,13 +45,13 @@ public class RayTracingRenderer implements IRenderer {
 	}
 	
 	@Override
-	public void render(GL3 gl, IView view) {
+	public void render(GL3 gl, IRenderProgram program) {
 		long t = System.currentTimeMillis();
-		Viewport viewport = view.getViewport();
+		ViewPort viewport = view.getViewPort();
 		if (viewport.w != rayTracer.getWidth() || viewport.h != rayTracer.getHeight())
 			rayTracer.setSize(viewport.w, viewport.h);
 		rayTracer.setCamera(view.getCamera());
-		rayTracer.setLights(view.getController().getScene().getLights());
+		rayTracer.setLights(view.getController().getScene().getLightInfo());
 		
 		screenTexture.update();
 
@@ -82,23 +66,20 @@ public class RayTracingRenderer implements IRenderer {
 		return new DefaultMesh(new ColorMapMaterial(texture), geometry, Queue.DEVICE_SPACE_OVERLAY);
 	}
 
-	@Override
 	public void addMesh(IMesh mesh) {
 		rayTracer.addMesh(mesh);
 	}
 
-	@Override
 	public void removeMesh(IMesh mesh) {
 		rayTracer.removeMesh(mesh);
 	}
 
-	@Override
 	public void addLight(ILight light) {
 		rayTracer.addLight(light);
 	}
 
-	@Override
 	public void removeLight(ILight light) {
 		rayTracer.removeLight(light);
 	}
+*/
 }

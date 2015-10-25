@@ -27,10 +27,12 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.render;
+package ch.fhnw.ether.render.forward;
 
 import java.util.List;
 
+import ch.fhnw.ether.render.Renderable;
+import ch.fhnw.ether.render.ShaderBuilder;
 import ch.fhnw.ether.render.shader.builtin.ShadowVolumeShader;
 import ch.fhnw.ether.render.shader.builtin.TrivialDeviceSpaceShader;
 import ch.fhnw.ether.scene.attribute.IAttributeProvider;
@@ -66,7 +68,7 @@ public final class ShadowVolumes {
 	}
 
 	// http://ogldev.atspace.co.uk/www/tutorial40/tutorial40.html
-	void render(GL3 gl, IMesh.Queue pass, boolean interactive, List<Renderable> renderables, List<GenericLight> lights) {
+	public void render(GL3 gl, IMesh.Queue pass, boolean interactive, List<Renderable> renderables, List<GenericLight> lights) {
 		gl.glEnable(GL.GL_BLEND);
 		gl.glBlendFunc(GL.GL_ZERO, GL.GL_SRC_ALPHA);
 		gl.glDepthMask(false);

@@ -29,102 +29,26 @@
 
 package ch.fhnw.ether.render;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import ch.fhnw.ether.render.gl.FloatUniformBuffer;
-import ch.fhnw.ether.render.variable.builtin.ViewUniformBlock;
-import ch.fhnw.ether.scene.attribute.IAttributeProvider;
-import ch.fhnw.ether.scene.camera.CameraMatrices;
-import ch.fhnw.ether.scene.light.ILight;
-import ch.fhnw.ether.scene.mesh.IMesh;
-import ch.fhnw.ether.scene.mesh.IMesh.Queue;
-import ch.fhnw.util.Viewport;
-
 import com.jogamp.opengl.GL3;
 
+import ch.fhnw.ether.render.forward.ShadowVolumes;
+import ch.fhnw.ether.scene.mesh.IMesh.Queue;
+
 public abstract class AbstractRenderer implements IRenderer {
-	protected static class Cameras {
-		private final FloatUniformBuffer uniforms = new FloatUniformBuffer(ViewUniformBlock.BLOCK_SIZE, 3);
-
-		public void update(GL3 gl, CameraMatrices matrices, Viewport viewport) {
-			ViewUniformBlock.loadUniforms(gl, uniforms, matrices, viewport);
-		}
-
-		public void setCameraSpace(GL3 gl) {
-			uniforms.bind(gl, 0);
-		}
-
-		public void setOrthoDeviceSpace(GL3 gl) {
-			uniforms.bind(gl, 1);
-		}
-
-		public void setOrthoScreenSpace(GL3 gl) {
-			uniforms.bind(gl, 2);
-		}
-
-		public IAttributeProvider getAttributeProvider() {
-			return new IAttributeProvider() {
-				@Override
-				public void getAttributes(IAttributes attributes) {
-					attributes.provide(ViewUniformBlock.ATTRIBUTE, () -> uniforms.getBindingPoint());
-				}
-			};
-		}
-	}
-
-	// FIXME: this needs cleanup, i don't think we need this here, maybe better in renderables
-	private final List<IAttributeProvider> providers = new ArrayList<>();
-
-	private final Cameras cameras = new Cameras();
-	private final Lights lights = new Lights();
-	private final Renderables renderables = new Renderables();
 
 	private ShadowVolumes shadowVolumes;
 
 	public AbstractRenderer() {
-		providers.add(cameras.getAttributeProvider());
-		providers.add(lights.getAttributeProvider());
-	}
-	
-	protected Cameras getCameras() {
-		return cameras;
 	}
 
-	@Override
-	public void addMesh(IMesh mesh) {
-		renderables.addMesh(mesh, providers);
+	protected void renderObjects(GL3 gl, IRenderProgram program, Queue pass, boolean interactive) {
+		program.getRenderables().renderObjects(gl, pass, interactive);
 	}
 
-	@Override
-	public void removeMesh(IMesh mesh) {
-		renderables.removeMesh(mesh);
-	}
-
-	@Override
-	public void addLight(ILight light) {
-		lights.addLight(light);
-	}
-
-	@Override
-	public void removeLight(ILight light) {
-		lights.removeLight(light);
-	}
-
-	protected void update(GL3 gl, CameraMatrices matrices, Viewport viewport) {
-		cameras.update(gl, matrices, viewport);
-		lights.update(gl, matrices);
-		renderables.update(gl);
-	}
-
-	protected void renderObjects(GL3 gl, Queue pass, boolean interactive) {
-		renderables.renderObjects(gl, pass, interactive);
-	}
-
-	protected void renderShadowVolumes(GL3 gl, Queue pass, boolean interactive) {
+	protected void renderShadowVolumes(GL3 gl, IRenderProgram program, Queue pass, boolean interactive) {
 		if (shadowVolumes == null) {
-			shadowVolumes = new ShadowVolumes(providers);
+			shadowVolumes = new ShadowVolumes(program.getProviders());
 		}
-		renderables.renderShadowVolumes(gl, pass, interactive, shadowVolumes, lights.getLights());
+		program.getRenderables().renderShadowVolumes(gl, pass, interactive, shadowVolumes, program.getLightInfo().getLights());
 	}
 }

@@ -55,12 +55,12 @@ public final class UI {
 	}
 
 	public void enable() {
-		controller.getRenderer().addMesh(plane.getMesh());
+		controller.getRenderManager().addMesh(plane.getMesh());
 		requestUpdate();
 	}
 
 	public void disable() {
-		controller.getRenderer().removeMesh(plane.getMesh());
+		controller.getRenderManager().removeMesh(plane.getMesh());
 	}
 
 	public void update() {

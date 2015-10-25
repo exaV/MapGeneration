@@ -69,12 +69,12 @@ public final class AreaTool extends AbstractTool {
 
 	@Override
 	public void activate() {
-		getController().getRenderer().addMesh(mesh);
+		getController().getRenderManager().addMesh(mesh);
 	}
 
 	@Override
 	public void deactivate() {
-		getController().getRenderer().removeMesh(mesh);
+		getController().getRenderManager().removeMesh(mesh);
 	}
 
 	@Override

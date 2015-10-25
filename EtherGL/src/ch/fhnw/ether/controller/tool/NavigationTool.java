@@ -69,8 +69,8 @@ public class NavigationTool extends AbstractTool {
 	public void activate() {
 		IView view = getController().getCurrentView();
 		if (view != null && view.getConfig().has(ViewFlag.GRID)) {
-			getController().getRenderer().addMesh(grid);
-			getController().getRenderer().addMesh(axes);
+			getController().getRenderManager().addMesh(grid);
+			getController().getRenderManager().addMesh(axes);
 		}
 	}
 
@@ -78,8 +78,8 @@ public class NavigationTool extends AbstractTool {
 	public void deactivate() {
 		IView view = getController().getCurrentView();
 		if (view != null && getController().getCurrentView().getConfig().has(ViewFlag.GRID)) {
-			getController().getRenderer().removeMesh(grid);
-			getController().getRenderer().removeMesh(axes);
+			getController().getRenderManager().removeMesh(grid);
+			getController().getRenderManager().removeMesh(axes);
 		}
 	}
 

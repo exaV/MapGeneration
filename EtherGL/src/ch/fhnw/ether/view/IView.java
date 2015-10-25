@@ -30,9 +30,9 @@
 import java.util.EnumSet;
 
 import ch.fhnw.ether.controller.IController;
-import ch.fhnw.ether.scene.camera.CameraMatrices;
+import ch.fhnw.ether.scene.camera.ViewMatrices;
 import ch.fhnw.ether.scene.camera.ICamera;
-import ch.fhnw.util.Viewport;
+import ch.fhnw.util.ViewPort;
 import ch.fhnw.util.math.Mat4;
 
 /**
@@ -117,14 +117,15 @@ public interface IView {
 	void setCamera(ICamera camera);
 
 	/**
-	 * Calculate camera matrices (if camera changed) and return them.
+	 * Calculate view matrices based on camera (if camera changed) and return
+	 * them.
 	 * 
 	 * @return the camera matrices
 	 */
-	CameraMatrices getCameraMatrices();
+	ViewMatrices getViewMatrices();
 
 	/**
-	 * Set camera matrices to given fixed view and projection matrix. Will lock
+	 * Set view matrices to given fixed view and projection matrix. Will lock
 	 * matrices and disable camera control. Use setCameraMatrices(null, null) to
 	 * unlock and re-enable camera control.
 	 * 
@@ -133,14 +134,14 @@ public interface IView {
 	 * @param projMatrix
 	 *            the projection matrix to be set
 	 */
-	void setCameraMatrices(Mat4 viewMatrix, Mat4 projMatrix);
+	void setViewMatrices(Mat4 viewMatrix, Mat4 projMatrix);
 
 	/**
 	 * Get viewport [x, y, w, h].
 	 * 
 	 * @return the viewport
 	 */
-	Viewport getViewport();
+	ViewPort getViewPort();
 
 	/**
 	 * Get view configuration.

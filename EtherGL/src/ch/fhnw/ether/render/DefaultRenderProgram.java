@@ -27,29 +27,49 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.scene.attribute;
+package ch.fhnw.ether.render;
 
-public abstract class AbstractAttribute<T> implements ITypedAttribute<T> {
-	private final String id;
+import java.util.ArrayList;
+import java.util.List;
 
-	protected AbstractAttribute(String id) {
-		this.id = id;
+import ch.fhnw.ether.scene.attribute.IAttributeProvider;
+
+/**
+ * Default render program.
+ *
+ * @author radar
+ */
+public class DefaultRenderProgram implements IRenderProgram {
+	// FIXME: this needs cleanup, i don't think we need this here, maybe better
+	// in renderables
+	private final List<IAttributeProvider> providers = new ArrayList<>();
+
+	private final Renderables renderables = new Renderables();
+	private final LightInfo lightInfo = new LightInfo();
+	private final ViewInfo viewInfo = new ViewInfo();
+
+	public DefaultRenderProgram() {
+		providers.add(viewInfo.getAttributeProvider());
+		providers.add(lightInfo.getAttributeProvider());
 	}
 
 	@Override
-	public final String id() {
-		return id;
+	public Renderables getRenderables() {
+		return renderables;
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof AbstractAttribute<?> && id.equals(((AbstractAttribute<?>) obj).id))
-			return true;
-		return false;
+	public LightInfo getLightInfo() {
+		return lightInfo;
 	}
 
 	@Override
-	public String toString() {
-		return id;
+	public ViewInfo getViewInfo() {
+		return viewInfo;
+	}
+
+	@Override
+	public List<IAttributeProvider> getProviders() {
+		return providers;
 	}
 }

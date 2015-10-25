@@ -59,7 +59,7 @@ public final class VertexBuffer implements IVertexBuffer {
 	private final int[] offsets;
 	private final int[] attributeIndices;
 
-	VertexBuffer(IShader shader, IMesh mesh) {
+	public VertexBuffer(IShader shader, IMesh mesh) {
 		List<IShaderArray<?>> arrays = shader.getArrays();
 
 		sizes = new int[arrays.size()];

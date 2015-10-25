@@ -113,7 +113,7 @@ public final class PickUtilities {
 
 		float[] v = new float[] { xmin, ymin, zmin, xmin, ymin, zmax, xmin, ymax, zmin, xmin, ymax, zmax, xmax, ymin, zmin, xmax, ymin, zmax, xmax, ymax, zmin,
 				xmax, ymax, zmax, };
-		b.add(ProjectionUtilities.projectToScreen(view.getCameraMatrices().getViewProjMatrix(), view.getViewport(), v));
+		b.add(ProjectionUtilities.projectToScreen(view.getViewMatrices().getViewProjMatrix(), view.getViewPort(), v));
 		b.grow(PICK_DISTANCE, PICK_DISTANCE, 0);
 
 		if (b.getMaxZ() > 0 && x > b.getMinX() && x < b.getMaxX() && y > b.getMinY() && y < b.getMaxY())

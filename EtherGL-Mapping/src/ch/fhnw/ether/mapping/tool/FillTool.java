@@ -57,12 +57,12 @@ public final class FillTool extends AbstractTool {
 
 	@Override
 	public void activate() {
-		getController().getRenderer().addMesh(quads);
+		getController().getRenderManager().addMesh(quads);
 	}
 
 	@Override
 	public void deactivate() {
-		getController().getRenderer().removeMesh(quads);
+		getController().getRenderManager().removeMesh(quads);
 		getController().enableViews(null);
 	}
 

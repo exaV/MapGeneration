@@ -41,8 +41,8 @@ import ch.fhnw.ether.controller.event.IScheduler;
 import ch.fhnw.ether.controller.tool.ITool;
 import ch.fhnw.ether.controller.tool.NavigationTool;
 import ch.fhnw.ether.controller.tool.PickTool;
-import ch.fhnw.ether.render.IRenderer;
-import ch.fhnw.ether.render.forward.ForwardRenderer;
+import ch.fhnw.ether.render.DefaultRenderManager;
+import ch.fhnw.ether.render.IRenderManager;
 import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.ui.UI;
 import ch.fhnw.ether.view.IView;
@@ -58,7 +58,7 @@ public class DefaultController implements IController {
 	private static final boolean DBG = false;
 
 	private final DefaultScheduler scheduler;
-	private final IRenderer renderer;
+	private final IRenderManager renderManager;
 
 	private IScene scene;
 
@@ -72,16 +72,12 @@ public class DefaultController implements IController {
 	private ITool currentTool;
 
 	public DefaultController() {
-		this(new ForwardRenderer());
+		this(60);
 	}
 
-	public DefaultController(IRenderer renderer) {
-		this(renderer, 80);
-	}
-
-	public DefaultController(IRenderer renderer, float fps) {
+	public DefaultController(float fps) {
 		this.scheduler = new DefaultScheduler(fps);
-		this.renderer = renderer;
+		this.renderManager = new DefaultRenderManager();
 		this.ui = new UI(this);
 		this.navigationTool = new NavigationTool(this);
 		this.pickTool = new PickTool(this);
@@ -148,13 +144,13 @@ public class DefaultController implements IController {
 	}
 
 	@Override
-	public final IRenderer getRenderer() {
-		return renderer;
+	public final UI getUI() {
+		return ui;
 	}
 
 	@Override
-	public final UI getUI() {
-		return ui;
+	public final IRenderManager getRenderManager() {
+		return renderManager;
 	}
 
 	@Override

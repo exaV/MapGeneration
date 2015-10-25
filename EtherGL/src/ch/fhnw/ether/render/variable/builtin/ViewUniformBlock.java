@@ -32,8 +32,8 @@ package ch.fhnw.ether.render.variable.builtin;
 import ch.fhnw.ether.render.IRenderer.RendererAttribute;
 import ch.fhnw.ether.render.gl.FloatUniformBuffer;
 import ch.fhnw.ether.render.variable.base.UniformBlock;
-import ch.fhnw.ether.scene.camera.CameraMatrices;
-import ch.fhnw.util.Viewport;
+import ch.fhnw.ether.scene.camera.ViewMatrices;
+import ch.fhnw.util.ViewPort;
 import ch.fhnw.util.math.Mat4;
 
 import com.jogamp.opengl.GL3;
@@ -59,12 +59,11 @@ public final class ViewUniformBlock extends UniformBlock {
 		super(ATTRIBUTE, shaderName);
 	}
 
-	public static void loadUniforms(GL3 gl, FloatUniformBuffer uniforms, CameraMatrices matrices, Viewport viewport) {
+	public static void loadUniforms(GL3 gl, FloatUniformBuffer uniforms, ViewMatrices matrices, ViewPort viewport) {
 		uniforms.load(gl, (blockIndex, buffer) -> {
 			switch (blockIndex) {
 			case 0:
 				// 3d setup
-				// TODO: add toBuffer method to Mat4/Mat3
 				buffer.put(matrices.getViewMatrix().toArray());
 				buffer.put(matrices.getViewProjMatrix().toArray());
 				buffer.put(matrices.getProjMatrix().toArray());

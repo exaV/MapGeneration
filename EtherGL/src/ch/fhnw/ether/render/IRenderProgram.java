@@ -27,29 +27,24 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.scene.attribute;
+package ch.fhnw.ether.render;
 
-public abstract class AbstractAttribute<T> implements ITypedAttribute<T> {
-	private final String id;
+import java.util.List;
 
-	protected AbstractAttribute(String id) {
-		this.id = id;
-	}
+import ch.fhnw.ether.scene.attribute.IAttributeProvider;
 
-	@Override
-	public final String id() {
-		return id;
-	}
+/**
+ * The program to be executed by the renderer.
+ *
+ * @author radar
+ */
+public interface IRenderProgram {
+	Renderables getRenderables();
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof AbstractAttribute<?> && id.equals(((AbstractAttribute<?>) obj).id))
-			return true;
-		return false;
-	}
+	LightInfo getLightInfo();
 
-	@Override
-	public String toString() {
-		return id;
-	}
+	ViewInfo getViewInfo();
+
+	// XXX remove
+	List<IAttributeProvider> getProviders();
 }

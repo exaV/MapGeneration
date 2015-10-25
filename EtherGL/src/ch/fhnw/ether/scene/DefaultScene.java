@@ -34,7 +34,7 @@ import java.util.Collections;
 import java.util.List;
 
 import ch.fhnw.ether.controller.IController;
-import ch.fhnw.ether.render.IRenderer;
+import ch.fhnw.ether.render.IRenderManager;
 import ch.fhnw.ether.scene.camera.ICamera;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.IMesh;
@@ -61,16 +61,16 @@ public class DefaultScene implements IScene {
 	// FIXME: handling if objects are already added (use sets, or throw exceptions or etc... similar to renderer)
 	@Override
 	public final void add3DObject(I3DObject object) {
-		IRenderer renderer = controller.getRenderer();
+		IRenderManager rm = controller.getRenderManager();
 		if (object instanceof IMesh) {
 			meshes.add((IMesh)object);
-			renderer.addMesh((IMesh)object);
+			rm.addMesh((IMesh)object);
 		}
 		if (object instanceof ICamera)
 			cameras.add((ICamera)object);
 		if (object instanceof ILight) {
 			lights.add((ILight)object);		
-			renderer.addLight((ILight)object);
+			rm.addLight((ILight)object);
 		}
 		objects.add(object);
 	}
@@ -83,16 +83,16 @@ public class DefaultScene implements IScene {
 	
 	@Override
 	public final void remove3DObject(I3DObject object) {
-		IRenderer renderer = controller.getRenderer();
+		IRenderManager rm = controller.getRenderManager();
 		if (object instanceof IMesh) {
 			meshes.remove(object);
-			renderer.removeMesh((IMesh)object);
+			rm.removeMesh((IMesh)object);
 		}
 		if (object instanceof ICamera)
 			cameras.remove(object);
 		if (object instanceof ILight) {
 			lights.remove(object);	
-			renderer.removeLight((ILight)object);
+			rm.removeLight((ILight)object);
 		}
 		objects.remove(object);
 	}

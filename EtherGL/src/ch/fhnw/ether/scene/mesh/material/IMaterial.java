@@ -39,7 +39,7 @@ import ch.fhnw.util.math.IVec4;
 public interface IMaterial extends IAttributeProvider, IUpdateRequester {
 	interface IMaterialAttribute<T> extends ITypedAttribute<T> {
 	}
-	
+
 	final class MaterialAttribute<T> extends AbstractAttribute<T> implements IMaterialAttribute<T> {
 		public MaterialAttribute(String id) {
 			super(id);
@@ -47,7 +47,7 @@ public interface IMaterial extends IAttributeProvider, IUpdateRequester {
 	}
 
 	// default material attributes
-	
+
 	// non-shaded objects
 	MaterialAttribute<IVec4> COLOR = new MaterialAttribute<>("builtin.material.color");
 

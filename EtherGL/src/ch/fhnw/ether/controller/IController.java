@@ -35,7 +35,7 @@ import ch.fhnw.ether.controller.event.IPointerEvent;
 import ch.fhnw.ether.controller.event.IScheduler;
 import ch.fhnw.ether.controller.tool.ITool;
 import ch.fhnw.ether.controller.tool.NavigationTool;
-import ch.fhnw.ether.render.IRenderer;
+import ch.fhnw.ether.render.IRenderManager;
 import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.ui.UI;
 import ch.fhnw.ether.view.IView;
@@ -114,18 +114,18 @@ public interface IController {
 	NavigationTool getNavigationTool();
 
 	/**
-	 * Get the renderer.
-	 *
-	 * @return the renderer
-	 */
-	IRenderer getRenderer();
-
-	/**
 	 * Get the UI.
 	 *
 	 * @return the ui
 	 */
 	UI getUI();
+
+	/**
+	 * Get the renderer.
+	 *
+	 * @return the renderer
+	 */
+	IRenderManager getRenderManager();
 
 	/**
 	 * Get the scheduler.

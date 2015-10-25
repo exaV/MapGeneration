@@ -47,13 +47,14 @@ import ch.fhnw.ether.controller.event.IEvent;
 import ch.fhnw.ether.controller.event.IKeyEvent;
 import ch.fhnw.ether.controller.event.IPointerEvent;
 import ch.fhnw.ether.controller.event.IScheduler.IAction;
-import ch.fhnw.ether.scene.camera.CameraMatrices;
+import ch.fhnw.ether.render.forward.ForwardRenderer;
+import ch.fhnw.ether.scene.camera.ViewMatrices;
 import ch.fhnw.ether.scene.camera.ICamera;
 import ch.fhnw.ether.ui.UI;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.IWindow;
 import ch.fhnw.util.IUpdateListener;
-import ch.fhnw.util.Viewport;
+import ch.fhnw.util.ViewPort;
 import ch.fhnw.util.math.Mat4;
 
 /**
@@ -74,10 +75,10 @@ public class DefaultView implements IView {
 	private NEWTWindow window;
 
 	private ICamera camera;
-	private CameraMatrices cameraMatrices = null;
+	private ViewMatrices cameraMatrices = null;
 	private boolean cameraLocked = false;
 
-	private Viewport viewport = new Viewport(0, 0, 1, 1);
+	private ViewPort viewport = new ViewPort(0, 0, 1, 1);
 
 	private boolean enabled = true;
 
@@ -139,31 +140,31 @@ public class DefaultView implements IView {
 	}
 
 	@Override
-	public final CameraMatrices getCameraMatrices() {
+	public final ViewMatrices getViewMatrices() {
 		synchronized (this) {
 			ICamera c = camera;
 			if (cameraMatrices == null)
-				cameraMatrices = new CameraMatrices(c.getPosition(), c.getTarget(), c.getUp(), c.getFov(), c.getNear(),
+				cameraMatrices = new ViewMatrices(c.getPosition(), c.getTarget(), c.getUp(), c.getFov(), c.getNear(),
 						c.getFar(), viewport.getAspect());
 			return cameraMatrices;
 		}
 	}
 
 	@Override
-	public void setCameraMatrices(Mat4 viewMatrix, Mat4 projMatrix) {
+	public void setViewMatrices(Mat4 viewMatrix, Mat4 projMatrix) {
 		synchronized (this) {
 			if (viewMatrix == null && projMatrix == null) {
 				cameraMatrices = null;
 				cameraLocked = false;
 			} else {
-				cameraMatrices = new CameraMatrices(viewMatrix, projMatrix);
+				cameraMatrices = new ViewMatrices(viewMatrix, projMatrix);
 				cameraLocked = true;
 			}
 		}
 	}
 
 	@Override
-	public final Viewport getViewport() {
+	public final ViewPort getViewPort() {
 		return viewport;
 	}
 
@@ -254,7 +255,8 @@ public class DefaultView implements IView {
 					ui.update();
 
 				// render everything
-				getController().getRenderer().render(gl3, DefaultView.this);
+				getController().getRenderManager().update(gl3, getViewMatrices(), getViewPort(), getConfig().getViewType());
+				new ForwardRenderer().render(gl3, getController().getRenderManager().getProgram());
 
 				int error = gl.glGetError();
 				if (error != 0)
@@ -273,7 +275,7 @@ public class DefaultView implements IView {
 					height = 1; // prevent divide by zero
 				gl.glViewport(0, 0, width, height);
 				synchronized (this) {
-					viewport = new Viewport(0, 0, width, height);
+					viewport = new ViewPort(0, 0, width, height);
 					if (!cameraLocked)
 						cameraMatrices = null;
 				}
@@ -397,7 +399,7 @@ public class DefaultView implements IView {
 			button = e.getButton();
 			clickCount = e.getClickCount();
 			x = e.getX();
-			y = getViewport().h - e.getY();
+			y = getViewPort().h - e.getY();
 			if (e.getPointerCount() > 0) {
 				scrollX = e.getRotationScale() * e.getRotation()[0];
 				scrollY = -e.getRotationScale() * e.getRotation()[1];

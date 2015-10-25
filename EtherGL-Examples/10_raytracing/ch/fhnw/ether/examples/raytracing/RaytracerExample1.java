@@ -27,23 +27,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */package ch.fhnw.ether.examples.raytracing;
 
-import ch.fhnw.ether.controller.DefaultController;
-import ch.fhnw.ether.controller.IController;
-import ch.fhnw.ether.examples.raytracing.surface.Plane;
-import ch.fhnw.ether.examples.raytracing.surface.Sphere;
-import ch.fhnw.ether.scene.DefaultScene;
-import ch.fhnw.ether.scene.IScene;
-import ch.fhnw.ether.scene.camera.Camera;
-import ch.fhnw.ether.scene.camera.ICamera;
-import ch.fhnw.ether.scene.light.ILight;
-import ch.fhnw.ether.scene.light.PointLight;
-import ch.fhnw.ether.view.IView;
-import ch.fhnw.ether.view.gl.DefaultView;
-import ch.fhnw.util.color.RGB;
-import ch.fhnw.util.math.Vec3;
-
 public class RaytracerExample1 {
-
+/*
 	public static void main(String[] args) {
 		new RaytracerExample1();
 	}
@@ -70,4 +55,5 @@ public class RaytracerExample1 {
 		// adjust scene
 		sphere.setPosition(Vec3.Z.scale(0.5f));
 	}
+*/
 }

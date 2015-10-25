@@ -36,7 +36,7 @@ import java.util.List;
 import ch.fhnw.ether.render.gl.FloatUniformBuffer;
 import ch.fhnw.ether.render.variable.builtin.LightUniformBlock;
 import ch.fhnw.ether.scene.attribute.IAttributeProvider;
-import ch.fhnw.ether.scene.camera.CameraMatrices;
+import ch.fhnw.ether.scene.camera.ViewMatrices;
 import ch.fhnw.ether.scene.light.DirectionalLight;
 import ch.fhnw.ether.scene.light.GenericLight;
 import ch.fhnw.ether.scene.light.ILight;
@@ -45,13 +45,13 @@ import ch.fhnw.util.math.Vec3;
 
 import com.jogamp.opengl.GL3;
 
-public final class Lights {
+public final class LightInfo {
 	private static final GenericLight DEFAULT_LIGHT = new DirectionalLight(Vec3.Z, RGB.BLACK, RGB.WHITE);
 
 	private final List<GenericLight> lights = new ArrayList<>(Collections.singletonList(DEFAULT_LIGHT));
 	private final FloatUniformBuffer uniforms = new FloatUniformBuffer(LightUniformBlock.BLOCK_SIZE);
 
-	public Lights() {
+	public LightInfo() {
 	}
 
 	public List<GenericLight> getLights() {
@@ -93,7 +93,7 @@ public final class Lights {
 		}
 	}
 
-	public synchronized void update(GL3 gl, CameraMatrices matrices) {
+	public synchronized void update(GL3 gl, ViewMatrices matrices) {
 		LightUniformBlock.loadUniforms(gl, uniforms, lights, matrices);
 		uniforms.bind(gl);
 	}

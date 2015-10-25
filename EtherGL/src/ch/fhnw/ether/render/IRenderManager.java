@@ -27,29 +27,53 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.scene.attribute;
+package ch.fhnw.ether.render;
 
-public abstract class AbstractAttribute<T> implements ITypedAttribute<T> {
-	private final String id;
+import com.jogamp.opengl.GL3;
 
-	protected AbstractAttribute(String id) {
-		this.id = id;
-	}
+import ch.fhnw.ether.scene.camera.ViewMatrices;
+import ch.fhnw.ether.scene.light.ILight;
+import ch.fhnw.ether.scene.mesh.IMesh;
+import ch.fhnw.ether.view.IView.ViewType;
+import ch.fhnw.util.ViewPort;
 
-	@Override
-	public final String id() {
-		return id;
-	}
+/**
+ * Render manager interface for interaction between scene and renderer.
+ *
+ * @author radar
+ */
+public interface IRenderManager {
+	/**
+	 * Add mesh to renderer. Allocates all renderer-dependent resources.
+	 * Thread-safe.
+	 * 
+	 * @param mesh
+	 *            mesh to be added
+	 * @throws IllegalArgumentException
+	 *             if mesh already in renderer.
+	 */
+	void addMesh(IMesh mesh);
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof AbstractAttribute<?> && id.equals(((AbstractAttribute<?>) obj).id))
-			return true;
-		return false;
-	}
+	// FIXME: we could use a special flag (or similar) to prevent deallocation
+	// of resources for cases where meshes are
+	// added and removed quickly.
+	/**
+	 * Remove mesh from renderer. Releases all renderer-dependent resources.
+	 * Thread-safe.
+	 * 
+	 * @param mesh
+	 *            mesh to be removed
+	 * @throws IllegalArgumentException
+	 *             if mesh not in renderer.
+	 */
+	void removeMesh(IMesh mesh);
 
-	@Override
-	public String toString() {
-		return id;
-	}
+	void addLight(ILight light);
+
+	void removeLight(ILight light);
+	
+	
+	IRenderProgram getProgram();
+
+	void update(GL3 gl, ViewMatrices matrices, ViewPort viewPort, ViewType viewType);
 }

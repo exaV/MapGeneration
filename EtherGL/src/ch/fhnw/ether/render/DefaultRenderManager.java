@@ -27,27 +27,56 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.util;
+package ch.fhnw.ether.render;
+
+import com.jogamp.opengl.GL3;
+
+import ch.fhnw.ether.scene.camera.ViewMatrices;
+import ch.fhnw.ether.scene.light.ILight;
+import ch.fhnw.ether.scene.mesh.IMesh;
+import ch.fhnw.ether.view.IView.ViewType;
+import ch.fhnw.util.ViewPort;
 
 /**
- * Viewport frame for use with OpenGL.
+ * Default render manager.
  *
  * @author radar
  */
-public final class Viewport {
-	public final int x;
-	public final int y;
-	public final int w;
-	public final int h;
+public class DefaultRenderManager implements IRenderManager {
+	private final IRenderProgram program = new DefaultRenderProgram();
 
-	public Viewport(int x, int y, int w, int h) {
-		this.x = x;
-		this.y = y;
-		this.w = w;
-		this.h = h;
+	public DefaultRenderManager() {
 	}
 	
-	public float getAspect() {
-		return (float)w / (float)h;
+	@Override
+	public void addMesh(IMesh mesh) {
+		program.getRenderables().addMesh(mesh, program.getProviders());
+	}
+
+	@Override
+	public void removeMesh(IMesh mesh) {
+		program.getRenderables().removeMesh(mesh);
+	}
+
+	@Override
+	public void addLight(ILight light) {
+		program.getLightInfo().addLight(light);
+	}
+
+	@Override
+	public void removeLight(ILight light) {
+		program.getLightInfo().removeLight(light);
+	}
+	
+	@Override
+	public IRenderProgram getProgram() {
+		return program;
+	}
+
+	@Override
+	public void update(GL3 gl, ViewMatrices matrices, ViewPort viewPort, ViewType viewType) {
+		program.getViewInfo().update(gl, matrices, viewPort, viewType);
+		program.getLightInfo().update(gl, matrices);
+		program.getRenderables().update(gl);
 	}
 }

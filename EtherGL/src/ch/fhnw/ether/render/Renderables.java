@@ -35,6 +35,7 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
+import ch.fhnw.ether.render.forward.ShadowVolumes;
 import ch.fhnw.ether.scene.attribute.IAttributeProvider;
 import ch.fhnw.ether.scene.light.GenericLight;
 import ch.fhnw.ether.scene.mesh.IMesh;
@@ -43,8 +44,7 @@ import ch.fhnw.util.UpdateRequest;
 
 import com.jogamp.opengl.GL3;
 
-// FIXME: the api needs to be revised in terms of synchronization, consistency etc.
-final class Renderables {
+public final class Renderables {
 	private final UpdateRequest updater = new UpdateRequest();
 
 	private final Map<IMesh, Renderable> sceneRenderables = new IdentityHashMap<>();
@@ -52,7 +52,7 @@ final class Renderables {
 
 	public Renderables() {
 	}
-	
+
 	public void addMesh(IMesh mesh, List<IAttributeProvider> providers) {
 		Renderable renderable = new Renderable(mesh, providers);
 		synchronized (sceneRenderables) {
@@ -72,7 +72,7 @@ final class Renderables {
 		updater.requestUpdate();
 	}
 
-	void update(GL3 gl) {
+	public void update(GL3 gl) {
 		if (updater.needsUpdate()) {
 			// update added / removed renderables
 			synchronized (sceneRenderables) {
@@ -85,7 +85,7 @@ final class Renderables {
 		rendererRenderables.forEach((r) -> r.update(gl));
 	}
 
-	void renderObjects(GL3 gl, IMesh.Queue pass, boolean interactive) {
+	public void renderObjects(GL3 gl, IMesh.Queue pass, boolean interactive) {
 		for (Renderable renderable : rendererRenderables) {
 			if (renderable.containsFlag(Flags.INTERACTIVE_VIEWS_ONLY) && !interactive)
 				continue;
@@ -95,8 +95,7 @@ final class Renderables {
 		}
 	}
 
-	void renderShadowVolumes(GL3 gl, IMesh.Queue pass, boolean interactive, ShadowVolumes shadowVolumes, List<GenericLight> lights) {
+	public void renderShadowVolumes(GL3 gl, IMesh.Queue pass, boolean interactive, ShadowVolumes shadowVolumes, List<GenericLight> lights) {
 		shadowVolumes.render(gl, pass, interactive, rendererRenderables, lights);
 	}
-	
 }

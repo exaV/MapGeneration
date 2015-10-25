@@ -33,7 +33,7 @@ import ch.fhnw.util.math.Mat3;
 import ch.fhnw.util.math.Mat4;
 import ch.fhnw.util.math.Vec3;
 
-public final class CameraMatrices {
+public final class ViewMatrices {
 	private final Vec3 position;
 	private final Vec3 target;
 	private final Vec3 up;
@@ -50,7 +50,7 @@ public final class CameraMatrices {
 	private Mat4 viewProjInvMatrix;
 	private Mat3 normalMatrix;
 
-	public CameraMatrices(Vec3 position, Vec3 target, Vec3 up, float fov, float near, float far, float aspect) {
+	public ViewMatrices(Vec3 position, Vec3 target, Vec3 up, float fov, float near, float far, float aspect) {
 		this.position = position;
 		this.target = target;
 		this.up = up;
@@ -60,7 +60,7 @@ public final class CameraMatrices {
 		this.aspect = aspect;
 	}
 	
-	public CameraMatrices(Mat4 viewMatrix, Mat4 projMatrix) {
+	public ViewMatrices(Mat4 viewMatrix, Mat4 projMatrix) {
 		position = target = up = null;
 		fov = near = far = aspect = 0;
 		this.viewMatrix = viewMatrix;

@@ -38,7 +38,7 @@ public interface IGeometry extends IUpdateRequester {
 		int getNumComponents();
 	}
 
-	final class GeometryAttribute extends AbstractAttribute<float[]>implements IGeometryAttribute {
+	final class GeometryAttribute extends AbstractAttribute<float[]> implements IGeometryAttribute {
 		private final int numComponents;
 
 		public GeometryAttribute(String id, int numComponents) {
