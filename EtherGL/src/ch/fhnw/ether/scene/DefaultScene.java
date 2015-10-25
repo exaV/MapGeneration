@@ -38,6 +38,7 @@ import ch.fhnw.ether.render.IRenderManager;
 import ch.fhnw.ether.scene.camera.ICamera;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.IMesh;
+import ch.fhnw.ether.view.IView;
 
 public class DefaultScene implements IScene {
 
@@ -66,8 +67,9 @@ public class DefaultScene implements IScene {
 			meshes.add((IMesh)object);
 			rm.addMesh((IMesh)object);
 		}
-		if (object instanceof ICamera)
+		if (object instanceof ICamera) {
 			cameras.add((ICamera)object);
+		}
 		if (object instanceof ILight) {
 			lights.add((ILight)object);		
 			rm.addLight((ILight)object);
@@ -115,13 +117,20 @@ public class DefaultScene implements IScene {
 	}
 
 	@Override
+	public final List<ILight> getLights() {
+		return Collections.unmodifiableList(lights);
+	}
+	
+	@Override
 	public final List<ICamera> getCameras() {
 		return Collections.unmodifiableList(cameras);
 	}
 
 	@Override
-	public final List<ILight> getLights() {
-		return Collections.unmodifiableList(lights);
+	public void setActiveCamera(IView view, ICamera camera) {
+		if (!cameras.contains(camera))
+			add3DObject(camera);
+		controller.getRenderManager().setActiveCamera(view, camera);
 	}
 
 	protected final IController getController() {

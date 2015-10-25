@@ -47,9 +47,8 @@ import ch.fhnw.ether.controller.event.IEvent;
 import ch.fhnw.ether.controller.event.IKeyEvent;
 import ch.fhnw.ether.controller.event.IPointerEvent;
 import ch.fhnw.ether.controller.event.IScheduler.IAction;
-import ch.fhnw.ether.render.forward.ForwardRenderer;
-import ch.fhnw.ether.scene.camera.ViewMatrices;
 import ch.fhnw.ether.scene.camera.ICamera;
+import ch.fhnw.ether.scene.camera.ViewMatrices;
 import ch.fhnw.ether.ui.UI;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.IWindow;
@@ -61,9 +60,6 @@ import ch.fhnw.util.math.Mat4;
  * Default view class that implements some basic functionality. Use as base for
  * more complex implementations.
  * 
- * Thread safety: setCamera, getCameraMatrices, setCameraMatrices, getViewport
- * are thread safe.
- *
  * @author radar
  */
 public class DefaultView implements IView {
@@ -193,13 +189,11 @@ public class DefaultView implements IView {
 		@Override
 		public void requestUpdate(Object source) {
 			if (source instanceof ICamera) {
-				synchronized (this) {
+				synchronized (DefaultView.this) {
 					if (!cameraLocked)
 						cameraMatrices = null;
 				}
-				runOnSceneThread((time) -> {
-					controller.viewChanged(DefaultView.this);
-				});
+				controller.viewChanged(DefaultView.this);
 			}
 		}
 	};
@@ -255,8 +249,7 @@ public class DefaultView implements IView {
 					ui.update();
 
 				// render everything
-				getController().getRenderManager().update(gl3, DefaultView.this);
-				getController().getRenderManager().render(gl3);
+				getController().getRenderManager().render(gl3, DefaultView.this);
 
 				int error = gl.glGetError();
 				if (error != 0)

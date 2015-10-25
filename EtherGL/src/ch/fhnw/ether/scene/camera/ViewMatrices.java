@@ -44,11 +44,11 @@ public final class ViewMatrices {
 
 	private final float aspect;
 
-	private Mat4 viewMatrix;
-	private Mat4 projMatrix;
-	private Mat4 viewProjMatrix;
-	private Mat4 viewProjInvMatrix;
-	private Mat3 normalMatrix;
+	private volatile Mat4 viewMatrix;
+	private volatile Mat4 projMatrix;
+	private volatile Mat4 viewProjMatrix;
+	private volatile Mat4 viewProjInvMatrix;
+	private volatile Mat3 normalMatrix;
 
 	public ViewMatrices(Vec3 position, Vec3 target, Vec3 up, float fov, float near, float far, float aspect) {
 		this.position = position;
@@ -59,7 +59,7 @@ public final class ViewMatrices {
 		this.far = far;
 		this.aspect = aspect;
 	}
-	
+
 	public ViewMatrices(Mat4 viewMatrix, Mat4 projMatrix) {
 		position = target = up = null;
 		fov = near = far = aspect = 0;

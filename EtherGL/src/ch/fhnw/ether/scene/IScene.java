@@ -32,22 +32,25 @@ import java.util.List;
 import ch.fhnw.ether.scene.camera.ICamera;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.IMesh;
+import ch.fhnw.ether.view.IView;
 
-// FIXME: needs extensions (hierarchy, visitors, picking, etc)
+// TODO: needs extensions (hierarchy, visitors, picking, etc)
 public interface IScene {
 	void add3DObject(I3DObject object);
-	
+
 	void add3DObjects(I3DObject... objects);
-	
+
 	void remove3DObject(I3DObject object);
-	
+
 	void remove3DObjects(I3DObject... objects);
 
 	List<I3DObject> get3DObjects();
 
 	List<IMesh> getMeshes();
 
+	List<ILight> getLights();
+
 	List<ICamera> getCameras();
 
-	List<ILight> getLights();
+	void setActiveCamera(IView view, ICamera camera);
 }

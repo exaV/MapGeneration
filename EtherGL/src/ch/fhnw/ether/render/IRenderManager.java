@@ -31,6 +31,7 @@ package ch.fhnw.ether.render;
 
 import com.jogamp.opengl.GL3;
 
+import ch.fhnw.ether.scene.camera.ICamera;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.view.IView;
@@ -42,7 +43,7 @@ import ch.fhnw.ether.view.IView;
  */
 public interface IRenderManager {
 	/**
-	 * Add mesh to renderer. Allocates all renderer-dependent resources.
+	 * Add mesh to renderer.
 	 * 
 	 * @param mesh
 	 *            mesh to be added
@@ -52,7 +53,7 @@ public interface IRenderManager {
 	void addMesh(IMesh mesh);
 
 	/**
-	 * Remove mesh from renderer. Releases all renderer-dependent resources.
+	 * Remove mesh from renderer.
 	 * 
 	 * @param mesh
 	 *            mesh to be removed
@@ -61,13 +62,32 @@ public interface IRenderManager {
 	 */
 	void removeMesh(IMesh mesh);
 
+	/**
+	 * Add light to renderer..
+	 * 
+	 * @param light
+	 *            light to be added
+	 * @throws IllegalArgumentException
+	 *             if light already in renderer.
+	 */
 	void addLight(ILight light);
 
+	/**
+	 * Remove light from renderer.
+	 * 
+	 * @param light
+	 *            light to be removed
+	 * @throws IllegalArgumentException
+	 *             if light not in renderer.
+	 */
 	void removeLight(ILight light);
 	
-	IRenderProgram getProgram();
+	/**
+	 * Set active camera for given view.
+	 */
+	void setActiveCamera(IView view, ICamera camera);
 
-	void update(GL3 gl, IView view);
+	void update(GL3 gl);
 	
-	void render(GL3 gl);
+	void render(GL3 gl, IView view);
 }
