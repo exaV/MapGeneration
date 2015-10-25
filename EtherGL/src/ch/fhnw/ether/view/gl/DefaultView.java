@@ -255,8 +255,8 @@ public class DefaultView implements IView {
 					ui.update();
 
 				// render everything
-				getController().getRenderManager().update(gl3, getViewMatrices(), getViewPort(), getConfig().getViewType());
-				new ForwardRenderer().render(gl3, getController().getRenderManager().getProgram());
+				getController().getRenderManager().update(gl3, DefaultView.this);
+				getController().getRenderManager().render(gl3);
 
 				int error = gl.glGetError();
 				if (error != 0)

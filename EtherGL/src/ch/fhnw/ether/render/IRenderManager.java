@@ -31,11 +31,9 @@ package ch.fhnw.ether.render;
 
 import com.jogamp.opengl.GL3;
 
-import ch.fhnw.ether.scene.camera.ViewMatrices;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.IMesh;
-import ch.fhnw.ether.view.IView.ViewType;
-import ch.fhnw.util.ViewPort;
+import ch.fhnw.ether.view.IView;
 
 /**
  * Render manager interface for interaction between scene and renderer.
@@ -45,7 +43,6 @@ import ch.fhnw.util.ViewPort;
 public interface IRenderManager {
 	/**
 	 * Add mesh to renderer. Allocates all renderer-dependent resources.
-	 * Thread-safe.
 	 * 
 	 * @param mesh
 	 *            mesh to be added
@@ -54,12 +51,8 @@ public interface IRenderManager {
 	 */
 	void addMesh(IMesh mesh);
 
-	// FIXME: we could use a special flag (or similar) to prevent deallocation
-	// of resources for cases where meshes are
-	// added and removed quickly.
 	/**
 	 * Remove mesh from renderer. Releases all renderer-dependent resources.
-	 * Thread-safe.
 	 * 
 	 * @param mesh
 	 *            mesh to be removed
@@ -72,8 +65,9 @@ public interface IRenderManager {
 
 	void removeLight(ILight light);
 	
-	
 	IRenderProgram getProgram();
 
-	void update(GL3 gl, ViewMatrices matrices, ViewPort viewPort, ViewType viewType);
+	void update(GL3 gl, IView view);
+	
+	void render(GL3 gl);
 }

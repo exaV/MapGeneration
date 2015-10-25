@@ -31,9 +31,11 @@ package ch.fhnw.ether.render;
 
 import com.jogamp.opengl.GL3;
 
+import ch.fhnw.ether.render.forward.ForwardRenderer;
 import ch.fhnw.ether.scene.camera.ViewMatrices;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.IMesh;
+import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.IView.ViewType;
 import ch.fhnw.util.ViewPort;
 
@@ -43,6 +45,8 @@ import ch.fhnw.util.ViewPort;
  * @author radar
  */
 public class DefaultRenderManager implements IRenderManager {
+	private final IRenderer renderer = new ForwardRenderer();
+	
 	private final IRenderProgram program = new DefaultRenderProgram();
 
 	public DefaultRenderManager() {
@@ -74,9 +78,17 @@ public class DefaultRenderManager implements IRenderManager {
 	}
 
 	@Override
-	public void update(GL3 gl, ViewMatrices matrices, ViewPort viewPort, ViewType viewType) {
+	public void update(GL3 gl, IView view) {
+		ViewMatrices matrices = view.getViewMatrices();
+		ViewPort viewPort = view.getViewPort();
+		ViewType viewType = view.getConfig().getViewType();
 		program.getViewInfo().update(gl, matrices, viewPort, viewType);
 		program.getLightInfo().update(gl, matrices);
 		program.getRenderables().update(gl);
+	}
+	
+	@Override
+	public void render(GL3 gl) {
+		renderer.render(gl, program);
 	}
 }
