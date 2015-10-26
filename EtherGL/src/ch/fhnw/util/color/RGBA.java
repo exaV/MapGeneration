@@ -32,7 +32,7 @@ package ch.fhnw.util.color;
 import ch.fhnw.util.math.IVec4;
 import ch.fhnw.util.math.Vec4;
 
-public class RGBA implements IColor, IVec4 {
+public final class RGBA implements IColor, IVec4 {
 	public static final RGBA BLACK = new RGBA(0, 0, 0, 1);
 	public static final RGBA WHITE = new RGBA(1, 1, 1, 1);
 

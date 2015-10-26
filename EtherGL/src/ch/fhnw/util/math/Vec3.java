@@ -36,7 +36,7 @@ import java.util.List;
  *
  * @author radar
  */
-public class Vec3 implements IVec3 {
+public final class Vec3 implements IVec3 {
 	public static final Vec3 ZERO = new Vec3(0, 0, 0);
 	public static final Vec3 ONE = new Vec3(1, 1, 1);
 	public static final Vec3 X = new Vec3(1, 0, 0);

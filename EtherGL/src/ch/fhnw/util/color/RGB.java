@@ -32,7 +32,7 @@ package ch.fhnw.util.color;
 import ch.fhnw.util.math.IVec3;
 import ch.fhnw.util.math.Vec3;
 
-public class RGB implements IColor, IVec3 {
+public final class RGB implements IColor, IVec3 {
 	public static final RGB BLACK = new RGB(0, 0, 0);
 	public static final RGB WHITE = new RGB(1, 1, 1);
 
