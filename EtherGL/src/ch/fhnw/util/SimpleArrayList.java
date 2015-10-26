@@ -291,7 +291,7 @@ public abstract class SimpleArrayList<AT, WT> implements RandomAccess, Cloneable
 		return numNew != 0;
 	}
 
-	public final AT toSimpleArray() {
+	public final AT toArray() {
 		return copyOf(elementData, size);
 	}
 

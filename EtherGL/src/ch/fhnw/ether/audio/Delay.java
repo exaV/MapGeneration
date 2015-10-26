@@ -24,8 +24,11 @@ public class Delay {
 
 	public void setLength(double lengthInSec) {
 		int newLen = sec2samples(lengthInSec);
-		if(newLen > len)
+		if(newLen > len) {
 			buffer = Arrays.copyOf(buffer, newLen);
+			int length = (len - ptr) - 1;
+			System.arraycopy(buffer, ptr + 1, buffer, buffer.length - length, length);
+		}
 		len = newLen;
 	}
 

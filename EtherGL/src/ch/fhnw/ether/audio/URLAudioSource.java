@@ -31,7 +31,9 @@ package ch.fhnw.ether.audio;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.BlockingQueue;
@@ -54,9 +56,11 @@ import javax.sound.sampled.AudioFormat.Encoding;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.sound.sampled.spi.AudioFileReader;
 
 import ch.fhnw.ether.media.PerTargetState;
 import ch.fhnw.ether.media.RenderCommandException;
+import ch.fhnw.util.ClassUtilities;
 import ch.fhnw.util.IDisposable;
 import ch.fhnw.util.Log;
 import ch.fhnw.util.TextUtilities;
@@ -65,9 +69,9 @@ import ch.fhnw.util.TextUtilities;
 public class URLAudioSource extends AbstractAudioSource<URLAudioSource.State> {
 	private static final Log log = Log.create();
 
-	private static final float       S2F    = Short.MAX_VALUE;
-	private static final double      SEC2US = 1000000;
-	private static final MidiEvent[] EMPTY_MidiEventA = new MidiEvent[0];
+	private static final float         S2F    = Short.MAX_VALUE;
+	private static final double        SEC2US = 1000000;
+	private static final MidiEvent[]   EMPTY_MidiEventA = new MidiEvent[0];
 
 	private final URL                url;
 	private final AudioFormat        fmt;       
@@ -113,16 +117,54 @@ public class URLAudioSource extends AbstractAudioSource<URLAudioSource.State> {
 			throw new IOException(e);
 		}
 
-		try (AudioInputStream in = AudioSystem.getAudioInputStream(url)) {
+		try (AudioInputStream in = getStream(url)) {
 			this.fmt   = in.getFormat();
 			frameCount = in.getFrameLength();
 
 			if(fmt.getSampleSizeInBits() != 16)
-				throw new IOException("Only 16 bit audio supported");
-			if(fmt.getEncoding() != Encoding.PCM_SIGNED) 
-				throw new IOException("Only signed PCM audio supported");
+				throw new IOException("Only 16 bit audio supported, got " + fmt.getSampleSizeInBits());
+			if(fmt.getEncoding() != Encoding.PCM_SIGNED)
+				throw new IOException("Only signed PCM audio supported, got " + fmt.getEncoding());
 		} catch (UnsupportedAudioFileException e) {
 			throw new IOException(e);
+		}
+	}
+
+	private AudioInputStream getStream(URL url) throws UnsupportedAudioFileException {
+        List<AudioFileReader> providers = getAudioFileReaders();
+        AudioInputStream result = null;
+
+        for(int i = 0; i < providers.size(); i++ ) {
+            AudioFileReader reader = providers.get(i);
+            try {
+                result = reader.getAudioInputStream( url );
+                break;
+            } catch (UnsupportedAudioFileException e) {
+                continue;
+            } catch(IOException e) {
+            	continue;
+            }
+        }
+
+        if( result==null ) {
+            throw new UnsupportedAudioFileException("could not get audio input stream from input URL");
+        }
+        
+		AudioFormat      format = result.getFormat();
+		if(format.getEncoding() != Encoding.PCM_SIGNED || format.getSampleSizeInBits() < 0) {
+			AudioFormat fmt = new AudioFormat(Encoding.PCM_SIGNED, format.getSampleRate(), 16, format.getChannels(), format.getChannels() * 2, format.getSampleRate(), false);
+			return AudioSystem.getAudioInputStream(fmt, result);
+		}
+		return result;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private List<AudioFileReader> getAudioFileReaders() {
+		try {
+			return (List<AudioFileReader>) ClassUtilities.getMethod(AudioSystem.class, "getAudioFileReaders").invoke(null);
+		} catch (Throwable t) {
+			log.severe(t);
+			return Collections.emptyList();
 		}
 	}
 
@@ -157,7 +199,7 @@ public class URLAudioSource extends AbstractAudioSource<URLAudioSource.State> {
 				byte[] buffer = new byte[fmt.getChannels() * fmt.getSampleSizeInBits() / 8 * 128];
 
 				do {
-					try (AudioInputStream in = AudioSystem.getAudioInputStream(url)) {
+					try (AudioInputStream in = getStream(url)) {
 						int   bytesPerSample = fmt.getSampleSizeInBits() / 8;
 
 						for(;;) {
