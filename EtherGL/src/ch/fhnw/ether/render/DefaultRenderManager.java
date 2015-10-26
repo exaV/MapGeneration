@@ -29,16 +29,24 @@
 
 package ch.fhnw.ether.render;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL3;
+import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GLRunnable;
 
 import ch.fhnw.ether.render.forward.ForwardRenderer;
 import ch.fhnw.ether.scene.camera.ICamera;
 import ch.fhnw.ether.scene.camera.ViewMatrices;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.IMesh;
+import ch.fhnw.ether.ui.UI;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.IView.ViewType;
 import ch.fhnw.util.ViewPort;
+import ch.fhnw.util.math.Mat4;
 
 /**
  * Default render manager.
@@ -46,11 +54,27 @@ import ch.fhnw.util.ViewPort;
  * @author radar
  */
 public class DefaultRenderManager implements IRenderManager {
+	private static final class ViewState {
+		
+	}
+	
 	private final IRenderer renderer = new ForwardRenderer();
 	
 	private final IRenderProgram program = new DefaultRenderProgram();
+	
+	private final Map<IView, ViewState> views = new HashMap<>();
 
 	public DefaultRenderManager() {
+	}
+	
+	@Override
+	public void addView(IView view) {
+		views.put(view, new ViewState());
+	}
+	
+	@Override
+	public void removeView(IView view) {
+		views.remove(view);
 	}
 	
 	@Override
@@ -74,23 +98,84 @@ public class DefaultRenderManager implements IRenderManager {
 	}
 	
 	@Override
-	public void setActiveCamera(IView view, ICamera camera) {
+	public void setCamera(IView view, ICamera camera) {
 		// TODO Auto-generated method stub
+	}
+	
+	@Override
+	public void lockCamera(IView view, Mat4 viewMatrix, Mat4 projMatrix) {
+		// TODO Auto-generated method stub
+	}
+	
+	@Override
+	public Runnable getRenderRunnable() {
+		return new RenderRunnable(views, renderer, program);
+	}
+	
+	private static class RenderRunnable implements Runnable {
+		final Map<IView, ViewState> views;
+		final IRenderer renderer;
+		final IRenderProgram program;
 		
-	}
-	
-	@Override
-	public void update(GL3 gl) {
-	}
-	
-	@Override
-	public void render(GL3 gl, IView view) {
-		ViewMatrices matrices = view.getViewMatrices();
-		ViewPort viewPort = view.getViewPort();
-		ViewType viewType = view.getConfig().getViewType();
-		program.getViewInfo().update(gl, matrices, viewPort, viewType);
-		program.getLightInfo().update(gl, matrices);
-		program.getRenderables().update(gl);
-		renderer.render(gl, program);
+		RenderRunnable(Map<IView, ViewState> views, IRenderer renderer, IRenderProgram program) {
+			this.views = views;
+			this.renderer = renderer;
+			this.program = program;
+		}
+		
+		@Override
+		public void run() {
+			for (IView view : views.keySet()) {
+				view.getWindow().display(new GLRunnable() {
+					@Override
+					public boolean run(GLAutoDrawable drawable) {
+						render(drawable.getGL().getGL3(), view);
+						return true;
+					}
+				});
+			}
+		}
+		
+		void render(GL3 gl, IView view) {
+			try {
+				// XXX: make sure we only render on render thread (e.g. jogl
+				// will do repaints on other threads when resizing windows...)
+				if (!view.getController().getScheduler().isRenderThread()) {
+					return;
+				}
+
+				GL3 gl3 = gl.getGL3();
+				// gl3 = new TraceGL3(gl3, System.out);
+				// gl3 = new DebugGL3(gl3);
+
+				gl3.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT | GL.GL_STENCIL_BUFFER_BIT);
+
+				gl3.glEnable(GL.GL_MULTISAMPLE);
+
+				if (!view.isEnabled())
+					return;
+
+				// repaint UI surface to texture if necessary
+				// FIXME: should this be done on model or render thread?
+				UI ui = view.getController().getUI();
+				if (ui != null)
+					ui.update();
+
+				// render everything
+				ViewMatrices matrices = view.getViewMatrices();
+				ViewPort viewPort = view.getViewPort();
+				ViewType viewType = view.getConfig().getViewType();
+				program.getViewInfo().update(gl, matrices, viewPort, viewType);
+				program.getLightInfo().update(gl, matrices);
+				program.getRenderables().update(gl);
+				renderer.render(gl, program);
+
+				int error = gl.glGetError();
+				if (error != 0)
+					System.err.println("renderer returned with exisiting GL error 0x" + Integer.toHexString(error));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }

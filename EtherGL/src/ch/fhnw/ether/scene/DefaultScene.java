@@ -130,7 +130,7 @@ public class DefaultScene implements IScene {
 	public void setActiveCamera(IView view, ICamera camera) {
 		if (!cameras.contains(camera))
 			add3DObject(camera);
-		controller.getRenderManager().setActiveCamera(view, camera);
+		controller.getRenderManager().setCamera(view, camera);
 	}
 
 	protected final IController getController() {

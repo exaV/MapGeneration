@@ -29,12 +29,11 @@
 
 package ch.fhnw.ether.render;
 
-import com.jogamp.opengl.GL3;
-
 import ch.fhnw.ether.scene.camera.ICamera;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.view.IView;
+import ch.fhnw.util.math.Mat4;
 
 /**
  * Render manager interface for interaction between scene and renderer.
@@ -42,6 +41,10 @@ import ch.fhnw.ether.view.IView;
  * @author radar
  */
 public interface IRenderManager {
+	void addView(IView view);
+
+	void removeView(IView view);
+
 	/**
 	 * Add mesh to renderer.
 	 * 
@@ -81,13 +84,22 @@ public interface IRenderManager {
 	 *             if light not in renderer.
 	 */
 	void removeLight(ILight light);
-	
+
 	/**
 	 * Set active camera for given view.
 	 */
-	void setActiveCamera(IView view, ICamera camera);
+	void setCamera(IView view, ICamera camera);
 
-	void update(GL3 gl);
-	
-	void render(GL3 gl, IView view);
+	/**
+	 * Lock camera for given view with provided matrices.
+	 */
+	void lockCamera(IView view, Mat4 viewMatrix, Mat4 projMatrix);
+
+	/**
+	 * Create render state for next frame and return it as a runnable to be run
+	 * on render thread.
+	 * 
+	 * @return runnable to be run on render thread
+	 */
+	Runnable getRenderRunnable();
 }

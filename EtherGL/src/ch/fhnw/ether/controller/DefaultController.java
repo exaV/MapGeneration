@@ -76,7 +76,7 @@ public class DefaultController implements IController {
 	}
 
 	public DefaultController(float fps) {
-		this.scheduler = new DefaultScheduler(fps);
+		this.scheduler = new DefaultScheduler(this, fps);
 		this.renderManager = new DefaultRenderManager();
 		this.ui = new UI(this);
 		this.navigationTool = new NavigationTool(this);
@@ -171,7 +171,7 @@ public class DefaultController implements IController {
 			System.out.println("view created");
 
 		views.add(view);
-		scheduler.addView(view);
+		renderManager.addView(view);
 	}
 
 	@Override
@@ -182,7 +182,7 @@ public class DefaultController implements IController {
 		views.remove(view);
 		if (currentView == view)
 			setCurrentView(null);
-		scheduler.removeView(view);
+		renderManager.removeView(view);
 	}
 
 	@Override

@@ -31,16 +31,18 @@ package ch.fhnw.ether.controller.event;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
-import ch.fhnw.ether.view.IView;
+import ch.fhnw.ether.controller.IController;
 import ch.fhnw.util.Pair;
 
 public class DefaultScheduler implements IScheduler {
 	private static final long START_TIME = System.nanoTime();
 
+	private final IController controller;
+	
 	private final double interval;
 
 	private final Thread sceneThread;
@@ -49,22 +51,19 @@ public class DefaultScheduler implements IScheduler {
 	private final List<IAnimationAction> animations = new ArrayList<>();
 	private final List<Pair<Double, IAction>> actions = new ArrayList<>();
 
-	private final List<IView> views = new ArrayList<>();
-
 	private final AtomicBoolean repaint = new AtomicBoolean();
+	
+	private final Semaphore renderMonitor = new Semaphore(0);
+	private final AtomicReference<Runnable> renderRunnable = new AtomicReference<>();
 
-	private final BlockingQueue<Runnable> renderQueue = new LinkedBlockingQueue<>();
-
-	private final Runnable renderUpdate = () -> {
-	};
-
-	public DefaultScheduler(float fps) {
+	public DefaultScheduler(IController controller, float fps) {
+		this.controller = controller;
 		this.interval = 1 / fps;
 		this.sceneThread = new Thread(this::runSceneThread, "scenethread");
 		this.renderThread = new Thread(this::runRenderThread, "renderthread");
 
 		sceneThread.start();
-		renderThread.start();
+		renderThread.start();		
 	}
 
 	@Override
@@ -101,18 +100,6 @@ public class DefaultScheduler implements IScheduler {
 	@Override
 	public boolean isRenderThread() {
 		return Thread.currentThread().equals(renderThread);
-	}
-
-	public void addView(IView view) {
-		invokeOnRenderThread(() -> views.add(view));
-	}
-
-	public void removeView(IView view) {
-		invokeOnRenderThread(() -> views.remove(view));
-	}
-
-	private void invokeOnRenderThread(Runnable runnable) {
-		renderQueue.add(runnable);
 	}
 
 	private void runSceneThread() {
@@ -164,8 +151,9 @@ public class DefaultScheduler implements IScheduler {
 				}
 			}
 
-			if (repaint.getAndSet(false) && renderQueue.isEmpty()) {
-				renderQueue.add(renderUpdate);
+			if (repaint.getAndSet(false) && renderMonitor.availablePermits() < 1) {
+				renderRunnable.set(controller.getRenderManager().getRenderRunnable());
+				renderMonitor.release();
 			}
 
 			double elapsed = getTime() - time;
@@ -185,18 +173,10 @@ public class DefaultScheduler implements IScheduler {
 	private void runRenderThread() {
 		while (true) {
 			try {
-				renderQueue.take().run();
-				while (renderQueue.peek() != null)
-					renderQueue.take().run();
+				renderMonitor.acquire();
+				renderRunnable.get().run();
 			} catch (Exception e) {
 				e.printStackTrace();
-			}
-			for (IView view : views) {
-				try {
-					view.getWindow().display();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
 			}
 		}
 	}

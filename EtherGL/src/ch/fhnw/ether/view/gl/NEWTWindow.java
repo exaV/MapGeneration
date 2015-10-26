@@ -43,6 +43,7 @@ import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.newt.opengl.GLWindow;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLCapabilities;
+import com.jogamp.opengl.GLRunnable;
 
 import ch.fhnw.ether.view.IView.Config;
 import ch.fhnw.ether.view.IWindow;
@@ -188,14 +189,7 @@ final class NEWTWindow implements IWindow {
 	}
 
 	@Override
-	public void display() {
-		// XXX locking madness... not sure if this helps, need to try
-		if (window.lockSurface() == GLWindow.LOCK_SURFACE_NOT_READY)
-			return;
-		try {
-			window.display();
-		} finally {
-			window.unlockSurface();
-		}
+	public void display(GLRunnable runnable) {
+		window.invoke(false, runnable);
 	}
 }

@@ -2,6 +2,8 @@ package ch.fhnw.ether.view;
 
 import java.io.File;
 
+import com.jogamp.opengl.GLRunnable;
+
 public interface IWindow {
 	/**
 	 * Shows / hides this window.
@@ -58,5 +60,5 @@ public interface IWindow {
 	/**
 	 * Display (i.e. render) this view. Must be run from render thread.
 	 */
-	void display();
+	void display(GLRunnable runnable);
 }

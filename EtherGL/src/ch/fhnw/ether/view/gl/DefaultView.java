@@ -38,7 +38,6 @@ import com.jogamp.newt.event.WindowAdapter;
 import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.newt.event.WindowListener;
 import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLEventListener;
 
@@ -49,7 +48,6 @@ import ch.fhnw.ether.controller.event.IPointerEvent;
 import ch.fhnw.ether.controller.event.IScheduler.IAction;
 import ch.fhnw.ether.scene.camera.ICamera;
 import ch.fhnw.ether.scene.camera.ViewMatrices;
-import ch.fhnw.ether.ui.UI;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.IWindow;
 import ch.fhnw.util.IUpdateListener;
@@ -140,8 +138,7 @@ public class DefaultView implements IView {
 		synchronized (this) {
 			ICamera c = camera;
 			if (cameraMatrices == null)
-				cameraMatrices = new ViewMatrices(c.getPosition(), c.getTarget(), c.getUp(), c.getFov(), c.getNear(),
-						c.getFar(), viewport.getAspect());
+				cameraMatrices = new ViewMatrices(c.getPosition(), c.getTarget(), c.getUp(), c.getFov(), c.getNear(), c.getFar(), viewport.getAspect());
 			return cameraMatrices;
 		}
 	}
@@ -223,40 +220,6 @@ public class DefaultView implements IView {
 
 		@Override
 		public final void display(GLAutoDrawable drawable) {
-			try {
-				// XXX: make sure we only render on render thread (e.g. jogl
-				// will do repaints on other threads when resizing windows...)
-				if (!getController().getScheduler().isRenderThread()) {
-					return;
-				}
-
-				GL gl = drawable.getGL();
-				GL3 gl3 = gl.getGL3();
-				// gl3 = new TraceGL3(gl3, System.out);
-				// gl3 = new DebugGL3(gl3);
-
-				gl3.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT | GL.GL_STENCIL_BUFFER_BIT);
-
-				gl3.glEnable(GL.GL_MULTISAMPLE);
-
-				if (!isEnabled())
-					return;
-
-				// repaint UI surface to texture if necessary
-				// FIXME: should this be done on model or render thread?
-				UI ui = getController().getUI();
-				if (ui != null)
-					ui.update();
-
-				// render everything
-				getController().getRenderManager().render(gl3, DefaultView.this);
-
-				int error = gl.glGetError();
-				if (error != 0)
-					System.err.println("renderer returned with exisiting GL error 0x" + Integer.toHexString(error));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
 		}
 
 		@Override
