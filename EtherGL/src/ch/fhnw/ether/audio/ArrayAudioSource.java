@@ -45,7 +45,7 @@ public class ArrayAudioSource extends AbstractAudioSource<ArrayAudioSource.State
 	private final int     frameSz;
 
 	public ArrayAudioSource(FloatList samples, int numChannels, float samplingRate, final int numPlays) {
-		this(samples.toSimpleArray(), numChannels, samplingRate, numPlays);
+		this(samples.toArray(), numChannels, samplingRate, numPlays);
 	}
 	
 	public ArrayAudioSource(final float[] samples, int numChannels, float samplingRate, final int numPlays) {

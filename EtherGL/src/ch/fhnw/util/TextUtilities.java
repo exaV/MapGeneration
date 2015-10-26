@@ -289,7 +289,7 @@ public final class TextUtilities {
 				high = true;
 			}
 		}
-		return result.toSimpleArray();
+		return result.toArray();
 	}
 
 	static boolean isPrintable(int c) {
