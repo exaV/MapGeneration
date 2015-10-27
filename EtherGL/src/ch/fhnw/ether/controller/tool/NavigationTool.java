@@ -88,7 +88,6 @@ public class NavigationTool extends AbstractTool {
 		mouseX = e.getX();
 		mouseY = e.getY();
 		button = e.getButton();
-		repaint();
 	}
 
 	@Override
@@ -100,7 +99,7 @@ public class NavigationTool extends AbstractTool {
 
 	@Override
 	public void pointerDragged(IPointerEvent e) {
-		DefaultCameraControl control = new DefaultCameraControl(e.getView().getCamera());
+		DefaultCameraControl control = new DefaultCameraControl(getCamera(e.getView()));
 		float dx = mouseX - e.getX();
 		float dy = mouseY - e.getY();
 		float moveFactor = 0.001f * control.getDistance();
@@ -117,7 +116,7 @@ public class NavigationTool extends AbstractTool {
 
 	@Override
 	public void pointerScrolled(IPointerEvent e) {
-		DefaultCameraControl control = new DefaultCameraControl(e.getView().getCamera());
+		DefaultCameraControl control = new DefaultCameraControl(getCamera(e.getView()));
 		float zoomFactor = 0.1f;
 		control.addToAzimuth(-e.getScrollX());
 		if (e.isControlDown()) {

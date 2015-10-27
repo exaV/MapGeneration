@@ -32,6 +32,7 @@ package ch.fhnw.ether.controller.tool;
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.controller.event.IKeyEvent;
 import ch.fhnw.ether.controller.event.IPointerEvent;
+import ch.fhnw.ether.scene.camera.ICamera;
 import ch.fhnw.ether.view.IView;
 
 public abstract class AbstractTool implements ITool {
@@ -47,10 +48,10 @@ public abstract class AbstractTool implements ITool {
 		return controller;
 	}
 	
-	protected final void repaint() {
-		controller.repaint();
+	protected final ICamera getCamera(IView view) {
+		return controller.getCamera(view);
 	}
-
+	
 	@Override
 	public void activate() {
 	}

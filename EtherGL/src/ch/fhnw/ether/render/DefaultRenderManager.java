@@ -29,7 +29,9 @@
 
 package ch.fhnw.ether.render;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.jogamp.opengl.GL;
@@ -37,15 +39,17 @@ import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLRunnable;
 
+import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.render.forward.ForwardRenderer;
+import ch.fhnw.ether.scene.camera.Camera;
 import ch.fhnw.ether.scene.camera.ICamera;
-import ch.fhnw.ether.scene.camera.ViewMatrices;
+import ch.fhnw.ether.scene.camera.ViewCameraState;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.ui.UI;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.IView.ViewType;
-import ch.fhnw.util.ViewPort;
+import ch.fhnw.util.Viewport;
 import ch.fhnw.util.math.Mat4;
 
 /**
@@ -54,27 +58,44 @@ import ch.fhnw.util.math.Mat4;
  * @author radar
  */
 public class DefaultRenderManager implements IRenderManager {
-	private static final class ViewState {
-		
+	private static class CameraSceneState {
+		List<IView> views = new ArrayList<>();
 	}
+	
+	private static class ViewSceneState {
+		ICamera camera = new Camera();
+		ViewCameraState viewCameraState;
+		
+		public ViewSceneState(IView view) {
+			viewCameraState = new ViewCameraState(view.getViewport(), camera);
+		}
+	}
+
+	private final IController controller;
 	
 	private final IRenderer renderer = new ForwardRenderer();
 	
 	private final IRenderProgram program = new DefaultRenderProgram();
 	
-	private final Map<IView, ViewState> views = new HashMap<>();
+	private final Map<ICamera, CameraSceneState> cameras = new IdentityHashMap<>();
 
-	public DefaultRenderManager() {
+	private final Map<IView, ViewSceneState> views = new IdentityHashMap<>();
+
+	public DefaultRenderManager(IController controller) {
+		this.controller = controller;
 	}
 	
 	@Override
 	public void addView(IView view) {
-		views.put(view, new ViewState());
+		ViewSceneState vcs = new ViewSceneState(view);
+		views.put(view, vcs);
+		setCamera(view, vcs.camera);
 	}
 	
 	@Override
 	public void removeView(IView view) {
 		views.remove(view);
+		setCamera(view, null);
 	}
 	
 	@Override
@@ -98,49 +119,101 @@ public class DefaultRenderManager implements IRenderManager {
 	}
 	
 	@Override
+	public ICamera getCamera(IView view) {
+		return views.get(view).camera;
+	}
+	
+	@Override
 	public void setCamera(IView view, ICamera camera) {
-		// TODO Auto-generated method stub
+		views.get(view).camera = camera;
+		cameras.clear();
+		for (Map.Entry<IView, ViewSceneState> e : views.entrySet()) {
+			IView v = e.getKey();
+			ICamera c = e.getValue().camera;
+			CameraSceneState css = cameras.get(c);
+			if (css == null) {
+				css = new CameraSceneState();
+				cameras.put(c, css);
+			}
+			css.views.add(v);
+		}
 	}
 	
 	@Override
 	public void lockCamera(IView view, Mat4 viewMatrix, Mat4 projMatrix) {
-		// TODO Auto-generated method stub
+		views.get(view).viewCameraState = new ViewCameraState(view.getViewport(), viewMatrix, projMatrix);
+	}
+	
+	@Override
+	public ViewCameraState getViewCameraState(IView view) {
+		return views.get(view).viewCameraState;
 	}
 	
 	@Override
 	public Runnable getRenderRunnable() {
-		return new RenderRunnable(views, renderer, program);
+		// 1. set new view matrices for each updated camera
+		for (Map.Entry<ICamera, CameraSceneState> e : cameras.entrySet()) {
+			ICamera camera = e.getKey();
+			if (camera.needsUpdate()) {
+				for (IView view : e.getValue().views) {
+					views.get(view).viewCameraState = new ViewCameraState(view.getViewport(), camera);
+				}
+			}
+		}
+
+		// 2. create runnable
+		return new RenderRunnable(controller, views, renderer, program);
 	}
 	
+	/**
+	 * This runnable is created on scene thread and then run on render thread.
+	 */
 	private static class RenderRunnable implements Runnable {
-		final Map<IView, ViewState> views;
+		static class ViewRenderState {
+			final IView view;
+			final Viewport viewport;
+			final ViewCameraState matrices;
+			
+			ViewRenderState(IView view, Viewport viewport, ViewCameraState matrices) {
+				this.view = view;
+				this.viewport = viewport;
+				this.matrices = matrices;
+			}
+		}
+		
+		final IController controller;
+		final List<ViewRenderState> viewStates = new ArrayList<>();
 		final IRenderer renderer;
 		final IRenderProgram program;
 		
-		RenderRunnable(Map<IView, ViewState> views, IRenderer renderer, IRenderProgram program) {
-			this.views = views;
+		RenderRunnable(IController controller, Map<IView, ViewSceneState> views, IRenderer renderer, IRenderProgram program) {
+			this.controller = controller;
+			for (Map.Entry<IView, ViewSceneState> e : views.entrySet()) {
+				IView view = e.getKey();
+				viewStates.add(new ViewRenderState(view, view.getViewport(), e.getValue().viewCameraState));
+			}
 			this.renderer = renderer;
 			this.program = program;
 		}
 		
 		@Override
 		public void run() {
-			for (IView view : views.keySet()) {
-				view.getWindow().display(new GLRunnable() {
+			for (ViewRenderState viewState : viewStates) {
+				viewState.view.getWindow().display(new GLRunnable() {
 					@Override
 					public boolean run(GLAutoDrawable drawable) {
-						render(drawable.getGL().getGL3(), view);
+						render(drawable.getGL().getGL3(), viewState);
 						return true;
 					}
 				});
 			}
 		}
 		
-		void render(GL3 gl, IView view) {
+		void render(GL3 gl, ViewRenderState viewState) {
 			try {
 				// XXX: make sure we only render on render thread (e.g. jogl
 				// will do repaints on other threads when resizing windows...)
-				if (!view.getController().getScheduler().isRenderThread()) {
+				if (!controller.getScheduler().isRenderThread()) {
 					return;
 				}
 
@@ -152,21 +225,19 @@ public class DefaultRenderManager implements IRenderManager {
 
 				gl3.glEnable(GL.GL_MULTISAMPLE);
 
-				if (!view.isEnabled())
+				if (!viewState.view.isEnabled())
 					return;
 
 				// repaint UI surface to texture if necessary
 				// FIXME: should this be done on model or render thread?
-				UI ui = view.getController().getUI();
+				UI ui = controller.getUI();
 				if (ui != null)
 					ui.update();
 
 				// render everything
-				ViewMatrices matrices = view.getViewMatrices();
-				ViewPort viewPort = view.getViewPort();
-				ViewType viewType = view.getConfig().getViewType();
-				program.getViewInfo().update(gl, matrices, viewPort, viewType);
-				program.getLightInfo().update(gl, matrices);
+				ViewType type = viewState.view.getConfig().getViewType();
+				program.getViewInfo().update(gl, viewState.matrices, viewState.viewport, type);
+				program.getLightInfo().update(gl, viewState.matrices);
 				program.getRenderables().update(gl);
 				renderer.render(gl, program);
 

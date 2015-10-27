@@ -36,7 +36,6 @@ import ch.fhnw.ether.controller.event.IKeyEvent;
 import ch.fhnw.ether.formats.obj.OBJReader;
 import ch.fhnw.ether.scene.DefaultScene;
 import ch.fhnw.ether.scene.IScene;
-import ch.fhnw.ether.scene.camera.Camera;
 import ch.fhnw.ether.scene.light.DirectionalLight;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.light.PointLight;
@@ -140,15 +139,11 @@ public final class SimpleLightExample {
 				getUI().setMessage("light position: " + lightMesh.getPosition());
 				light.setPosition(lightMesh.getPosition());
 				lightMesh.requestUpdate(null);
-				repaint();
 			};
 		};
 
 		// Create view
-		Camera camera = new Camera();
-		camera.setPosition(new Vec3(0, -5, 0));
-		camera.setUp(new Vec3(0, 0, 1));
-		new DefaultView(controller, 100, 100, 500, 500, IView.INTERACTIVE_VIEW, "Simple Sphere", camera);
+		new DefaultView(controller, 100, 100, 500, 500, IView.INTERACTIVE_VIEW, "Simple Sphere");
 
 		// Create scene and add some content
 		scene = new DefaultScene(controller);

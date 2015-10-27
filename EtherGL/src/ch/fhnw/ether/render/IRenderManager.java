@@ -30,6 +30,7 @@
 package ch.fhnw.ether.render;
 
 import ch.fhnw.ether.scene.camera.ICamera;
+import ch.fhnw.ether.scene.camera.ViewCameraState;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.view.IView;
@@ -86,6 +87,11 @@ public interface IRenderManager {
 	void removeLight(ILight light);
 
 	/**
+	 * Get active camera for given view.
+	 */
+	ICamera getCamera(IView view);
+	
+	/**
 	 * Set active camera for given view.
 	 */
 	void setCamera(IView view, ICamera camera);
@@ -95,6 +101,11 @@ public interface IRenderManager {
 	 */
 	void lockCamera(IView view, Mat4 viewMatrix, Mat4 projMatrix);
 
+	/**
+	 * Get view-camera state.
+	 */
+	ViewCameraState getViewCameraState(IView view);
+	
 	/**
 	 * Create render state for next frame and return it as a runnable to be run
 	 * on render thread.

@@ -46,6 +46,7 @@ import ch.fhnw.ether.mapping.ICalibrationModel;
 import ch.fhnw.ether.mapping.ICalibrator;
 import ch.fhnw.ether.render.IRenderManager;
 import ch.fhnw.ether.scene.camera.ICamera;
+import ch.fhnw.ether.scene.camera.ViewCameraState;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh.Queue;
 import ch.fhnw.ether.scene.mesh.MeshLibrary;
@@ -56,7 +57,7 @@ import ch.fhnw.ether.scene.mesh.material.PointMaterial;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.ProjectionUtilities;
 import ch.fhnw.util.PreferencesStore;
-import ch.fhnw.util.ViewPort;
+import ch.fhnw.util.Viewport;
 import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Vec3;
 
@@ -188,9 +189,10 @@ public final class CalibrationTool extends AbstractTool {
 		}
 
 		// second, try to hit model point
+		ViewCameraState vcs = view.getController().getRenderManager().getViewCameraState(view);
 		float[] mv = model.getCalibrationPoints();
 		for (int i = 0; i < mv.length; i += 3) {
-			Vec3 vv = ProjectionUtilities.projectToScreen(view, new Vec3(mv[i], mv[i + 1], mv[i + 2]));
+			Vec3 vv = ProjectionUtilities.projectToScreen(vcs, new Vec3(mv[i], mv[i + 1], mv[i + 2]));
 			if (vv == null)
 				continue;
 			if (snap2D(mx, my, (int) vv.x, (int) vv.y)) {
@@ -237,7 +239,7 @@ public final class CalibrationTool extends AbstractTool {
 		CalibrationContext context = getContext(view);
 		if (context.currentSelection != -1) {
 			Vec3 p = context.projectedVertices.get(context.currentSelection);
-			Vec3 a = new Vec3(p.x + dx / view.getViewPort().w, p.y + dy / view.getViewPort().h, 0);
+			Vec3 a = new Vec3(p.x + dx / view.getViewport().w, p.y + dy / view.getViewport().h, 0);
 			context.projectedVertices.set(context.currentSelection, a);
 			calibrate(view);
 		}
@@ -274,12 +276,12 @@ public final class CalibrationTool extends AbstractTool {
 
 	private void clearCalibration(IView view) {
 		contexts.put(view, new CalibrationContext());
-		view.setViewMatrices(null, null);
+		getController().getRenderManager().lockCamera(view, null, null);
 		calibrate(view);
 	}
 
 	private void calibrate(IView view) {
-		ICamera camera = view.getCamera();
+		ICamera camera = getCamera(view);
 		CalibrationContext context = getContext(view);
 		context.calibrated = false;
 		try {
@@ -290,7 +292,7 @@ public final class CalibrationTool extends AbstractTool {
 		} catch (Throwable ignored) {
 		}
 		if (context.calibrated) {
-			view.setViewMatrices(calibrator.getViewMatrix(), calibrator.getProjMatrix());
+			getController().getRenderManager().lockCamera(view, calibrator.getViewMatrix(), calibrator.getProjMatrix());
 		}
 
 		// need to update VBOs
@@ -298,6 +300,7 @@ public final class CalibrationTool extends AbstractTool {
 	}
 
 	private void updateCalibratedGeometry(IView view) {
+		ViewCameraState vcs = view.getController().getRenderManager().getViewCameraState(view);
 		CalibrationContext context = getContext(view);
 
 		// prepare points
@@ -308,14 +311,14 @@ public final class CalibrationTool extends AbstractTool {
 		List<Vec3> v = new ArrayList<>();
 		for (int i = 0; i < context.projectedVertices.size(); ++i) {
 			Vec3 a = context.modelVertices.get(i);
-			Vec3 aa = ProjectionUtilities.projectToDevice(view, a);
+			Vec3 aa = ProjectionUtilities.projectToDevice(vcs, a);
 			if (aa == null)
 				continue;
 			a = context.projectedVertices.get(i);
 			MeshLibrary.addLine(v, a.x, a.y, a.z, aa.x, aa.y, aa.z);
 
 			if (i == context.currentSelection) {
-				ViewPort viewport = view.getViewPort();
+				Viewport viewport = view.getViewport();
 				MeshLibrary.addLine(v, a.x - CROSSHAIR_SIZE / viewport.w, a.y, a.z, a.x + CROSSHAIR_SIZE / viewport.w, a.y, a.z);
 				MeshLibrary.addLine(v, a.x, a.y - CROSSHAIR_SIZE / viewport.h, a.z, a.x, a.y + CROSSHAIR_SIZE / viewport.h, a.z);
 			}

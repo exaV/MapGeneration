@@ -42,7 +42,6 @@ import ch.fhnw.ether.image.RGB8Frame;
 import ch.fhnw.ether.media.RenderProgram;
 import ch.fhnw.ether.scene.DefaultScene;
 import ch.fhnw.ether.scene.IScene;
-import ch.fhnw.ether.scene.camera.Camera;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.IMesh.Queue;
@@ -75,7 +74,7 @@ public class SimplePlayerGL implements Runnable {
 		try {
 			IController controller = new DefaultController();
 
-			new DefaultView(controller, 0, 10, 1024, 512, new Config(ViewType.INTERACTIVE_VIEW, 2), "SimplePlayerGL", new Camera());
+			new DefaultView(controller, 0, 10, 1024, 512, new Config(ViewType.INTERACTIVE_VIEW, 2), "SimplePlayerGL");
 
 			IScene scene = new DefaultScene(controller);
 			controller.setScene(scene);

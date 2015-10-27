@@ -5,33 +5,33 @@ import com.jogamp.opengl.GL3;
 import ch.fhnw.ether.render.gl.FloatUniformBuffer;
 import ch.fhnw.ether.render.variable.builtin.ViewUniformBlock;
 import ch.fhnw.ether.scene.attribute.IAttributeProvider;
-import ch.fhnw.ether.scene.camera.ViewMatrices;
-import ch.fhnw.util.ViewPort;
+import ch.fhnw.ether.scene.camera.ViewCameraState;
+import ch.fhnw.util.Viewport;
 import ch.fhnw.ether.view.IView.ViewType;
 
 public class ViewInfo {
 	private final FloatUniformBuffer uniforms = new FloatUniformBuffer(ViewUniformBlock.BLOCK_SIZE, 3);
-	private ViewMatrices matrices;
-	private ViewPort viewPort;
-	private ViewType viewType;
+	private ViewCameraState matrices;
+	private Viewport viewport;
+	private ViewType type;
 
-	public void update(GL3 gl, ViewMatrices matrices, ViewPort viewPort, ViewType viewType) {
-		ViewUniformBlock.loadUniforms(gl, uniforms, matrices, viewPort);
+	public void update(GL3 gl, ViewCameraState matrices, Viewport viewport, ViewType type) {
+		ViewUniformBlock.loadUniforms(gl, uniforms, matrices, viewport);
 		this.matrices = matrices;
-		this.viewPort = viewPort;
-		this.viewType = viewType;
+		this.viewport = viewport;
+		this.type = type;
 	}
 	
-	public ViewMatrices getMatrices() {
+	public ViewCameraState getMatrices() {
 		return matrices;
 	}
 	
-	public ViewPort getViewPort() {
-		return viewPort;
+	public Viewport getViewport() {
+		return viewport;
 	}
 	
-	public ViewType getViewType() {
-		return viewType;
+	public ViewType getType() {
+		return type;
 	}
 
 	public void setCameraSpace(GL3 gl) {

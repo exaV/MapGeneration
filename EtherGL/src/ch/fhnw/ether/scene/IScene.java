@@ -32,7 +32,6 @@ import java.util.List;
 import ch.fhnw.ether.scene.camera.ICamera;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.IMesh;
-import ch.fhnw.ether.view.IView;
 
 // TODO: needs extensions (hierarchy, visitors, picking, etc)
 public interface IScene {
@@ -51,6 +50,4 @@ public interface IScene {
 	List<ILight> getLights();
 
 	List<ICamera> getCameras();
-
-	void setActiveCamera(IView view, ICamera camera);
 }

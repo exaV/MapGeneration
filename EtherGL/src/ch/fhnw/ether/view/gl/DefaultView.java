@@ -46,13 +46,9 @@ import ch.fhnw.ether.controller.event.IEvent;
 import ch.fhnw.ether.controller.event.IKeyEvent;
 import ch.fhnw.ether.controller.event.IPointerEvent;
 import ch.fhnw.ether.controller.event.IScheduler.IAction;
-import ch.fhnw.ether.scene.camera.ICamera;
-import ch.fhnw.ether.scene.camera.ViewMatrices;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.IWindow;
-import ch.fhnw.util.IUpdateListener;
-import ch.fhnw.util.ViewPort;
-import ch.fhnw.util.math.Mat4;
+import ch.fhnw.util.Viewport;
 
 /**
  * Default view class that implements some basic functionality. Use as base for
@@ -68,18 +64,13 @@ public class DefaultView implements IView {
 
 	private NEWTWindow window;
 
-	private ICamera camera;
-	private ViewMatrices cameraMatrices = null;
-	private boolean cameraLocked = false;
-
-	private ViewPort viewport = new ViewPort(0, 0, 1, 1);
+	private volatile Viewport viewport = new Viewport(0, 0, 1, 1);
 
 	private boolean enabled = true;
 
-	public DefaultView(IController controller, int x, int y, int w, int h, Config viewConfig, String title, ICamera camera) {
+	public DefaultView(IController controller, int x, int y, int w, int h, Config viewConfig, String title) {
 		this.controller = controller;
 		this.viewConfig = viewConfig;
-		setCamera(camera);
 
 		window = new NEWTWindow(w, h, title, viewConfig);
 		window.getWindow().addGLEventListener(glEventListener);
@@ -108,65 +99,6 @@ public class DefaultView implements IView {
 	}
 
 	@Override
-	public IWindow getWindow() {
-		return window;
-	}
-
-	@Override
-	public final IController getController() {
-		return controller;
-	}
-
-	@Override
-	public final ICamera getCamera() {
-		return camera;
-	}
-
-	@Override
-	public final void setCamera(ICamera camera) {
-		synchronized (this) {
-			if (this.camera != null)
-				this.camera.removeUpdateListener(updateListener);
-			this.camera = camera;
-			if (camera != null)
-				this.camera.addUpdateListener(updateListener);
-		}
-	}
-
-	@Override
-	public final ViewMatrices getViewMatrices() {
-		synchronized (this) {
-			ICamera c = camera;
-			if (cameraMatrices == null)
-				cameraMatrices = new ViewMatrices(c.getPosition(), c.getTarget(), c.getUp(), c.getFov(), c.getNear(), c.getFar(), viewport.getAspect());
-			return cameraMatrices;
-		}
-	}
-
-	@Override
-	public void setViewMatrices(Mat4 viewMatrix, Mat4 projMatrix) {
-		synchronized (this) {
-			if (viewMatrix == null && projMatrix == null) {
-				cameraMatrices = null;
-				cameraLocked = false;
-			} else {
-				cameraMatrices = new ViewMatrices(viewMatrix, projMatrix);
-				cameraLocked = true;
-			}
-		}
-	}
-
-	@Override
-	public final ViewPort getViewPort() {
-		return viewport;
-	}
-
-	@Override
-	public Config getConfig() {
-		return viewConfig;
-	}
-
-	@Override
 	public final boolean isEnabled() {
 		return enabled;
 	}
@@ -176,24 +108,29 @@ public class DefaultView implements IView {
 		this.enabled = enabled;
 	}
 
+	@Override
+	public Config getConfig() {
+		return viewConfig;
+	}
+
+	@Override
+	public final IController getController() {
+		return controller;
+	}
+
+	@Override
+	public final Viewport getViewport() {
+		return viewport;
+	}
+
+	@Override
+	public IWindow getWindow() {
+		return window;
+	}
+
 	private void runOnSceneThread(IAction action) {
 		controller.getScheduler().run(action);
 	}
-
-	// IUpdate listener implementation (e.g. for camera)
-
-	private IUpdateListener updateListener = new IUpdateListener() {
-		@Override
-		public void requestUpdate(Object source) {
-			if (source instanceof ICamera) {
-				synchronized (DefaultView.this) {
-					if (!cameraLocked)
-						cameraMatrices = null;
-				}
-				controller.viewChanged(DefaultView.this);
-			}
-		}
-	};
 
 	// GLEventListener implementation
 
@@ -226,15 +163,9 @@ public class DefaultView implements IView {
 		public final void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
 			try {
 				GL gl = drawable.getGL();
-
-				if (height == 0)
-					height = 1; // prevent divide by zero
+				height = Math.max(1,  height);
 				gl.glViewport(0, 0, width, height);
-				synchronized (this) {
-					viewport = new ViewPort(0, 0, width, height);
-					if (!cameraLocked)
-						cameraMatrices = null;
-				}
+				viewport = new Viewport(0, 0, width, height);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -244,9 +175,7 @@ public class DefaultView implements IView {
 		public final void dispose(GLAutoDrawable drawable) {
 			runOnSceneThread((time) -> {
 				controller.viewDisposed(DefaultView.this);
-				setCamera(null);
 				window = null;
-				camera = null;
 			});
 		}
 	};
@@ -355,7 +284,7 @@ public class DefaultView implements IView {
 			button = e.getButton();
 			clickCount = e.getClickCount();
 			x = e.getX();
-			y = getViewPort().h - e.getY();
+			y = getViewport().h - e.getY();
 			if (e.getPointerCount() > 0) {
 				scrollX = e.getRotationScale() * e.getRotation()[0];
 				scrollY = -e.getRotationScale() * e.getRotation()[1];

@@ -47,7 +47,7 @@ public class RayTracingRenderer /*implements IRenderer*/ {
 	@Override
 	public void render(GL3 gl, IRenderProgram program) {
 		long t = System.currentTimeMillis();
-		ViewPort viewport = view.getViewPort();
+		Viewport viewport = view.getViewport();
 		if (viewport.w != rayTracer.getWidth() || viewport.h != rayTracer.getHeight())
 			rayTracer.setSize(viewport.w, viewport.h);
 		rayTracer.setCamera(view.getCamera());

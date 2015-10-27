@@ -30,10 +30,9 @@
 package ch.fhnw.ether.scene.camera;
 
 import ch.fhnw.ether.scene.I3DObject;
-import ch.fhnw.util.IUpdateRequester;
 import ch.fhnw.util.math.Vec3;
 
-public interface ICamera extends I3DObject, IUpdateRequester {
+public interface ICamera extends I3DObject {
 	// view parameters
 
 	@Override
@@ -71,4 +70,11 @@ public interface ICamera extends I3DObject, IUpdateRequester {
 	Vec3 getCameraYAxis();
 	
 	Vec3 getCameraZAxis();
+	
+	// update handling
+	
+	void requestUpdate();
+
+	boolean needsUpdate();
+
 }

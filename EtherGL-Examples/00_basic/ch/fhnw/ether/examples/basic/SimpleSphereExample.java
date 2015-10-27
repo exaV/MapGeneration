@@ -34,7 +34,6 @@ import ch.fhnw.ether.controller.DefaultController;
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.scene.DefaultScene;
 import ch.fhnw.ether.scene.IScene;
-import ch.fhnw.ether.scene.camera.Camera;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.IMesh.Queue;
@@ -62,10 +61,7 @@ public final class SimpleSphereExample {
 		IController controller = new DefaultController();
 
 		// Create view
-		Camera camera = new Camera();
-		camera.setPosition(new Vec3(0, -5, 0));
-		camera.setUp(new Vec3(0, 0, 1));
-		new DefaultView(controller, 100, 100, 500, 500, IView.INTERACTIVE_VIEW, "Simple Sphere", camera);
+		new DefaultView(controller, 100, 100, 500, 500, IView.INTERACTIVE_VIEW, "Simple Sphere");
 
 		// Create scene and add some content
 		IScene scene = new DefaultScene(controller);
