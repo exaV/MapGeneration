@@ -30,10 +30,7 @@
 import java.util.EnumSet;
 
 import ch.fhnw.ether.controller.IController;
-import ch.fhnw.ether.scene.camera.ViewMatrices;
-import ch.fhnw.ether.scene.camera.ICamera;
-import ch.fhnw.util.ViewPort;
-import ch.fhnw.util.math.Mat4;
+import ch.fhnw.util.Viewport;
 
 /**
  * A 'view' here is a view with some control functionality, i.e. it handles the
@@ -88,69 +85,6 @@ public interface IView {
 	void dispose();
 
 	/**
-	 * Get the underlying window of this view.
-	 * 
-	 * @return the window
-	 */
-	IWindow getWindow();
-
-	/**
-	 * Get the controller this view belongs to.
-	 * 
-	 * @return the controller
-	 */
-	IController getController();
-
-	/**
-	 * Get associated camera.
-	 * 
-	 * @return the camera
-	 */
-	ICamera getCamera();
-
-	/**
-	 * Set associated camera.
-	 * 
-	 * @param camera
-	 *            camera to be set
-	 */
-	void setCamera(ICamera camera);
-
-	/**
-	 * Calculate view matrices based on camera (if camera changed) and return
-	 * them.
-	 * 
-	 * @return the camera matrices
-	 */
-	ViewMatrices getViewMatrices();
-
-	/**
-	 * Set view matrices to given fixed view and projection matrix. Will lock
-	 * matrices and disable camera control. Use setCameraMatrices(null, null) to
-	 * unlock and re-enable camera control.
-	 * 
-	 * @param viewMatrix
-	 *            the view matrix to be set
-	 * @param projMatrix
-	 *            the projection matrix to be set
-	 */
-	void setViewMatrices(Mat4 viewMatrix, Mat4 projMatrix);
-
-	/**
-	 * Get viewport [x, y, w, h].
-	 * 
-	 * @return the viewport
-	 */
-	ViewPort getViewPort();
-
-	/**
-	 * Get view configuration.
-	 * 
-	 * @return the view configuration
-	 */
-	Config getConfig();
-
-	/**
 	 * Check whether view is enabled for rendering.
 	 * 
 	 * @return true if view is enabled, false otherwise
@@ -164,4 +98,32 @@ public interface IView {
 	 *            enables view if true, disables otherwise
 	 */
 	void setEnabled(boolean enabled);
+
+	/**
+	 * Get view configuration.
+	 * 
+	 * @return the view configuration
+	 */
+	Config getConfig();
+
+	/**
+	 * Get the controller this view belongs to.
+	 * 
+	 * @return the controller
+	 */
+	IController getController();
+
+	/**
+	 * Get viewport [x, y, w, h].
+	 * 
+	 * @return the viewport
+	 */
+	Viewport getViewport();
+
+	/**
+	 * Get the underlying window of this view.
+	 * 
+	 * @return the window
+	 */
+	IWindow getWindow();
 }

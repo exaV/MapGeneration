@@ -31,8 +31,6 @@ package ch.fhnw.ether.examples.mapping;
 
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.scene.IScene;
-import ch.fhnw.ether.scene.camera.Camera;
-import ch.fhnw.ether.scene.camera.ICamera;
 import ch.fhnw.ether.view.IView;
 
 public final class MappingExample {
@@ -53,11 +51,9 @@ public final class MappingExample {
 	public MappingExample() {
 		IController controller = new MappingController();
 
-		ICamera camera = new Camera();
-		
 		// FIXME: for every view use separate camera with dedicated angle
-		new MappingView(controller, 0, 10, 512, 512, IView.INTERACTIVE_VIEW, "View 0", camera);
-		new MappingView(controller, 530, 0, 400, 400, IView.MAPPED_VIEW, "View 1", camera);
+		new MappingView(controller, 0, 10, 512, 512, IView.INTERACTIVE_VIEW, "View 0");
+		new MappingView(controller, 530, 0, 400, 400, IView.MAPPED_VIEW, "View 1");
 		// new MappingView(controller, 940, 0, 400, 400, ViewType.MAPPED_VIEW, "View 2", 90.0f);
 		// new MappingView(controller, 530, 410, 400, 400, ViewType.MAPPED_VIEW, "View 3", 180.0f);
 		// new MappingView(controller, 940, 410, 400, 400, ViewType.MAPPED_VIEW, "View 4", 270.0f);

@@ -44,6 +44,7 @@ import ch.fhnw.ether.controller.tool.PickTool;
 import ch.fhnw.ether.render.DefaultRenderManager;
 import ch.fhnw.ether.render.IRenderManager;
 import ch.fhnw.ether.scene.IScene;
+import ch.fhnw.ether.scene.camera.ICamera;
 import ch.fhnw.ether.ui.UI;
 import ch.fhnw.ether.view.IView;
 
@@ -77,7 +78,7 @@ public class DefaultController implements IController {
 
 	public DefaultController(float fps) {
 		this.scheduler = new DefaultScheduler(this, fps);
-		this.renderManager = new DefaultRenderManager();
+		this.renderManager = new DefaultRenderManager(this);
 		this.ui = new UI(this);
 		this.navigationTool = new NavigationTool(this);
 		this.pickTool = new PickTool(this);
@@ -117,6 +118,16 @@ public class DefaultController implements IController {
 				view.setEnabled(true);
 			}
 		}
+	}
+	
+	@Override
+	public ICamera getCamera(IView view) {
+		return renderManager.getCamera(view);
+	}
+	
+	@Override
+	public void setCamera(IView view, ICamera camera) {
+		renderManager.setCamera(view, camera);
 	}
 
 	@Override
@@ -210,9 +221,9 @@ public class DefaultController implements IController {
 		if (DBG)
 			System.out.println("view changed");
 
+		getCamera(view).requestUpdate();
 		currentTool.refresh(view);
 		navigationTool.refresh(view);
-		repaint();
 	}
 
 	// key listener

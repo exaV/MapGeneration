@@ -29,15 +29,15 @@
 
 package ch.fhnw.ether.scene.camera;
 
-import ch.fhnw.util.IUpdateListener;
+import ch.fhnw.util.UpdateRequest;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.BoundingBox;
 
 public final class Camera implements ICamera {
+	
+	private final UpdateRequest update = new UpdateRequest();
 
-	private final UpdateListeners listeners = new UpdateListeners();
-
-	private Vec3 position = new Vec3(0, -10, 0);
+	private Vec3 position = new Vec3(0, -5, 0);
 	private Vec3 target = Vec3.ZERO;
 	private Vec3 up = Vec3.Z;
 
@@ -159,21 +159,17 @@ public final class Camera implements ICamera {
 	}
 	
 	@Override
-	public void addUpdateListener(IUpdateListener listener) {
-		listeners.addListener(listener);
+	public void requestUpdate() {
+		update.requestUpdate();
 	}
-	
+
 	@Override
-	public void removeUpdateListener(IUpdateListener listener) {
-		listeners.removeListener(listener);
+	public boolean needsUpdate() {
+		return update.needsUpdate();
 	}
 	
 	@Override
 	public String toString() {
 		return "camera '" + getName() + "' [" + position + target + up + "][" + getCameraXAxis() + getCameraYAxis() + getCameraZAxis() + "]";
-	}
-	
-	private void requestUpdate() {
-		listeners.requestUpdate(this);
 	}
 }

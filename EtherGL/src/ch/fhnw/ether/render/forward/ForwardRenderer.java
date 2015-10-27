@@ -72,7 +72,7 @@ public class ForwardRenderer extends AbstractRenderer {
 	// FIXME: we should not pass view here, as it might be modified while we're rendering...
 	@Override
 	public void render(GL3 gl, IRenderProgram program) {
-		boolean interactive = program.getViewInfo().getViewType() == IView.ViewType.INTERACTIVE_VIEW;
+		boolean interactive = program.getViewInfo().getType() == IView.ViewType.INTERACTIVE_VIEW;
 
 		program.getViewInfo().setCameraSpace(gl);
 

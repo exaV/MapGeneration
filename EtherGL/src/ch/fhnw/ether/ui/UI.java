@@ -124,7 +124,6 @@ public final class UI {
 
 	public void requestUpdate() {
 		updater.requestUpdate();
-		controller.repaint();
 	}
 
 	// key listener

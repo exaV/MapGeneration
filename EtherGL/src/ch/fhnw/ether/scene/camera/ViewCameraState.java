@@ -29,11 +29,12 @@
 
 package ch.fhnw.ether.scene.camera;
 
+import ch.fhnw.util.Viewport;
 import ch.fhnw.util.math.Mat3;
 import ch.fhnw.util.math.Mat4;
 import ch.fhnw.util.math.Vec3;
 
-public final class ViewMatrices {
+public final class ViewCameraState {
 	private final Vec3 position;
 	private final Vec3 target;
 	private final Vec3 up;
@@ -42,7 +43,11 @@ public final class ViewMatrices {
 	private final float near;
 	private final float far;
 
+	
+	private final Viewport viewport;
 	private final float aspect;
+	
+	private final boolean locked;
 
 	private volatile Mat4 viewMatrix;
 	private volatile Mat4 projMatrix;
@@ -50,21 +55,34 @@ public final class ViewMatrices {
 	private volatile Mat4 viewProjInvMatrix;
 	private volatile Mat3 normalMatrix;
 
-	public ViewMatrices(Vec3 position, Vec3 target, Vec3 up, float fov, float near, float far, float aspect) {
-		this.position = position;
-		this.target = target;
-		this.up = up;
-		this.fov = fov;
-		this.near = near;
-		this.far = far;
-		this.aspect = aspect;
+	public ViewCameraState(Viewport viewport, ICamera camera) {
+		this.viewport = viewport;
+		this.aspect = viewport.getAspect();
+		this.locked = false;
+		this.position = camera.getPosition();
+		this.target = camera.getTarget();
+		this.up = camera.getUp();
+		this.fov = camera.getFov();
+		this.near = camera.getNear();
+		this.far = camera.getFar();
 	}
 
-	public ViewMatrices(Mat4 viewMatrix, Mat4 projMatrix) {
+	public ViewCameraState(Viewport viewport, Mat4 viewMatrix, Mat4 projMatrix) {
+		this.viewport = viewport;
+		this.aspect = viewport.getAspect();
+		this.locked = true;
 		position = target = up = null;
-		fov = near = far = aspect = 0;
+		fov = near = far = 0;
 		this.viewMatrix = viewMatrix;
 		this.projMatrix = projMatrix;
+	}
+	
+	public Viewport getViewport() {
+		return viewport;
+	}
+	
+	public boolean isLocked() {
+		return locked;
 	}
 
 	public Mat4 getViewMatrix() {

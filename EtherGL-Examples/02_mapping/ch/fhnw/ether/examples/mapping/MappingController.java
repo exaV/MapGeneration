@@ -70,7 +70,6 @@ public class MappingController extends DefaultController {
 		default:
 			super.keyPressed(e);
 		}
-		repaint();
 	}
 
 	public Vec3 getLightPosition() {

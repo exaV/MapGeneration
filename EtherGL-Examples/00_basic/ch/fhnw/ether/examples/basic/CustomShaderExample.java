@@ -37,8 +37,6 @@ import ch.fhnw.ether.render.variable.builtin.PositionArray;
 import ch.fhnw.ether.render.variable.builtin.ViewUniformBlock;
 import ch.fhnw.ether.scene.DefaultScene;
 import ch.fhnw.ether.scene.IScene;
-import ch.fhnw.ether.scene.camera.Camera;
-import ch.fhnw.ether.scene.camera.ICamera;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
@@ -77,8 +75,7 @@ public final class CustomShaderExample {
 		IController controller = new DefaultController();
 
 		// Create view
-		ICamera camera = new Camera();
-		new DefaultView(controller, 100, 100, 500, 500, IView.INTERACTIVE_VIEW, "Test", camera);
+		new DefaultView(controller, 100, 100, 500, 500, IView.INTERACTIVE_VIEW, "Test");
 
 		// Create scene and add triangle
 		IScene scene = new DefaultScene(controller);
