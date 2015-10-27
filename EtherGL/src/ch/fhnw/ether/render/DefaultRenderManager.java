@@ -49,7 +49,6 @@ import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.ui.UI;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.IView.ViewType;
-import ch.fhnw.util.Viewport;
 import ch.fhnw.util.math.Mat4;
 
 /**
@@ -171,13 +170,11 @@ public class DefaultRenderManager implements IRenderManager {
 	private static class RenderRunnable implements Runnable {
 		static class ViewRenderState {
 			final IView view;
-			final Viewport viewport;
-			final ViewCameraState matrices;
+			final ViewCameraState viewCameraState;
 			
-			ViewRenderState(IView view, Viewport viewport, ViewCameraState matrices) {
+			ViewRenderState(IView view, ViewCameraState vcs) {
 				this.view = view;
-				this.viewport = viewport;
-				this.matrices = matrices;
+				this.viewCameraState = vcs;
 			}
 		}
 		
@@ -190,7 +187,8 @@ public class DefaultRenderManager implements IRenderManager {
 			this.controller = controller;
 			for (Map.Entry<IView, ViewSceneState> e : views.entrySet()) {
 				IView view = e.getKey();
-				viewStates.add(new ViewRenderState(view, view.getViewport(), e.getValue().viewCameraState));
+				ViewCameraState vcs = e.getValue().viewCameraState;
+				viewStates.add(new ViewRenderState(view, vcs));
 			}
 			this.renderer = renderer;
 			this.program = program;
@@ -236,8 +234,8 @@ public class DefaultRenderManager implements IRenderManager {
 
 				// render everything
 				ViewType type = viewState.view.getConfig().getViewType();
-				program.getViewInfo().update(gl, viewState.matrices, viewState.viewport, type);
-				program.getLightInfo().update(gl, viewState.matrices);
+				program.getViewInfo().update(gl, viewState.viewCameraState, type);
+				program.getLightInfo().update(gl, viewState.viewCameraState);
 				program.getRenderables().update(gl);
 				renderer.render(gl, program);
 

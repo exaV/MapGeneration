@@ -29,14 +29,13 @@
 
 package ch.fhnw.ether.render.variable.builtin;
 
+import com.jogamp.opengl.GL3;
+
 import ch.fhnw.ether.render.IRenderer.RendererAttribute;
 import ch.fhnw.ether.render.gl.FloatUniformBuffer;
 import ch.fhnw.ether.render.variable.base.UniformBlock;
 import ch.fhnw.ether.scene.camera.ViewCameraState;
-import ch.fhnw.util.Viewport;
 import ch.fhnw.util.math.Mat4;
-
-import com.jogamp.opengl.GL3;
 
 public final class ViewUniformBlock extends UniformBlock {
 	public static final RendererAttribute<Integer> ATTRIBUTE = new RendererAttribute<>("builtin.view_uniform_block");
@@ -59,15 +58,15 @@ public final class ViewUniformBlock extends UniformBlock {
 		super(ATTRIBUTE, shaderName);
 	}
 
-	public static void loadUniforms(GL3 gl, FloatUniformBuffer uniforms, ViewCameraState matrices, Viewport viewport) {
+	public static void loadUniforms(GL3 gl, FloatUniformBuffer uniforms, ViewCameraState vcs) {
 		uniforms.load(gl, (blockIndex, buffer) -> {
 			switch (blockIndex) {
 			case 0:
 				// 3d setup
-				buffer.put(matrices.getViewMatrix().toArray());
-				buffer.put(matrices.getViewProjMatrix().toArray());
-				buffer.put(matrices.getProjMatrix().toArray());
-				addMat3(buffer, matrices.getNormalMatrix());
+				buffer.put(vcs.getViewMatrix().toArray());
+				buffer.put(vcs.getViewProjMatrix().toArray());
+				buffer.put(vcs.getProjMatrix().toArray());
+				addMat3(buffer, vcs.getNormalMatrix());
 				break;
 			case 1:
 				// ortho device space
@@ -78,7 +77,7 @@ public final class ViewUniformBlock extends UniformBlock {
 				break;
 			case 2:
 				// ortho screen space
-				Mat4 ortho = Mat4.ortho(0, viewport.w, 0, viewport.h, -1, 1);
+				Mat4 ortho = Mat4.ortho(0, vcs.getViewport().w, 0, vcs.getViewport().h, -1, 1);
 				buffer.put(ID_4X4);
 				buffer.put(ortho.toArray());
 				buffer.put(ortho.toArray());
