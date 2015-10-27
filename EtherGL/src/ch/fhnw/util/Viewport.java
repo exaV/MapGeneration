@@ -30,7 +30,7 @@
 package ch.fhnw.util;
 
 /**
- * Viewport frame for use with OpenGL.
+ * Viewport rectangle for use with OpenGL.
  *
  * @author radar
  */
