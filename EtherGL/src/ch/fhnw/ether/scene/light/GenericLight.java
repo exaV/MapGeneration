@@ -29,7 +29,6 @@
 
 package ch.fhnw.ether.scene.light;
 
-import ch.fhnw.util.UpdateRequest;
 import ch.fhnw.util.color.RGB;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.Vec4;
@@ -130,8 +129,6 @@ public class GenericLight implements ILight {
 		}
 	}
 
-	private final UpdateRequest updater = new UpdateRequest(true);
-
 	private String name = "unnamed_light";
 
 	private LightSource lightParameters;
@@ -154,7 +151,6 @@ public class GenericLight implements ILight {
 	@Override
 	public void setPosition(Vec3 position) {
 		lightParameters = new LightSource(lightParameters, position);
-		requestUpdate();
 	}
 
 	@Override
@@ -165,12 +161,6 @@ public class GenericLight implements ILight {
 	@Override
 	public void setName(String name) {
 		this.name = name;
-		requestUpdate();
-	}
-
-	@Override
-	public boolean needsUpdate() {
-		return updater.testAndClear();
 	}
 
 	public LightSource getLightSource() {
@@ -179,10 +169,5 @@ public class GenericLight implements ILight {
 
 	public void setLightParameters(LightSource lightParameters) {
 		this.lightParameters = lightParameters;
-		requestUpdate();
-	}
-
-	private void requestUpdate() {
-		updater.request();
 	}
 }

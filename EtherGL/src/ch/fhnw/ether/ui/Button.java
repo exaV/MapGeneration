@@ -92,12 +92,12 @@ public class Button extends AbstractWidget {
 
 	public void setState(State state) {
 		this.state = state;
-		requestUpdate();
+		updateRequest();
 	}
 
 	public void setState(boolean pressed) {
 		setState(pressed ? State.PRESSED : State.DEFAULT);
-		requestUpdate();
+		updateRequest();
 	}
 
 	@Override

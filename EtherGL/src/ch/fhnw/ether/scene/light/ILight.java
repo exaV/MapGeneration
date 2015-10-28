@@ -32,8 +32,4 @@ package ch.fhnw.ether.scene.light;
 import ch.fhnw.ether.scene.I3DObject;
 
 public interface ILight extends I3DObject {
-	/**
-	 * @return true if light was modified since last call to this method.
-	 */
-	boolean needsUpdate();
 }
