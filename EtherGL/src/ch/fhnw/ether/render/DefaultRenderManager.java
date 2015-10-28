@@ -58,15 +58,18 @@ import ch.fhnw.util.math.Mat4;
  */
 public class DefaultRenderManager implements IRenderManager {
 	private static class CameraSceneState {
-		List<IView> views = new ArrayList<>();
+		final List<IView> views = new ArrayList<>();
+		
+		public CameraSceneState() {
+		}
 	}
 	
 	private static class ViewSceneState {
 		ICamera camera = new Camera();
 		ViewCameraState viewCameraState;
 		
-		public ViewSceneState(IView view) {
-			viewCameraState = new ViewCameraState(view.getViewport(), camera);
+		ViewSceneState(IView view) {
+			viewCameraState = new ViewCameraState(view, camera);
 		}
 	}
 
@@ -140,7 +143,7 @@ public class DefaultRenderManager implements IRenderManager {
 	
 	@Override
 	public void lockCamera(IView view, Mat4 viewMatrix, Mat4 projMatrix) {
-		views.get(view).viewCameraState = new ViewCameraState(view.getViewport(), viewMatrix, projMatrix);
+		views.get(view).viewCameraState = new ViewCameraState(view, viewMatrix, projMatrix);
 	}
 	
 	@Override
@@ -155,7 +158,7 @@ public class DefaultRenderManager implements IRenderManager {
 			ICamera camera = e.getKey();
 			if (camera.needsUpdate()) {
 				for (IView view : e.getValue().views) {
-					views.get(view).viewCameraState = new ViewCameraState(view.getViewport(), camera);
+					views.get(view).viewCameraState = new ViewCameraState(view, camera);
 				}
 			}
 		}

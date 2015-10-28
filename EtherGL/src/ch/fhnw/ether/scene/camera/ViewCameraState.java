@@ -29,6 +29,7 @@
 
 package ch.fhnw.ether.scene.camera;
 
+import ch.fhnw.ether.view.IView;
 import ch.fhnw.util.Viewport;
 import ch.fhnw.util.math.Mat3;
 import ch.fhnw.util.math.Mat4;
@@ -45,7 +46,6 @@ public final class ViewCameraState {
 
 	
 	private final Viewport viewport;
-	private final float aspect;
 	
 	private final boolean locked;
 
@@ -55,9 +55,8 @@ public final class ViewCameraState {
 	private volatile Mat4 viewProjInvMatrix;
 	private volatile Mat3 normalMatrix;
 
-	public ViewCameraState(Viewport viewport, ICamera camera) {
-		this.viewport = viewport;
-		this.aspect = viewport.getAspect();
+	public ViewCameraState(IView view, ICamera camera) {
+		this.viewport = view.getViewport();
 		this.locked = false;
 		this.position = camera.getPosition();
 		this.target = camera.getTarget();
@@ -67,9 +66,8 @@ public final class ViewCameraState {
 		this.far = camera.getFar();
 	}
 
-	public ViewCameraState(Viewport viewport, Mat4 viewMatrix, Mat4 projMatrix) {
-		this.viewport = viewport;
-		this.aspect = viewport.getAspect();
+	public ViewCameraState(IView view, Mat4 viewMatrix, Mat4 projMatrix) {
+		this.viewport = view.getViewport();
 		this.locked = true;
 		position = target = up = null;
 		fov = near = far = 0;
@@ -94,7 +92,7 @@ public final class ViewCameraState {
 
 	public Mat4 getProjMatrix() {
 		if (projMatrix == null) {
-			projMatrix = Mat4.perspective(fov, aspect, near, far);
+			projMatrix = Mat4.perspective(fov, viewport.getAspect(), near, far);
 		}
 		return projMatrix;
 	}

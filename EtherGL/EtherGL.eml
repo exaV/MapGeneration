@@ -57,4 +57,16 @@
 	<lib name="JTransforms-3.0.jar" scope="COMPILE">
 		<relative-module-cls project-related="jar://$PROJECT_DIR$/../../git/ether-gl/EtherGL/lib/jtransforms/JTransforms-3.0.jar!/"/>
 	</lib>
+	<lib name="javalayer.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/../../git/ether-gl/EtherGL/lib/tritonus/javalayer.jar!/"/>
+	</lib>
+	<lib name="mp3plugin.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/../../git/ether-gl/EtherGL/lib/tritonus/mp3plugin.jar!/"/>
+	</lib>
+	<lib name="tritonus_share-0.3.6.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/../../git/ether-gl/EtherGL/lib/tritonus/tritonus_share-0.3.6.jar!/"/>
+	</lib>
+	<lib name="jaad-0.8.4.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/../../git/ether-gl/EtherGL/lib/jaad/jaad-0.8.4.jar!/"/>
+	</lib>
 </component>
