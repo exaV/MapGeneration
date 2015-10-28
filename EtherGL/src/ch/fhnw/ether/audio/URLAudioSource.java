@@ -73,6 +73,7 @@ public class URLAudioSource extends AbstractAudioSource<URLAudioSource.State> {
 	private static final double        SEC2US = 1000000;
 	private static final MidiEvent[]   EMPTY_MidiEventA = new MidiEvent[0];
 
+	private       double             frameSize;
 	private final URL                url;
 	private final AudioFormat        fmt;       
 	private final int                numPlays;
@@ -87,12 +88,17 @@ public class URLAudioSource extends AbstractAudioSource<URLAudioSource.State> {
 	});
 
 	public URLAudioSource(URL url) throws IOException {
-		this(url, Integer.MAX_VALUE);
+		this(url, Integer.MAX_VALUE, -128);
 	}
 
 	public URLAudioSource(final URL url, final int numPlays) throws IOException {
-		this.url      = url;
-		this.numPlays = numPlays;
+		this(url, numPlays, -128);
+	}
+
+	public URLAudioSource(final URL url, final int numPlays, double frameSizeInSec) throws IOException {
+		this.url       = url;
+		this.numPlays  = numPlays;
+		this.frameSize = frameSizeInSec;
 
 		try {
 			if(TextUtilities.hasFileExtension(url.getPath(), "mid")) {
@@ -131,25 +137,25 @@ public class URLAudioSource extends AbstractAudioSource<URLAudioSource.State> {
 	}
 
 	private AudioInputStream getStream(URL url) throws UnsupportedAudioFileException {
-        List<AudioFileReader> providers = getAudioFileReaders();
-        AudioInputStream result = null;
+		List<AudioFileReader> providers = getAudioFileReaders();
+		AudioInputStream result = null;
 
-        for(int i = 0; i < providers.size(); i++ ) {
-            AudioFileReader reader = providers.get(i);
-            try {
-                result = reader.getAudioInputStream( url );
-                break;
-            } catch (UnsupportedAudioFileException e) {
-                continue;
-            } catch(IOException e) {
-            	continue;
-            }
-        }
+		for(int i = 0; i < providers.size(); i++ ) {
+			AudioFileReader reader = providers.get(i);
+			try {
+				result = reader.getAudioInputStream( url );
+				break;
+			} catch (UnsupportedAudioFileException e) {
+				continue;
+			} catch(IOException e) {
+				continue;
+			}
+		}
 
-        if( result==null ) {
-            throw new UnsupportedAudioFileException("could not get audio input stream from input URL");
-        }
-        
+		if( result==null ) {
+			throw new UnsupportedAudioFileException("could not get audio input stream from input URL");
+		}
+
 		AudioFormat      format = result.getFormat();
 		if(format.getEncoding() != Encoding.PCM_SIGNED || format.getSampleSizeInBits() < 0) {
 			AudioFormat fmt = new AudioFormat(Encoding.PCM_SIGNED, format.getSampleRate(), 16, format.getChannels(), format.getChannels() * 2, format.getSampleRate(), false);
@@ -157,7 +163,7 @@ public class URLAudioSource extends AbstractAudioSource<URLAudioSource.State> {
 		}
 		return result;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private List<AudioFileReader> getAudioFileReaders() {
 		try {
@@ -196,7 +202,9 @@ public class URLAudioSource extends AbstractAudioSource<URLAudioSource.State> {
 		@Override
 		public void run() {
 			try {
-				byte[] buffer = new byte[fmt.getChannels() * fmt.getSampleSizeInBits() / 8 * 128];
+				byte[] buffer = new byte[frameSize > 0 
+				                         ? fmt.getChannels() * fmt.getSampleSizeInBits() / 8 * (int)(frameSize * fmt.getSampleRate())
+				                        		 : fmt.getChannels() * fmt.getSampleSizeInBits() / 8 * (int)-frameSize];
 
 				do {
 					try (AudioInputStream in = getStream(url)) {

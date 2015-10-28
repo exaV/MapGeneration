@@ -39,26 +39,27 @@ import ch.fhnw.ether.audio.AverageBuffer;
 public class GainEngine {
 	
 	private final static double MIN_LEVEL = AudioUtilities.dbToLevel(AudioUtilities.MIN_GAIN);
+	private final static double MAX_LEVEL = AudioUtilities.dbToLevel(AudioUtilities.MAX_GAIN);
 	
 	private final  AverageBuffer history; // Contains squared sample values
 	private int                  sustainSpeed; // Number of samples
-	private double               attackSpeed; // Ratio to multiply by on each sample
-	private double               decaySpeed;
+	private double               attackSpeed; // increase per sample
+	private double               decaySpeed; // decrease per sample
 	private double               smoothedGain;
 	private int                  sustainCountDown;
 	private double               jumpLevel;
 	private final float          sRate;
 	private final int            numChannels;
 	
-	public GainEngine(float sampleRate, int numChannels, double historySizeInSeconds, double sustainSpeedInSeconds, double attackSpeed, double decaySpeed, double jumpLevel) {
+	public GainEngine(float sampleRate, int numChannels, double historySizeInSeconds, double sustainSpeed, double attackSpeed, double decaySpeed, double jumpLevel) {
 		this.history     = new AverageBuffer(sampleRate, numChannels, historySizeInSeconds);
 		this.sRate       = sampleRate;
 		this.numChannels = numChannels;
-		setSustainSpeed(sustainSpeedInSeconds);
+		setSustainSpeed(sustainSpeed);
 		setAttackSpeed(attackSpeed);
 		setDecaySpeed(decaySpeed);
 		setJumpLevel(jumpLevel);
-		this.smoothedGain = MIN_LEVEL;
+		this.smoothedGain = MAX_LEVEL;
 	}
 
 	public double getSustainSpeed() {
@@ -70,7 +71,7 @@ public class GainEngine {
 	}
 
 	public double getAttackSpeed() {
-		return attackSpeed;
+		return attackSpeed * sRate;
 	}
 
 	public double getJumpLevel() {
@@ -82,15 +83,15 @@ public class GainEngine {
 	}
 
 	public void setAttackSpeed(double attackSpeed) {
-		this.attackSpeed = attackSpeed;
+		this.attackSpeed = attackSpeed / sRate;
 	}
 
 	public double getDecaySpeed() {
-		return decaySpeed;
+		return decaySpeed * sRate;
 	}
 
 	public void setDecaySpeed(double decaySpeed) {
-		this.decaySpeed = decaySpeed;
+		this.decaySpeed = decaySpeed / sRate;
 	}
 	
 	public void process(AudioFrame frame) {
@@ -104,7 +105,7 @@ public class GainEngine {
 				if (smoothedGain < jumpLevel)
 					smoothedGain = immediateGain;
 				else
-					smoothedGain *= attackSpeed;
+					smoothedGain += attackSpeed;
 				if (smoothedGain > immediateGain)
 					smoothedGain = immediateGain;
 				sustainCountDown = sustainSpeed;
@@ -114,7 +115,7 @@ public class GainEngine {
 					sustainCountDown--;
 				} else {
 					// Decay
-					smoothedGain *= decaySpeed;
+					smoothedGain -= decaySpeed;
 					if (smoothedGain < MIN_LEVEL)
 						smoothedGain = MIN_LEVEL;
 					if (smoothedGain < immediateGain)
@@ -125,7 +126,13 @@ public class GainEngine {
 	}
 	
 	public double getGain() {
-		return this.smoothedGain;
+		return smoothedGain;
+	}
+
+	public void reset() {
+		history.reset();
+		smoothedGain     = MAX_LEVEL;
+		sustainCountDown = 0;
 	}
 
 }
