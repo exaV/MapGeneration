@@ -170,7 +170,7 @@ public class GenericLight implements ILight {
 
 	@Override
 	public boolean needsUpdate() {
-		return updater.needsUpdate();
+		return updater.testAndClear();
 	}
 
 	public LightSource getLightSource() {
@@ -183,6 +183,6 @@ public class GenericLight implements ILight {
 	}
 
 	private void requestUpdate() {
-		updater.requestUpdate();
+		updater.request();
 	}
 }

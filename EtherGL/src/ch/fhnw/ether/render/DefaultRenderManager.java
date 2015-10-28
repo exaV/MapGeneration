@@ -51,19 +51,24 @@ import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.IView.ViewType;
 import ch.fhnw.util.math.Mat4;
 
+/*
+
+SCENE SIDE
+- map: views (camera, view-camera state)
+- map: materials (shader, list of meshes)
+- list: meshes
+- list: lights
+
+
+*/
+
+
 /**
  * Default render manager.
  *
  * @author radar
  */
 public class DefaultRenderManager implements IRenderManager {
-	private static class SceneCameraState {
-		final List<IView> views = new ArrayList<>();
-		
-		public SceneCameraState() {
-		}
-	}
-	
 	private static class SceneViewState {
 		ICamera camera = new Camera();
 		IViewCameraState viewCameraState;
@@ -79,8 +84,6 @@ public class DefaultRenderManager implements IRenderManager {
 	
 	private final IRenderProgram program = new DefaultRenderProgram();
 	
-	private final Map<ICamera, SceneCameraState> cameras = new IdentityHashMap<>();
-
 	private final Map<IView, SceneViewState> views = new IdentityHashMap<>();
 
 	public DefaultRenderManager(IController controller) {
@@ -127,18 +130,8 @@ public class DefaultRenderManager implements IRenderManager {
 	
 	@Override
 	public void setCamera(IView view, ICamera camera) {
+		camera.updateRequest();
 		views.get(view).camera = camera;
-		cameras.clear();
-		for (Map.Entry<IView, SceneViewState> e : views.entrySet()) {
-			IView v = e.getKey();
-			ICamera c = e.getValue().camera;
-			SceneCameraState css = cameras.get(c);
-			if (css == null) {
-				css = new SceneCameraState();
-				cameras.put(c, css);
-			}
-			css.views.add(v);
-		}
 	}
 	
 	@Override
@@ -154,13 +147,12 @@ public class DefaultRenderManager implements IRenderManager {
 	@Override
 	public Runnable getRenderRunnable() {
 		// 1. set new view matrices for each updated camera
-		for (Map.Entry<ICamera, SceneCameraState> e : cameras.entrySet()) {
-			ICamera camera = e.getKey();
-			if (camera.needsUpdate()) {
-				for (IView view : e.getValue().views) {
-					views.get(view).viewCameraState = new ViewCameraState(view, camera);
-				}
-			}
+		for (Map.Entry<IView, SceneViewState> e : views.entrySet()) {
+			if (e.getValue().camera.updateTest())
+				e.getValue().viewCameraState = new ViewCameraState(e.getKey(), e.getValue().camera);
+		}
+		for (Map.Entry<IView, SceneViewState> e : views.entrySet()) {
+				e.getValue().camera.updateClear();
 		}
 
 		// 2. create runnable

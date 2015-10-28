@@ -92,7 +92,7 @@ public final class Camera implements ICamera {
 	@Override
 	public void setPosition(Vec3 position) {
 		this.position = position;
-		requestUpdate();
+		updateRequest();
 	}
 
 	@Override
@@ -103,7 +103,7 @@ public final class Camera implements ICamera {
 	@Override
 	public void setTarget(Vec3 target) {
 		this.target = target;
-		requestUpdate();
+		updateRequest();
 	}
 
 	@Override
@@ -114,7 +114,7 @@ public final class Camera implements ICamera {
 	@Override
 	public void setUp(Vec3 up) {
 		this.up = up;
-		requestUpdate();
+		updateRequest();
 	}
 
 	@Override
@@ -125,7 +125,7 @@ public final class Camera implements ICamera {
 	@Override
 	public void setFov(float fov) {
 		this.fov = fov;
-		requestUpdate();
+		updateRequest();
 	}
 
 	@Override
@@ -136,7 +136,7 @@ public final class Camera implements ICamera {
 	@Override
 	public void setNear(float near) {
 		this.near = near;
-		requestUpdate();
+		updateRequest();
 	}
 
 	@Override
@@ -147,7 +147,7 @@ public final class Camera implements ICamera {
 	@Override
 	public void setFar(float far) {
 		this.far = far;
-		requestUpdate();
+		updateRequest();
 	}
 
 	@Override
@@ -173,17 +173,22 @@ public final class Camera implements ICamera {
 	@Override
 	public void setName(String name) {
 		this.name = name;
-		requestUpdate();
+		updateRequest();
 	}
 
 	@Override
-	public void requestUpdate() {
-		update.requestUpdate();
+	public void updateRequest() {
+		update.request();
 	}
 
 	@Override
-	public boolean needsUpdate() {
-		return update.needsUpdate();
+	public boolean updateTest() {
+		return update.test();
+	}
+
+	@Override
+	public void updateClear() {
+		update.updateClear();
 	}
 
 	@Override

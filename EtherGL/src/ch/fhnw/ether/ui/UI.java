@@ -64,7 +64,7 @@ public final class UI {
 	}
 
 	public void update() {
-		if (!updater.needsUpdate())
+		if (!updater.testAndClear())
 			return;
 
 		plane.clear();
@@ -123,7 +123,7 @@ public final class UI {
 	}
 
 	public void requestUpdate() {
-		updater.requestUpdate();
+		updater.request();
 	}
 
 	// key listener

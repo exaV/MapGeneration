@@ -77,7 +77,7 @@ public final class TransformExample {
 
 				Mat4 transform = Mat4.multiply(Mat4.rotate(angle, Vec3.Z), Mat4.translate(1, 1, 1));
 				mesh.setTransform(transform);
-				mesh.requestUpdate(transform);
+				mesh.updateRequest(transform);
 				return true;
 			}
 		});

@@ -62,9 +62,14 @@ public interface IUpdateRequester {
 		}
 		
 		@Override
-		public void requestUpdate(Object source) {
+		public void updateRequest() {
+			updateRequest(null);			
+		}
+		
+		@Override
+		public void updateRequest(Object source) {
 			for (IUpdateListener listener : listeners.get())
-				listener.requestUpdate(source);
+				listener.updateRequest(source);
 		}
 	}
 	

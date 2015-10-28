@@ -154,11 +154,11 @@ class GraphicsPlane {
 	}
 	
 	public void update() {
-		if (updater.needsUpdate())
+		if (updater.testAndClear())
 			texture.setData(Frame.create(image));
 	}
 
 	private void requestUpdate() {
-		updater.requestUpdate();
+		updater.request();
 	}
 }

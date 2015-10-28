@@ -110,7 +110,7 @@ public final class SimpleTextureExample {
 							vertices[i + 0] = 1;
 					}
 				});
-				mesh.requestUpdate(null);
+				mesh.updateRequest(null);
 				return true;
 			}
 		});

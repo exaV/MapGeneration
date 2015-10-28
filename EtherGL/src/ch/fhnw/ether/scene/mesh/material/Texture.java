@@ -100,7 +100,7 @@ public class Texture extends AbstractMediaTarget<VideoFrame, IVideoRenderTarget>
 			singleFrame = null;
 			useProgram(new RenderProgram<>(source));
 			start();
-			updater.requestUpdate();
+			updater.request();
 		} catch (Throwable e) {
 			throw new IllegalArgumentException("can't load image " + source);
 		}
@@ -109,7 +109,7 @@ public class Texture extends AbstractMediaTarget<VideoFrame, IVideoRenderTarget>
 	@Override
 	protected void runOneCycle() throws RenderCommandException {
 		super.runOneCycle();
-		updater.requestUpdate();
+		updater.request();
 	}
 	
 	public void setData(Frame frame) {
@@ -119,11 +119,11 @@ public class Texture extends AbstractMediaTarget<VideoFrame, IVideoRenderTarget>
 		} catch (RenderCommandException e) {
 			log.warning(e);
 		}
-		updater.requestUpdate();
+		updater.request();
 	}
 
 	public boolean needsUpdate() {
-		return updater.needsUpdate();
+		return updater.testAndClear();
 	}
 
 	public int getWidth() {
@@ -149,7 +149,7 @@ public class Texture extends AbstractMediaTarget<VideoFrame, IVideoRenderTarget>
 			log.warning(e);
 		}
 		setRendering(false);
-		updater.requestUpdate();
+		updater.request();
 	}
 
 	public void load(GL3 gl, int target, int textureId) {

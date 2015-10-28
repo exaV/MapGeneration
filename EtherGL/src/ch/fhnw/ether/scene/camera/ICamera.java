@@ -62,19 +62,21 @@ public interface ICamera extends I3DObject {
 	float getFar();
 
 	void setFar(float far);
-	
-	// camera coordinate system
-	
-	Vec3 getCameraXAxis();
-	
-	Vec3 getCameraYAxis();
-	
-	Vec3 getCameraZAxis();
-	
-	// update handling
-	
-	void requestUpdate();
 
-	boolean needsUpdate();
+	// camera coordinate system
+
+	Vec3 getCameraXAxis();
+
+	Vec3 getCameraYAxis();
+
+	Vec3 getCameraZAxis();
+
+	// update handling
+
+	void updateRequest();
+
+	boolean updateTest();
+
+	void updateClear();
 
 }

@@ -179,16 +179,21 @@ public final class DefaultMesh implements IMesh {
 
 	@Override
 	public boolean needsMaterialUpdate() {
-		return materialUpdater.needsUpdate();
+		return materialUpdater.testAndClear();
 	}
 
 	@Override
 	public boolean needsGeometryUpdate() {
-		return geometryUpdater.needsUpdate();
+		return geometryUpdater.testAndClear();
 	}
 
 	@Override
-	public void requestUpdate(Object source) {
+	public void updateRequest() {
+		updateRequest(null);		
+	}
+	
+	@Override
+	public void updateRequest(Object source) {
 		if (source == null) {
 			requestMaterialUpdate();
 			requestGeometryUpdate();
@@ -204,11 +209,11 @@ public final class DefaultMesh implements IMesh {
 	}
 
 	private void requestMaterialUpdate() {
-		materialUpdater.requestUpdate();
+		materialUpdater.request();
 	}
 
 	private void requestGeometryUpdate() {
-		geometryUpdater.requestUpdate();
+		geometryUpdater.request();
 		bb = null;
 	}
 }

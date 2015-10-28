@@ -221,7 +221,7 @@ public class DefaultController implements IController {
 		if (DBG)
 			System.out.println("view changed");
 
-		getCamera(view).requestUpdate();
+		getCamera(view).updateRequest();
 		currentTool.refresh(view);
 		navigationTool.refresh(view);
 	}

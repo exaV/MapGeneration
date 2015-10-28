@@ -36,7 +36,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * 
  * @author radar
  */
-public final class UpdateRequest implements IUpdateListener {
+public final class UpdateRequest {
 	private final AtomicBoolean update = new AtomicBoolean();
 
 	public UpdateRequest() {
@@ -44,36 +44,54 @@ public final class UpdateRequest implements IUpdateListener {
 
 	public UpdateRequest(boolean requestInitialUpdate) {
 		if (requestInitialUpdate)
-			requestUpdate();
+			request();
 	}
 
 	/**
-	 * Called to request an update.
+	 * Request an update.
+	 */
+	public void request() {
+		update.set(true);
+	}
+
+	/**
+	 * Request an update.
 	 * 
 	 * @param source
 	 *            reference to caller (ignored).
 	 */
-	@Override
-	public void requestUpdate(Object source) {
-		update.set(true);
+	public void updateRequest(Object source) {
+		request();
 	}
 
 	/**
-	 * Called to request an update.
-	 */
-	public void requestUpdate() {
-		update.set(true);
-	}
-
-	/**
-	 * Called to check for an update and clear a pending request.
+	 * Test for an update and clear a pending request.
 	 * 
 	 * @return true if update is required, false otherwise.
 	 */
-	public boolean needsUpdate() {
+	public boolean test() {
+		return update.get();
+	}
+
+	/**
+	 * Test for an update and clear a pending request.
+	 * 
+	 * @return true if update is required, false otherwise.
+	 */
+	public boolean testAndClear() {
 		return update.getAndSet(false);
 	}
 	
+	/**
+	 * Clear a pending request.
+	 * 
+	 * @return true if update is required, false otherwise.
+	 */
+	public void updateClear() {
+		update.set(false);
+	}
+	
+
 	@Override
 	public String toString() {
 		return update.toString();

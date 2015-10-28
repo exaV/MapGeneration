@@ -59,7 +59,7 @@ public final class Renderables {
 			if (sceneRenderables.putIfAbsent(mesh, renderable) != null)
 				throw new IllegalArgumentException("mesh already in renderer: " + mesh);
 		}
-		updater.requestUpdate();
+		updater.request();
 	}
 
 	public void removeMesh(IMesh mesh) {
@@ -69,11 +69,11 @@ public final class Renderables {
 			if (renderable == null)
 				throw new IllegalArgumentException("mesh not in renderer: " + mesh);
 		}
-		updater.requestUpdate();
+		updater.request();
 	}
 
 	public void update(GL3 gl) {
-		if (updater.needsUpdate()) {
+		if (updater.testAndClear()) {
 			// update added / removed renderables
 			synchronized (sceneRenderables) {
 				Collection<Renderable> r = sceneRenderables.values();

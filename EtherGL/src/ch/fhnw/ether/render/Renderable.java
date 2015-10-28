@@ -53,7 +53,7 @@ public final class Renderable {
 		this.buffer = new VertexBuffer(this.shader, this.mesh);
 
 		// make sure update flag is set, so everything get initialized on the next render cycle
-		mesh.requestUpdate(null);
+		mesh.updateRequest(null);
 	}
 
 	public void update(GL3 gl) {

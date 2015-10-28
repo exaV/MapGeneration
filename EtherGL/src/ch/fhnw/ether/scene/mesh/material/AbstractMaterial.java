@@ -45,6 +45,6 @@ public abstract class AbstractMaterial implements IMaterial {
 	}
 
 	protected void requestUpdate() {
-		listeners.requestUpdate(this);
+		listeners.updateRequest(this);
 	}
 }
