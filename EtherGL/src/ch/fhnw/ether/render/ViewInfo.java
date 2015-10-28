@@ -8,7 +8,7 @@ import ch.fhnw.ether.scene.attribute.IAttributeProvider;
 import ch.fhnw.ether.scene.camera.IViewCameraState;
 import ch.fhnw.ether.view.IView.ViewType;
 
-public class ViewInfo {
+public final class ViewInfo {
 	private final FloatUniformBuffer uniforms = new FloatUniformBuffer(ViewUniformBlock.BLOCK_SIZE, 3);
 	private IViewCameraState vcs;
 	private ViewType type;

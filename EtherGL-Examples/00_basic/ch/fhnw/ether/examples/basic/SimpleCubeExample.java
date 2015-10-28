@@ -49,23 +49,24 @@ public final class SimpleCubeExample {
 	public SimpleCubeExample() {
 		// Create controller
 		IController controller = new DefaultController();
-
-		// Create view
-		IView view = new DefaultView(controller, 100, 100, 500, 500, IView.INTERACTIVE_VIEW, "Simple Cube");
-
-		// Create scene
-		IScene scene = new DefaultScene(controller);
-		controller.setScene(scene);
-
-		// Create and add camera
-		ICamera camera = new Camera(new Vec3(0, -5, 5), Vec3.ZERO);
-		scene.add3DObject(camera);
-		controller.setCamera(view, camera);
-		
-		// Add cube
-		scene.add3DObject(MeshLibrary.createCube());
-		
-		// Add an exit button
-		controller.getUI().addWidget(new Button(0, 0, "Quit", "Quit", KeyEvent.VK_ESCAPE, (button, v) -> System.exit(0)));
+		controller.run((time) -> {
+			// Create view
+			IView view = new DefaultView(controller, 100, 100, 500, 500, IView.INTERACTIVE_VIEW, "Simple Cube");
+	
+			// Create scene
+			IScene scene = new DefaultScene(controller);
+			controller.setScene(scene);
+	
+			// Create and add camera
+			ICamera camera = new Camera(new Vec3(0, -5, 5), Vec3.ZERO);
+			scene.add3DObject(camera);
+			controller.setCamera(view, camera);
+			
+			// Add cube
+			scene.add3DObject(MeshLibrary.createCube());
+			
+			// Add an exit button
+			controller.getUI().addWidget(new Button(0, 0, "Quit", "Quit", KeyEvent.VK_ESCAPE, (button, v) -> System.exit(0)));
+		});
 	}
 }

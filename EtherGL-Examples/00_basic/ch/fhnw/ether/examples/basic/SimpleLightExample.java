@@ -54,7 +54,6 @@ import ch.fhnw.ether.scene.mesh.material.Texture;
 import ch.fhnw.ether.ui.Button;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.gl.DefaultView;
-import ch.fhnw.util.AutoDisposer;
 import ch.fhnw.util.color.RGB;
 import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Transform;
@@ -79,7 +78,6 @@ public final class SimpleLightExample {
 	}
 
 	private static final boolean ADD_BUNNY = true;
-	private static final boolean REMOVE_BUNNY = false;
 
 	private static final float INC_XY = 0.25f;
 	private static final float INC_Z = 0.25f;
@@ -142,83 +140,69 @@ public final class SimpleLightExample {
 			};
 		};
 
-		// Create view
-		new DefaultView(controller, 100, 100, 500, 500, IView.INTERACTIVE_VIEW, "Simple Sphere");
-
-		// Create scene and add some content
-		scene = new DefaultScene(controller);
-		controller.setScene(scene);
-
-		// Add first light and light geometry
-		GeodesicSphere s = new GeodesicSphere(4);
-
-		lightMesh = new DefaultMesh(new ColorMaterial(RGBA.YELLOW), DefaultGeometry.createV(Primitive.TRIANGLES, s.getTriangles()), Flags.DONT_CAST_SHADOW);
-		lightMesh.setTransform(Transform.trs(0, 0, 0, 0, 0, 0, 0.1f, 0.1f, 0.1f));
-		lightMesh.setPosition(new Vec3(0, 0, 2));
-		light.setPosition(lightMesh.getPosition());
-
-		scene.add3DObjects(light);
-		scene.add3DObjects(lightMesh);
-
-		// Add a second light (now that we have multiple light support...)
-		scene.add3DObject(new PointLight(new Vec3(2, 0, 2), RGB.BLACK, RGB.BLUE));
-
-		// Add a ground plane
-		IMesh ground = MeshLibrary.createGroundPlane();
-		scene.add3DObject(ground);
-
-		// Add an exit button
-		controller.getUI().addWidget(new Button(0, 0, "Quit", "Quit", IKeyEvent.VK_ESCAPE, (button, v) -> System.exit(0)));
-
-		// Add geometry
-		IMaterial solidMaterial = new ShadedMaterial(RGB.BLACK, RGB.BLUE, RGB.GRAY, RGB.WHITE, 10, 1, 1f);
-		IMaterial lineMaterial = new ColorMaterial(new RGBA(1, 1, 1, 0.2f));
-
-		Texture t = new Texture(SimpleLightExample.class.getResource("assets/earth_nasa.jpg"));
-		IMaterial textureMaterial = new ShadedMaterial(RGB.BLACK, RGB.BLUE, RGB.GRAY, RGB.RED, 10, 1, 1f, t);
-
-		IMesh solidMeshT = new DefaultMesh(solidMaterial, DefaultGeometry.createVN(Primitive.TRIANGLES, s.getTriangles(), s.getNormals()));
-		IMesh solidMeshL = new DefaultMesh(lineMaterial, DefaultGeometry.createV(Primitive.LINES, s.getLines()), Queue.TRANSPARENCY);
-
-		solidMeshT.setTransform(Transform.trs(-1, 0, 0.5f, 0, 0, 0, 1, 1, 1));
-		solidMeshL.setTransform(Transform.trs(-1, 0, 0.5f, 0, 0, 0, 1, 1, 1));
-
-		IMesh texturedMeshT = new DefaultMesh(textureMaterial, DefaultGeometry.createVNM(Primitive.TRIANGLES, s.getTriangles(), s.getNormals(),
-				s.getTexCoords()));
-		texturedMeshT.setTransform(Transform.trs(1, 0, 0.5f, 0, 0, 0, 1, 1, 1));
-
-		IMesh solidCubeT = MeshLibrary.createCube(solidMaterial);
-		solidCubeT.setTransform(Transform.trs(0, 0, 0.5f, 0, 0, 0, 0.8f, 0.8f, 0.8f));
-
-		scene.add3DObjects(solidMeshT, solidMeshL, texturedMeshT, solidCubeT);
-
-		// Add bunny
-		IMesh solidBunnyT = null;
-		if (ADD_BUNNY) {
-			try {
-				List<IMesh> meshes = new OBJReader(getClass().getResource("assets/bunny_original.obj")).getMeshes();
-				solidBunnyT = new DefaultMesh(solidMaterial, meshes.get(0).getGeometry());
-				solidBunnyT.setTransform(Transform.trs(2, 0, 0, 90, 0, 0, 4, 4, 4));
-				scene.add3DObject(solidBunnyT);
-			} catch (Throwable throwable) {
-				throwable.printStackTrace();
+		controller.run((time) -> {
+			// Create view
+			new DefaultView(controller, 100, 100, 500, 500, IView.INTERACTIVE_VIEW, "Simple Sphere");
+	
+			// Create scene and add some content
+			scene = new DefaultScene(controller);
+			controller.setScene(scene);
+	
+			// Add first light and light geometry
+			GeodesicSphere s = new GeodesicSphere(4);
+	
+			lightMesh = new DefaultMesh(new ColorMaterial(RGBA.YELLOW), DefaultGeometry.createV(Primitive.TRIANGLES, s.getTriangles()), Flags.DONT_CAST_SHADOW);
+			lightMesh.setTransform(Transform.trs(0, 0, 0, 0, 0, 0, 0.1f, 0.1f, 0.1f));
+			lightMesh.setPosition(new Vec3(0, 0, 2));
+			light.setPosition(lightMesh.getPosition());
+	
+			scene.add3DObjects(light);
+			scene.add3DObjects(lightMesh);
+	
+			// Add a second light (now that we have multiple light support...)
+			scene.add3DObject(new PointLight(new Vec3(2, 0, 2), RGB.BLACK, RGB.BLUE));
+	
+			// Add a ground plane
+			IMesh ground = MeshLibrary.createGroundPlane();
+			scene.add3DObject(ground);
+	
+			// Add an exit button
+			controller.getUI().addWidget(new Button(0, 0, "Quit", "Quit", IKeyEvent.VK_ESCAPE, (button, v) -> System.exit(0)));
+	
+			// Add geometry
+			IMaterial solidMaterial = new ShadedMaterial(RGB.BLACK, RGB.BLUE, RGB.GRAY, RGB.WHITE, 10, 1, 1f);
+			IMaterial lineMaterial = new ColorMaterial(new RGBA(1, 1, 1, 0.2f));
+	
+			Texture t = new Texture(SimpleLightExample.class.getResource("assets/earth_nasa.jpg"));
+			IMaterial textureMaterial = new ShadedMaterial(RGB.BLACK, RGB.BLUE, RGB.GRAY, RGB.RED, 10, 1, 1f, t);
+	
+			IMesh solidMeshT = new DefaultMesh(solidMaterial, DefaultGeometry.createVN(Primitive.TRIANGLES, s.getTriangles(), s.getNormals()));
+			IMesh solidMeshL = new DefaultMesh(lineMaterial, DefaultGeometry.createV(Primitive.LINES, s.getLines()), Queue.TRANSPARENCY);
+	
+			solidMeshT.setTransform(Transform.trs(-1, 0, 0.5f, 0, 0, 0, 1, 1, 1));
+			solidMeshL.setTransform(Transform.trs(-1, 0, 0.5f, 0, 0, 0, 1, 1, 1));
+	
+			IMesh texturedMeshT = new DefaultMesh(textureMaterial, DefaultGeometry.createVNM(Primitive.TRIANGLES, s.getTriangles(), s.getNormals(),
+					s.getTexCoords()));
+			texturedMeshT.setTransform(Transform.trs(1, 0, 0.5f, 0, 0, 0, 1, 1, 1));
+	
+			IMesh solidCubeT = MeshLibrary.createCube(solidMaterial);
+			solidCubeT.setTransform(Transform.trs(0, 0, 0.5f, 0, 0, 0, 0.8f, 0.8f, 0.8f));
+	
+			scene.add3DObjects(solidMeshT, solidMeshL, texturedMeshT, solidCubeT);
+	
+			// Add bunny
+			IMesh solidBunnyT = null;
+			if (ADD_BUNNY) {
+				try {
+					List<IMesh> meshes = new OBJReader(getClass().getResource("assets/bunny_original.obj")).getMeshes();
+					solidBunnyT = new DefaultMesh(solidMaterial, meshes.get(0).getGeometry());
+					solidBunnyT.setTransform(Transform.trs(2, 0, 0, 90, 0, 0, 4, 4, 4));
+					scene.add3DObject(solidBunnyT);
+				} catch (Throwable throwable) {
+					throwable.printStackTrace();
+				}
 			}
-		}
-
-		if (REMOVE_BUNNY) {
-			// test auto disposer
-			try {
-				Thread.sleep(1000);
-				scene.remove3DObject(solidBunnyT);
-				solidBunnyT = null;
-				Thread.sleep(1000);
-				AutoDisposer.runGC();
-				Thread.sleep(1000);
-				AutoDisposer.runGC();
-				Thread.sleep(1000);
-				AutoDisposer.runGC();
-			} catch (Exception e) {
-			}
-		}
+		});
 	}
 }

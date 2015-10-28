@@ -45,6 +45,7 @@ import ch.fhnw.util.math.Mat4;
 import ch.fhnw.util.math.Vec3;
 
 public final class TransformExample {
+	private IMesh mesh;
 	private float angle = 0;
 	private float speed = 0.3f;
 
@@ -55,22 +56,23 @@ public final class TransformExample {
 	public TransformExample() {
 		// Create controller
 		IController controller = new DefaultController();
+		controller.run((time) -> {
+			// Create view
+			new DefaultView(controller, 100, 100, 500, 500, IView.INTERACTIVE_VIEW, "Transform Example");
+	
+			// Create scene and add a cube
+			IScene scene = new DefaultScene(controller);
+			controller.setScene(scene);
+	
+			mesh = MeshLibrary.createCube();
+			scene.add3DObject(mesh);
+	
+			// Add an exit button
+			controller.getUI().addWidget(new Button(0, 0, "Quit", "Quit", KeyEvent.VK_ESCAPE, (button, v) -> System.exit(0)));
+			controller.getUI().addWidget(new Slider(0, 1, "Speed", "Rotation Speed", speed, (slider, view) -> speed = slider.getValue()));
+		});
 
-		// Create view
-		new DefaultView(controller, 100, 100, 500, 500, IView.INTERACTIVE_VIEW, "Transform Example");
-
-		// Create scene and add a cube
-		IScene scene = new DefaultScene(controller);
-		controller.setScene(scene);
-
-		IMesh mesh = MeshLibrary.createCube();
-		scene.add3DObject(mesh);
-
-		// Add an exit button
-		controller.getUI().addWidget(new Button(0, 0, "Quit", "Quit", KeyEvent.VK_ESCAPE, (button, v) -> System.exit(0)));
-		controller.getUI().addWidget(new Slider(0, 1, "Speed", "Rotation Speed", speed, (slider, view) -> speed = slider.getValue()));
-
-		controller.getScheduler().animate(new IScheduler.IAnimationAction() {
+		controller.animate(new IScheduler.IAnimationAction() {
 			@Override
 			public boolean run(double time, double interval) {
 				angle += speed;

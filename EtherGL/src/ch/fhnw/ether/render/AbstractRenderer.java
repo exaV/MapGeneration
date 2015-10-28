@@ -32,6 +32,7 @@ package ch.fhnw.ether.render;
 import com.jogamp.opengl.GL3;
 
 import ch.fhnw.ether.render.forward.ShadowVolumes;
+import ch.fhnw.ether.scene.mesh.IMesh.Flags;
 import ch.fhnw.ether.scene.mesh.IMesh.Queue;
 
 public abstract class AbstractRenderer implements IRenderer {
@@ -42,13 +43,19 @@ public abstract class AbstractRenderer implements IRenderer {
 	}
 
 	protected void renderObjects(GL3 gl, IRenderProgram program, Queue pass, boolean interactive) {
-		program.getRenderables().renderObjects(gl, pass, interactive);
+		for (Renderable renderable : program.getRenderables()) {
+			if (renderable.containsFlag(Flags.INTERACTIVE_VIEWS_ONLY) && !interactive)
+				continue;
+			if (renderable.getQueue() == pass) {
+				renderable.render(gl);
+			}
+		}
 	}
 
 	protected void renderShadowVolumes(GL3 gl, IRenderProgram program, Queue pass, boolean interactive) {
 		if (shadowVolumes == null) {
 			shadowVolumes = new ShadowVolumes(program.getProviders());
 		}
-		program.getRenderables().renderShadowVolumes(gl, pass, interactive, shadowVolumes, program.getLightInfo().getLights());
+		shadowVolumes.render(gl, pass, interactive, program.getRenderables(), program.getLightInfo().getLights());
 	}
 }

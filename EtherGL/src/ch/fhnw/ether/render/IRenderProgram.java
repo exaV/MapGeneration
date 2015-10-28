@@ -39,7 +39,10 @@ import ch.fhnw.ether.scene.attribute.IAttributeProvider;
  * @author radar
  */
 public interface IRenderProgram {
-	Renderables getRenderables();
+	
+	List<Renderable> getRenderables();
+	
+	void setRenderables(List<Renderable> renderables);
 
 	LightInfo getLightInfo();
 

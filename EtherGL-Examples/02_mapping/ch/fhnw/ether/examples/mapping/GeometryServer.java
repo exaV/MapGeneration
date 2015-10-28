@@ -100,7 +100,7 @@ public class GeometryServer {
 	private void runOSCSun(int port) {
 		sunPosition = controller.getLightPosition();
 		try {
-			controller.getScheduler().animate(new IScheduler.IAnimationAction() {
+			controller.animate(new IScheduler.IAnimationAction() {
 				@Override
 				public boolean run(double time, double interval) {
 					Vec3 p = controller.getLightPosition();

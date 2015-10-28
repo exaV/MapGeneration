@@ -29,33 +29,31 @@
 
 package ch.fhnw.ether.render;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+
+import com.jogamp.opengl.GL3;
 
 import ch.fhnw.ether.render.gl.FloatUniformBuffer;
 import ch.fhnw.ether.render.variable.builtin.LightUniformBlock;
 import ch.fhnw.ether.scene.attribute.IAttributeProvider;
 import ch.fhnw.ether.scene.camera.IViewCameraState;
-import ch.fhnw.ether.scene.light.DirectionalLight;
 import ch.fhnw.ether.scene.light.GenericLight;
-import ch.fhnw.ether.scene.light.ILight;
-import ch.fhnw.util.color.RGB;
-import ch.fhnw.util.math.Vec3;
-
-import com.jogamp.opengl.GL3;
 
 public final class LightInfo {
-	private static final GenericLight DEFAULT_LIGHT = new DirectionalLight(Vec3.Z, RGB.BLACK, RGB.WHITE);
-
-	private final List<GenericLight> lights = new ArrayList<>(Collections.singletonList(DEFAULT_LIGHT));
 	private final FloatUniformBuffer uniforms = new FloatUniformBuffer(LightUniformBlock.BLOCK_SIZE);
+	private List<GenericLight> lights;
 
 	public LightInfo() {
 	}
 
 	public List<GenericLight> getLights() {
 		return lights;
+	}
+	
+	public void update(GL3 gl, IViewCameraState matrices, List<GenericLight> lights) {
+		this.lights = lights;
+		LightUniformBlock.loadUniforms(gl, uniforms, lights, matrices);
+		uniforms.bind(gl);
 	}
 
 	public IAttributeProvider getAttributeProvider() {
@@ -65,36 +63,5 @@ public final class LightInfo {
 				attributes.provide(LightUniformBlock.ATTRIBUTE, () -> uniforms.getBindingPoint());
 			}
 		};
-	}
-
-	public synchronized void addLight(ILight light) {
-		if (!(light instanceof GenericLight)) {
-			throw new IllegalArgumentException("can only handle GenericLight");
-		}
-		if (lights.contains(light)) {
-			throw new IllegalArgumentException("light already in renderer: " + light);
-		}
-		if (lights.size() == LightUniformBlock.MAX_LIGHTS) {
-			throw new IllegalStateException("too many lights in renderer: " + LightUniformBlock.MAX_LIGHTS);
-		}
-		if (lights.get(0) == DEFAULT_LIGHT)
-			lights.remove(0);
-		lights.add((GenericLight) light);
-	}
-
-	public synchronized void removeLight(ILight light) {
-		synchronized (lights) {
-			if (!lights.contains(light)) {
-				throw new IllegalArgumentException("light not in renderer: " + light);
-			}
-			lights.remove(light);
-			if (lights.isEmpty())
-				lights.add(DEFAULT_LIGHT);
-		}
-	}
-
-	public synchronized void update(GL3 gl, IViewCameraState matrices) {
-		LightUniformBlock.loadUniforms(gl, uniforms, lights, matrices);
-		uniforms.bind(gl);
 	}
 }

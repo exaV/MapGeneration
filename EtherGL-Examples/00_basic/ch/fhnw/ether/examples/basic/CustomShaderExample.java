@@ -73,15 +73,16 @@ public final class CustomShaderExample {
 	public CustomShaderExample() {
 		// Create controller
 		IController controller = new DefaultController();
+		controller.run((time) -> {
+			// Create view
+			new DefaultView(controller, 100, 100, 500, 500, IView.INTERACTIVE_VIEW, "Test");
 
-		// Create view
-		new DefaultView(controller, 100, 100, 500, 500, IView.INTERACTIVE_VIEW, "Test");
+			// Create scene and add triangle
+			IScene scene = new DefaultScene(controller);
+			controller.setScene(scene);
 
-		// Create scene and add triangle
-		IScene scene = new DefaultScene(controller);
-		controller.setScene(scene);
-
-		IMesh mesh = makeColoredTriangle();
-		scene.add3DObject(mesh);
+			IMesh mesh = makeColoredTriangle();
+			scene.add3DObject(mesh);
+		});
 	}
 }

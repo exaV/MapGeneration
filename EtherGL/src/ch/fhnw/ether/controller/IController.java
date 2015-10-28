@@ -33,6 +33,8 @@ import java.util.List;
 import ch.fhnw.ether.controller.event.IKeyEvent;
 import ch.fhnw.ether.controller.event.IPointerEvent;
 import ch.fhnw.ether.controller.event.IScheduler;
+import ch.fhnw.ether.controller.event.IScheduler.IAction;
+import ch.fhnw.ether.controller.event.IScheduler.IAnimationAction;
 import ch.fhnw.ether.controller.tool.ITool;
 import ch.fhnw.ether.controller.tool.NavigationTool;
 import ch.fhnw.ether.render.IRenderManager;
@@ -96,12 +98,12 @@ public interface IController {
 	 * Get active camera for given view.
 	 */
 	ICamera getCamera(IView view);
-	
+
 	/**
 	 * Set active camera for given view.
 	 */
 	void setCamera(IView view, ICamera camera);
-	
+
 	/**
 	 * Get the current tool.
 	 *
@@ -144,9 +146,38 @@ public interface IController {
 	 * @return the scheduler
 	 */
 	IScheduler getScheduler();
-	
+
 	/**
-	 * Request repaint of all views
+	 * Add an action to the model animation loop until it removes itself. This
+	 * is a shorthand for getScheduler().animate(). Thread-safe.
+	 * 
+	 * @param action
+	 *            Action to be run
+	 */
+	void animate(IAnimationAction action);
+
+	/**
+	 * Run an action on model thread once. This is a shorthand for
+	 * getScheduler().run(). Thread-safe.
+	 * 
+	 * @param action
+	 *            Action to be run
+	 */
+	void run(IAction action);
+
+	/**
+	 * Run an action on model thread once, with given delay. This is a shorthand
+	 * for getScheduler().run(). Thread-safe.
+	 * 
+	 * @param delay
+	 *            Delay before action is run, in seconds
+	 * @param action
+	 *            Action to be run
+	 */
+	void run(double delay, IAction action);
+
+	/**
+	 * Request repaint of all views. This is a shorthand for getScheduler().repaint(). Thread-safe.
 	 */
 	void repaint();
 

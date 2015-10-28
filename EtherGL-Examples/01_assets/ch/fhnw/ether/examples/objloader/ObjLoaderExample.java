@@ -43,18 +43,19 @@ public class ObjLoaderExample {
 
 	public ObjLoaderExample() {
 		IController controller = new ObjLoaderController();
-
-		new DefaultView(controller, 0, 10, 512, 512, IView.INTERACTIVE_VIEW, "Obj View");
-
-		IScene scene = new DefaultScene(controller);
-		controller.setScene(scene);
-
-		try {
-			new OBJReader(getClass().getResource("fhnw.obj")).getMeshes().forEach((mesh) -> {
-				scene.add3DObject(mesh);
-			});
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		controller.run((time) -> {
+			new DefaultView(controller, 0, 10, 512, 512, IView.INTERACTIVE_VIEW, "Obj View");
+	
+			IScene scene = new DefaultScene(controller);
+			controller.setScene(scene);
+	
+			try {
+				new OBJReader(getClass().getResource("fhnw.obj")).getMeshes().forEach((mesh) -> {
+					scene.add3DObject(mesh);
+				});
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		});
 	}
 }

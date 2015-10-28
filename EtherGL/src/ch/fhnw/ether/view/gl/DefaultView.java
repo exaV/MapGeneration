@@ -129,7 +129,7 @@ public class DefaultView implements IView {
 	}
 
 	private void runOnSceneThread(IAction action) {
-		controller.getScheduler().run(action);
+		controller.run(action);
 	}
 
 	// GLEventListener implementation
@@ -157,6 +157,7 @@ public class DefaultView implements IView {
 
 		@Override
 		public final void display(GLAutoDrawable drawable) {
+			drawable.getGL().glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT | GL.GL_STENCIL_BUFFER_BIT);
 		}
 
 		@Override

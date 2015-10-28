@@ -71,23 +71,26 @@ public final class SimpleTextureExample {
 		return null;
 	}
 
+	private IMesh mesh;
+
 	// Setup the whole thing
 	public SimpleTextureExample() {
 		// Create controller
 		IController controller = new DefaultController();
-
-		// Create view
-		new DefaultView(controller, 100, 100, 500, 500, IView.INTERACTIVE_VIEW, "Test");
-
-		// Create scene and add triangle
-		IScene scene = new DefaultScene(controller);
-		controller.setScene(scene);
-
-		IMesh mesh = makeTexturedTriangle();
-		scene.add3DObject(mesh);
+		controller.run((time) -> {
+			// Create view
+			new DefaultView(controller, 100, 100, 500, 500, IView.INTERACTIVE_VIEW, "Test");
+	
+			// Create scene and add triangle
+			IScene scene = new DefaultScene(controller);
+			controller.setScene(scene);
+	
+			mesh = makeTexturedTriangle();
+			scene.add3DObject(mesh);
+		});
 
 		// Animate (Using event timer)
-		controller.getScheduler().animate(new IScheduler.IAnimationAction() {
+		controller.animate(new IScheduler.IAnimationAction() {
 			private int c = 0;
 
 			@Override
@@ -110,7 +113,7 @@ public final class SimpleTextureExample {
 							vertices[i + 0] = 1;
 					}
 				});
-				mesh.updateRequest(null);
+				mesh.updateRequest();
 				return true;
 			}
 		});

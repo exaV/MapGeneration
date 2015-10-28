@@ -40,13 +40,12 @@ import ch.fhnw.ether.scene.attribute.IAttributeProvider;
  * @author radar
  */
 public class DefaultRenderProgram implements IRenderProgram {
-	// FIXME: this needs cleanup, i don't think we need this here, maybe better
-	// in renderables
+	// FIXME: this needs cleanup, i don't think we need this here
 	private final List<IAttributeProvider> providers = new ArrayList<>();
 
-	private final Renderables renderables = new Renderables();
-	private final LightInfo lightInfo = new LightInfo();
 	private final ViewInfo viewInfo = new ViewInfo();
+	private List<Renderable> renderables;
+	private final LightInfo lightInfo = new LightInfo();
 
 	public DefaultRenderProgram() {
 		providers.add(viewInfo.getAttributeProvider());
@@ -54,8 +53,13 @@ public class DefaultRenderProgram implements IRenderProgram {
 	}
 
 	@Override
-	public Renderables getRenderables() {
+	public List<Renderable> getRenderables() {
 		return renderables;
+	}
+
+	@Override
+	public void setRenderables(List<Renderable> renderables) {
+		this.renderables = renderables;
 	}
 
 	@Override

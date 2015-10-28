@@ -38,6 +38,8 @@ import ch.fhnw.ether.controller.event.DefaultScheduler;
 import ch.fhnw.ether.controller.event.IKeyEvent;
 import ch.fhnw.ether.controller.event.IPointerEvent;
 import ch.fhnw.ether.controller.event.IScheduler;
+import ch.fhnw.ether.controller.event.IScheduler.IAction;
+import ch.fhnw.ether.controller.event.IScheduler.IAnimationAction;
 import ch.fhnw.ether.controller.tool.ITool;
 import ch.fhnw.ether.controller.tool.NavigationTool;
 import ch.fhnw.ether.controller.tool.PickTool;
@@ -165,12 +167,27 @@ public class DefaultController implements IController {
 	}
 
 	@Override
-	public IScheduler getScheduler() {
+	public final IScheduler getScheduler() {
 		return scheduler;
+	}
+	
+	@Override
+	public void animate(IAnimationAction action) {
+		scheduler.animate(action);
+	}
+	
+	@Override
+	public void run(IAction action) {
+		scheduler.run(action);
+	}
+	
+	@Override
+	public void run(double delay, IAction action) {
+		scheduler.run(delay, action);
 	}
 
 	@Override
-	public void repaint() {
+	public final void repaint() {
 		scheduler.repaint();
 	}
 

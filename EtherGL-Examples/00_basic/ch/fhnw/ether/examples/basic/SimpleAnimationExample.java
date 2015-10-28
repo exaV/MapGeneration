@@ -46,6 +46,7 @@ import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Mat4;
 
 public final class SimpleAnimationExample {
+	private IMesh mesh;
 
 	public static void main(String[] args) {
 		new SimpleAnimationExample();
@@ -63,18 +64,19 @@ public final class SimpleAnimationExample {
 	public SimpleAnimationExample() {
 		// Create controller
 		IController controller = new DefaultController();
+		controller.run((time) -> {
+			// Create view
+			new DefaultView(controller, 100, 100, 500, 500, IView.INTERACTIVE_VIEW, "Test");
+	
+			// Create scene and add triangle
+			IScene scene = new DefaultScene(controller);
+			controller.setScene(scene);
+	
+			mesh = makeColoredTriangle();
+			scene.add3DObject(mesh);
+		});
 
-		// Create view
-		new DefaultView(controller, 100, 100, 500, 500, IView.INTERACTIVE_VIEW, "Test");
-
-		// Create scene and add triangle
-		IScene scene = new DefaultScene(controller);
-		controller.setScene(scene);
-
-		IMesh mesh = makeColoredTriangle();
-		scene.add3DObject(mesh);
-
-		controller.getScheduler().animate(new IScheduler.IAnimationAction() {
+		controller.animate(new IScheduler.IAnimationAction() {
 			private int c = 0;
 
 			@Override
