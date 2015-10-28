@@ -36,7 +36,7 @@ import java.util.List;
 import ch.fhnw.ether.render.gl.FloatUniformBuffer;
 import ch.fhnw.ether.render.variable.builtin.LightUniformBlock;
 import ch.fhnw.ether.scene.attribute.IAttributeProvider;
-import ch.fhnw.ether.scene.camera.ViewCameraState;
+import ch.fhnw.ether.scene.camera.IViewCameraState;
 import ch.fhnw.ether.scene.light.DirectionalLight;
 import ch.fhnw.ether.scene.light.GenericLight;
 import ch.fhnw.ether.scene.light.ILight;
@@ -93,7 +93,7 @@ public final class LightInfo {
 		}
 	}
 
-	public synchronized void update(GL3 gl, ViewCameraState matrices) {
+	public synchronized void update(GL3 gl, IViewCameraState matrices) {
 		LightUniformBlock.loadUniforms(gl, uniforms, lights, matrices);
 		uniforms.bind(gl);
 	}

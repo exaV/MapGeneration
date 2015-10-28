@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import ch.fhnw.ether.scene.I3DObject;
-import ch.fhnw.ether.scene.camera.ViewCameraState;
+import ch.fhnw.ether.scene.camera.IViewCameraState;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.IGeometryAttribute;
@@ -58,7 +58,7 @@ public final class PickUtilities {
 	private static final float PICK_DISTANCE = 5;
 
 	public static Map<Float, I3DObject> pickFromScene(PickMode mode, int x, int y, int w, int h, IView view) {
-		ViewCameraState vcs = view.getController().getRenderManager().getViewCameraState(view);
+		IViewCameraState vcs = view.getController().getRenderManager().getViewCameraState(view);
 		final Map<Float, I3DObject> pickables = new TreeMap<>();
 		float[][] transformedData = new float[1][0];
 		for (I3DObject object : view.getController().getScene().get3DObjects()) {
@@ -104,7 +104,7 @@ public final class PickUtilities {
 		return pickables;
 	}
 
-	public static float pickBoundingBox(PickMode mode, int x, int y, int w, int h, ViewCameraState vcs, BoundingBox bounds) {
+	public static float pickBoundingBox(PickMode mode, int x, int y, int w, int h, IViewCameraState vcs, BoundingBox bounds) {
 		BoundingBox b = new BoundingBox();
 		float xmin = bounds.getMinX();
 		float xmax = bounds.getMaxX();
@@ -124,7 +124,7 @@ public final class PickUtilities {
 		return Float.POSITIVE_INFINITY;
 	}
 
-	public static float pickTriangles(PickMode mode, int x, int y, int w, int h, ViewCameraState vcs, float[] triangles) {
+	public static float pickTriangles(PickMode mode, int x, int y, int w, int h, IViewCameraState vcs, float[] triangles) {
 		triangles = ProjectionUtilities.projectToScreen(vcs, triangles);
 
 		Vec3 o = new Vec3(x, y, 0);
@@ -137,7 +137,7 @@ public final class PickUtilities {
 		return zMin;
 	}
 
-	public static float pickEdges(PickMode mode, int x, int y, int w, int h, ViewCameraState vcs, float[] edges) {
+	public static float pickEdges(PickMode mode, int x, int y, int w, int h, IViewCameraState vcs, float[] edges) {
 		edges = ProjectionUtilities.projectToScreen(vcs, edges);
 
 		float zMin = Float.POSITIVE_INFINITY;
@@ -168,7 +168,7 @@ public final class PickUtilities {
 		return zMin;
 	}
 
-	public static float pickPoints(PickMode mode, int x, int y, int w, int h, ViewCameraState vcs, float[] points) {
+	public static float pickPoints(PickMode mode, int x, int y, int w, int h, IViewCameraState vcs, float[] points) {
 		points = ProjectionUtilities.projectToScreen(vcs, points);
 
 		float zMin = Float.POSITIVE_INFINITY;

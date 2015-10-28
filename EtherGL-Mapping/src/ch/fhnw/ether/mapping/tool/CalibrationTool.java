@@ -46,7 +46,7 @@ import ch.fhnw.ether.mapping.ICalibrationModel;
 import ch.fhnw.ether.mapping.ICalibrator;
 import ch.fhnw.ether.render.IRenderManager;
 import ch.fhnw.ether.scene.camera.ICamera;
-import ch.fhnw.ether.scene.camera.ViewCameraState;
+import ch.fhnw.ether.scene.camera.IViewCameraState;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh.Queue;
 import ch.fhnw.ether.scene.mesh.MeshLibrary;
@@ -189,7 +189,7 @@ public final class CalibrationTool extends AbstractTool {
 		}
 
 		// second, try to hit model point
-		ViewCameraState vcs = view.getController().getRenderManager().getViewCameraState(view);
+		IViewCameraState vcs = view.getController().getRenderManager().getViewCameraState(view);
 		float[] mv = model.getCalibrationPoints();
 		for (int i = 0; i < mv.length; i += 3) {
 			Vec3 vv = ProjectionUtilities.projectToScreen(vcs, new Vec3(mv[i], mv[i + 1], mv[i + 2]));
@@ -300,7 +300,7 @@ public final class CalibrationTool extends AbstractTool {
 	}
 
 	private void updateCalibratedGeometry(IView view) {
-		ViewCameraState vcs = view.getController().getRenderManager().getViewCameraState(view);
+		IViewCameraState vcs = view.getController().getRenderManager().getViewCameraState(view);
 		CalibrationContext context = getContext(view);
 
 		// prepare points

@@ -27,15 +27,17 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.scene.camera;
+package ch.fhnw.ether.render;
 
+import ch.fhnw.ether.scene.camera.ICamera;
+import ch.fhnw.ether.scene.camera.IViewCameraState;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.util.Viewport;
 import ch.fhnw.util.math.Mat3;
 import ch.fhnw.util.math.Mat4;
 import ch.fhnw.util.math.Vec3;
 
-public final class ViewCameraState {
+final class ViewCameraState implements IViewCameraState {
 	private final Vec3 position;
 	private final Vec3 target;
 	private final Vec3 up;
@@ -75,14 +77,17 @@ public final class ViewCameraState {
 		this.projMatrix = projMatrix;
 	}
 	
+	@Override
 	public Viewport getViewport() {
 		return viewport;
 	}
 	
+	@Override
 	public boolean isLocked() {
 		return locked;
 	}
 
+	@Override
 	public Mat4 getViewMatrix() {
 		if (viewMatrix == null) {
 			viewMatrix = Mat4.lookAt(position, target, up);
@@ -90,6 +95,7 @@ public final class ViewCameraState {
 		return viewMatrix;
 	}
 
+	@Override
 	public Mat4 getProjMatrix() {
 		if (projMatrix == null) {
 			projMatrix = Mat4.perspective(fov, viewport.getAspect(), near, far);
@@ -97,6 +103,7 @@ public final class ViewCameraState {
 		return projMatrix;
 	}
 
+	@Override
 	public Mat4 getViewProjMatrix() {
 		if (viewProjMatrix == null) {
 			viewProjMatrix = Mat4.multiply(getProjMatrix(), getViewMatrix());
@@ -104,6 +111,7 @@ public final class ViewCameraState {
 		return viewProjMatrix;
 	}
 
+	@Override
 	public Mat4 getViewProjInvMatrix() {
 		if (viewProjInvMatrix == null) {
 			viewProjInvMatrix = getViewProjMatrix().inverse();
@@ -111,6 +119,7 @@ public final class ViewCameraState {
 		return viewProjInvMatrix;
 	}
 
+	@Override
 	public Mat3 getNormalMatrix() {
 		if (normalMatrix == null) {
 			normalMatrix = new Mat3(getViewMatrix()).inverse().transpose();

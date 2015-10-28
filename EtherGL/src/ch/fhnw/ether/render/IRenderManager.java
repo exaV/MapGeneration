@@ -30,7 +30,7 @@
 package ch.fhnw.ether.render;
 
 import ch.fhnw.ether.scene.camera.ICamera;
-import ch.fhnw.ether.scene.camera.ViewCameraState;
+import ch.fhnw.ether.scene.camera.IViewCameraState;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.view.IView;
@@ -104,7 +104,7 @@ public interface IRenderManager {
 	/**
 	 * Get view-camera state.
 	 */
-	ViewCameraState getViewCameraState(IView view);
+	IViewCameraState getViewCameraState(IView view);
 	
 	/**
 	 * Create render state for next frame and return it as a runnable to be run

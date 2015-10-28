@@ -43,7 +43,7 @@ import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.render.forward.ForwardRenderer;
 import ch.fhnw.ether.scene.camera.Camera;
 import ch.fhnw.ether.scene.camera.ICamera;
-import ch.fhnw.ether.scene.camera.ViewCameraState;
+import ch.fhnw.ether.scene.camera.IViewCameraState;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.ui.UI;
@@ -57,18 +57,18 @@ import ch.fhnw.util.math.Mat4;
  * @author radar
  */
 public class DefaultRenderManager implements IRenderManager {
-	private static class CameraSceneState {
+	private static class SceneCameraState {
 		final List<IView> views = new ArrayList<>();
 		
-		public CameraSceneState() {
+		public SceneCameraState() {
 		}
 	}
 	
-	private static class ViewSceneState {
+	private static class SceneViewState {
 		ICamera camera = new Camera();
-		ViewCameraState viewCameraState;
+		IViewCameraState viewCameraState;
 		
-		ViewSceneState(IView view) {
+		SceneViewState(IView view) {
 			viewCameraState = new ViewCameraState(view, camera);
 		}
 	}
@@ -79,9 +79,9 @@ public class DefaultRenderManager implements IRenderManager {
 	
 	private final IRenderProgram program = new DefaultRenderProgram();
 	
-	private final Map<ICamera, CameraSceneState> cameras = new IdentityHashMap<>();
+	private final Map<ICamera, SceneCameraState> cameras = new IdentityHashMap<>();
 
-	private final Map<IView, ViewSceneState> views = new IdentityHashMap<>();
+	private final Map<IView, SceneViewState> views = new IdentityHashMap<>();
 
 	public DefaultRenderManager(IController controller) {
 		this.controller = controller;
@@ -89,7 +89,7 @@ public class DefaultRenderManager implements IRenderManager {
 	
 	@Override
 	public void addView(IView view) {
-		ViewSceneState vcs = new ViewSceneState(view);
+		SceneViewState vcs = new SceneViewState(view);
 		views.put(view, vcs);
 		setCamera(view, vcs.camera);
 	}
@@ -129,12 +129,12 @@ public class DefaultRenderManager implements IRenderManager {
 	public void setCamera(IView view, ICamera camera) {
 		views.get(view).camera = camera;
 		cameras.clear();
-		for (Map.Entry<IView, ViewSceneState> e : views.entrySet()) {
+		for (Map.Entry<IView, SceneViewState> e : views.entrySet()) {
 			IView v = e.getKey();
 			ICamera c = e.getValue().camera;
-			CameraSceneState css = cameras.get(c);
+			SceneCameraState css = cameras.get(c);
 			if (css == null) {
-				css = new CameraSceneState();
+				css = new SceneCameraState();
 				cameras.put(c, css);
 			}
 			css.views.add(v);
@@ -147,14 +147,14 @@ public class DefaultRenderManager implements IRenderManager {
 	}
 	
 	@Override
-	public ViewCameraState getViewCameraState(IView view) {
+	public IViewCameraState getViewCameraState(IView view) {
 		return views.get(view).viewCameraState;
 	}
 	
 	@Override
 	public Runnable getRenderRunnable() {
 		// 1. set new view matrices for each updated camera
-		for (Map.Entry<ICamera, CameraSceneState> e : cameras.entrySet()) {
+		for (Map.Entry<ICamera, SceneCameraState> e : cameras.entrySet()) {
 			ICamera camera = e.getKey();
 			if (camera.needsUpdate()) {
 				for (IView view : e.getValue().views) {
@@ -171,27 +171,27 @@ public class DefaultRenderManager implements IRenderManager {
 	 * This runnable is created on scene thread and then run on render thread.
 	 */
 	private static class RenderRunnable implements Runnable {
-		static class ViewRenderState {
+		static class RenderViewState {
 			final IView view;
-			final ViewCameraState viewCameraState;
+			final IViewCameraState viewCameraState;
 			
-			ViewRenderState(IView view, ViewCameraState vcs) {
+			RenderViewState(IView view, IViewCameraState vcs) {
 				this.view = view;
 				this.viewCameraState = vcs;
 			}
 		}
 		
 		final IController controller;
-		final List<ViewRenderState> viewStates = new ArrayList<>();
+		final List<RenderViewState> viewStates = new ArrayList<>();
 		final IRenderer renderer;
 		final IRenderProgram program;
 		
-		RenderRunnable(IController controller, Map<IView, ViewSceneState> views, IRenderer renderer, IRenderProgram program) {
+		RenderRunnable(IController controller, Map<IView, SceneViewState> views, IRenderer renderer, IRenderProgram program) {
 			this.controller = controller;
-			for (Map.Entry<IView, ViewSceneState> e : views.entrySet()) {
+			for (Map.Entry<IView, SceneViewState> e : views.entrySet()) {
 				IView view = e.getKey();
-				ViewCameraState vcs = e.getValue().viewCameraState;
-				viewStates.add(new ViewRenderState(view, vcs));
+				IViewCameraState vcs = e.getValue().viewCameraState;
+				viewStates.add(new RenderViewState(view, vcs));
 			}
 			this.renderer = renderer;
 			this.program = program;
@@ -199,7 +199,7 @@ public class DefaultRenderManager implements IRenderManager {
 		
 		@Override
 		public void run() {
-			for (ViewRenderState viewState : viewStates) {
+			for (RenderViewState viewState : viewStates) {
 				viewState.view.getWindow().display(new GLRunnable() {
 					@Override
 					public boolean run(GLAutoDrawable drawable) {
@@ -210,7 +210,7 @@ public class DefaultRenderManager implements IRenderManager {
 			}
 		}
 		
-		void render(GL3 gl, ViewRenderState viewState) {
+		void render(GL3 gl, RenderViewState viewState) {
 			try {
 				// XXX: make sure we only render on render thread (e.g. jogl
 				// will do repaints on other threads when resizing windows...)

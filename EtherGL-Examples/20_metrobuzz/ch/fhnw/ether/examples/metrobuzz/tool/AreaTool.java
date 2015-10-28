@@ -35,7 +35,7 @@ import ch.fhnw.ether.controller.event.IPointerEvent;
 import ch.fhnw.ether.controller.tool.AbstractTool;
 import ch.fhnw.ether.controller.tool.PickUtilities;
 import ch.fhnw.ether.controller.tool.PickUtilities.PickMode;
-import ch.fhnw.ether.scene.camera.ViewCameraState;
+import ch.fhnw.ether.scene.camera.IViewCameraState;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.MeshLibrary;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
@@ -102,7 +102,7 @@ public final class AreaTool extends AbstractTool {
 	public void pointerPressed(IPointerEvent e) {
 		int x = e.getX();
 		int y = e.getY();
-		ViewCameraState vcs = getController().getRenderManager().getViewCameraState(e.getView());
+		IViewCameraState vcs = getController().getRenderManager().getViewCameraState(e.getView());
 		float d = PickUtilities.pickBoundingBox(PickMode.POINT, x, y, 0, 0, vcs, mesh.getBounds());
 		if (d < Float.POSITIVE_INFINITY)
 			moving = true;
@@ -111,7 +111,7 @@ public final class AreaTool extends AbstractTool {
 	@Override
 	public void pointerDragged(IPointerEvent e) {
 		if (moving) {
-			ViewCameraState state = getController().getRenderManager().getViewCameraState(e.getView());
+			IViewCameraState state = getController().getRenderManager().getViewCameraState(e.getView());
 			Line line = ProjectionUtilities.getRay(state, e.getX(), e.getY());
 			Plane plane = new Plane(new Vec3(0, 0, 1));
 			Vec3 p = plane.intersection(line);
