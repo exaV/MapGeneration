@@ -52,6 +52,7 @@ public class NoteDetect extends AbstractRenderCommand<IAudioRenderTarget,NoteDet
 		private final int       N;
 		private       float     onsetv;
 		private final float[]   values;
+		private final float[]   velocities;
 		private final double[]  noteTimes;
 		private final boolean[] notes;
 		private       double    sampleTime;
@@ -59,10 +60,11 @@ public class NoteDetect extends AbstractRenderCommand<IAudioRenderTarget,NoteDet
 		
 		public State(IAudioRenderTarget target) throws RenderCommandException {
 			super(target);
-			N         = bands.get(target).numBands();
-			values    = new float[N+24];
-			notes     = new boolean[values.length];
-			noteTimes = new double[values.length];
+			N          = bands.get(target).numBands();
+			values     = new float[N+36];
+			velocities = new float[values.length];
+			notes      = new boolean[values.length];
+			noteTimes  = new double[values.length];
 		}
 
 		public void process(State state) throws RenderCommandException {
@@ -76,11 +78,12 @@ public class NoteDetect extends AbstractRenderCommand<IAudioRenderTarget,NoteDet
 				float h0 = getVal(HARMONIC0);
 				float h1 = getVal(HARMONIC1);
 				for(int i = 0; i < N; i++) {
-					if(values[i] > 0.3) {
+					if(values[i] > 0.3f) {
 						values[i + 12] *= h0;
 						values[i + 24] *= h1;
 					}
 				} 
+				System.arraycopy(values, 0, velocities, 0, velocities.length);
 				sampleTime = 0;
 			}
 			else
@@ -95,6 +98,10 @@ public class NoteDetect extends AbstractRenderCommand<IAudioRenderTarget,NoteDet
 			for(int i = 0; i < notes.length; i++)
 				notes[i] = now < noteTimes[i];
 			return notes;
+		}
+		
+		public float[] velocities() {
+			return velocities;
 		}
 	}
 

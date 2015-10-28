@@ -4,8 +4,10 @@ import java.util.Arrays;
 
 import ch.fhnw.ether.audio.AudioFrame;
 import ch.fhnw.ether.audio.AudioUtilities;
+import ch.fhnw.ether.audio.BlockBuffer;
 import ch.fhnw.ether.audio.ButterworthFilter;
 import ch.fhnw.ether.audio.IAudioRenderTarget;
+import ch.fhnw.ether.audio.AudioUtilities.Window;
 import ch.fhnw.ether.media.AbstractRenderCommand;
 import ch.fhnw.ether.media.Parameter;
 import ch.fhnw.ether.media.PerTargetState;
@@ -17,7 +19,7 @@ public class OnsetDetect extends AbstractRenderCommand<IAudioRenderTarget,OnsetD
 	private static final Parameter BAND_DECAY = new Parameter("bDecay", "Per band decay", 0.88f, 0.9999f, 0.9f);
 	private static final Parameter AVG_DECAY  = new Parameter("aDecay", "Average decay",  0.88f, 0.9999f, 0.999f);
 	
-	private static final float[] BANDS      = { 80, 1000, 4000, 10000, 16000 };
+	private static final float[] BANDS      = { 80, 2000, 6000, 13000, 16000 };
 	private static final double  CHUNK_SIZE = 0.02;
 	private static final float   ATTACK     = 0.9f;
 
@@ -31,9 +33,11 @@ public class OnsetDetect extends AbstractRenderCommand<IAudioRenderTarget,OnsetD
 		private final ButterworthFilter[]   filters;
 		private float                       flux;
 		private float                       threshold;
-
+		private final BlockBuffer           buffer;
+		
 		public State(IAudioRenderTarget target) throws RenderCommandException {
 			super(target);
+			this.buffer = new BlockBuffer((int) (target.getSampleRate() * CHUNK_SIZE), false, Window.RECTANGLE);
 			if(OnsetDetect.this.bands == null) {
 				lastBands  = new float[BANDS.length - 1];
 				bands      = new float[BANDS.length - 1];
@@ -56,16 +60,14 @@ public class OnsetDetect extends AbstractRenderCommand<IAudioRenderTarget,OnsetD
 			final float sens  = Math.max(0.1f, getMax(SENS) - getVal(SENS));
 			if(OnsetDetect.this.bands == null) {
 				final float[] monoSamples = frame.getMonoSamples();
-
-				int chunkSize = (int) (frame.sRate * CHUNK_SIZE);
-				int numChunks = Math.max(1, ((monoSamples.length - 1) / chunkSize));
-				chunkSize = monoSamples.length / numChunks;
-
+				buffer.add(monoSamples);
+				
 				flux = 0;
-				for(int start = 0; start < monoSamples.length; start += chunkSize) {
-					final int end = Math.min(start + chunkSize, monoSamples.length);
+				for(;;) {
+					float[] block = buffer.nextBlock();
+					if(block == null) break;
 					for(int band = 0; band < BANDS.length - 1; band++) {
-						final float[] samples = Arrays.copyOfRange(monoSamples, start, end);
+						final float[] samples = block.clone();
 						if(samples.length > 5) {
 							filters[band].processBand(samples);
 							bands[band] = AudioUtilities.energy(samples);
