@@ -93,9 +93,9 @@ abstract class AbstractWidget implements IWidget {
 		this.action = action;
 	}
 
-	protected void requestUpdate() {
+	protected void updateRequest() {
 		if (ui != null)
-			ui.requestUpdate();
+			ui.updateRequest();
 	}
 
 	@Override

@@ -108,31 +108,31 @@ class GraphicsPlane {
 	public final void setPosition(int x, int y) {
 		this.x = x;
 		this.y = y;
-		requestUpdate();
+		updateRequest();
 	}
 
 	public void clear() {
 		graphics.setComposite(AlphaComposite.getInstance(AlphaComposite.CLEAR));
 		fillRect(CLEAR_COLOR, x, y, w, h);
 		graphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
-		requestUpdate();
+		updateRequest();
 	}
 
 	public void fillRect(Color color, int x, int y, int w, int h) {
 		graphics.setColor(color);
 		graphics.fillRect(x, y, w, h);
-		requestUpdate();
+		updateRequest();
 	}
 
 	public void drawString(String string, int x, int y) {
 		drawString(Color.WHITE, string, x, y);
-		requestUpdate();
+		updateRequest();
 	}
 
 	public void drawString(Color color, String string, int x, int y) {
 		graphics.setColor(color);
 		graphics.drawString(string, x, y);
-		requestUpdate();
+		updateRequest();
 	}
 
 	public void drawStrings(String[] strings, int x, int y) {
@@ -146,7 +146,7 @@ class GraphicsPlane {
 			graphics.drawString(s, x, y + dy);
 			dy += FONT.getSize();
 		}
-		requestUpdate();
+		updateRequest();
 	}
 
 	public IMesh getMesh() {
@@ -158,7 +158,7 @@ class GraphicsPlane {
 			texture.setData(Frame.create(image));
 	}
 
-	private void requestUpdate() {
+	private void updateRequest() {
 		updater.request();
 	}
 }

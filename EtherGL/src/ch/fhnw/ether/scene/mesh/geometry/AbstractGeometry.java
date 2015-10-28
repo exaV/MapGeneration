@@ -56,7 +56,7 @@ public abstract class AbstractGeometry implements IGeometry {
 	}
 
 	@Override
-	public void requestUpdate() {
+	public void updateRequest() {
 		listeners.updateRequest(this);
 	}
 }

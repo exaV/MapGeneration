@@ -132,7 +132,7 @@ public class Slider extends AbstractWidget {
 		UI ui = getUI();
 		float bx = ui.getX() + getX() * (SLIDER_GAP + SLIDER_WIDTH);
 		value = MathUtilities.clamp((e.getX() - bx) / SLIDER_WIDTH, 0, 1);
-		requestUpdate();
+		updateRequest();
 		fire(e.getView());
 	}
 }

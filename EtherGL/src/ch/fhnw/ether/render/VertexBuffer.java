@@ -49,8 +49,8 @@ import com.jogamp.opengl.GL3;
 // TODO: deal with max vbo size & multiple vbos, memory optimization, handle non-float arrays
 
 public final class VertexBuffer implements IVertexBuffer {
-	private static final ThreadLocal<FloatBuffer> TARGET
-	= ThreadLocal.withInitial(() -> BufferUtilities.createDirectFloatBuffer(1024 * 1024));
+	private static final ThreadLocal<FloatBuffer> TARGET = 
+			ThreadLocal.withInitial(() -> BufferUtilities.createDirectFloatBuffer(1024 * 1024));
 
 	private final FloatArrayBuffer buffer = new FloatArrayBuffer();
 
@@ -65,7 +65,7 @@ public final class VertexBuffer implements IVertexBuffer {
 		sizes = new int[arrays.size()];
 		offsets = new int[arrays.size()];
 		attributeIndices = new int[arrays.size()];
-		
+
 		int[] stride = new int[1];
 		mesh.getGeometry().inspect((attributes, data) -> {
 			int bufferIndex = 0;
@@ -143,7 +143,8 @@ public final class VertexBuffer implements IVertexBuffer {
 	public void enableAttribute(GL3 gl, int bufferIndex, int shaderIndex) {
 		if (!buffer.isEmpty()) {
 			gl.glEnableVertexAttribArray(shaderIndex);
-			gl.glVertexAttribPointer(shaderIndex, sizes[bufferIndex], GL.GL_FLOAT, false, stride * 4, offsets[bufferIndex] * 4);
+			gl.glVertexAttribPointer(shaderIndex, sizes[bufferIndex], GL.GL_FLOAT, false, stride * 4,
+					offsets[bufferIndex] * 4);
 		}
 	}
 

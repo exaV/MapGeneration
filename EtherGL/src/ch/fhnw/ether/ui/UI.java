@@ -56,7 +56,7 @@ public final class UI {
 
 	public void enable() {
 		controller.getRenderManager().addMesh(plane.getMesh());
-		requestUpdate();
+		updateRequest();
 	}
 
 	public void disable() {
@@ -90,7 +90,7 @@ public final class UI {
 		synchronized (widgets) {
 			widgets.add(widget);
 		}
-		requestUpdate();
+		updateRequest();
 	}
 
 	public void addWidgets(Collection<? extends IWidget> widgets) {
@@ -103,7 +103,7 @@ public final class UI {
 				return;
 			this.message = message;
 		}
-		requestUpdate();
+		updateRequest();
 	}
 
 	public int getX() {
@@ -122,7 +122,7 @@ public final class UI {
 		return plane.getHeight();
 	}
 
-	public void requestUpdate() {
+	public void updateRequest() {
 		updater.request();
 	}
 
