@@ -33,10 +33,13 @@ import ch.fhnw.ether.controller.DefaultController;
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.scene.DefaultScene;
 import ch.fhnw.ether.scene.IScene;
+import ch.fhnw.ether.scene.camera.Camera;
+import ch.fhnw.ether.scene.camera.ICamera;
 import ch.fhnw.ether.scene.mesh.MeshLibrary;
 import ch.fhnw.ether.ui.Button;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.gl.DefaultView;
+import ch.fhnw.util.math.Vec3;
 
 public final class SimpleCubeExample {
 	public static void main(String[] args) {
@@ -48,12 +51,18 @@ public final class SimpleCubeExample {
 		IController controller = new DefaultController();
 
 		// Create view
-		new DefaultView(controller, 100, 100, 500, 500, IView.INTERACTIVE_VIEW, "Simple Cube");
+		IView view = new DefaultView(controller, 100, 100, 500, 500, IView.INTERACTIVE_VIEW, "Simple Cube");
 
-		// Create scene and add a cube
+		// Create scene
 		IScene scene = new DefaultScene(controller);
 		controller.setScene(scene);
 
+		// Create and add camera
+		ICamera camera = new Camera(new Vec3(0, -5, 5), Vec3.ZERO);
+		scene.add3DObject(camera);
+		controller.setCamera(view, camera);
+		
+		// Add cube
 		scene.add3DObject(MeshLibrary.createCube());
 		
 		// Add an exit button

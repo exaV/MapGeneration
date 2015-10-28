@@ -34,20 +34,38 @@ import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.BoundingBox;
 
 public final class Camera implements ICamera {
-	
+	private static final Vec3 DEFAULT_POSITION = new Vec3(0, -5, 0);
+	private static final Vec3 DEFAULT_TARGET = Vec3.ZERO;
+	private static final Vec3 DEFAULT_UP = Vec3.Z;
+	private static final float DEFAULT_FOV = 45;
+	private static final float DEFAULT_NEAR = 0.01f;
+	private static final float DEFAULT_FAR = 100000f;
+
 	private final UpdateRequest update = new UpdateRequest();
 
-	private Vec3 position = new Vec3(0, -5, 0);
-	private Vec3 target = Vec3.ZERO;
-	private Vec3 up = Vec3.Z;
+	private Vec3 position;
+	private Vec3 target;
+	private Vec3 up;
 
-	private float fov = 45;
-	private float near = 0.01f;
-	private float far = 100000f;
-	
+	private float fov;
+	private float near;
+	private float far;
+
 	private String name = "camera";
 
 	public Camera() {
+		this(DEFAULT_POSITION, DEFAULT_TARGET, DEFAULT_UP, DEFAULT_FOV, DEFAULT_NEAR, DEFAULT_FAR);
+	}
+
+	public Camera(Vec3 position, Vec3 target) {
+		this(position, target, DEFAULT_FOV, DEFAULT_NEAR, DEFAULT_FAR);
+	}
+
+	public Camera(Vec3 position, Vec3 target, float fov, float near, float far) {
+		this(position, target, Vec3.Z, fov, near, far);
+		up = getCameraYAxis();
+		if (up.isZero())
+			up = Vec3.Y;
 	}
 
 	public Camera(Vec3 position, Vec3 target, Vec3 up, float fov, float near, float far) {
@@ -131,12 +149,12 @@ public final class Camera implements ICamera {
 		this.far = far;
 		requestUpdate();
 	}
-	
+
 	@Override
 	public Vec3 getCameraXAxis() {
 		return up.cross(getCameraZAxis()).normalize();
 	}
-	
+
 	@Override
 	public Vec3 getCameraYAxis() {
 		return getCameraZAxis().cross(getCameraXAxis()).normalize();
@@ -151,13 +169,13 @@ public final class Camera implements ICamera {
 	public String getName() {
 		return name;
 	}
-	
+
 	@Override
 	public void setName(String name) {
 		this.name = name;
 		requestUpdate();
 	}
-	
+
 	@Override
 	public void requestUpdate() {
 		update.requestUpdate();
@@ -167,9 +185,10 @@ public final class Camera implements ICamera {
 	public boolean needsUpdate() {
 		return update.needsUpdate();
 	}
-	
+
 	@Override
 	public String toString() {
-		return "camera '" + getName() + "' [" + position + target + up + "][" + getCameraXAxis() + getCameraYAxis() + getCameraZAxis() + "]";
+		return "camera '" + getName() + "' [" + position + target + up + "][" + getCameraXAxis() + getCameraYAxis()
+				+ getCameraZAxis() + "]";
 	}
 }
