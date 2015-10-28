@@ -83,6 +83,10 @@ public final class Vec3 implements IVec3 {
 		return z;
 	}
 
+	public boolean isZero() {
+		return MathUtilities.isZero(length());
+	}
+
 	public float length() {
 		return MathUtilities.length(x, y, z);
 	}

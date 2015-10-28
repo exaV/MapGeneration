@@ -57,6 +57,10 @@ public final class Vec2 implements IFloatArrayCopyProvider {
 	public Vec2(double x, double y) {
 		this((float) x, (float) y);
 	}
+	
+	public boolean isZero() {
+		return MathUtilities.isZero(length());
+	}
 
 	public float length() {
 		return MathUtilities.length(x, y);

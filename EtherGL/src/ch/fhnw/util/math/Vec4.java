@@ -96,6 +96,10 @@ public final class Vec4 implements IVec4 {
 		return w;
 	}
 
+	public boolean isZero() {
+		return MathUtilities.isZero(length());
+	}
+
 	public float length() {
 		return MathUtilities.length(x, y, z, w);
 	}
