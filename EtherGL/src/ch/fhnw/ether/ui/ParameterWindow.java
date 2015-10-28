@@ -33,7 +33,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -43,12 +42,15 @@ import java.text.NumberFormat;
 import java.util.Hashtable;
 import java.util.concurrent.atomic.AtomicReference;
 
-import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
@@ -179,11 +181,16 @@ public class ParameterWindow {
 				f.setLayout(new BorderLayout());
 				if(addOn != null)
 					f.add(addOn, BorderLayout.NORTH);
-				f.add(createUIRecr(src), BorderLayout.CENTER);
+				f.add(new JScrollPane(createUIRecr(src), JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER), BorderLayout.CENTER);
 				f.pack();
 				f.setLocation(Toolkit.getDefaultToolkit().getScreenSize().width - f.getSize().width, f.getLocation().y);
 				f.setVisible(true);
 				frame.set(f);
+			}
+
+			private void addMenuItem(JPopupMenu menu, JMenuItem item, ActionListener listener) {
+				item.addActionListener(listener);
+				menu.add(item);
 			}
 
 			JComponent createUI(AbstractRenderCommand<?,?> cmd) {
@@ -193,47 +200,54 @@ public class ParameterWindow {
 					return result;
 				}
 
-				JPanel result = new JPanel();
+				JPopupMenu menu   = new JPopupMenu();
+				JPanel     result = new JPanel();
+				result.setComponentPopupMenu(menu);
 				result.setBorder(new TitledBorder(cmd.getClass().getName()));
 				Parameter[] params = cmd.getParameters();
-				result.setLayout(new GridLayout(params.length + 1, 2, 0, 0));
+				result.setLayout(new GridBagLayout());
 				if(params.length > 0) {
 					final ParamUI[] uis = new ParamUI[params.length];
 					for(int i = 0; i < uis.length; i++) {
 						uis[i] = new ParamUI(cmd, params[i]);
-						result.add(uis[i].label);
+						GridBagConstraints gbc = new GridBagConstraints();
+						gbc.gridy = i;
+						gbc.gridx = 0;
+						result.add(uis[i].label, gbc);
+						gbc = new GridBagConstraints();
+						gbc.gridy = i;
+						gbc.gridx = 1;
 						if(uis[i].slider != null)
-							result.add(uis[i].slider);
+							result.add(uis[i].slider, gbc);
 						if(uis[i].combo != null)
-							result.add(uis[i].combo);
+							result.add(uis[i].combo, gbc);
 					}
-					JButton reset = new JButton("Reset");
-					reset.addActionListener(new ActionListener() {
-						@Override
-						public void actionPerformed(ActionEvent e) {
-							for(ParamUI p : uis) p.reset();	
-						}
+					addMenuItem(menu, new JCheckBoxMenuItem("Enabled", cmd.isEnabled()), (ActionEvent e)->{
+						cmd.setEnable(((JCheckBoxMenuItem)e.getSource()).isSelected());
+						setEnablded(result, cmd.isEnabled());
 					});
-					result.add(reset);
-
-					JButton zero = new JButton("Zero");
-					zero.addActionListener(new ActionListener() {
-						@Override
-						public void actionPerformed(ActionEvent e) {
-							for(ParamUI p : uis) p.zero();	
-						}
-					});
-					result.add(zero);
+					addMenuItem(menu, new JMenuItem("Reset"), (ActionEvent e)->{for(ParamUI p : uis) p.reset();});
+					addMenuItem(menu, new JMenuItem("Zero"), (ActionEvent e)->{for(ParamUI p : uis) p.zero();});
 				} else {
 					JTextArea text = new JTextArea(cmd.toString(), 1, 30);
 					text.setWrapStyleWord(false);
 					text.setEditable(false);
 					text.setBackground(result.getBackground());
-					result.add(text);
+					GridBagConstraints gbc = new GridBagConstraints();
+					gbc.gridwidth = 2;
+					result.add(text, new GridBagConstraints());
 				}
 				return result;
 			}
 
+
+			private void setEnablded(JComponent cmp, boolean state) {
+				cmp.setEnabled(state);
+				for(Component c : cmp.getComponents()) {
+					if(c instanceof JComponent)
+						setEnablded((JComponent)c, state);
+				}
+			}
 
 			JPanel createUIRecr(AbstractRenderCommand<?,?> src) {
 				Insets insets = new Insets(0, 0, 0, 0);

@@ -27,6 +27,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */package ch.fhnw.ether.audio;
 
+ import java.util.Arrays;
+
  public final class AverageBuffer {
 	 private float[] values;
 	 private int     index;
@@ -37,8 +39,8 @@
 	 public AverageBuffer(float sampleRate, int numChannels, double sizeInSeconds) {
 		 this.numChannels = numChannels;
 		 this.sRate       = sampleRate;
-		 this.values = new float[(int) (sampleRate * numChannels * sizeInSeconds)];
-		 this.index = 0;
+		 this.values      = new float[(int) (sampleRate * numChannels * sizeInSeconds)];
+		 this.index       = 0;
 	 }
 
 	 public void push(double value) {
@@ -118,5 +120,11 @@
 			 sum+= values[i];
 		 // Reset index
 		 index = 0;
+	 }
+
+	 public void reset() {
+		 Arrays.fill(values, 0f);
+		 index = 0;;
+		 sum = 0;
 	 }
  }

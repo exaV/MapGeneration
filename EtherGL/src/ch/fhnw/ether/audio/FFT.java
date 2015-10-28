@@ -53,6 +53,7 @@ public class FFT extends AbstractRenderCommand<IAudioRenderTarget,FFT.State> {
 		private final FloatFFT_1D   fft;
 		private final BlockBuffer   buffer;
 		private final int           fftSize;
+		private final int           fftSize2;
 		private final List<float[]> spectrum = new LinkedList<>();
 		private       float[]       block;
 		private final float         sRate;
@@ -64,15 +65,16 @@ public class FFT extends AbstractRenderCommand<IAudioRenderTarget,FFT.State> {
 
 		State(IAudioRenderTarget target) {
 			super(target);
-			sRate   = target.getSampleRate();
-			fftSize = MathUtilities.nextPowerOfTwo((int)(sRate / minFreq));
+			sRate    = target.getSampleRate();
+			fftSize  = MathUtilities.nextPowerOfTwo((int)(sRate / minFreq));
+			fftSize2 = fftSize / 2;
 			log.info("FFT of " + fftSize + " at " + sRate + " Hz");
 			fft      = new FloatFFT_1D(fftSize);
 			buffer   = new BlockBuffer(fftSize, true, windowType);
 			block    = new float[fftSize];
-			power    = new float[fftSize / 2];
+			power    = new float[fftSize2];
 			pcm1     = new float[fftSize];
-			pcm1rd   = fftSize / 2;
+			pcm1rd   = fftSize2;
 			pcm0rd   = fftSize;
 		}
 
@@ -125,8 +127,8 @@ public class FFT extends AbstractRenderCommand<IAudioRenderTarget,FFT.State> {
 
 		public int f2idx(float f) {
 			int result = (int) ((fftSize * f) / sRate);
-			if(result < 0)        return 0;
-			if(result >= fftSize) return fftSize - 1;
+			if(result < 0)         return 0;
+			if(result >= fftSize2) return fftSize2 - 1;
 			return result;
 		}
 

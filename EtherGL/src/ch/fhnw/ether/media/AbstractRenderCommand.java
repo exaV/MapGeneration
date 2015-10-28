@@ -36,8 +36,9 @@ public abstract class AbstractRenderCommand<T extends IRenderTarget, S extends P
 	private final long id = ClassUtilities.createObjectID();
 
 	protected final Parameter[]    parameters;
+	private         boolean        enabled = true; 
 	private   final StateHandle<S> stateHandle;
-	
+
 	protected AbstractRenderCommand(Parameter ... parameters) {
 		this.stateHandle = new StateHandle<>(this);
 		this.parameters  = new Parameter[parameters.length];
@@ -46,7 +47,7 @@ public abstract class AbstractRenderCommand<T extends IRenderTarget, S extends P
 			this.parameters[i] = parameters[i].copy();
 		}
 	}
-		
+
 	public Parameter getParameter(String name) {
 		for(Parameter p : parameters)
 			if(p.getName().equals(name))
@@ -99,7 +100,7 @@ public abstract class AbstractRenderCommand<T extends IRenderTarget, S extends P
 	}
 
 	protected abstract void run(S state) throws RenderCommandException;
-	
+
 	@SuppressWarnings({"unused","unchecked" })
 	protected S createState(T target) throws RenderCommandException {
 		return (S)new Stateless<>(target);
@@ -109,37 +110,47 @@ public abstract class AbstractRenderCommand<T extends IRenderTarget, S extends P
 	public final long getObjectID() {
 		return id;
 	}
-	
+
 	@Override
 	public final int hashCode() {
 		return (int) id;
 	}
-	
+
 	@Override
 	public final boolean equals(Object obj) {
 		return obj instanceof AbstractRenderCommand && ((AbstractRenderCommand<?,?>)obj).id == id;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public final void runInternal(IRenderTarget target) throws RenderCommandException {
-		run((S)target.getState(this));
+		S state = (S)target.getState(this); 
+		if(isEnabled())
+			run(state);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public final <TS extends PerTargetState<?>> TS createStateInternal(IRenderTarget target) throws RenderCommandException {
 		return (TS)createState((T) target);
 	}
-	
+
 	@Override
 	public String toString() {
 		return getClass().getName();
 	}
-	
+
 	public StateHandle<S> state() {
 		return stateHandle; 
 	}
-	
+
 	public S state(IRenderTarget target) throws RenderCommandException {
 		return stateHandle.get(target); 
+	}
+
+	public void setEnable(boolean state) {
+		this.enabled = state;
+	}
+
+	public boolean isEnabled() {
+		return enabled;
 	}
 }
