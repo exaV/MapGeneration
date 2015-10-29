@@ -43,7 +43,7 @@ import ch.fhnw.ether.render.shader.builtin.TrivialDeviceSpaceShader;
 import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
-import ch.fhnw.ether.scene.mesh.IMesh.Flags;
+import ch.fhnw.ether.scene.mesh.IMesh.Flag;
 import ch.fhnw.ether.scene.mesh.MeshLibrary;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
@@ -91,9 +91,9 @@ public final class ShadowVolumes {
 			volumeShader.update(gl);
 			volumeShader.enable(gl);
 			for (Renderable renderable : renderables) {
-				if (renderable.containsFlag(Flags.INTERACTIVE_VIEWS_ONLY) && !interactive)
+				if (renderable.containsFlag(Flag.INTERACTIVE_VIEWS_ONLY) && !interactive)
 					continue;
-				if (renderable.containsFlag(Flags.DONT_CAST_SHADOW))
+				if (renderable.containsFlag(Flag.DONT_CAST_SHADOW))
 					continue;
 				if (renderable.getQueue() != pass)
 					continue;

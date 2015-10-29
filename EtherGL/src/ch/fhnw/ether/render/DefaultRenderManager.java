@@ -35,7 +35,6 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLRunnable;
@@ -258,13 +257,8 @@ public class DefaultRenderManager implements IRenderManager {
 				// FIXME: currently we clear in DefaultView.display() ... needs to move
 				//gl3.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT | GL.GL_STENCIL_BUFFER_BIT);
 
-				gl3.glEnable(GL.GL_MULTISAMPLE);
-
 				if (!viewState.view.isEnabled())
 					return;
-
-				// repaint UI surface to texture if necessary
-				// FIXME: should this be done on model or render thread?
 
 				// render everything
 				ViewType type = viewState.view.getConfig().getViewType();

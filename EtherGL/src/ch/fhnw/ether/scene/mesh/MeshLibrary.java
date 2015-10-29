@@ -31,7 +31,7 @@ package ch.fhnw.ether.scene.mesh;
 
 import java.util.List;
 
-import ch.fhnw.ether.scene.mesh.IMesh.Flags;
+import ch.fhnw.ether.scene.mesh.IMesh.Flag;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
@@ -135,7 +135,7 @@ public class MeshLibrary {
 		float z = 0;
 		float[] v = { -e, -e, z, e, -e, z, e, e, z, -e, -e, z, e, e, z, -e, e, z };
 		float[] n = { 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1 };
-		return new DefaultMesh(material, DefaultGeometry.createVN(Primitive.TRIANGLES, v, n), Flags.DONT_CAST_SHADOW);
+		return new DefaultMesh(material, DefaultGeometry.createVN(Primitive.TRIANGLES, v, n), Flag.DONT_CAST_SHADOW);
 	}
 
 	// FIXME: this needs some revision / organization

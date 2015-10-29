@@ -30,6 +30,7 @@
 package ch.fhnw.ether.scene.mesh;
 
 import java.util.EnumSet;
+import java.util.Set;
 
 import ch.fhnw.ether.scene.I3DObject;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
@@ -52,15 +53,17 @@ public interface IMesh extends I3DObject, IUpdateListener {
 	}
 
 	// FIXME: DONT_CAST_SHADOW should go to material, including CULL_FACE / DONT_CULL_FACE
-	enum Flags {
+	enum Flag {
 		DONT_CAST_SHADOW, INTERACTIVE_VIEWS_ONLY
 	}
 
-	EnumSet<Flags> NO_FLAGS = EnumSet.noneOf(Flags.class);
+	EnumSet<Flag> NO_FLAGS = EnumSet.noneOf(Flag.class);
 
 	Queue getQueue();
 
-	EnumSet<Flags> getFlags();
+	Set<Flag> getFlags();
+	
+	boolean hasFlag(Flag flag);
 
 	IMaterial getMaterial();
 

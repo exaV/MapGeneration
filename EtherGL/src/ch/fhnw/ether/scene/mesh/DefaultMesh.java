@@ -30,8 +30,10 @@
 package ch.fhnw.ether.scene.mesh;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
@@ -45,7 +47,7 @@ import ch.fhnw.util.math.geometry.BoundingBox;
 
 public final class DefaultMesh implements IMesh {
 	private final Queue queue;
-	private final EnumSet<Flags> flags;
+	private final Set<Flag> flags;
 	private final IMaterial material;
 	private final IGeometry geometry;
 	private volatile Vec3 position = Vec3.ZERO;
@@ -65,31 +67,31 @@ public final class DefaultMesh implements IMesh {
 		this(material, geometry, queue, NO_FLAGS);
 	}
 
-	public DefaultMesh(IMaterial material, IGeometry geometry, Flags flag, Flags... flags) {
+	public DefaultMesh(IMaterial material, IGeometry geometry, Flag flag, Flag... flags) {
 		this(material, geometry, Queue.DEPTH, EnumSet.of(flag, flags));
 	}
 
-	public DefaultMesh(IMaterial material, IGeometry geometry, Flags flag) {
+	public DefaultMesh(IMaterial material, IGeometry geometry, Flag flag) {
 		this(material, geometry, Queue.DEPTH, EnumSet.of(flag));
 	}
 
-	public DefaultMesh(IMaterial material, IGeometry geometry, EnumSet<Flags> flags) {
+	public DefaultMesh(IMaterial material, IGeometry geometry, EnumSet<Flag> flags) {
 		this(material, geometry, Queue.DEPTH, flags);
 	}
 
-	public DefaultMesh(IMaterial material, IGeometry geometry, Queue queue, Flags flag) {
+	public DefaultMesh(IMaterial material, IGeometry geometry, Queue queue, Flag flag) {
 		this(material, geometry, queue, EnumSet.of(flag));
 	}
 
-	public DefaultMesh(IMaterial material, IGeometry geometry, Queue queue, Flags flag, Flags... flags) {
+	public DefaultMesh(IMaterial material, IGeometry geometry, Queue queue, Flag flag, Flag... flags) {
 		this(material, geometry, queue, EnumSet.of(flag, flags));
 	}
 
-	public DefaultMesh(IMaterial material, IGeometry geometry, Queue queue, EnumSet<Flags> flags) {
+	public DefaultMesh(IMaterial material, IGeometry geometry, Queue queue, EnumSet<Flag> flags) {
 		this.material = material;
 		this.geometry = geometry;
 		this.queue = queue;
-		this.flags = flags;
+		this.flags = Collections.unmodifiableSet(flags);
 		checkAttributeConsistency(material, geometry);
 	}
 
@@ -154,8 +156,13 @@ public final class DefaultMesh implements IMesh {
 	}
 
 	@Override
-	public EnumSet<Flags> getFlags() {
+	public Set<Flag> getFlags() {
 		return flags;
+	}
+	
+	@Override
+	public boolean hasFlag(Flag flag) {
+		return flags.contains(flag);
 	}
 
 	@Override

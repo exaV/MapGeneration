@@ -91,7 +91,7 @@ public final class ShaderBuilder {
 				attributes.provide(required, null);
 			}
 		}
-		
+
 		// add global attributes
 		if (globals != null) {
 			globals.forEach((attribute, supplier) -> attributes.provide(attribute, supplier));
@@ -111,8 +111,8 @@ public final class ShaderBuilder {
 		return shader;
 	}
 
-	// as soon as we have more builtin shaders we should move to a more flexible scheme, e.g. derive shader from
-	// provided attributes
+	// as soon as we have more builtin shaders we should move to a more flexible
+	// scheme, e.g. derive shader from provided attributes
 	private static IShader createShader(IMaterial material, Collection<IAttribute> attributes) {
 		if (material instanceof CustomMaterial) {
 			return ((CustomMaterial) material).getShader();

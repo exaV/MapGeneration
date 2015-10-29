@@ -32,7 +32,7 @@ package ch.fhnw.ether.render;
 import com.jogamp.opengl.GL3;
 
 import ch.fhnw.ether.render.forward.ShadowVolumes;
-import ch.fhnw.ether.scene.mesh.IMesh.Flags;
+import ch.fhnw.ether.scene.mesh.IMesh.Flag;
 import ch.fhnw.ether.scene.mesh.IMesh.Queue;
 
 public abstract class AbstractRenderer implements IRenderer {
@@ -44,7 +44,7 @@ public abstract class AbstractRenderer implements IRenderer {
 
 	protected void renderObjects(GL3 gl, IRenderProgram program, Queue pass, boolean interactive) {
 		for (Renderable renderable : program.getRenderables()) {
-			if (renderable.containsFlag(Flags.INTERACTIVE_VIEWS_ONLY) && !interactive)
+			if (renderable.containsFlag(Flag.INTERACTIVE_VIEWS_ONLY) && !interactive)
 				continue;
 			if (renderable.getQueue() == pass) {
 				renderable.render(gl);

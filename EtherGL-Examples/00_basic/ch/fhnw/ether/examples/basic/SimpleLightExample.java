@@ -42,7 +42,7 @@ import ch.fhnw.ether.scene.light.PointLight;
 import ch.fhnw.ether.scene.light.SpotLight;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
-import ch.fhnw.ether.scene.mesh.IMesh.Flags;
+import ch.fhnw.ether.scene.mesh.IMesh.Flag;
 import ch.fhnw.ether.scene.mesh.IMesh.Queue;
 import ch.fhnw.ether.scene.mesh.MeshLibrary;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
@@ -151,7 +151,7 @@ public final class SimpleLightExample {
 			// Add first light and light geometry
 			GeodesicSphere s = new GeodesicSphere(4);
 	
-			lightMesh = new DefaultMesh(new ColorMaterial(RGBA.YELLOW), DefaultGeometry.createV(Primitive.TRIANGLES, s.getTriangles()), Flags.DONT_CAST_SHADOW);
+			lightMesh = new DefaultMesh(new ColorMaterial(RGBA.YELLOW), DefaultGeometry.createV(Primitive.TRIANGLES, s.getTriangles()), Flag.DONT_CAST_SHADOW);
 			lightMesh.setTransform(Transform.trs(0, 0, 0, 0, 0, 0, 0.1f, 0.1f, 0.1f));
 			lightMesh.setPosition(new Vec3(0, 0, 2));
 			light.setPosition(lightMesh.getPosition());

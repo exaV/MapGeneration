@@ -90,7 +90,12 @@ public class RayTraceMesh implements IMesh {
 	}
 	
 	@Override
-	public EnumSet<Flags> getFlags() {
+	public boolean hasFlag(Flag flag) {
+		return false;
+	}
+	
+	@Override
+	public EnumSet<Flag> getFlags() {
 		return NO_FLAGS;
 	}
 

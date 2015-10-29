@@ -30,6 +30,7 @@
 package ch.fhnw.ether.render;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Supplier;
 
 import com.jogamp.opengl.GL3;
@@ -37,48 +38,50 @@ import com.jogamp.opengl.GL3;
 import ch.fhnw.ether.render.shader.IShader;
 import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.mesh.IMesh;
+import ch.fhnw.util.math.Mat3;
+import ch.fhnw.util.math.Mat4;
 
 public final class Renderable {
 	public static class RenderData {
 		public Object[] materialData;
 		public float[][] geometryData;
+		public Mat4 positionTransform;
+		public Mat3 normalTransform;
 
-		private void assign(IMesh mesh) {
+		private RenderData(IMesh mesh) {
+			update(mesh);
+		}
+		
+		private void update(IMesh mesh) {
 			materialData = mesh.getMaterial().getData().toArray();
 			geometryData = mesh.getGeometry().getData();
+			positionTransform = Mat4.multiply(Mat4.translate(mesh.getPosition()), mesh.getTransform());
+			normalTransform = new Mat3(positionTransform).inverse().transpose();
 		}
 	}
 
-	private final RenderData data = new RenderData();
-
+	private final RenderData data;
 	private final IShader shader;
-	private final IMesh mesh;
-	private final IVertexBuffer buffer;
+	private final VertexBuffer buffer;
+	private final IMesh.Queue queue;
+	private final Set<IMesh.Flag> flags;
 
-	// FIXME: let's get rid of this providers list somehow (an unmodifiable map
-	// of provided arrays would be fine)
 	public Renderable(IMesh mesh, Map<IAttribute, Supplier<?>> globals) {
 		this(null, mesh, globals);
 	}
 
 	public Renderable(IShader shader, IMesh mesh, Map<IAttribute, Supplier<?>> globals) {
-		data.assign(mesh);
-
+		this.data = new RenderData(mesh);
 		this.shader = ShaderBuilder.create(shader, mesh.getMaterial(), data, globals);
-		this.mesh = mesh;
-		this.buffer = new VertexBuffer(this.shader, this.mesh);
-
-		// make sure update flag is set, so everything get initialized on the
-		// next render cycle
-		mesh.updateRequest(null);
+		this.buffer = new VertexBuffer(this.shader, mesh.getGeometry());
+		this.queue = mesh.getQueue();
+		this.flags = mesh.getFlags();
 	}
 
 	public void update(GL3 gl) {
-		if (mesh.needsMaterialUpdate())
-			shader.update(gl);
-
-		if (mesh.needsGeometryUpdate())
-			buffer.load(gl, shader, mesh);
+		// XXX to be revised
+		shader.update(gl);
+		buffer.load(gl, shader, data);
 	}
 
 	public void render(GL3 gl) {
@@ -88,11 +91,11 @@ public final class Renderable {
 	}
 
 	public IMesh.Queue getQueue() {
-		return mesh.getQueue();
+		return queue;
 	}
 
-	public boolean containsFlag(IMesh.Flags flag) {
-		return mesh.getFlags().contains(flag);
+	public boolean containsFlag(IMesh.Flag flag) {
+		return flags.contains(flag);
 	}
 
 	public IVertexBuffer getBuffer() {
@@ -101,6 +104,6 @@ public final class Renderable {
 
 	@Override
 	public String toString() {
-		return "renderable[queue=" + mesh.getQueue() + " shader=" + shader + " buffer=" + buffer + "]";
+		return "renderable[queue=" + getQueue() + " shader=" + shader + " buffer=" + buffer + "]";
 	}
 }
