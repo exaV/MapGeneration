@@ -30,12 +30,14 @@
 package ch.fhnw.ether.render;
 
 import java.util.List;
+import java.util.Map;
+import java.util.function.Supplier;
 
 import com.jogamp.opengl.GL3;
 
 import ch.fhnw.ether.render.gl.FloatUniformBuffer;
 import ch.fhnw.ether.render.variable.builtin.LightUniformBlock;
-import ch.fhnw.ether.scene.attribute.IAttributeProvider;
+import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.camera.IViewCameraState;
 import ch.fhnw.ether.scene.light.GenericLight;
 
@@ -57,12 +59,7 @@ public final class LightInfo {
 		uniforms.bind(gl);
 	}
 
-	public IAttributeProvider getAttributeProvider() {
-		return new IAttributeProvider() {
-			@Override
-			public void getAttributes(IAttributes attributes) {
-				attributes.provide(LightUniformBlock.ATTRIBUTE, () -> uniforms.getBindingPoint());
-			}
-		};
+	public void getAttributes(Map<IAttribute, Supplier<?>> globals) {
+		globals.put(LightUniformBlock.ATTRIBUTE, () -> uniforms.getBindingPoint());
 	}
 }

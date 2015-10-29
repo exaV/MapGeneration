@@ -29,14 +29,16 @@
 
 package ch.fhnw.ether.scene.mesh.material;
 
+import java.util.List;
+
 import ch.fhnw.ether.scene.attribute.AbstractAttribute;
-import ch.fhnw.ether.scene.attribute.IAttributeProvider;
+import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.attribute.ITypedAttribute;
-import ch.fhnw.util.IUpdateRequester;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.util.math.IVec3;
 import ch.fhnw.util.math.IVec4;
 
-public interface IMaterial extends IAttributeProvider, IUpdateRequester {
+public interface IMaterial {
 	interface IMaterialAttribute<T> extends ITypedAttribute<T> {
 	}
 
@@ -68,4 +70,28 @@ public interface IMaterial extends IAttributeProvider, IUpdateRequester {
 
 	// points only: point size
 	MaterialAttribute<Float> POINT_SIZE = new MaterialAttribute<>("builtin.material.point_size");
+
+	/**
+	 * Get primitive type required by this material.
+	 */
+	Primitive getType();
+
+	/**
+	 * Get list of provided attributes.
+	 */
+	List<IAttribute> getProvidedAttributes();
+
+	/**
+	 * Get list of required attributes.
+	 */
+	List<IAttribute> getRequiredAttributes();
+
+	/**
+	 * Get list of provided attribute data.
+	 */
+	List<Object> getData();
+	
+	boolean updateTest();
+	
+	void updateClear();
 }

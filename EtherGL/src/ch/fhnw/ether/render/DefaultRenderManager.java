@@ -114,7 +114,7 @@ public class DefaultRenderManager implements IRenderManager {
 
 	@Override
 	public void addMesh(IMesh mesh) {
-		Renderable renderable = new Renderable(mesh, program.getProviders());
+		Renderable renderable = new Renderable(mesh, program.getGlobalAttributes());
 		if (sceneRenderables.putIfAbsent(mesh, renderable) != null)
 			throw new IllegalArgumentException("mesh already in renderer: " + mesh);
 	}

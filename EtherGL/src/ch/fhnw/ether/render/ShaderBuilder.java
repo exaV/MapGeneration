@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Supplier;
 
+import ch.fhnw.ether.render.Renderable.RenderData;
 import ch.fhnw.ether.render.shader.IShader;
 import ch.fhnw.ether.render.shader.builtin.LineShader;
 import ch.fhnw.ether.render.shader.builtin.PointShader;
@@ -45,27 +46,18 @@ import ch.fhnw.ether.render.shader.builtin.UnshadedTriangleShader;
 import ch.fhnw.ether.render.variable.IShaderUniform;
 import ch.fhnw.ether.render.variable.IShaderVariable;
 import ch.fhnw.ether.scene.attribute.IAttribute;
-import ch.fhnw.ether.scene.attribute.IAttributeProvider;
-import ch.fhnw.ether.scene.attribute.ITypedAttribute;
-import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.scene.mesh.material.CustomMaterial;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.ether.scene.mesh.material.ShadedMaterial;
 
 public final class ShaderBuilder {
-	private static final class Attributes implements IAttributeProvider.IAttributes {
-		private final Map<IAttribute, Supplier<?>> attributes = new HashMap<>();
+	private static final class Attributes {
+		final Map<IAttribute, Supplier<?>> attributes = new HashMap<>();
 
-		@Override
-		public <T> void provide(ITypedAttribute<T> attribute, Supplier<? extends T> supplier) {
+		void provide(IAttribute attribute, Supplier<?> supplier) {
 			if (attributes.put(attribute, supplier) != null)
 				throw new IllegalArgumentException("duplicate attribute: " + attribute);
-		}
-
-		@Override
-		public void require(IAttribute attribute) {
-			attributes.put(attribute, null);
 		}
 
 		Supplier<?> getSupplier(IShader shader, IShaderVariable<?> variable) {
@@ -78,27 +70,36 @@ public final class ShaderBuilder {
 
 		@Override
 		public String toString() {
-			String s = "";
-			for (Entry<IAttribute, Supplier<?>> e : attributes.entrySet()) {
-				s += "[" + e.getKey() + ", " + e.getValue() + "] ";
-			}
-			return s;
+			final StringBuffer s = new StringBuffer();
+			attributes.forEach((key, value) -> s.append("[" + key + ", " + value + "] "));
+			return s.toString();
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <S extends IShader> S create(S shader, IMesh mesh, List<IAttributeProvider> providers) {
+	public static <S extends IShader> S create(S shader, IMaterial material, RenderData data, Map<IAttribute, Supplier<?>> globals) {
 		Attributes attributes = new Attributes();
 
-		// get attributes from mesh and from renderer)
-		if (mesh != null)
-			mesh.getMaterial().getAttributes(attributes);
-		if (providers != null)
-			providers.forEach((provider) -> provider.getAttributes(attributes));
+		// add material & geometry attributes
+		if (material != null) {
+			List<IAttribute> provided = material.getProvidedAttributes();
+			for (int i = 0; i < provided.size(); ++i) {
+				final int index = i;
+				attributes.provide(provided.get(i), () -> data.materialData[index]);
+			}
+			for (IAttribute required : material.getRequiredAttributes()) {
+				attributes.provide(required, null);
+			}
+		}
+		
+		// add global attributes
+		if (globals != null) {
+			globals.forEach((attribute, supplier) -> attributes.provide(attribute, supplier));
+		}
 
 		// create shader and attach all attributes this shader requires
 		if (shader == null)
-			shader = (S) createShader(mesh, Collections.unmodifiableSet(attributes.attributes.keySet()));
+			shader = (S) createShader(material, Collections.unmodifiableSet(attributes.attributes.keySet()));
 
 		// attach attribute suppliers to uniforms
 		for (IShaderUniform<?> uniform : shader.getUniforms()) {
@@ -112,13 +113,12 @@ public final class ShaderBuilder {
 
 	// as soon as we have more builtin shaders we should move to a more flexible scheme, e.g. derive shader from
 	// provided attributes
-	private static IShader createShader(IMesh mesh, Collection<IAttribute> attributes) {
-		IMaterial material = mesh.getMaterial();
+	private static IShader createShader(IMaterial material, Collection<IAttribute> attributes) {
 		if (material instanceof CustomMaterial) {
-			return ((CustomMaterial) mesh.getMaterial()).getShader();
+			return ((CustomMaterial) material).getShader();
 		}
 
-		switch (mesh.getGeometry().getType()) {
+		switch (material.getType()) {
 		case POINTS:
 			return new PointShader(attributes);
 		case LINES:

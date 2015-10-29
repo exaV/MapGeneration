@@ -41,6 +41,7 @@ import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.ColorMapMaterial;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
+import ch.fhnw.ether.scene.mesh.material.LineMaterial;
 import ch.fhnw.ether.scene.mesh.material.PointMaterial;
 import ch.fhnw.ether.scene.mesh.material.Texture;
 import ch.fhnw.ether.ui.Button;
@@ -70,7 +71,7 @@ public final class SimpleSphereExample {
 			GeodesicSphere sphere = new GeodesicSphere(3);
 	
 			IMesh transparentMeshT = new DefaultMesh(new ColorMaterial(new RGBA(1, 1, 1, 0.5f)), DefaultGeometry.createV(Primitive.TRIANGLES, sphere.getTriangles()), Queue.TRANSPARENCY);
-			IMesh transparentMeshL = new DefaultMesh(new ColorMaterial(new RGBA(1, 1, 1, 1)), DefaultGeometry.createV(Primitive.LINES, sphere.getLines()), Queue.TRANSPARENCY);
+			IMesh transparentMeshL = new DefaultMesh(new LineMaterial(new RGBA(1, 1, 1, 1)), DefaultGeometry.createV(Primitive.LINES, sphere.getLines()), Queue.TRANSPARENCY);
 			IMesh transparentMeshP = new DefaultMesh(new PointMaterial(new RGBA(1, 1, 0, 0.5f), 8), DefaultGeometry.createV(Primitive.POINTS, sphere.getPoints()), Queue.TRANSPARENCY);
 	
 			transparentMeshT.setPosition(Vec3.X_NEG);

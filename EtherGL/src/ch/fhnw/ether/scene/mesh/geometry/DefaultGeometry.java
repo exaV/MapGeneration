@@ -93,6 +93,16 @@ public final class DefaultGeometry extends AbstractGeometry {
 			lock.readLock().unlock();
 		}
 	}
+	
+	@Override
+	public IGeometryAttribute[] getAttributes() {
+		return attributes;
+	}
+	
+	@Override
+	public float[][] getData() {
+		return data;
+	}
 
 	@Override
 	public void inspect(int index, IAttributeVisitor visitor) {

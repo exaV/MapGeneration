@@ -49,6 +49,7 @@ import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
+import ch.fhnw.ether.scene.mesh.material.LineMaterial;
 import ch.fhnw.ether.scene.mesh.material.ShadedMaterial;
 import ch.fhnw.ether.scene.mesh.material.Texture;
 import ch.fhnw.ether.ui.Button;
@@ -170,7 +171,7 @@ public final class SimpleLightExample {
 	
 			// Add geometry
 			IMaterial solidMaterial = new ShadedMaterial(RGB.BLACK, RGB.BLUE, RGB.GRAY, RGB.WHITE, 10, 1, 1f);
-			IMaterial lineMaterial = new ColorMaterial(new RGBA(1, 1, 1, 0.2f));
+			IMaterial lineMaterial = new LineMaterial(new RGBA(1, 1, 1, 0.2f));
 	
 			Texture t = new Texture(SimpleLightExample.class.getResource("assets/earth_nasa.jpg"));
 			IMaterial textureMaterial = new ShadedMaterial(RGB.BLACK, RGB.BLUE, RGB.GRAY, RGB.RED, 10, 1, 1f, t);

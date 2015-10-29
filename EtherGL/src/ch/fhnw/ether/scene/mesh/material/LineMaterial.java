@@ -29,37 +29,72 @@
 
 package ch.fhnw.ether.scene.mesh.material;
 
+import java.util.List;
+
+import ch.fhnw.ether.scene.attribute.IAttribute;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.util.color.RGBA;
 
-public class LineMaterial extends ColorMaterial {
-	private volatile float width;
-	
-	public LineMaterial(float width) {
-		this(RGBA.WHITE, width);
+// width currently unsupported
+public class LineMaterial extends AbstractMaterial {
+	private RGBA color;
+	private float width = 1;
+	private final boolean perVertexColor;
+
+	public LineMaterial(RGBA color) {
+		this(color, false);
 	}
 
-	public LineMaterial(RGBA color, float width) {
-		super(color);
-		this.width = width;
+	public LineMaterial(RGBA color, boolean perVertexColor) {
+		this.color = color;
+		this.perVertexColor = perVertexColor;
 	}
 
-	public LineMaterial(RGBA color, float width, boolean perVertexColor) {
-		super(color, perVertexColor);
-		this.width = width;
+	public final RGBA getColor() {
+		return color;
 	}
-	
+
+	public final void setColor(RGBA color) {
+		this.color = color;
+		updateRequest();
+	}
+
 	public final float getWidth() {
 		return width;
 	}
-	
+
 	public final void setWidth(float width) {
 		this.width = width;
 		updateRequest();
 	}
 
 	@Override
-	public void getAttributes(IAttributes attributes) {
-		attributes.provide(IMaterial.LINE_WIDTH, () -> width);
-		super.getAttributes(attributes);
+	public Primitive getType() {
+		return Primitive.LINES;
+	}
+
+	@Override
+	public List<IAttribute> getProvidedAttributes() {
+		List<IAttribute> attributes = super.getProvidedAttributes();
+		attributes.add(IMaterial.COLOR);
+		attributes.add(IMaterial.LINE_WIDTH);
+		return attributes;
+	}
+
+	@Override
+	public List<IAttribute> getRequiredAttributes() {
+		List<IAttribute> attributes = super.getRequiredAttributes();
+		if (perVertexColor)
+			attributes.add(IGeometry.COLOR_ARRAY);
+		return attributes;
+	}
+
+	@Override
+	public List<Object> getData() {
+		List<Object> data = super.getData();
+		data.add(color);
+		data.add(width);
+		return data;
 	}
 }

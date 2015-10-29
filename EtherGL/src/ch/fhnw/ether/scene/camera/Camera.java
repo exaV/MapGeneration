@@ -188,7 +188,7 @@ public final class Camera implements ICamera {
 
 	@Override
 	public void updateClear() {
-		update.updateClear();
+		update.clear();
 	}
 
 	@Override

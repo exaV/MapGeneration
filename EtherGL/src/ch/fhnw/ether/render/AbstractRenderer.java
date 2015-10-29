@@ -54,7 +54,7 @@ public abstract class AbstractRenderer implements IRenderer {
 
 	protected void renderShadowVolumes(GL3 gl, IRenderProgram program, Queue pass, boolean interactive) {
 		if (shadowVolumes == null) {
-			shadowVolumes = new ShadowVolumes(program.getProviders());
+			shadowVolumes = new ShadowVolumes(program.getGlobalAttributes());
 		}
 		shadowVolumes.render(gl, pass, interactive, program.getRenderables(), program.getLightInfo().getNumLights());
 	}

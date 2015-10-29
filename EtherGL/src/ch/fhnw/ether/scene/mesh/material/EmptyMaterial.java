@@ -33,8 +33,4 @@ package ch.fhnw.ether.scene.mesh.material;
 public class EmptyMaterial extends AbstractMaterial {
 	public EmptyMaterial() {
 	}
-
-	@Override
-	public void getAttributes(IAttributes suppliers) {
-	}
 }

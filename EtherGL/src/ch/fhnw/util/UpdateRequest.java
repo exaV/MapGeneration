@@ -55,16 +55,6 @@ public final class UpdateRequest {
 	}
 
 	/**
-	 * Request an update.
-	 * 
-	 * @param source
-	 *            reference to caller (ignored).
-	 */
-	public void updateRequest(Object source) {
-		request();
-	}
-
-	/**
 	 * Test for an update and clear a pending request.
 	 * 
 	 * @return true if update is required, false otherwise.
@@ -87,7 +77,7 @@ public final class UpdateRequest {
 	 * 
 	 * @return true if update is required, false otherwise.
 	 */
-	public void updateClear() {
+	public void clear() {
 		update.set(false);
 	}
 	

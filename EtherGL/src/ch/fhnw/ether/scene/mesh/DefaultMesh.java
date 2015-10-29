@@ -29,15 +29,19 @@
 
 package ch.fhnw.ether.scene.mesh;
 
+import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.List;
 
+import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry.IGeometryAttribute;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.util.UpdateRequest;
 import ch.fhnw.util.math.Mat4;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.BoundingBox;
-import ch.fhnw.ether.scene.mesh.geometry.IGeometry.IGeometryAttribute;
 
 public final class DefaultMesh implements IMesh {
 	private final Queue queue;
@@ -83,11 +87,10 @@ public final class DefaultMesh implements IMesh {
 
 	public DefaultMesh(IMaterial material, IGeometry geometry, Queue queue, EnumSet<Flags> flags) {
 		this.material = material;
-		this.material.addUpdateListener(this);
 		this.geometry = geometry;
-		this.geometry.addUpdateListener(this);
 		this.queue = queue;
 		this.flags = flags;
+		checkAttributeConsistency(material, geometry);
 	}
 
 	// I3DObject implementation
@@ -191,9 +194,9 @@ public final class DefaultMesh implements IMesh {
 
 	@Override
 	public void updateRequest() {
-		updateRequest(null);		
+		updateRequest(null);
 	}
-	
+
 	@Override
 	public void updateRequest(Object source) {
 		if (source == null) {
@@ -217,5 +220,19 @@ public final class DefaultMesh implements IMesh {
 	private void requestGeometryUpdate() {
 		geometryUpdater.request();
 		bb = null;
+	}
+
+	private static void checkAttributeConsistency(IMaterial material, IGeometry geometry) {
+		// primitive types must match
+		Primitive m = material.getType();
+		Primitive g = geometry.getType();
+		if (m != g)
+			throw new IllegalArgumentException("primitive types of material and geometry do not match: " + m + " " + g);
+
+		// geometry must provide all materials required by material
+		List<IGeometryAttribute> ga = Arrays.asList(geometry.getAttributes());
+		List<IAttribute> ma = material.getRequiredAttributes();
+		if (!ga.containsAll(ma))
+			throw new IllegalArgumentException("primitive types of material and geometry do not match: " + m + " " + g);
 	}
 }

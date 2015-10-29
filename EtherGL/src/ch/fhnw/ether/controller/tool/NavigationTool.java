@@ -43,7 +43,7 @@ import ch.fhnw.ether.scene.mesh.IMesh.Queue;
 import ch.fhnw.ether.scene.mesh.MeshLibrary;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
-import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
+import ch.fhnw.ether.scene.mesh.material.LineMaterial;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.IView.ViewFlag;
 import ch.fhnw.util.color.RGBA;
@@ -146,7 +146,7 @@ public class NavigationTool extends AbstractTool {
 			MeshLibrary.addLine(lines, -e, -i * gridSpacing, e, -i * gridSpacing);
 		}
 
-		return new DefaultMesh(new ColorMaterial(RGBA.GRAY), DefaultGeometry.createV(Primitive.LINES, Vec3.toArray(lines)), Queue.TRANSPARENCY);
+		return new DefaultMesh(new LineMaterial(RGBA.GRAY), DefaultGeometry.createV(Primitive.LINES, Vec3.toArray(lines)), Queue.TRANSPARENCY);
 	}
 	
 	private static IMesh makeAxes() {
@@ -161,6 +161,6 @@ public class NavigationTool extends AbstractTool {
 			0, 0, 1, 1, 0, 0, 1, 1
 		};
 
-		return new DefaultMesh(new ColorMaterial(RGBA.WHITE, true), DefaultGeometry.createVC(Primitive.LINES, lines, colors));
+		return new DefaultMesh(new LineMaterial(RGBA.WHITE, true), DefaultGeometry.createVC(Primitive.LINES, lines, colors));
 	}
 }
