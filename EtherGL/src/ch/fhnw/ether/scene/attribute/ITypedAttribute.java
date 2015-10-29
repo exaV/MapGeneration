@@ -30,8 +30,8 @@
 package ch.fhnw.ether.scene.attribute;
 
 /**
- * Abstraction of typed attribute. Sub-classes on material as well as shader
- * side implement specific attributes.
+ * Abstraction of typed attribute. Attributes are used to bind between
+ * materials/geometry and shader uniforms/arrays.
  * 
  * @author radar
  *

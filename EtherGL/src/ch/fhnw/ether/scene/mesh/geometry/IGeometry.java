@@ -122,8 +122,7 @@ public interface IGeometry extends IUpdateRequester {
 	void inspect(IAttributesVisitor visitor);
 
 	/**
-	 * Modify specific attribute of this geometry through visitor. If geometry
-	 * is modified, {@link #updateRequest()} needs to be called explicitly.
+	 * Modify specific attribute of this geometry through visitor.
 	 * 
 	 * @param index
 	 *            index of attribute to be visited
@@ -136,8 +135,7 @@ public interface IGeometry extends IUpdateRequester {
 	void modify(int index, IAttributeVisitor visitor);
 
 	/**
-	 * Modify all attributes of this geometry through visitor. If geometry is
-	 * modified, {@link #updateRequest()} needs to be called explicitly.
+	 * Modify all attributes of this geometry through visitor.
 	 * 
 	 * @param visitor
 	 *            attributes visitor used for modification

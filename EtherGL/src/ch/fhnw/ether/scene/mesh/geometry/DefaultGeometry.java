@@ -34,13 +34,12 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 // note: position is always expected as first attribute
-public class DefaultGeometry extends AbstractGeometry {
+public final class DefaultGeometry extends AbstractGeometry {
 
 	private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
-	private final IGeometryAttribute[] attributeTypes;
-	private final float[][] attributeData; // first dimension is attribute,
-											// second data
+	private final IGeometryAttribute[] attributes;
+	private final float[][] data;
 
 	/**
 	 * Generates geometry from the given data with the given attribute-layout.
@@ -60,16 +59,24 @@ public class DefaultGeometry extends AbstractGeometry {
 		super(type);
 
 		if (attributes[0] != POSITION_ARRAY)
-			throw new IllegalArgumentException("First attribute must be position");
+			throw new IllegalArgumentException("first attribute must be position");
 		if (attributes.length != data.length)
 			throw new IllegalArgumentException("# attribute type != # attribute data");
 		checkAttributeConsistency(attributes, data);
 
-		this.attributeTypes = Arrays.copyOf(attributes, attributes.length);
-
-		this.attributeData = new float[data.length][];
+		this.attributes = Arrays.copyOf(attributes, attributes.length);
+		this.data = new float[data.length][];
 		for (int i = 0; i < data.length; ++i) {
-			this.attributeData[i] = Arrays.copyOf(data[i], data[i].length);
+			this.data[i] = Arrays.copyOf(data[i], data[i].length);
+		}
+	}
+	
+	private DefaultGeometry(DefaultGeometry g) {
+		super(g.getType());
+		attributes = g.attributes;
+		this.data = new float[g.data.length][];
+		for (int i = 0; i < g.data.length; ++i) {
+			this.data[i] = Arrays.copyOf(g.data[i], g.data[i].length);
 		}
 	}
 
@@ -81,7 +88,7 @@ public class DefaultGeometry extends AbstractGeometry {
 	public DefaultGeometry copy() {
 		try {
 			lock.readLock().lock();
-			return new DefaultGeometry(getType(), attributeTypes, attributeData);
+			return new DefaultGeometry(getType(), attributes, data);
 		} finally {
 			lock.readLock().unlock();
 		}
@@ -91,7 +98,7 @@ public class DefaultGeometry extends AbstractGeometry {
 	public void inspect(int index, IAttributeVisitor visitor) {
 		try {
 			lock.readLock().lock();
-			visitor.visit(attributeTypes[index], attributeData[index]);
+			visitor.visit(attributes[index], data[index]);
 		} finally {
 			lock.readLock().unlock();
 		}
@@ -101,7 +108,7 @@ public class DefaultGeometry extends AbstractGeometry {
 	public void inspect(IAttributesVisitor visitor) {
 		try {
 			lock.readLock().lock();
-			visitor.visit(attributeTypes, attributeData);
+			visitor.visit(attributes, data);
 		} finally {
 			lock.readLock().unlock();
 		}
@@ -111,7 +118,7 @@ public class DefaultGeometry extends AbstractGeometry {
 	public void modify(int index, IAttributeVisitor visitor) {
 		try {
 			lock.writeLock().lock();
-			visitor.visit(attributeTypes[index], attributeData[index]);
+			visitor.visit(attributes[index], data[index]);
 		} finally {
 			lock.writeLock().unlock();
 		}
@@ -122,8 +129,8 @@ public class DefaultGeometry extends AbstractGeometry {
 	public void modify(IAttributesVisitor visitor) {
 		try {
 			lock.writeLock().lock();
-			visitor.visit(attributeTypes, attributeData);
-			checkAttributeConsistency(attributeTypes, attributeData);
+			visitor.visit(attributes, data);
+			checkAttributeConsistency(attributes, data);
 		} finally {
 			lock.writeLock().unlock();
 		}
