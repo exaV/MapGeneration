@@ -53,6 +53,7 @@ public class PointMaterial extends ColorMaterial {
 	
 	public final void setSize(float size) {
 		this.size = size;
+		updateRequest();
 	}
 
 	@Override

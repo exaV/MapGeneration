@@ -69,6 +69,7 @@ public class ShadedMaterial extends AbstractMaterial {
 	
 	public final void setEmission(RGB emission) {
 		this.emission = emission;
+		updateRequest();
 	}
 	
 	public final RGB getAmbient() {
@@ -77,6 +78,7 @@ public class ShadedMaterial extends AbstractMaterial {
 	
 	public final void setAmbient(RGB ambient) {
 		this.ambient = ambient;
+		updateRequest();
 	}
 	
 	public final RGB getDiffuse() {
@@ -85,6 +87,7 @@ public class ShadedMaterial extends AbstractMaterial {
 	
 	public final void setDiffuse(RGB diffuse) {
 		this.diffuse = diffuse;
+		updateRequest();
 	}
 	
 	public final RGB getSpecular() {
@@ -93,6 +96,7 @@ public class ShadedMaterial extends AbstractMaterial {
 	
 	public final void setSpecular(RGB specular) {
 		this.specular = specular;
+		updateRequest();
 	}
 	
 	public final float getShininess() {
@@ -101,6 +105,7 @@ public class ShadedMaterial extends AbstractMaterial {
 	
 	public final void setShininess(float shininess) {
 		this.shininess = shininess;
+		updateRequest();
 	}
 	
 	public final float getStrength() {
@@ -109,6 +114,7 @@ public class ShadedMaterial extends AbstractMaterial {
 	
 	public final void setStrength(float strength) {
 		this.strength = strength;
+		updateRequest();
 	}
 	
 	public final float getAlpha() {
@@ -117,6 +123,7 @@ public class ShadedMaterial extends AbstractMaterial {
 	
 	public final void setAlpha(float alpha) {
 		this.alpha = alpha;
+		updateRequest();
 	}
 	
 	public final Texture getColorMap() {
@@ -124,10 +131,10 @@ public class ShadedMaterial extends AbstractMaterial {
 	}
 	
 	// TODO: need to handle this correctly (with / without color map)
-	public final void setColorMap(Texture colorMap) {
-		this.colorMap = colorMap;
-	}
-
+	// public final void setColorMap(Texture colorMap) {
+	// this.colorMap = colorMap;
+	// updateRequest();
+	// }
 	
 	@Override
 	public void getAttributes(IAttributes attributes) {

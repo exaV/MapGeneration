@@ -54,6 +54,7 @@ public class LineMaterial extends ColorMaterial {
 	
 	public final void setWidth(float width) {
 		this.width = width;
+		updateRequest();
 	}
 
 	@Override

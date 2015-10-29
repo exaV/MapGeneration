@@ -131,43 +131,43 @@ public class GenericLight implements ILight {
 
 	private String name = "unnamed_light";
 
-	private LightSource lightParameters;
+	private LightSource lightSource;
 
 	protected GenericLight(LightSource lightParameters) {
-		this.lightParameters = lightParameters;
+		this.lightSource = lightParameters;
 	}
 
 	@Override
-	public BoundingBox getBounds() {
+	public final BoundingBox getBounds() {
 		// TODO: return correct bounding box (whatever that is/means)
 		return null;
 	}
 
 	@Override
-	public Vec3 getPosition() {
-		return new Vec3(lightParameters.getPosition());
+	public final Vec3 getPosition() {
+		return new Vec3(lightSource.getPosition());
 	}
 
 	@Override
-	public void setPosition(Vec3 position) {
-		lightParameters = new LightSource(lightParameters, position);
+	public final void setPosition(Vec3 position) {
+		lightSource = new LightSource(lightSource, position);
 	}
 
 	@Override
-	public String getName() {
+	public final String getName() {
 		return name;
 	}
 
 	@Override
-	public void setName(String name) {
+	public final void setName(String name) {
 		this.name = name;
 	}
 
-	public LightSource getLightSource() {
-		return lightParameters;
+	public final LightSource getLightSource() {
+		return lightSource;
 	}
 
-	public void setLightParameters(LightSource lightParameters) {
-		this.lightParameters = lightParameters;
+	public final void setLightParameters(LightSource lightParameters) {
+		this.lightSource = lightParameters;
 	}
 }

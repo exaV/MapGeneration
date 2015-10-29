@@ -54,6 +54,7 @@ public class ColorMapMaterial extends ColorMaterial {
 	
 	public final void setColorMap(Texture colorMap) {
 		this.colorMap = colorMap;
+		updateRequest();
 	}
 
 	@Override
