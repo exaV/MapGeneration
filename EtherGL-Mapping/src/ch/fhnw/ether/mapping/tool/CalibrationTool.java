@@ -53,6 +53,7 @@ import ch.fhnw.ether.scene.mesh.MeshLibrary;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
+import ch.fhnw.ether.scene.mesh.material.LineMaterial;
 import ch.fhnw.ether.scene.mesh.material.PointMaterial;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.ProjectionUtilities;
@@ -97,9 +98,9 @@ public final class CalibrationTool extends AbstractTool {
 	public CalibrationTool(IController controller, ICalibrationModel model) {
 		super(controller);
 		this.model = model;
-		lines = new DefaultMesh(new ColorMaterial(MODEL_COLOR), DefaultGeometry.createV(Primitive.LINES, model.getCalibrationLines()), Queue.OVERLAY);
+		lines = new DefaultMesh(new LineMaterial(MODEL_COLOR), DefaultGeometry.createV(Primitive.LINES, model.getCalibrationLines()), Queue.OVERLAY);
 		points = new DefaultMesh(new PointMaterial(MODEL_COLOR, 10), DefaultGeometry.createV(Primitive.POINTS, model.getCalibrationPoints()), Queue.OVERLAY);
-		calibratedLines = new DefaultMesh(new ColorMaterial(UNCALIBRATED_COLOR), DefaultGeometry.createV(Primitive.LINES, new float[0]),
+		calibratedLines = new DefaultMesh(new LineMaterial(UNCALIBRATED_COLOR), DefaultGeometry.createV(Primitive.LINES, new float[0]),
 				Queue.DEVICE_SPACE_OVERLAY);
 		calibratedPoints = new DefaultMesh(new PointMaterial(UNCALIBRATED_COLOR, 10), DefaultGeometry.createV(Primitive.POINTS, new float[0]),
 				Queue.DEVICE_SPACE_OVERLAY);

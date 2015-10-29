@@ -31,9 +31,8 @@ package ch.fhnw.ether.scene.mesh.geometry;
 
 import ch.fhnw.ether.scene.attribute.AbstractAttribute;
 import ch.fhnw.ether.scene.attribute.ITypedAttribute;
-import ch.fhnw.util.IUpdateRequester;
 
-public interface IGeometry extends IUpdateRequester {
+public interface IGeometry {
 	interface IGeometryAttribute extends ITypedAttribute<float[]> {
 		int getNumComponents();
 	}
@@ -97,11 +96,23 @@ public interface IGeometry extends IUpdateRequester {
 	IGeometryAttribute POINT_SIZE_ARRAY = new GeometryAttribute("builtin.material.point_size_array", 1);
 
 	/**
-	 * Obtain primitive type of this geometry.
-	 * 
-	 * @return primitive type of this geometry
+	 * Get primitive type of this geometry.
 	 */
 	Primitive getType();
+
+	/**
+	 * Get attributes this geometry provides. Warning: Does not copy the
+	 * internal array, and changes to the array will leave the geometry in
+	 * undefined state.
+	 */
+	IGeometryAttribute[] getAttributes();
+
+	/**
+	 * Get data this geometry provides. Warning: Does not copy the internal
+	 * array, and changes to the array will leave the geometry in undefined
+	 * state. Use the modify visitors below instead to modify the geometry.
+	 */
+	float[][] getData();
 
 	/**
 	 * Inspect specific attribute of this geometry through visitor.
@@ -145,8 +156,7 @@ public interface IGeometry extends IUpdateRequester {
 	 */
 	void modify(IAttributesVisitor visitor);
 
-	/**
-	 * Request update after this geometry has been modified
-	 */
-	void updateRequest();
+	boolean updateTest();
+
+	void updateClear();
 }

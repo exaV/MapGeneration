@@ -30,8 +30,10 @@
 package ch.fhnw.ether.render;
 
 import java.util.List;
+import java.util.Map;
+import java.util.function.Supplier;
 
-import ch.fhnw.ether.scene.attribute.IAttributeProvider;
+import ch.fhnw.ether.scene.attribute.IAttribute;
 
 /**
  * The program to be executed by the renderer.
@@ -50,6 +52,6 @@ public interface IRenderProgram {
 
 	void setRenderables(List<Renderable> renderables);
 
-	// XXX remove
-	List<IAttributeProvider> getProviders();
+	// XXX remove/revise
+	Map<IAttribute, Supplier<?>> getGlobalAttributes();
 }

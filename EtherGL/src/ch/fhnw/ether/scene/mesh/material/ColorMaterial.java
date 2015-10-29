@@ -29,14 +29,17 @@
 
 package ch.fhnw.ether.scene.mesh.material;
 
+import java.util.List;
+
+import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.util.color.RGBA;
 
 public class ColorMaterial extends AbstractMaterial {
-	private volatile RGBA color;
 
+	private RGBA color;
 	private final boolean perVertexColor;
-	
+
 	public ColorMaterial(RGBA color) {
 		this(color, false);
 	}
@@ -46,14 +49,34 @@ public class ColorMaterial extends AbstractMaterial {
 		this.perVertexColor = perVertexColor;
 	}
 
+	public final RGBA getColor() {
+		return color;
+	}
+
 	public final void setColor(RGBA color) {
 		this.color = color;
+		updateRequest();
 	}
 
 	@Override
-	public void getAttributes(IAttributes suppliers) {
-		suppliers.provide(IMaterial.COLOR, () -> color);
+	public List<IAttribute> getProvidedAttributes() {
+		List<IAttribute> attributes = super.getProvidedAttributes();
+		attributes.add(IMaterial.COLOR);
+		return attributes;
+	}
+
+	@Override
+	public List<IAttribute> getRequiredAttributes() {
+		List<IAttribute> attributes = super.getRequiredAttributes();
 		if (perVertexColor)
-			suppliers.require(IGeometry.COLOR_ARRAY);
+			attributes.add(IGeometry.COLOR_ARRAY);
+		return attributes;
+	}
+
+	@Override
+	public List<Object> getData() {
+		List<Object> data = super.getData();
+		data.add(color);
+		return data;
 	}
 }

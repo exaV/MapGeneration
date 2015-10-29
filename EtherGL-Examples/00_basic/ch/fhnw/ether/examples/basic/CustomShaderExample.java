@@ -29,6 +29,8 @@
 
 package ch.fhnw.ether.examples.basic;
 
+import java.util.List;
+
 import ch.fhnw.ether.controller.DefaultController;
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.render.shader.base.AbstractShader;
@@ -38,6 +40,7 @@ import ch.fhnw.ether.render.variable.builtin.PositionArray;
 import ch.fhnw.ether.render.variable.builtin.ViewUniformBlock;
 import ch.fhnw.ether.scene.DefaultScene;
 import ch.fhnw.ether.scene.IScene;
+import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
@@ -49,32 +52,42 @@ import ch.fhnw.ether.view.gl.DefaultView;
 
 public final class CustomShaderExample {
 	public static class ExampleCustomMaterial extends CustomMaterial {
-		private volatile float redGain;
-		
+
+		private float redGain;
+
 		public ExampleCustomMaterial(ExampleCustomShader shader, float redGain) {
 			super(shader);
 			this.redGain = redGain;
 		}
-		
+
 		public float getRedGain() {
 			return redGain;
 		}
-		
+
 		public void setRedGain(float redGain) {
 			this.redGain = redGain;
 			updateRequest();
 		}
-		
+
 		@Override
-		public void getAttributes(IAttributes attributes) {
-			attributes.provide(new MaterialAttribute<Float>("custom.red_gain"), () -> redGain);
-			super.getAttributes(attributes);
+		public List<IAttribute> getProvidedAttributes() {
+			List<IAttribute> attributes = super.getProvidedAttributes();
+			attributes.add(new MaterialAttribute<Float>("custom.red_gain"));
+			return attributes;
+		}
+
+		@Override
+		public List<Object> getData() {
+			List<Object> data = super.getData();
+			data.add(redGain);
+			return data;
 		}
 	}
-	
+
 	public static class ExampleCustomShader extends AbstractShader {
 		public ExampleCustomShader() {
-			super(CustomShaderExample.class, "custom_shader_example.custom_shader", "custom_shader", Primitive.TRIANGLES);
+			super(CustomShaderExample.class, "custom_shader_example.custom_shader", "custom_shader",
+					Primitive.TRIANGLES);
 			addArray(new PositionArray());
 			addArray(new ColorArray());
 
@@ -94,7 +107,7 @@ public final class CustomShaderExample {
 		DefaultGeometry g = DefaultGeometry.createVC(Primitive.TRIANGLES, vertices, colors);
 		return new DefaultMesh(new ExampleCustomMaterial(new ExampleCustomShader(), 2f), g);
 	}
-	
+
 	private volatile IMesh mesh;
 
 	// Setup the whole thing
@@ -103,8 +116,10 @@ public final class CustomShaderExample {
 		IController controller = new DefaultController();
 		controller.run((time) -> {
 			// Create view
-			//new DefaultView(controller, 100, 100, 500, 500, IView.INTERACTIVE_VIEW, "Test");
-			new DefaultView(controller, 100, 100, 500, 500, new IView.Config(ViewType.INTERACTIVE_VIEW, 0, new IView.ViewFlag[0]), "Test");
+			// new DefaultView(controller, 100, 100, 500, 500,
+			// IView.INTERACTIVE_VIEW, "Test");
+			new DefaultView(controller, 100, 100, 500, 500,
+					new IView.Config(ViewType.INTERACTIVE_VIEW, 0, new IView.ViewFlag[0]), "Test");
 
 			// Create scene and add triangle
 			IScene scene = new DefaultScene(controller);
@@ -114,7 +129,7 @@ public final class CustomShaderExample {
 			scene.add3DObject(mesh);
 		});
 		controller.animate((time, interval) -> {
-			((ExampleCustomMaterial)mesh.getMaterial()).setRedGain((float)Math.sin(time) + 1);
+			((ExampleCustomMaterial) mesh.getMaterial()).setRedGain((float) Math.sin(time) + 1);
 		});
 	}
 }

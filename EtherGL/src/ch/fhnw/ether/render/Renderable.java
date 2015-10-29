@@ -29,30 +29,47 @@
 
 package ch.fhnw.ether.render;
 
-import java.util.List;
-
-import ch.fhnw.ether.render.shader.IShader;
-import ch.fhnw.ether.scene.attribute.IAttributeProvider;
-import ch.fhnw.ether.scene.mesh.IMesh;
+import java.util.Map;
+import java.util.function.Supplier;
 
 import com.jogamp.opengl.GL3;
 
+import ch.fhnw.ether.render.shader.IShader;
+import ch.fhnw.ether.scene.attribute.IAttribute;
+import ch.fhnw.ether.scene.mesh.IMesh;
+
 public final class Renderable {
+	public static class RenderData {
+		public Object[] materialData;
+		public float[][] geometryData;
+
+		private void assign(IMesh mesh) {
+			materialData = mesh.getMaterial().getData().toArray();
+			geometryData = mesh.getGeometry().getData();
+		}
+	}
+
+	private final RenderData data = new RenderData();
+
 	private final IShader shader;
 	private final IMesh mesh;
 	private final IVertexBuffer buffer;
 
-	// FIXME: let's get rid of this providers list somehow (an unmodifiable map of provided arrays would be fine)
-	public Renderable(IMesh mesh, List<IAttributeProvider> providers) {
-		this(null, mesh, providers);
+	// FIXME: let's get rid of this providers list somehow (an unmodifiable map
+	// of provided arrays would be fine)
+	public Renderable(IMesh mesh, Map<IAttribute, Supplier<?>> globals) {
+		this(null, mesh, globals);
 	}
 
-	public Renderable(IShader shader, IMesh mesh, List<IAttributeProvider> providers) {
-		this.shader = ShaderBuilder.create(shader, mesh, providers);
+	public Renderable(IShader shader, IMesh mesh, Map<IAttribute, Supplier<?>> globals) {
+		data.assign(mesh);
+
+		this.shader = ShaderBuilder.create(shader, mesh.getMaterial(), data, globals);
 		this.mesh = mesh;
 		this.buffer = new VertexBuffer(this.shader, this.mesh);
 
-		// make sure update flag is set, so everything get initialized on the next render cycle
+		// make sure update flag is set, so everything get initialized on the
+		// next render cycle
 		mesh.updateRequest(null);
 	}
 

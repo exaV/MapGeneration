@@ -29,22 +29,51 @@
 
 package ch.fhnw.ether.scene.mesh.material;
 
-import ch.fhnw.util.IUpdateListener;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import ch.fhnw.ether.scene.attribute.IAttribute;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
+import ch.fhnw.util.UpdateRequest;
 
 public abstract class AbstractMaterial implements IMaterial {
-	private final UpdateListeners listeners = new UpdateListeners();
+
+	private final UpdateRequest updater = new UpdateRequest();
 
 	@Override
-	public final void addUpdateListener(IUpdateListener listener) {
-		listeners.addListener(listener);
+	public Primitive getType() {
+		// default to triangles, as this is the majority of all materials
+		return Primitive.TRIANGLES;
 	}
 
 	@Override
-	public final void removeUpdateListener(IUpdateListener listener) {
-		listeners.removeListener(listener);
+	public List<IAttribute> getProvidedAttributes() {
+		return new ArrayList<>();
 	}
 
-	protected void updateRequest() {
-		listeners.updateRequest(this);
+	@Override
+	public List<IAttribute> getRequiredAttributes() {
+		return new ArrayList<>(Collections.singletonList(IGeometry.POSITION_ARRAY));
+	}
+
+	@Override
+	public List<Object> getData() {
+		return new ArrayList<>();
+	}
+
+	@Override
+	public boolean updateTest() {
+		return updater.test();
+	}
+
+	@Override
+	public void updateClear() {
+		updater.clear();
+	}
+
+	protected final void updateRequest() {
+		updater.request();
 	}
 }

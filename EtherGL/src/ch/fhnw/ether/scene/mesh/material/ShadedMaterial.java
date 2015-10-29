@@ -29,21 +29,24 @@
 
 package ch.fhnw.ether.scene.mesh.material;
 
+import java.util.List;
+
+import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.util.color.RGB;
 
-// TODO: support for per vertex color (if that's ever needed)
 public class ShadedMaterial extends AbstractMaterial {
-	private volatile RGB emission;
-	private volatile RGB ambient;
-	private volatile RGB diffuse;
-	private volatile RGB specular;
-	private volatile float shininess;
-	private volatile float strength;
-	private volatile float alpha;
-	
+
+	private RGB emission;
+	private RGB ambient;
+	private RGB diffuse;
+	private RGB specular;
+	private float shininess;
+	private float strength;
+	private float alpha;
+
 	private volatile Texture colorMap;
-	
+
 	public ShadedMaterial(RGB diffuse) {
 		this(RGB.BLACK, RGB.BLACK, diffuse, RGB.BLACK, 0, 0, 1);
 	}
@@ -62,93 +65,118 @@ public class ShadedMaterial extends AbstractMaterial {
 		this.alpha = alpha;
 		this.colorMap = colorMap;
 	}
-	
+
 	public final RGB getEmission() {
 		return emission;
 	}
-	
+
 	public final void setEmission(RGB emission) {
 		this.emission = emission;
 		updateRequest();
 	}
-	
+
 	public final RGB getAmbient() {
 		return ambient;
 	}
-	
+
 	public final void setAmbient(RGB ambient) {
 		this.ambient = ambient;
 		updateRequest();
 	}
-	
+
 	public final RGB getDiffuse() {
 		return diffuse;
 	}
-	
+
 	public final void setDiffuse(RGB diffuse) {
 		this.diffuse = diffuse;
 		updateRequest();
 	}
-	
+
 	public final RGB getSpecular() {
 		return specular;
 	}
-	
+
 	public final void setSpecular(RGB specular) {
 		this.specular = specular;
 		updateRequest();
 	}
-	
+
 	public final float getShininess() {
 		return shininess;
 	}
-	
+
 	public final void setShininess(float shininess) {
 		this.shininess = shininess;
 		updateRequest();
 	}
-	
+
 	public final float getStrength() {
 		return strength;
 	}
-	
+
 	public final void setStrength(float strength) {
 		this.strength = strength;
 		updateRequest();
 	}
-	
+
 	public final float getAlpha() {
 		return alpha;
 	}
-	
+
 	public final void setAlpha(float alpha) {
 		this.alpha = alpha;
 		updateRequest();
 	}
-	
+
 	public final Texture getColorMap() {
 		return colorMap;
 	}
-	
+
 	// TODO: need to handle this correctly (with / without color map)
 	// public final void setColorMap(Texture colorMap) {
 	// this.colorMap = colorMap;
 	// updateRequest();
 	// }
+
+	@Override
+	public List<IAttribute> getProvidedAttributes() {
+		List<IAttribute> attributes = super.getProvidedAttributes();
+		attributes.add(IMaterial.EMISSION);
+		attributes.add(IMaterial.AMBIENT);
+		attributes.add(IMaterial.DIFFUSE);
+		attributes.add(IMaterial.SPECULAR);
+		attributes.add(IMaterial.SHININESS);
+		attributes.add(IMaterial.STRENGTH);
+		attributes.add(IMaterial.ALPHA);
+		if (colorMap != null) {
+			attributes.add(IMaterial.COLOR_MAP);
+		}
+		return attributes;
+	}
+
+	@Override
+	public List<IAttribute> getRequiredAttributes() {		
+		List<IAttribute> attributes = super.getRequiredAttributes();
+		if (colorMap != null) {
+			attributes.add(IGeometry.COLOR_MAP_ARRAY);
+		}
+		return attributes;
+	}
 	
 	@Override
-	public void getAttributes(IAttributes attributes) {
-		attributes.provide(IMaterial.EMISSION, () -> emission);
-		attributes.provide(IMaterial.AMBIENT, () -> ambient);
-		attributes.provide(IMaterial.DIFFUSE, () -> diffuse);
-		attributes.provide(IMaterial.SPECULAR, () -> specular);
-		attributes.provide(IMaterial.SHININESS, () -> shininess);
-		attributes.provide(IMaterial.STRENGTH, () -> strength);
-		attributes.provide(IMaterial.ALPHA, () -> alpha);
-
+	public List<Object> getData() {
+		List<Object> data = super.getData();
+		data.add(emission);
+		data.add(ambient);
+		data.add(diffuse);
+		data.add(specular);
+		data.add(shininess);
+		data.add(strength);
+		data.add(alpha);
 		if (colorMap != null) {
-			attributes.provide(IMaterial.COLOR_MAP, () -> colorMap);
-			attributes.require(IGeometry.COLOR_MAP_ARRAY);
+			data.add(colorMap);
 		}
+		return data;
 	}
 }

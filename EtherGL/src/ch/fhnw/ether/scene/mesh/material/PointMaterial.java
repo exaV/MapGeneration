@@ -29,12 +29,17 @@
 
 package ch.fhnw.ether.scene.mesh.material;
 
+import java.util.List;
+
+import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.util.color.RGBA;
 
-public class PointMaterial extends ColorMaterial {
-	private volatile float size;
-	
+public class PointMaterial extends AbstractMaterial {
+	private RGBA color;
+	private float size;
+	private final boolean perVertexColor;
 	private final boolean perVertexSize;
 
 	public PointMaterial(RGBA color, float size) {
@@ -42,25 +47,58 @@ public class PointMaterial extends ColorMaterial {
 	}
 
 	public PointMaterial(RGBA color, float size, boolean perVertexColor, boolean perVertexSize) {
-		super(color, perVertexColor);
+		this.color = color;
 		this.size = size;
+		this.perVertexColor = perVertexColor;
 		this.perVertexSize = perVertexSize;
 	}
-	
+
+	public final RGBA getColor() {
+		return color;
+	}
+
+	public final void setColor(RGBA color) {
+		this.color = color;
+		updateRequest();
+	}
+
 	public final float getSize() {
 		return size;
 	}
-	
+
 	public final void setSize(float size) {
 		this.size = size;
 		updateRequest();
 	}
 
 	@Override
-	public void getAttributes(IAttributes attributes) {
-		attributes.provide(IMaterial.POINT_SIZE, () -> size);
+	public Primitive getType() {
+		return Primitive.POINTS;
+	}
+
+	@Override
+	public List<IAttribute> getProvidedAttributes() {
+		List<IAttribute> attributes = super.getProvidedAttributes();
+		attributes.add(IMaterial.COLOR);
+		attributes.add(IMaterial.POINT_SIZE);
+		return attributes;
+	}
+
+	@Override
+	public List<IAttribute> getRequiredAttributes() {
+		List<IAttribute> attributes = super.getRequiredAttributes();
+		if (perVertexColor)
+			attributes.add(IGeometry.COLOR_ARRAY);
 		if (perVertexSize)
-			attributes.require(IGeometry.POINT_SIZE_ARRAY);
-		super.getAttributes(attributes);
+			attributes.add(IGeometry.POINT_SIZE_ARRAY);
+		return attributes;
+	}
+
+	@Override
+	public List<Object> getData() {
+		List<Object> data = super.getData();
+		data.add(color);
+		data.add(size);
+		return data;
 	}
 }

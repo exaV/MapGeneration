@@ -29,10 +29,12 @@
 
 package ch.fhnw.ether.render;
 
-import java.util.ArrayList;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Supplier;
 
-import ch.fhnw.ether.scene.attribute.IAttributeProvider;
+import ch.fhnw.ether.scene.attribute.IAttribute;
 
 /**
  * Default render program.
@@ -40,16 +42,15 @@ import ch.fhnw.ether.scene.attribute.IAttributeProvider;
  * @author radar
  */
 public class DefaultRenderProgram implements IRenderProgram {
-	// FIXME: this needs cleanup, i don't think we need this here
-	private final List<IAttributeProvider> providers = new ArrayList<>();
+	private final Map<IAttribute, Supplier<?>> globals = new IdentityHashMap<>();
 
 	private final ViewInfo viewInfo = new ViewInfo();
 	private final LightInfo lightInfo = new LightInfo();
 	private List<Renderable> renderables;
 
 	public DefaultRenderProgram() {
-		providers.add(viewInfo.getAttributeProvider());
-		providers.add(lightInfo.getAttributeProvider());
+		viewInfo.getAttributes(globals);
+		lightInfo.getAttributes(globals);
 	}
 
 	@Override
@@ -73,7 +74,7 @@ public class DefaultRenderProgram implements IRenderProgram {
 	}
 
 	@Override
-	public List<IAttributeProvider> getProviders() {
-		return providers;
+	public Map<IAttribute, Supplier<?>> getGlobalAttributes() {
+		return globals;
 	}
 }

@@ -42,7 +42,7 @@ public final class ViewUniformBlock extends UniformBlock {
 
 	// 3 * mat4 + 1 * mat3 + 3 pad
 	// layout: viewMatrix, viewProjMatrix, projMatrix, normalMatrix
-	// 3x (3D, ortho device space, ortho screen space
+	// 3x (3D, ortho device space, ortho screen space)
 	public static final int BLOCK_SIZE = 3 * 16 + 9 + 3;
 
 	private static final String DEFAULT_SHADER_NAME = "viewBlock";

@@ -30,6 +30,8 @@
 package ch.fhnw.ether.render.forward;
 
 import java.util.List;
+import java.util.Map;
+import java.util.function.Supplier;
 
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL3;
@@ -38,7 +40,7 @@ import ch.fhnw.ether.render.Renderable;
 import ch.fhnw.ether.render.ShaderBuilder;
 import ch.fhnw.ether.render.shader.builtin.ShadowVolumeShader;
 import ch.fhnw.ether.render.shader.builtin.TrivialDeviceSpaceShader;
-import ch.fhnw.ether.scene.attribute.IAttributeProvider;
+import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.IMesh.Flags;
@@ -60,10 +62,10 @@ public final class ShadowVolumes {
 	private RGBA volumeColor = new RGBA(1, 0, 0, 0.2f);
 	private RGBA overlayColor = new RGBA(0, 0, 0, 0.9f);
 
-	public ShadowVolumes(List<IAttributeProvider> providers) {
-		volumeShader = ShaderBuilder.create(new ShadowVolumeShader(() -> lightIndex, () -> extrudeDistance, () -> volumeColor), null, providers);
+	public ShadowVolumes(Map<IAttribute, Supplier<?>> globals) {
+		volumeShader = ShaderBuilder.create(new ShadowVolumeShader(() -> lightIndex, () -> extrudeDistance, () -> volumeColor), null, null, globals);
 
-		overlay = new Renderable(new TrivialDeviceSpaceShader(() -> overlayColor), OVERLAY_MESH, providers);
+		overlay = new Renderable(new TrivialDeviceSpaceShader(() -> overlayColor), OVERLAY_MESH, globals);
 	}
 
 	// http://ogldev.atspace.co.uk/www/tutorial40/tutorial40.html

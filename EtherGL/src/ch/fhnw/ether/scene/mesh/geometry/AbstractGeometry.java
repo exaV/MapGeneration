@@ -29,12 +29,12 @@
 
 package ch.fhnw.ether.scene.mesh.geometry;
 
-import ch.fhnw.util.IUpdateListener;
+import ch.fhnw.util.UpdateRequest;
 
 public abstract class AbstractGeometry implements IGeometry {
 	private final Primitive type;
 
-	private final UpdateListeners listeners = new UpdateListeners();
+	private final UpdateRequest updater = new UpdateRequest();
 
 	protected AbstractGeometry(Primitive type) {
 		this.type = type;
@@ -46,17 +46,17 @@ public abstract class AbstractGeometry implements IGeometry {
 	}
 
 	@Override
-	public final void addUpdateListener(IUpdateListener listener) {
-		listeners.addListener(listener);
+	public boolean updateTest() {
+		return updater.test();
 	}
 
 	@Override
-	public final void removeUpdateListener(IUpdateListener listener) {
-		listeners.removeListener(listener);
+	public final void updateClear() {
+		updater.clear();
 	}
 
-	@Override
-	public void updateRequest() {
-		listeners.updateRequest(this);
+	protected final void updateRequest() {
+		updater.request();
 	}
+
 }
