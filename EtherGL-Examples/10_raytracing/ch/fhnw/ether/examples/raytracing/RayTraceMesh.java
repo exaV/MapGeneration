@@ -131,11 +131,9 @@ public class RayTraceMesh implements IMesh {
 		return false;
 	}
 	
-	@Override
 	public void updateRequest() {
 	}
 	
-	@Override
 	public void updateRequest(Object source) {
 	}
 	

@@ -35,7 +35,6 @@ import java.util.Set;
 import ch.fhnw.ether.scene.I3DObject;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
-import ch.fhnw.util.IUpdateListener;
 import ch.fhnw.util.math.Mat4;
 
 /**
@@ -46,7 +45,7 @@ import ch.fhnw.util.math.Mat4;
  * @author radar
  *
  */
-public interface IMesh extends I3DObject, IUpdateListener {
+public interface IMesh extends I3DObject {
 
 	enum Queue {
 		DEPTH, TRANSPARENCY, OVERLAY, DEVICE_SPACE_OVERLAY, SCREEN_SPACE_OVERLAY

@@ -113,7 +113,6 @@ public final class SimpleTextureExample {
 							vertices[i + 0] = 1;
 					}
 				});
-				mesh.updateRequest();
 			}
 		});
 	}

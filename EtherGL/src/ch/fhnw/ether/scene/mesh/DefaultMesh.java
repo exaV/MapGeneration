@@ -199,12 +199,10 @@ public final class DefaultMesh implements IMesh {
 		return geometryUpdater.testAndClear();
 	}
 
-	@Override
 	public void updateRequest() {
 		updateRequest(null);
 	}
 
-	@Override
 	public void updateRequest(Object source) {
 		if (source == null) {
 			requestMaterialUpdate();

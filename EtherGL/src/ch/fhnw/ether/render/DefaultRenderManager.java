@@ -250,12 +250,11 @@ public class DefaultRenderManager implements IRenderManager {
 					return;
 				}
 
-				GL3 gl3 = gl.getGL3();
-				// gl3 = new TraceGL3(gl3, System.out);
-				// gl3 = new DebugGL3(gl3);
+				// gl = new TraceGL3(gl, System.out);
+				// gl = new DebugGL3(gl);
 
 				// FIXME: currently we clear in DefaultView.display() ... needs to move
-				//gl3.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT | GL.GL_STENCIL_BUFFER_BIT);
+				//gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT | GL.GL_STENCIL_BUFFER_BIT);
 
 				if (!viewState.view.isEnabled())
 					return;
