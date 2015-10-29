@@ -31,12 +31,14 @@ package ch.fhnw.ether.render.forward;
 
 import java.util.List;
 
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL3;
+
 import ch.fhnw.ether.render.Renderable;
 import ch.fhnw.ether.render.ShaderBuilder;
 import ch.fhnw.ether.render.shader.builtin.ShadowVolumeShader;
 import ch.fhnw.ether.render.shader.builtin.TrivialDeviceSpaceShader;
 import ch.fhnw.ether.scene.attribute.IAttributeProvider;
-import ch.fhnw.ether.scene.light.GenericLight;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.IMesh.Flags;
@@ -45,9 +47,6 @@ import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.EmptyMaterial;
 import ch.fhnw.util.color.RGBA;
-
-import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GL3;
 
 public final class ShadowVolumes {
 	private static final IMesh OVERLAY_MESH = new DefaultMesh(new EmptyMaterial(), DefaultGeometry.createV(Primitive.TRIANGLES,
@@ -68,14 +67,13 @@ public final class ShadowVolumes {
 	}
 
 	// http://ogldev.atspace.co.uk/www/tutorial40/tutorial40.html
-	public void render(GL3 gl, IMesh.Queue pass, boolean interactive, List<Renderable> renderables, List<GenericLight> lights) {
+	public void render(GL3 gl, IMesh.Queue pass, boolean interactive, List<Renderable> renderables, int numLights) {
 		gl.glEnable(GL.GL_BLEND);
 		gl.glBlendFunc(GL.GL_ZERO, GL.GL_SRC_ALPHA);
 		gl.glDepthMask(false);
 		gl.glEnable(GL3.GL_DEPTH_CLAMP);
 
-		lightIndex = 0;
-		for (@SuppressWarnings("unused") GenericLight light : lights) {
+		for (lightIndex = 0; lightIndex < numLights; ++lightIndex) {
 			gl.glClear(GL.GL_STENCIL_BUFFER_BIT);
 
 			gl.glColorMask(false, false, false, false);

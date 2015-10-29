@@ -74,12 +74,11 @@ public final class TransformExample {
 
 		controller.animate(new IScheduler.IAnimationAction() {
 			@Override
-			public boolean run(double time, double interval) {
+			public void run(double time, double interval) {
 				angle += speed;
 
 				Mat4 transform = Mat4.multiply(Mat4.rotate(angle, Vec3.Z), Mat4.translate(1, 1, 1));
 				mesh.setTransform(transform);
-				return true;
 			}
 		});
 	}

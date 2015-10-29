@@ -177,6 +177,11 @@ public class DefaultController implements IController {
 	}
 	
 	@Override
+	public void kill(IAnimationAction action) {
+		scheduler.kill(action);
+	}
+	
+	@Override
 	public void run(IAction action) {
 		scheduler.run(action);
 	}

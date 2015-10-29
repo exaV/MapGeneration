@@ -115,7 +115,6 @@ public final class CustomShaderExample {
 		});
 		controller.animate((time, interval) -> {
 			((ExampleCustomMaterial)mesh.getMaterial()).setRedGain((float)Math.sin(time) + 1);
-			return true;
 		});
 	}
 }

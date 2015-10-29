@@ -80,7 +80,7 @@ public final class SimpleAnimationExample {
 			private int c = 0;
 
 			@Override
-			public boolean run(double time, double interval) {
+			public void run(double time, double interval) {
 				// make some heavy animation calculation
 				c += 4;
 				if (c >= 360)
@@ -98,7 +98,6 @@ public final class SimpleAnimationExample {
 							colors[i + 0] = 1;
 					}
 				});
-				return true;
 			}
 		});
 	}

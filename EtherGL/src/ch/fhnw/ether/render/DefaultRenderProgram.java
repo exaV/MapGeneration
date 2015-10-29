@@ -44,12 +44,22 @@ public class DefaultRenderProgram implements IRenderProgram {
 	private final List<IAttributeProvider> providers = new ArrayList<>();
 
 	private final ViewInfo viewInfo = new ViewInfo();
-	private List<Renderable> renderables;
 	private final LightInfo lightInfo = new LightInfo();
+	private List<Renderable> renderables;
 
 	public DefaultRenderProgram() {
 		providers.add(viewInfo.getAttributeProvider());
 		providers.add(lightInfo.getAttributeProvider());
+	}
+
+	@Override
+	public ViewInfo getViewInfo() {
+		return viewInfo;
+	}
+
+	@Override
+	public LightInfo getLightInfo() {
+		return lightInfo;
 	}
 
 	@Override
@@ -60,16 +70,6 @@ public class DefaultRenderProgram implements IRenderProgram {
 	@Override
 	public void setRenderables(List<Renderable> renderables) {
 		this.renderables = renderables;
-	}
-
-	@Override
-	public LightInfo getLightInfo() {
-		return lightInfo;
-	}
-
-	@Override
-	public ViewInfo getViewInfo() {
-		return viewInfo;
 	}
 
 	@Override

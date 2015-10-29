@@ -45,9 +45,9 @@ public interface IScene {
 
 	List<I3DObject> get3DObjects();
 
-	List<IMesh> getMeshes();
+	List<ICamera> getCameras();
 
 	List<ILight> getLights();
 
-	List<ICamera> getCameras();
+	List<IMesh> getMeshes();
 }

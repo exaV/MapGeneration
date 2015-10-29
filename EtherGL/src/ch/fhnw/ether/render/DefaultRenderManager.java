@@ -50,7 +50,6 @@ import ch.fhnw.ether.scene.light.DirectionalLight;
 import ch.fhnw.ether.scene.light.GenericLight;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.IMesh;
-import ch.fhnw.ether.ui.UI;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.IView.ViewType;
 import ch.fhnw.util.color.RGB;
@@ -266,9 +265,6 @@ public class DefaultRenderManager implements IRenderManager {
 
 				// repaint UI surface to texture if necessary
 				// FIXME: should this be done on model or render thread?
-				UI ui = controller.getUI();
-				if (ui != null)
-					ui.update();
 
 				// render everything
 				ViewType type = viewState.view.getConfig().getViewType();

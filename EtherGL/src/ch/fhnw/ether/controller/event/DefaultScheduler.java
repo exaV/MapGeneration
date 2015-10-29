@@ -36,13 +36,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import ch.fhnw.ether.controller.IController;
+import ch.fhnw.ether.ui.UI;
 import ch.fhnw.util.Pair;
 
 public class DefaultScheduler implements IScheduler {
 	private static final long START_TIME = System.nanoTime();
 
 	private final IController controller;
-	
+
 	private final double interval;
 
 	private final Thread sceneThread;
@@ -52,7 +53,7 @@ public class DefaultScheduler implements IScheduler {
 	private final List<Pair<Double, IAction>> actions = new ArrayList<>();
 
 	private final AtomicBoolean repaint = new AtomicBoolean();
-	
+
 	private final Semaphore renderMonitor = new Semaphore(0);
 	private final AtomicReference<Runnable> renderRunnable = new AtomicReference<>();
 
@@ -63,13 +64,20 @@ public class DefaultScheduler implements IScheduler {
 		this.renderThread = new Thread(this::runRenderThread, "renderthread");
 
 		sceneThread.start();
-		renderThread.start();		
+		renderThread.start();
 	}
 
 	@Override
 	public void animate(IAnimationAction action) {
 		synchronized (animations) {
 			animations.add(action);
+		}
+	}
+
+	@Override
+	public void kill(IAnimationAction action) {
+		synchronized (animations) {
+			animations.remove(action);
 		}
 	}
 
@@ -134,23 +142,20 @@ public class DefaultScheduler implements IScheduler {
 				synchronized (animations) {
 					aa = new ArrayList<>(animations);
 				}
-				List<IAnimationAction> ra = new ArrayList<>();
 				for (IAnimationAction a : aa) {
 					try {
-						if (!a.run(time, interval))
-							ra.add(a);
+						a.run(time, interval);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
 					repaint.set(true);
 				}
-				if (!ra.isEmpty()) {
-					synchronized (animations) {
-						animations.removeAll(ra);
-					}
-				}
 			}
 
+			// FIXME: special hook for ui update (this should go into the regular animation loop)
+			UI ui = controller.getUI();
+			if (ui != null && ui.update())
+				repaint.set(true);
 
 			if (repaint.getAndSet(false) && renderMonitor.availablePermits() < 1) {
 				renderRunnable.set(controller.getRenderManager().getRenderRunnable());

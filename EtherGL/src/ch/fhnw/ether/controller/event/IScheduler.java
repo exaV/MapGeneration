@@ -49,25 +49,31 @@ public interface IScheduler {
 
 	interface IAnimationAction {
 		/**
-		 * Repeated animation action to be run, implemented by client.
+		 * Action to be run, implemented by client.
 		 * 
 		 * @param time
 		 *            time since application start, in seconds
 		 * @param interval
 		 *            interval of repeated action, in seconds
-		 * @return false to stop repeated execution of action, true otherwise.
 		 */
-		boolean run(double time, double interval);
+		void run(double time, double interval);
 	}
 
 	/**
-	 * Add an action to the model animation loop until it removes itself.
-	 * Thread-safe.
+	 * Add an action to the model animation loop until it removes itself via
+	 * {@link #kill(IAnimationAction)}. Thread-safe.
 	 * 
 	 * @param action
 	 *            Action to be run
 	 */
 	void animate(IAnimationAction action);
+
+	/**
+	 * Remove an action from model animation loop.
+	 * 
+	 * @param action
+	 */
+	void kill(IAnimationAction action);
 
 	/**
 	 * Run an action on model thread once. Thread-safe.
@@ -86,7 +92,7 @@ public interface IScheduler {
 	 *            Action to be run
 	 */
 	void run(double delay, IAction action);
-	
+
 	/**
 	 * Request repaint.
 	 */

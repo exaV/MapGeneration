@@ -94,7 +94,7 @@ public final class SimpleTextureExample {
 			private int c = 0;
 
 			@Override
-			public boolean run(double time, double interval) {
+			public void run(double time, double interval) {
 
 				// make some heavy animation calculation
 				c += 4;
@@ -114,7 +114,6 @@ public final class SimpleTextureExample {
 					}
 				});
 				mesh.updateRequest();
-				return true;
 			}
 		});
 	}

@@ -102,11 +102,10 @@ public class GeometryServer {
 		try {
 			controller.animate(new IScheduler.IAnimationAction() {
 				@Override
-				public boolean run(double time, double interval) {
+				public void run(double time, double interval) {
 					Vec3 p = controller.getLightPosition();
 					Vec3 q = new Vec3(sunPosition.x - p.x, sunPosition.y - p.y, 0).scale(0.1f);
 					controller.setLightPosition(q);
-					return true;
 				}
 			});
 

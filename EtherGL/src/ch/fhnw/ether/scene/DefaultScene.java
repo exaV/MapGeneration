@@ -43,67 +43,61 @@ public class DefaultScene implements IScene {
 
 	private final IController controller;
 
-	private final List<IMesh>     meshes  = new ArrayList<>();
-	private final List<ICamera>   cameras = new ArrayList<>();
-	private final List<ILight>    lights  = new ArrayList<>();
+	private final List<ICamera> cameras = new ArrayList<>();
+	private final List<ILight> lights = new ArrayList<>();
+	private final List<IMesh> meshes = new ArrayList<>();
 	private final List<I3DObject> objects = new ArrayList<>();
-	
+
 	public DefaultScene(IController controller) {
 		this.controller = controller;
 	}
-	
-	public DefaultScene(IController controller, ICamera camera, List<IMesh> meshes) {
-		this(controller);
-		meshes.addAll(meshes);
-		objects.addAll(meshes);
-	}
-	
-	// FIXME: handling if objects are already added (use sets, or throw exceptions or etc... similar to renderer)
+
+	// FIXME: handling if objects are already added (use sets, or throw
+	// exceptions or etc... similar to renderer)
 	@Override
 	public final void add3DObject(I3DObject object) {
 		IRenderManager rm = controller.getRenderManager();
-		if (object instanceof IMesh) {
-			meshes.add((IMesh)object);
-			rm.addMesh((IMesh)object);
-		}
 		if (object instanceof ICamera) {
-			cameras.add((ICamera)object);
+			cameras.add((ICamera) object);
 		}
 		if (object instanceof ILight) {
-			lights.add((ILight)object);		
-			rm.addLight((ILight)object);
+			lights.add((ILight) object);
+			rm.addLight((ILight) object);
+		}
+		if (object instanceof IMesh) {
+			meshes.add((IMesh) object);
+			rm.addMesh((IMesh) object);
 		}
 		objects.add(object);
 	}
-	
+
 	@Override
 	public void add3DObjects(I3DObject... objects) {
 		for (I3DObject object : objects)
 			add3DObject(object);
 	}
-	
+
 	@Override
 	public final void remove3DObject(I3DObject object) {
 		IRenderManager rm = controller.getRenderManager();
-		if (object instanceof IMesh) {
-			meshes.remove(object);
-			rm.removeMesh((IMesh)object);
-		}
 		if (object instanceof ICamera)
 			cameras.remove(object);
 		if (object instanceof ILight) {
-			lights.remove(object);	
-			rm.removeLight((ILight)object);
+			lights.remove(object);
+			rm.removeLight((ILight) object);
+		}
+		if (object instanceof IMesh) {
+			meshes.remove(object);
+			rm.removeMesh((IMesh) object);
 		}
 		objects.remove(object);
 	}
-	
+
 	@Override
 	public void remove3DObjects(I3DObject... objects) {
 		for (I3DObject object : objects)
 			remove3DObject(object);
 	}
-
 
 	@Override
 	public final List<I3DObject> get3DObjects() {
@@ -111,18 +105,18 @@ public class DefaultScene implements IScene {
 	}
 
 	@Override
-	public final List<IMesh> getMeshes() {
-		return Collections.unmodifiableList(meshes);
+	public final List<ICamera> getCameras() {
+		return Collections.unmodifiableList(cameras);
 	}
 
 	@Override
 	public final List<ILight> getLights() {
 		return Collections.unmodifiableList(lights);
 	}
-	
+
 	@Override
-	public final List<ICamera> getCameras() {
-		return Collections.unmodifiableList(cameras);
+	public final List<IMesh> getMeshes() {
+		return Collections.unmodifiableList(meshes);
 	}
 
 	protected final IController getController() {

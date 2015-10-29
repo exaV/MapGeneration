@@ -148,13 +148,22 @@ public interface IController {
 	IScheduler getScheduler();
 
 	/**
-	 * Add an action to the model animation loop until it removes itself. This
-	 * is a shorthand for getScheduler().animate(). Thread-safe.
+	 * Add an action to the model animation loop until it removes itself via
+	 * {@link #kill(IAnimationAction)}. This is a shorthand for
+	 * getScheduler().animate(). Thread-safe.
 	 * 
 	 * @param action
 	 *            Action to be run
 	 */
 	void animate(IAnimationAction action);
+
+	/**
+	 * Remove an action from model animation loop. This is a shorthand for
+	 * getScheduler().animate(). Thread-safe.
+	 * 
+	 * @param action
+	 */
+	void kill(IAnimationAction action);
 
 	/**
 	 * Run an action on model thread once. This is a shorthand for
@@ -177,7 +186,8 @@ public interface IController {
 	void run(double delay, IAction action);
 
 	/**
-	 * Request repaint of all views. This is a shorthand for getScheduler().repaint(). Thread-safe.
+	 * Request repaint of all views. This is a shorthand for
+	 * getScheduler().repaint(). Thread-safe.
 	 */
 	void repaint();
 

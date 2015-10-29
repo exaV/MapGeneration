@@ -41,18 +41,19 @@ import ch.fhnw.ether.scene.light.GenericLight;
 
 public final class LightInfo {
 	private final FloatUniformBuffer uniforms = new FloatUniformBuffer(LightUniformBlock.BLOCK_SIZE);
-	private List<GenericLight> lights;
+	private int numLights;
 
 	public LightInfo() {
 	}
 
-	public List<GenericLight> getLights() {
-		return lights;
+	public int getNumLights() {
+		return numLights;
 	}
 	
 	public void update(GL3 gl, IViewCameraState matrices, List<GenericLight> lights) {
-		this.lights = lights;
 		LightUniformBlock.loadUniforms(gl, uniforms, lights, matrices);
+		numLights = lights.size();
+		// FIXME: we always bind here. this could be avoided if there's no shader using lights
 		uniforms.bind(gl);
 	}
 

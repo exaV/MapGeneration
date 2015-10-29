@@ -63,9 +63,9 @@ public final class UI {
 		controller.getRenderManager().removeMesh(plane.getMesh());
 	}
 
-	public void update() {
+	public boolean update() {
 		if (!updater.testAndClear())
-			return;
+			return false;
 
 		plane.clear();
 
@@ -79,6 +79,7 @@ public final class UI {
 		}
 		
 		plane.update();
+		return true;
 	}
 
 	public List<IWidget> getWidgets() {

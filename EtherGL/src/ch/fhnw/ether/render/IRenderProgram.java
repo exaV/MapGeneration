@@ -39,14 +39,16 @@ import ch.fhnw.ether.scene.attribute.IAttributeProvider;
  * @author radar
  */
 public interface IRenderProgram {
+
+	// TODO: support for render target / render to texture
 	
-	List<Renderable> getRenderables();
-	
-	void setRenderables(List<Renderable> renderables);
+	ViewInfo getViewInfo();
 
 	LightInfo getLightInfo();
 
-	ViewInfo getViewInfo();
+	List<Renderable> getRenderables();
+
+	void setRenderables(List<Renderable> renderables);
 
 	// XXX remove
 	List<IAttributeProvider> getProviders();
