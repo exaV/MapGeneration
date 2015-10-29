@@ -50,7 +50,7 @@ public abstract class AbstractVariable<T> implements IShaderVariable<T> {
 	}
 	
 	@Override
-	public String id() {
+	public final String id() {
 		return id;
 	}
 

@@ -106,7 +106,29 @@ public class DefaultScheduler implements IScheduler {
 		while (true) {
 			double time = getTime();
 
-			// run animations first
+			// run actions first
+			{
+				List<Pair<Double, IAction>> aa;
+				synchronized (actions) {
+					aa = new ArrayList<>();
+					for (Pair<Double, IAction> p : actions) {
+						if (time > p.left)
+							aa.add(p);
+					}
+					if (!aa.isEmpty())
+						actions.removeAll(aa);
+				}
+				for (Pair<Double, IAction> a : aa) {
+					try {
+						a.right.run(time);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					repaint.set(true);
+				}
+			}
+
+			// run animations second
 			{
 				List<IAnimationAction> aa;
 				synchronized (animations) {
@@ -129,27 +151,6 @@ public class DefaultScheduler implements IScheduler {
 				}
 			}
 
-			// run actions second
-			{
-				List<Pair<Double, IAction>> aa;
-				synchronized (actions) {
-					aa = new ArrayList<>();
-					for (Pair<Double, IAction> p : actions) {
-						if (time > p.left)
-							aa.add(p);
-					}
-					if (!aa.isEmpty())
-						actions.removeAll(aa);
-				}
-				for (Pair<Double, IAction> a : aa) {
-					try {
-						a.right.run(time);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-					repaint.set(true);
-				}
-			}
 
 			if (repaint.getAndSet(false) && renderMonitor.availablePermits() < 1) {
 				renderRunnable.set(controller.getRenderManager().getRenderRunnable());
