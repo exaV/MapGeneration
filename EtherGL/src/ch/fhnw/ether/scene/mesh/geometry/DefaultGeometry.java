@@ -115,6 +115,7 @@ public class DefaultGeometry extends AbstractGeometry {
 		} finally {
 			lock.writeLock().unlock();
 		}
+		updateRequest();
 	}
 
 	@Override
@@ -126,6 +127,7 @@ public class DefaultGeometry extends AbstractGeometry {
 		} finally {
 			lock.writeLock().unlock();
 		}
+		updateRequest();
 	}
 
 	private static void checkAttributeConsistency(IGeometryAttribute[] attributes, float[][] data) {

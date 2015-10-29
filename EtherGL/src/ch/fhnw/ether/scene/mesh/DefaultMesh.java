@@ -44,8 +44,8 @@ public final class DefaultMesh implements IMesh {
 	private final EnumSet<Flags> flags;
 	private final IMaterial material;
 	private final IGeometry geometry;
-	private Vec3 position = Vec3.ZERO;
-	private Mat4 transform = Mat4.ID;
+	private volatile Vec3 position = Vec3.ZERO;
+	private volatile Mat4 transform = Mat4.ID;
 	private BoundingBox bb;
 
 	private String name = "unnamed_mesh";
@@ -130,6 +130,7 @@ public final class DefaultMesh implements IMesh {
 	public void setPosition(Vec3 position) {
 		this.position = position;
 		bb = null;
+		updateRequest(Mat4.ID);
 	}
 
 	@Override
@@ -174,6 +175,7 @@ public final class DefaultMesh implements IMesh {
 		if (this.transform != transform) {
 			this.transform = transform;
 			bb = null;
+			updateRequest(transform);
 		}
 	}
 

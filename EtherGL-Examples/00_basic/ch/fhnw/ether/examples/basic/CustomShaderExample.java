@@ -44,6 +44,7 @@ import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.CustomMaterial;
 import ch.fhnw.ether.view.IView;
+import ch.fhnw.ether.view.IView.ViewType;
 import ch.fhnw.ether.view.gl.DefaultView;
 
 public final class CustomShaderExample {
@@ -61,6 +62,7 @@ public final class CustomShaderExample {
 		
 		public void setRedGain(float redGain) {
 			this.redGain = redGain;
+			updateRequest();
 		}
 		
 		@Override
@@ -101,7 +103,8 @@ public final class CustomShaderExample {
 		IController controller = new DefaultController();
 		controller.run((time) -> {
 			// Create view
-			new DefaultView(controller, 100, 100, 500, 500, IView.INTERACTIVE_VIEW, "Test");
+			//new DefaultView(controller, 100, 100, 500, 500, IView.INTERACTIVE_VIEW, "Test");
+			new DefaultView(controller, 100, 100, 500, 500, new IView.Config(ViewType.INTERACTIVE_VIEW, 0, new IView.ViewFlag[0]), "Test");
 
 			// Create scene and add triangle
 			IScene scene = new DefaultScene(controller);
@@ -112,7 +115,6 @@ public final class CustomShaderExample {
 		});
 		controller.animate((time, interval) -> {
 			((ExampleCustomMaterial)mesh.getMaterial()).setRedGain((float)Math.sin(time) + 1);
-			mesh.updateRequest();
 			return true;
 		});
 	}

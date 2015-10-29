@@ -98,7 +98,6 @@ public final class SimpleAnimationExample {
 							colors[i + 0] = 1;
 					}
 				});
-				mesh.updateRequest(null);
 				return true;
 			}
 		});

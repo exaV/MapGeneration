@@ -326,9 +326,6 @@ public final class CalibrationTool extends AbstractTool {
 
 		calibratedLines.getGeometry().modify((attributes, data) -> data[0] = Vec3.toArray(v));
 		((ColorMaterial) calibratedLines.getMaterial()).setColor(context.calibrated ? CALIBRATED_COLOR : UNCALIBRATED_COLOR);
-		
-		calibratedPoints.updateRequest(null);
-		calibratedLines.updateRequest(null);
 	}
 
 }
