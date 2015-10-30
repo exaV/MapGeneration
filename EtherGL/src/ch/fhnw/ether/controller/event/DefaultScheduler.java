@@ -31,40 +31,35 @@ package ch.fhnw.ether.controller.event;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.ui.UI;
 import ch.fhnw.util.Pair;
 
 public class DefaultScheduler implements IScheduler {
+	
 	private static final long START_TIME = System.nanoTime();
 
 	private final IController controller;
+	private final Runnable runnable;
 
 	private final double interval;
 
 	private final Thread sceneThread;
-	private final Thread renderThread;
 
 	private final List<IAnimationAction> animations = new ArrayList<>();
 	private final List<Pair<Double, IAction>> actions = new ArrayList<>();
 
 	private final AtomicBoolean repaint = new AtomicBoolean();
 
-	private final Semaphore renderMonitor = new Semaphore(0);
-	private final AtomicReference<Runnable> renderRunnable = new AtomicReference<>();
-
-	public DefaultScheduler(IController controller, float fps) {
+	public DefaultScheduler(IController controller, Runnable runnable, float fps) {
 		this.controller = controller;
+		this.runnable = runnable;
 		this.interval = 1 / fps;
 		this.sceneThread = new Thread(this::runSceneThread, "scenethread");
-		this.renderThread = new Thread(this::runRenderThread, "renderthread");
 
 		sceneThread.start();
-		renderThread.start();
 	}
 
 	@Override
@@ -103,11 +98,6 @@ public class DefaultScheduler implements IScheduler {
 	@Override
 	public boolean isSceneThread() {
 		return Thread.currentThread().equals(sceneThread);
-	}
-
-	@Override
-	public boolean isRenderThread() {
-		return Thread.currentThread().equals(renderThread);
 	}
 
 	private void runSceneThread() {
@@ -157,9 +147,12 @@ public class DefaultScheduler implements IScheduler {
 			if (ui != null && ui.update())
 				repaint.set(true);
 
-			if (repaint.getAndSet(false) && renderMonitor.availablePermits() < 1) {
-				renderRunnable.set(controller.getRenderManager().getRenderRunnable());
-				renderMonitor.release();
+			if (repaint.getAndSet(false)) {
+				try {
+					runnable.run();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 
 			double elapsed = getTime() - time;
@@ -171,18 +164,7 @@ public class DefaultScheduler implements IScheduler {
 				} catch (Exception e) {
 				}
 			} else {
-				System.out.println("scene thread overload: max=" + interval + " used=" + elapsed);
-			}
-		}
-	}
-
-	private void runRenderThread() {
-		while (true) {
-			try {
-				renderMonitor.acquire();
-				renderRunnable.get().run();
-			} catch (Exception e) {
-				e.printStackTrace();
+				System.err.println("scheduler: scene thread overload (max=" + s2ms(interval) + "ms used=" + s2ms(time) + "ms)");
 			}
 		}
 	}
@@ -190,5 +172,9 @@ public class DefaultScheduler implements IScheduler {
 	private double getTime() {
 		long elapsed = System.nanoTime() - START_TIME;
 		return elapsed / 1000000000.0;
+	}
+	
+	private int s2ms(double time) {
+		return (int)(time * 1000);
 	}
 }

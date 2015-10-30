@@ -36,11 +36,13 @@ import ch.fhnw.ether.render.gl.Program;
 import com.jogamp.opengl.GL3;
 
 public interface IShaderUniform<T> extends IShaderVariable<T> {
-	boolean hasSupplier();
+	boolean isLinked();
 
 	void setSupplier(Supplier<?> supplier);
+	
+	void setIndex(int index);
 
-	void update();
+	void update(Object[] data);
 
 	void enable(GL3 gl, Program program);
 

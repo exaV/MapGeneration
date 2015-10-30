@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import ch.fhnw.ether.scene.attribute.IAttribute;
+import ch.fhnw.ether.scene.mesh.IMesh;
 
 /**
  * Default render program.
@@ -66,6 +67,11 @@ public class DefaultRenderProgram implements IRenderProgram {
 	@Override
 	public List<Renderable> getRenderables() {
 		return renderables;
+	}
+	
+	@Override
+	public Renderable createRenderable(IMesh mesh) {
+		return new Renderable(mesh, globals);
 	}
 
 	@Override

@@ -32,21 +32,20 @@ package ch.fhnw.ether.render;
 import java.nio.FloatBuffer;
 import java.util.List;
 
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL3;
+
 import ch.fhnw.ether.render.gl.FloatArrayBuffer;
 import ch.fhnw.ether.render.gl.IArrayBuffer;
 import ch.fhnw.ether.render.shader.IShader;
 import ch.fhnw.ether.render.variable.IShaderArray;
-import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.IGeometryAttribute;
 import ch.fhnw.util.BufferUtilities;
 import ch.fhnw.util.math.Mat3;
 import ch.fhnw.util.math.Mat4;
 
-import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GL3;
-
-// TODO: deal with max vbo size & multiple vbos, memory optimization, handle non-float arrays
+// TODO: deal with max vbo size & multiple vbos, memory optimization, handle non-float arrays, indexed buffers
 
 public final class VertexBuffer implements IVertexBuffer {
 	private static final ThreadLocal<FloatBuffer> TARGET = 
@@ -59,74 +58,67 @@ public final class VertexBuffer implements IVertexBuffer {
 	private final int[] offsets;
 	private final int[] attributeIndices;
 
-	public VertexBuffer(IShader shader, IMesh mesh) {
+	public VertexBuffer(IShader shader, IGeometryAttribute[] attributes) {
 		List<IShaderArray<?>> arrays = shader.getArrays();
 
 		sizes = new int[arrays.size()];
 		offsets = new int[arrays.size()];
 		attributeIndices = new int[arrays.size()];
 
-		int[] stride = new int[1];
-		mesh.getGeometry().inspect((attributes, data) -> {
-			int bufferIndex = 0;
-			for (IShaderArray<?> array : arrays) {
-				int attributeIndex = 0;
-				for (IGeometryAttribute attribute : attributes) {
-					if (array.id().equals(attribute.id())) {
-						int size = attribute.getNumComponents();
-						sizes[bufferIndex] = size;
-						offsets[bufferIndex] = stride[0];
-						attributeIndices[bufferIndex] = attributeIndex;
-						array.setBufferIndex(bufferIndex);
-						bufferIndex++;
-						stride[0] += size;
-						break;
-					}
-					attributeIndex++;
+		int stride = 0;
+		int bufferIndex = 0;
+		for (IShaderArray<?> array : arrays) {
+			int attributeIndex = 0;
+			for (IGeometryAttribute attribute : attributes) {
+				if (array.id().equals(attribute.id())) {
+					int size = attribute.getNumComponents();
+					sizes[bufferIndex] = size;
+					offsets[bufferIndex] = stride;
+					attributeIndices[bufferIndex] = attributeIndex;
+					array.setBufferIndex(bufferIndex);
+					bufferIndex++;
+					stride += size;
+					break;
 				}
-				if (attributeIndex == attributes.length)
-					throw new IllegalArgumentException("shader " + shader + " requires attribute " + array.id());
+				attributeIndex++;
 			}
-		});
-		this.stride = stride[0];
+			if (attributeIndex == attributes.length)
+				throw new IllegalArgumentException("shader " + shader + " requires attribute " + array.id());
+		}
+		this.stride = stride;
 	}
 
+	public void load(GL3 gl, IShader shader, float[][] data, Mat4 positionTransform, Mat3 normalTransform) {
+		List<IShaderArray<?>> arrays = shader.getArrays();
+		float[][] sources = new float[arrays.size()][];
+
+		int bufferIndex = 0;
+		int size = 0;
+		for (IShaderArray<?> array : arrays) {
+			float[] source = data[attributeIndices[bufferIndex]];
+			if (array.id().equals(IGeometry.POSITION_ARRAY.id()))
+				sources[bufferIndex] = positionTransform.transform(source);
+			else if (array.id().equals(IGeometry.NORMAL_ARRAY.id()))
+				sources[bufferIndex] = normalTransform.transform(source);
+			else
+				sources[bufferIndex] = source;
+			bufferIndex++;
+			size += source.length;
+		}
+		FloatBuffer buffer = TARGET.get();
+		if (buffer.capacity() < size) {
+			buffer = BufferUtilities.createDirectFloatBuffer(2 * size);
+			TARGET.set(buffer);
+		}
+		buffer.clear();
+		buffer.limit(size);
+		interleave(buffer, sources, sizes);
+		this.buffer.load(gl, TARGET.get());
+	}
+	
 	@Override
 	public int getNumVertices() {
 		return buffer.size() / stride;
-	}
-
-	@Override
-	public void load(GL3 gl, IShader shader, IMesh mesh) {
-		Mat4 modelMatrix = Mat4.multiply(Mat4.translate(mesh.getPosition()), mesh.getTransform());
-		Mat3 normalMatrix = new Mat3(modelMatrix).inverse().transpose();
-
-		List<IShaderArray<?>> arrays = shader.getArrays();
-		float[][] sources = new float[arrays.size()][];
-		mesh.getGeometry().inspect((attributes, data) -> {
-			int bufferIndex = 0;
-			int size = 0;
-			for (IShaderArray<?> array : arrays) {
-				float[] source = data[attributeIndices[bufferIndex]];
-				if (array.id().equals(IGeometry.POSITION_ARRAY.id()))
-					sources[bufferIndex] = modelMatrix.transform(source);
-				else if (array.id().equals(IGeometry.NORMAL_ARRAY.id()))
-					sources[bufferIndex] = normalMatrix.transform(source);
-				else
-					sources[bufferIndex] = source;
-				bufferIndex++;
-				size += source.length;
-			}
-			FloatBuffer buffer = TARGET.get();
-			if (buffer.capacity() < size) {
-				buffer = BufferUtilities.createDirectFloatBuffer(2 * size);
-				TARGET.set(buffer);
-			}
-			buffer.clear();
-			buffer.limit(size);
-			interleave(buffer, sources, sizes);
-		});
-		buffer.load(gl, TARGET.get());
 	}
 
 	@Override

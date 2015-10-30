@@ -43,7 +43,7 @@ import ch.fhnw.ether.render.shader.builtin.TrivialDeviceSpaceShader;
 import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
-import ch.fhnw.ether.scene.mesh.IMesh.Flags;
+import ch.fhnw.ether.scene.mesh.IMesh.Flag;
 import ch.fhnw.ether.scene.mesh.MeshLibrary;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
@@ -63,7 +63,7 @@ public final class ShadowVolumes {
 	private RGBA overlayColor = new RGBA(0, 0, 0, 0.9f);
 
 	public ShadowVolumes(Map<IAttribute, Supplier<?>> globals) {
-		volumeShader = ShaderBuilder.create(new ShadowVolumeShader(() -> lightIndex, () -> extrudeDistance, () -> volumeColor), null, null, globals);
+		volumeShader = ShaderBuilder.create(new ShadowVolumeShader(() -> lightIndex, () -> extrudeDistance, () -> volumeColor), null, globals);
 
 		overlay = new Renderable(new TrivialDeviceSpaceShader(() -> overlayColor), OVERLAY_MESH, globals);
 	}
@@ -88,12 +88,12 @@ public final class ShadowVolumes {
 			gl.glStencilFuncSeparate(GL.GL_BACK, GL.GL_ALWAYS, 0, 0xffffffff);
 			gl.glStencilOpSeparate(GL.GL_BACK, GL.GL_KEEP, GL.GL_INCR_WRAP, GL.GL_KEEP);
 
-			volumeShader.update(gl);
+			volumeShader.update(gl, null);
 			volumeShader.enable(gl);
 			for (Renderable renderable : renderables) {
-				if (renderable.containsFlag(Flags.INTERACTIVE_VIEWS_ONLY) && !interactive)
+				if (renderable.containsFlag(Flag.INTERACTIVE_VIEWS_ONLY) && !interactive)
 					continue;
-				if (renderable.containsFlag(Flags.DONT_CAST_SHADOW))
+				if (renderable.containsFlag(Flag.DONT_CAST_SHADOW))
 					continue;
 				if (renderable.getQueue() != pass)
 					continue;
@@ -107,7 +107,8 @@ public final class ShadowVolumes {
 			gl.glStencilFunc(GL.GL_NOTEQUAL, 0x0, 0xffffffff);
 			gl.glStencilOp(GL.GL_KEEP, GL.GL_KEEP, GL.GL_KEEP);
 
-			overlay.update(gl);
+			// XXX need to find a new solution for shadow volumes...
+			//overlay.update(gl);
 			overlay.render(gl);
 
 			gl.glDisable(GL.GL_STENCIL_TEST);

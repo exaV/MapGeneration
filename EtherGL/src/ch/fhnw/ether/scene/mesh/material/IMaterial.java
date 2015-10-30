@@ -35,10 +35,11 @@ import ch.fhnw.ether.scene.attribute.AbstractAttribute;
 import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.attribute.ITypedAttribute;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
+import ch.fhnw.util.UpdateRequest.IUpdateTracker;
 import ch.fhnw.util.math.IVec3;
 import ch.fhnw.util.math.IVec4;
 
-public interface IMaterial {
+public interface IMaterial extends IUpdateTracker {
 	interface IMaterialAttribute<T> extends ITypedAttribute<T> {
 	}
 
@@ -87,11 +88,7 @@ public interface IMaterial {
 	List<IAttribute> getRequiredAttributes();
 
 	/**
-	 * Get list of provided attribute data.
+	 * Get a copy of the provided attribute data. 
 	 */
 	List<Object> getData();
-	
-	boolean updateTest();
-	
-	void updateClear();
 }

@@ -57,8 +57,8 @@ public class Vec3FloatUniform extends AbstractUniform<IVec3> {
 	}
 
 	@Override
-	public final void update() {
-		value = fetch().toArray();
+	public final void update(Object[] data) {
+		value = fetch(data).toArray();
 	}
 
 	@Override

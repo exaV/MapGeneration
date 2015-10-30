@@ -40,7 +40,7 @@ import ch.fhnw.util.UpdateRequest;
 
 public abstract class AbstractMaterial implements IMaterial {
 
-	private final UpdateRequest updater = new UpdateRequest();
+	private final UpdateRequest update = new UpdateRequest();
 
 	@Override
 	public Primitive getType() {
@@ -64,16 +64,11 @@ public abstract class AbstractMaterial implements IMaterial {
 	}
 
 	@Override
-	public boolean updateTest() {
-		return updater.test();
+	public final UpdateRequest getUpdater() {
+		return update;
 	}
-
-	@Override
-	public void updateClear() {
-		updater.clear();
-	}
-
+	
 	protected final void updateRequest() {
-		updater.request();
+		update.request();
 	}
 }

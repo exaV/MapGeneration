@@ -48,8 +48,8 @@ public class UniformBlock extends AbstractUniform<Integer> {
 	}
 
 	@Override
-	public final void update() {
-		bindingPoint = fetch();
+	public final void update(Object[] data) {
+		bindingPoint = fetch(data);
 	}
 
 	@Override

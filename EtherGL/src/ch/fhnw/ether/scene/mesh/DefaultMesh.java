@@ -30,8 +30,10 @@
 package ch.fhnw.ether.scene.mesh;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
@@ -45,7 +47,7 @@ import ch.fhnw.util.math.geometry.BoundingBox;
 
 public final class DefaultMesh implements IMesh {
 	private final Queue queue;
-	private final EnumSet<Flags> flags;
+	private final Set<Flag> flags;
 	private final IMaterial material;
 	private final IGeometry geometry;
 	private volatile Vec3 position = Vec3.ZERO;
@@ -54,8 +56,7 @@ public final class DefaultMesh implements IMesh {
 
 	private String name = "unnamed_mesh";
 
-	private final UpdateRequest materialUpdater = new UpdateRequest(true);
-	private final UpdateRequest geometryUpdater = new UpdateRequest(true);
+	private final UpdateRequest update = new UpdateRequest(true);
 
 	public DefaultMesh(IMaterial material, IGeometry geometry) {
 		this(material, geometry, Queue.DEPTH);
@@ -65,31 +66,31 @@ public final class DefaultMesh implements IMesh {
 		this(material, geometry, queue, NO_FLAGS);
 	}
 
-	public DefaultMesh(IMaterial material, IGeometry geometry, Flags flag, Flags... flags) {
+	public DefaultMesh(IMaterial material, IGeometry geometry, Flag flag, Flag... flags) {
 		this(material, geometry, Queue.DEPTH, EnumSet.of(flag, flags));
 	}
 
-	public DefaultMesh(IMaterial material, IGeometry geometry, Flags flag) {
+	public DefaultMesh(IMaterial material, IGeometry geometry, Flag flag) {
 		this(material, geometry, Queue.DEPTH, EnumSet.of(flag));
 	}
 
-	public DefaultMesh(IMaterial material, IGeometry geometry, EnumSet<Flags> flags) {
+	public DefaultMesh(IMaterial material, IGeometry geometry, EnumSet<Flag> flags) {
 		this(material, geometry, Queue.DEPTH, flags);
 	}
 
-	public DefaultMesh(IMaterial material, IGeometry geometry, Queue queue, Flags flag) {
+	public DefaultMesh(IMaterial material, IGeometry geometry, Queue queue, Flag flag) {
 		this(material, geometry, queue, EnumSet.of(flag));
 	}
 
-	public DefaultMesh(IMaterial material, IGeometry geometry, Queue queue, Flags flag, Flags... flags) {
+	public DefaultMesh(IMaterial material, IGeometry geometry, Queue queue, Flag flag, Flag... flags) {
 		this(material, geometry, queue, EnumSet.of(flag, flags));
 	}
 
-	public DefaultMesh(IMaterial material, IGeometry geometry, Queue queue, EnumSet<Flags> flags) {
+	public DefaultMesh(IMaterial material, IGeometry geometry, Queue queue, EnumSet<Flag> flags) {
 		this.material = material;
 		this.geometry = geometry;
 		this.queue = queue;
-		this.flags = flags;
+		this.flags = Collections.unmodifiableSet(flags);
 		checkAttributeConsistency(material, geometry);
 	}
 
@@ -133,7 +134,7 @@ public final class DefaultMesh implements IMesh {
 	public void setPosition(Vec3 position) {
 		this.position = position;
 		bb = null;
-		updateRequest(Mat4.ID);
+		updateRequest();
 	}
 
 	@Override
@@ -154,8 +155,13 @@ public final class DefaultMesh implements IMesh {
 	}
 
 	@Override
-	public EnumSet<Flags> getFlags() {
+	public Set<Flag> getFlags() {
 		return flags;
+	}
+	
+	@Override
+	public boolean hasFlag(Flag flag) {
+		return flags.contains(flag);
 	}
 
 	@Override
@@ -178,48 +184,22 @@ public final class DefaultMesh implements IMesh {
 		if (this.transform != transform) {
 			this.transform = transform;
 			bb = null;
-			updateRequest(transform);
+			updateRequest();
 		}
-	}
-
-	@Override
-	public boolean needsMaterialUpdate() {
-		return materialUpdater.testAndClear();
-	}
-
-	@Override
-	public boolean needsGeometryUpdate() {
-		return geometryUpdater.testAndClear();
-	}
-
-	@Override
-	public void updateRequest() {
-		updateRequest(null);
-	}
-
-	@Override
-	public void updateRequest(Object source) {
-		if (source == null) {
-			requestMaterialUpdate();
-			requestGeometryUpdate();
-		} else if (source instanceof IMaterial)
-			requestMaterialUpdate();
-		else if (source instanceof IGeometry || source instanceof Mat4)
-			requestGeometryUpdate();
 	}
 
 	@Override
 	public String toString() {
 		return name;
 	}
-
-	private void requestMaterialUpdate() {
-		materialUpdater.request();
+	
+	@Override
+	public UpdateRequest getUpdater() {
+		return update;
 	}
 
-	private void requestGeometryUpdate() {
-		geometryUpdater.request();
-		bb = null;
+	private void updateRequest() {
+		update.request();
 	}
 
 	private static void checkAttributeConsistency(IMaterial material, IGeometry geometry) {

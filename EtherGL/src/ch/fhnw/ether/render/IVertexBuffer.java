@@ -29,16 +29,11 @@
 
 package ch.fhnw.ether.render;
 
-import ch.fhnw.ether.render.shader.IShader;
-import ch.fhnw.ether.scene.mesh.IMesh;
-
 import com.jogamp.opengl.GL3;
 
 public interface IVertexBuffer {
 	
 	public int getNumVertices();
-
-	void load(GL3 gl, IShader shader, IMesh mesh);
 
 	public void bind(GL3 gl);
 

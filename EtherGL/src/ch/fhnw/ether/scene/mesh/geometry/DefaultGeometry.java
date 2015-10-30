@@ -66,18 +66,16 @@ public final class DefaultGeometry extends AbstractGeometry {
 
 		this.attributes = Arrays.copyOf(attributes, attributes.length);
 		this.data = new float[data.length][];
-		for (int i = 0; i < data.length; ++i) {
+		for (int i = 0; i < data.length; ++i)
 			this.data[i] = Arrays.copyOf(data[i], data[i].length);
-		}
 	}
 	
 	private DefaultGeometry(DefaultGeometry g) {
 		super(g.getType());
 		attributes = g.attributes;
 		this.data = new float[g.data.length][];
-		for (int i = 0; i < g.data.length; ++i) {
+		for (int i = 0; i < g.data.length; ++i)
 			this.data[i] = Arrays.copyOf(g.data[i], g.data[i].length);
-		}
 	}
 
 	/**
@@ -101,7 +99,10 @@ public final class DefaultGeometry extends AbstractGeometry {
 	
 	@Override
 	public float[][] getData() {
-		return data;
+		float[][] d = new float[data.length][];
+		for (int i = 0; i < data.length; ++i)
+			d[i] = Arrays.copyOf(data[i], data[i].length);
+		return d;
 	}
 
 	@Override

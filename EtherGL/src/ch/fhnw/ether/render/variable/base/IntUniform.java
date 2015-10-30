@@ -56,8 +56,8 @@ public class IntUniform extends AbstractUniform<Integer> {
 	}
 
 	@Override
-	public final void update() {
-		value = fetch();
+	public final void update(Object[] data) {
+		value = fetch(data);
 	}
 
 	@Override

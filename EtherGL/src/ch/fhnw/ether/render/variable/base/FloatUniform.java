@@ -56,8 +56,8 @@ public class FloatUniform extends AbstractUniform<Float> {
 	}
 
 	@Override
-	public final void update() {
-		value = fetch();
+	public final void update(Object[] data) {
+		value = fetch(data);
 	}
 
 	@Override

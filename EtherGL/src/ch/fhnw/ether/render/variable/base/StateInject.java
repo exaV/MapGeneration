@@ -52,7 +52,7 @@ public final class StateInject extends AbstractVariable<GL3> implements IShaderU
 	}
 
 	@Override
-	public boolean hasSupplier() {
+	public boolean isLinked() {
 		return true;
 	}
 
@@ -61,7 +61,11 @@ public final class StateInject extends AbstractVariable<GL3> implements IShaderU
 	}
 	
 	@Override
-	public void update() {
+	public void setIndex(int index) {
+	}
+	
+	@Override
+	public void update(Object[] data) {
 	}
 
 	@Override

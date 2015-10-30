@@ -35,6 +35,7 @@ import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
+import ch.fhnw.util.UpdateRequest;
 import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Mat4;
 import ch.fhnw.util.math.Vec3;
@@ -90,7 +91,12 @@ public class RayTraceMesh implements IMesh {
 	}
 	
 	@Override
-	public EnumSet<Flags> getFlags() {
+	public boolean hasFlag(Flag flag) {
+		return false;
+	}
+	
+	@Override
+	public EnumSet<Flag> getFlags() {
 		return NO_FLAGS;
 	}
 
@@ -117,24 +123,6 @@ public class RayTraceMesh implements IMesh {
 	}
 
 	@Override
-	public boolean needsMaterialUpdate() {
-		return false;
-	}
-
-	@Override
-	public boolean needsGeometryUpdate() {
-		return false;
-	}
-	
-	@Override
-	public void updateRequest() {
-	}
-	
-	@Override
-	public void updateRequest(Object source) {
-	}
-	
-	@Override
 	public String getName() {
 		return name;
 	}
@@ -142,6 +130,11 @@ public class RayTraceMesh implements IMesh {
 	@Override
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	@Override
+	public UpdateRequest getUpdater() {
+		return new UpdateRequest();
 	}
 
 	@Override

@@ -37,35 +37,34 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Supplier;
 
-import ch.fhnw.ether.render.Renderable.RenderData;
 import ch.fhnw.ether.render.shader.IShader;
 import ch.fhnw.ether.render.shader.builtin.LineShader;
 import ch.fhnw.ether.render.shader.builtin.PointShader;
 import ch.fhnw.ether.render.shader.builtin.ShadedTriangleShader;
 import ch.fhnw.ether.render.shader.builtin.UnshadedTriangleShader;
 import ch.fhnw.ether.render.variable.IShaderUniform;
-import ch.fhnw.ether.render.variable.IShaderVariable;
 import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.scene.mesh.material.CustomMaterial;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.ether.scene.mesh.material.ShadedMaterial;
+import ch.fhnw.util.Pair;
 
 public final class ShaderBuilder {
 	private static final class Attributes {
-		final Map<IAttribute, Supplier<?>> attributes = new HashMap<>();
+		final Map<IAttribute, Pair<Integer, Supplier<?>>> attributes = new HashMap<>();
 
-		void provide(IAttribute attribute, Supplier<?> supplier) {
-			if (attributes.put(attribute, supplier) != null)
+		void provide(IAttribute attribute, Pair<Integer, Supplier<?>> link) {
+			if (attributes.put(attribute, link) != null)
 				throw new IllegalArgumentException("duplicate attribute: " + attribute);
 		}
 
-		Supplier<?> getSupplier(IShader shader, IShaderVariable<?> variable) {
-			for (Entry<IAttribute, Supplier<?>> entry : attributes.entrySet()) {
-				if (entry.getKey().id().equals(variable.id()))
+		Pair<Integer, Supplier<?>> getSupplier(IShader shader, IShaderUniform<?> uniform) {
+			for (Entry<IAttribute, Pair<Integer, Supplier<?>>> entry : attributes.entrySet()) {
+				if (entry.getKey().id().equals(uniform.id()))
 					return entry.getValue();
 			}
-			throw new IllegalArgumentException("shader " + shader + " requires attribute " + variable.id());
+			throw new IllegalArgumentException("shader " + shader + " requires attribute " + uniform.id());
 		}
 
 		@Override
@@ -77,7 +76,7 @@ public final class ShaderBuilder {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <S extends IShader> S create(S shader, IMaterial material, RenderData data, Map<IAttribute, Supplier<?>> globals) {
+	public static <S extends IShader> S create(S shader, IMaterial material, Map<IAttribute, Supplier<?>> globals) {
 		Attributes attributes = new Attributes();
 
 		// add material & geometry attributes
@@ -85,16 +84,17 @@ public final class ShaderBuilder {
 			List<IAttribute> provided = material.getProvidedAttributes();
 			for (int i = 0; i < provided.size(); ++i) {
 				final int index = i;
-				attributes.provide(provided.get(i), () -> data.materialData[index]);
+				attributes.provide(provided.get(i), new Pair<Integer, Supplier<?>>(index, null));
 			}
 			for (IAttribute required : material.getRequiredAttributes()) {
 				attributes.provide(required, null);
 			}
 		}
-		
+
 		// add global attributes
 		if (globals != null) {
-			globals.forEach((attribute, supplier) -> attributes.provide(attribute, supplier));
+			globals.forEach((attribute, supplier) -> attributes.provide(attribute,
+					new Pair<Integer, Supplier<?>>(-1, supplier)));
 		}
 
 		// create shader and attach all attributes this shader requires
@@ -103,16 +103,20 @@ public final class ShaderBuilder {
 
 		// attach attribute suppliers to uniforms
 		for (IShaderUniform<?> uniform : shader.getUniforms()) {
-			if (!uniform.hasSupplier()) {
-				uniform.setSupplier(attributes.getSupplier(shader, uniform));
+			if (!uniform.isLinked()) {
+				Pair<Integer, Supplier<?>> link = attributes.getSupplier(shader, uniform);
+				if (link.left == -1)
+					uniform.setSupplier(link.right);
+				else
+					uniform.setIndex(link.left);
 			}
 		}
 
 		return shader;
 	}
 
-	// as soon as we have more builtin shaders we should move to a more flexible scheme, e.g. derive shader from
-	// provided attributes
+	// as soon as we have more builtin shaders we should move to a more flexible
+	// scheme, e.g. derive shader from provided attributes
 	private static IShader createShader(IMaterial material, Collection<IAttribute> attributes) {
 		if (material instanceof CustomMaterial) {
 			return ((CustomMaterial) material).getShader();

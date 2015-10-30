@@ -66,10 +66,10 @@ public class DefaultController implements IController {
 	private IScene scene;
 
 	private final ArrayList<IView> views = new ArrayList<>();
-	private final UI ui;
+	private volatile UI ui;
 
-	private final NavigationTool navigationTool;
-	private final PickTool pickTool;
+	private volatile NavigationTool navigationTool;
+	private volatile PickTool pickTool;
 
 	private IView currentView;
 	private ITool currentTool;
@@ -79,14 +79,15 @@ public class DefaultController implements IController {
 	}
 
 	public DefaultController(float fps) {
-		this.scheduler = new DefaultScheduler(this, fps);
 		this.renderManager = new DefaultRenderManager(this);
-		this.ui = new UI(this);
-		this.navigationTool = new NavigationTool(this);
-		this.pickTool = new PickTool(this);
-
+		this.scheduler = new DefaultScheduler(this, renderManager.getRenderRunnable(), fps);
+		run((time) -> {
+			this.ui = new UI(this);
+			this.navigationTool = new NavigationTool(this);
+			this.pickTool = new PickTool(this);
+			currentTool = pickTool;
+		});
 		currentView = null;
-		currentTool = pickTool;
 	}
 
 	@Override
@@ -243,7 +244,7 @@ public class DefaultController implements IController {
 		if (DBG)
 			System.out.println("view changed");
 
-		getCamera(view).updateRequest();
+		getCamera(view).getUpdater().request();
 		currentTool.refresh(view);
 		navigationTool.refresh(view);
 	}

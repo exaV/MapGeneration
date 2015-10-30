@@ -39,6 +39,7 @@ import com.jogamp.opengl.GL3;
 
 public abstract class AbstractUniform<T> extends AbstractVariable<T> implements IShaderUniform<T> {
 	private Supplier<T> supplier;
+	private int index = -1;
 
 	protected AbstractUniform(ITypedAttribute<T> attribute, String shaderName) {
 		super(attribute, shaderName);
@@ -48,7 +49,7 @@ public abstract class AbstractUniform<T> extends AbstractVariable<T> implements 
 		super(attribute, shaderName);
 		this.supplier = supplier;
 		if (supplier != null)
-			update();
+			update(null);
 	}
 
 	protected AbstractUniform(String id, String shaderName) {
@@ -59,22 +60,28 @@ public abstract class AbstractUniform<T> extends AbstractVariable<T> implements 
 		super(id, shaderName);
 		this.supplier = supplier;
 		if (supplier != null)
-			update();
+			update(null);
 	}
 
-	protected final T fetch() {
-		return supplier.get();
+	@SuppressWarnings("unchecked")
+	protected final T fetch(Object[] data) {
+		return index == -1 ? supplier.get() : (T) data[index];
 	}
 
 	@Override
-	public final boolean hasSupplier() {
-		return supplier != null;
+	public final boolean isLinked() {
+		return supplier != null || index != -1;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public final void setSupplier(Supplier<?> supplier) {
 		this.supplier = (Supplier<T>) supplier;
+	}
+	
+	@Override
+	public void setIndex(int index) {
+		this.index = index;
 	}
 
 	@Override

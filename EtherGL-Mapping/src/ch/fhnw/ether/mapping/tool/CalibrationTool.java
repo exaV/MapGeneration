@@ -52,7 +52,6 @@ import ch.fhnw.ether.scene.mesh.IMesh.Queue;
 import ch.fhnw.ether.scene.mesh.MeshLibrary;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
-import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.scene.mesh.material.LineMaterial;
 import ch.fhnw.ether.scene.mesh.material.PointMaterial;
 import ch.fhnw.ether.view.IView;
@@ -306,7 +305,7 @@ public final class CalibrationTool extends AbstractTool {
 
 		// prepare points
 		calibratedPoints.getGeometry().modify((attributes, data) -> data[0] = Vec3.toArray(context.projectedVertices));
-		((ColorMaterial) calibratedPoints.getMaterial()).setColor(context.calibrated ? CALIBRATED_COLOR : UNCALIBRATED_COLOR);
+		((PointMaterial) calibratedPoints.getMaterial()).setColor(context.calibrated ? CALIBRATED_COLOR : UNCALIBRATED_COLOR);
 
 		// prepare lines
 		List<Vec3> v = new ArrayList<>();
@@ -326,7 +325,7 @@ public final class CalibrationTool extends AbstractTool {
 		}
 
 		calibratedLines.getGeometry().modify((attributes, data) -> data[0] = Vec3.toArray(v));
-		((ColorMaterial) calibratedLines.getMaterial()).setColor(context.calibrated ? CALIBRATED_COLOR : UNCALIBRATED_COLOR);
+		((LineMaterial) calibratedLines.getMaterial()).setColor(context.calibrated ? CALIBRATED_COLOR : UNCALIBRATED_COLOR);
 	}
 
 }
