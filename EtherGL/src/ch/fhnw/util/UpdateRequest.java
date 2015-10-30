@@ -37,6 +37,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author radar
  */
 public final class UpdateRequest {
+	public interface IUpdateTracker {
+		UpdateRequest getUpdater();
+	}
+	
+	
 	private final AtomicBoolean update = new AtomicBoolean();
 
 	public UpdateRequest() {

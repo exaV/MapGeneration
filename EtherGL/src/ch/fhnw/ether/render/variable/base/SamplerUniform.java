@@ -108,7 +108,6 @@ public class SamplerUniform extends AbstractUniform<Texture> {
 				gl.glTexParameterf(target, GL.GL_TEXTURE_WRAP_S, GL.GL_REPEAT);
 				gl.glTexParameterf(target, GL.GL_TEXTURE_WRAP_T, GL.GL_REPEAT);
 			}
-
 			texture.load(gl, target, tex.id());
 		}
 	}

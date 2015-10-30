@@ -41,9 +41,7 @@ import ch.fhnw.util.math.Mat4;
  * Basic mesh abstraction. A mesh is a light weight structure that combines
  * render pass, scene/view/render flags, material, geometry, and a transform.
  * 
- * 
  * @author radar
- *
  */
 public interface IMesh extends I3DObject {
 
@@ -61,7 +59,7 @@ public interface IMesh extends I3DObject {
 	Queue getQueue();
 
 	Set<Flag> getFlags();
-	
+
 	boolean hasFlag(Flag flag);
 
 	IMaterial getMaterial();
@@ -71,18 +69,4 @@ public interface IMesh extends I3DObject {
 	Mat4 getTransform();
 
 	void setTransform(Mat4 transform);
-
-	
-
-	// XXX below methods are to be used from the renderer thread only. subject to change / cleanup
-
-	/**
-	 * @return true if material was modified since last call to this method.
-	 */
-	boolean needsMaterialUpdate();
-
-	/**
-	 * @return true if geometry was modified since last call to this method.
-	 */
-	boolean needsGeometryUpdate();
 }

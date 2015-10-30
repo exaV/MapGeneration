@@ -175,25 +175,19 @@ public final class Camera implements ICamera {
 		this.name = name;
 		updateRequest();
 	}
-
+	
 	@Override
-	public void updateRequest() {
-		update.request();
-	}
-
-	@Override
-	public boolean updateTest() {
-		return update.test();
-	}
-
-	@Override
-	public void updateClear() {
-		update.clear();
+	public UpdateRequest getUpdater() {
+		return update;
 	}
 
 	@Override
 	public String toString() {
 		return "camera '" + getName() + "' [" + position + target + up + "][" + getCameraXAxis() + getCameraYAxis()
 				+ getCameraZAxis() + "]";
+	}
+	
+	private void updateRequest() {
+		update.request();
 	}
 }

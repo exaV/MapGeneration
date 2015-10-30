@@ -34,7 +34,7 @@ import ch.fhnw.util.UpdateRequest;
 public abstract class AbstractGeometry implements IGeometry {
 	private final Primitive type;
 
-	private final UpdateRequest updater = new UpdateRequest();
+	private final UpdateRequest update = new UpdateRequest();
 
 	protected AbstractGeometry(Primitive type) {
 		this.type = type;
@@ -46,17 +46,11 @@ public abstract class AbstractGeometry implements IGeometry {
 	}
 
 	@Override
-	public boolean updateTest() {
-		return updater.test();
-	}
-
-	@Override
-	public final void updateClear() {
-		updater.clear();
+	public final UpdateRequest getUpdater() {
+		return update;
 	}
 
 	protected final void updateRequest() {
-		updater.request();
+		update.request();
 	}
-
 }

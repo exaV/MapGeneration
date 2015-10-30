@@ -70,13 +70,4 @@ public interface ICamera extends I3DObject {
 	Vec3 getCameraYAxis();
 
 	Vec3 getCameraZAxis();
-
-	// update handling
-
-	void updateRequest();
-
-	boolean updateTest();
-
-	void updateClear();
-
 }

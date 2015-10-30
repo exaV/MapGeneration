@@ -43,20 +43,44 @@ import ch.fhnw.util.math.Mat4;
 
 public final class Renderable {
 	public static class RenderData {
-		public Object[] materialData;
-		public float[][] geometryData;
-		public Mat4 positionTransform;
-		public Mat3 normalTransform;
+		public volatile Object[] materialData;
+		public volatile float[][] geometryData;
+		public volatile Mat4 positionTransform;
+		public volatile Mat3 normalTransform;
 
-		private RenderData(IMesh mesh) {
-			update(mesh);
+		public RenderData() {
 		}
 		
-		private void update(IMesh mesh) {
-			materialData = mesh.getMaterial().getData().toArray();
-			geometryData = mesh.getGeometry().getData();
-			positionTransform = Mat4.multiply(Mat4.translate(mesh.getPosition()), mesh.getTransform());
-			normalTransform = new Mat3(positionTransform).inverse().transpose();
+		public RenderData(IMesh mesh, boolean materialChanged, boolean geometryChanged) {
+			if (materialChanged)
+				materialData = mesh.getMaterial().getData().toArray();	
+			else
+				materialData = null;
+
+			if (geometryChanged) {
+				// TODO: need to copy data here!
+				geometryData = mesh.getGeometry().getData();
+				positionTransform = Mat4.multiply(Mat4.translate(mesh.getPosition()), mesh.getTransform());
+				normalTransform = new Mat3(positionTransform).inverse().transpose();				
+			} else {
+				geometryData = null;
+				positionTransform = null;
+				normalTransform = null;
+			}
+		}
+		
+		void apply(RenderData data) {
+			materialData = data.materialData;
+			geometryData = data.geometryData;
+			positionTransform = data.positionTransform;
+			normalTransform = data.normalTransform;
+		}
+		
+		void reset() {
+			materialData = null;
+			geometryData = null;
+			positionTransform = null;
+			normalTransform = null;
 		}
 	}
 
@@ -66,22 +90,33 @@ public final class Renderable {
 	private final IMesh.Queue queue;
 	private final Set<IMesh.Flag> flags;
 
+
 	public Renderable(IMesh mesh, Map<IAttribute, Supplier<?>> globals) {
 		this(null, mesh, globals);
 	}
 
 	public Renderable(IShader shader, IMesh mesh, Map<IAttribute, Supplier<?>> globals) {
-		this.data = new RenderData(mesh);
+		this.data = new RenderData();
 		this.shader = ShaderBuilder.create(shader, mesh.getMaterial(), data, globals);
-		this.buffer = new VertexBuffer(this.shader, mesh.getGeometry());
+		this.buffer = new VertexBuffer(this.shader, mesh.getGeometry().getAttributes());
 		this.queue = mesh.getQueue();
 		this.flags = mesh.getFlags();
 	}
 
-	public void update(GL3 gl) {
-		// XXX to be revised
-		shader.update(gl);
-		buffer.load(gl, shader, data);
+	public void update(GL3 gl, RenderData data) {
+		if (data == null) {
+			return;
+		}
+
+		boolean materialChanged = data.materialData != null;
+		boolean geometryChanged = data.geometryData != null;
+		
+		this.data.apply(data);		
+		if (materialChanged)
+			shader.update(gl);
+		if (geometryChanged)
+			buffer.load(gl, shader, data.geometryData, data.positionTransform, data.normalTransform);
+		this.data.reset();
 	}
 
 	public void render(GL3 gl) {

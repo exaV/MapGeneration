@@ -31,8 +31,9 @@ package ch.fhnw.ether.scene.mesh.geometry;
 
 import ch.fhnw.ether.scene.attribute.AbstractAttribute;
 import ch.fhnw.ether.scene.attribute.ITypedAttribute;
+import ch.fhnw.util.UpdateRequest.IUpdateTracker;
 
-public interface IGeometry {
+public interface IGeometry extends IUpdateTracker {
 	interface IGeometryAttribute extends ITypedAttribute<float[]> {
 		int getNumComponents();
 	}
@@ -155,8 +156,4 @@ public interface IGeometry {
 	 *             if geometry cannot be modified.
 	 */
 	void modify(IAttributesVisitor visitor);
-
-	boolean updateTest();
-
-	void updateClear();
 }

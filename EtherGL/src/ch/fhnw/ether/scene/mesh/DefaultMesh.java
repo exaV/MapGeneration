@@ -56,8 +56,7 @@ public final class DefaultMesh implements IMesh {
 
 	private String name = "unnamed_mesh";
 
-	private final UpdateRequest materialUpdater = new UpdateRequest(true);
-	private final UpdateRequest geometryUpdater = new UpdateRequest(true);
+	private final UpdateRequest update = new UpdateRequest(true);
 
 	public DefaultMesh(IMaterial material, IGeometry geometry) {
 		this(material, geometry, Queue.DEPTH);
@@ -135,7 +134,7 @@ public final class DefaultMesh implements IMesh {
 	public void setPosition(Vec3 position) {
 		this.position = position;
 		bb = null;
-		updateRequest(Mat4.ID);
+		updateRequest();
 	}
 
 	@Override
@@ -185,46 +184,22 @@ public final class DefaultMesh implements IMesh {
 		if (this.transform != transform) {
 			this.transform = transform;
 			bb = null;
-			updateRequest(transform);
+			updateRequest();
 		}
-	}
-
-	@Override
-	public boolean needsMaterialUpdate() {
-		return materialUpdater.testAndClear();
-	}
-
-	@Override
-	public boolean needsGeometryUpdate() {
-		return geometryUpdater.testAndClear();
-	}
-
-	public void updateRequest() {
-		updateRequest(null);
-	}
-
-	public void updateRequest(Object source) {
-		if (source == null) {
-			requestMaterialUpdate();
-			requestGeometryUpdate();
-		} else if (source instanceof IMaterial)
-			requestMaterialUpdate();
-		else if (source instanceof IGeometry || source instanceof Mat4)
-			requestGeometryUpdate();
 	}
 
 	@Override
 	public String toString() {
 		return name;
 	}
-
-	private void requestMaterialUpdate() {
-		materialUpdater.request();
+	
+	@Override
+	public UpdateRequest getUpdater() {
+		return update;
 	}
 
-	private void requestGeometryUpdate() {
-		geometryUpdater.request();
-		bb = null;
+	private void updateRequest() {
+		update.request();
 	}
 
 	private static void checkAttributeConsistency(IMaterial material, IGeometry geometry) {

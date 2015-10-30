@@ -31,15 +31,17 @@ package ch.fhnw.ether.controller.event;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Semaphore;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.ui.UI;
 import ch.fhnw.util.Pair;
 
 public class DefaultScheduler implements IScheduler {
+	private static final int MAX_RENDER_QUEUE_SIZE = 3;
+	
 	private static final long START_TIME = System.nanoTime();
 
 	private final IController controller;
@@ -54,8 +56,7 @@ public class DefaultScheduler implements IScheduler {
 
 	private final AtomicBoolean repaint = new AtomicBoolean();
 
-	private final Semaphore renderMonitor = new Semaphore(0);
-	private final AtomicReference<Runnable> renderRunnable = new AtomicReference<>();
+	private final BlockingQueue<Runnable> renderQueue = new ArrayBlockingQueue<>(MAX_RENDER_QUEUE_SIZE);
 
 	public DefaultScheduler(IController controller, float fps) {
 		this.controller = controller;
@@ -157,9 +158,16 @@ public class DefaultScheduler implements IScheduler {
 			if (ui != null && ui.update())
 				repaint.set(true);
 
-			if (repaint.getAndSet(false) && renderMonitor.availablePermits() < 1) {
-				renderRunnable.set(controller.getRenderManager().getRenderRunnable());
-				renderMonitor.release();
+			if (repaint.getAndSet(false)) {
+				try {
+					if (renderQueue.size() < MAX_RENDER_QUEUE_SIZE)
+						renderQueue.put(controller.getRenderManager().getRenderRunnable());
+					else {
+						System.err.println("scheduler: render queue full");
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 
 			double elapsed = getTime() - time;
@@ -171,7 +179,7 @@ public class DefaultScheduler implements IScheduler {
 				} catch (Exception e) {
 				}
 			} else {
-				System.out.println("scene thread overload: max=" + interval + " used=" + elapsed);
+				System.err.println("scheduler: scene thread overload (max=" + s2ms(interval) + "ms used=" + s2ms(time) + "ms)");
 			}
 		}
 	}
@@ -179,8 +187,7 @@ public class DefaultScheduler implements IScheduler {
 	private void runRenderThread() {
 		while (true) {
 			try {
-				renderMonitor.acquire();
-				renderRunnable.get().run();
+				renderQueue.take().run();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -190,5 +197,9 @@ public class DefaultScheduler implements IScheduler {
 	private double getTime() {
 		long elapsed = System.nanoTime() - START_TIME;
 		return elapsed / 1000000000.0;
+	}
+	
+	private int s2ms(double time) {
+		return (int)(time * 1000);
 	}
 }

@@ -30,6 +30,11 @@
 package ch.fhnw.ether.scene.light;
 
 import ch.fhnw.ether.scene.I3DObject;
+import ch.fhnw.ether.scene.light.GenericLight.LightSource;
 
 public interface ILight extends I3DObject {
+
+	LightSource getLightSource();
+
+	void setLightSource(LightSource lightSource);
 }

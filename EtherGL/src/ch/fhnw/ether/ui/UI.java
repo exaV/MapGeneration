@@ -79,6 +79,7 @@ public final class UI {
 		}
 		
 		plane.update();
+
 		return true;
 	}
 

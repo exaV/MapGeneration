@@ -39,7 +39,7 @@ import ch.fhnw.ether.render.gl.FloatUniformBuffer;
 import ch.fhnw.ether.render.variable.builtin.LightUniformBlock;
 import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.camera.IViewCameraState;
-import ch.fhnw.ether.scene.light.GenericLight;
+import ch.fhnw.ether.scene.light.ILight;
 
 public final class LightInfo {
 	private final FloatUniformBuffer uniforms = new FloatUniformBuffer(LightUniformBlock.BLOCK_SIZE);
@@ -52,7 +52,7 @@ public final class LightInfo {
 		return numLights;
 	}
 	
-	public void update(GL3 gl, IViewCameraState matrices, List<GenericLight> lights) {
+	public void update(GL3 gl, IViewCameraState matrices, List<ILight> lights) {
 		LightUniformBlock.loadUniforms(gl, uniforms, lights, matrices);
 		numLights = lights.size();
 		// FIXME: we always bind here. this could be avoided if there's no shader using lights

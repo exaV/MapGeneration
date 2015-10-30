@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import ch.fhnw.ether.scene.attribute.IAttribute;
+import ch.fhnw.ether.scene.mesh.IMesh;
 
 /**
  * The program to be executed by the renderer.
@@ -51,6 +52,8 @@ public interface IRenderProgram {
 	List<Renderable> getRenderables();
 
 	void setRenderables(List<Renderable> renderables);
+	
+	Renderable createRenderable(IMesh mesh);
 
 	// XXX remove/revise
 	Map<IAttribute, Supplier<?>> getGlobalAttributes();

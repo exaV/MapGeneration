@@ -29,10 +29,11 @@
 
 package ch.fhnw.ether.scene;
 
+import ch.fhnw.util.UpdateRequest.IUpdateTracker;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.BoundingBox;
 
-public interface I3DObject {
+public interface I3DObject extends IUpdateTracker {
 
 	BoundingBox getBounds();
 

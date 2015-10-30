@@ -68,7 +68,6 @@ class GraphicsPlane {
 	private int w;
 	private int h;
 	
-
 	public GraphicsPlane(int x, int y, int w, int h) {
 		image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
 		graphics = image.createGraphics();

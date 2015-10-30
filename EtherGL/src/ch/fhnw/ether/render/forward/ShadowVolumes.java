@@ -107,7 +107,8 @@ public final class ShadowVolumes {
 			gl.glStencilFunc(GL.GL_NOTEQUAL, 0x0, 0xffffffff);
 			gl.glStencilOp(GL.GL_KEEP, GL.GL_KEEP, GL.GL_KEEP);
 
-			overlay.update(gl);
+			// XXX need to find a new solution for shadow volumes...
+			//overlay.update(gl);
 			overlay.render(gl);
 
 			gl.glDisable(GL.GL_STENCIL_TEST);

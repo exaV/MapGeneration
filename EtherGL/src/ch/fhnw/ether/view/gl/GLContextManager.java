@@ -59,7 +59,8 @@ public class GLContextManager {
 		private GLContext context;
 
 		TemporaryContext() {
-			context = theSharedDrawable.createContext(theSharedDrawable.getContext());
+			GLAutoDrawable drawable = getSharedDrawable();
+			context = drawable.createContext(drawable.getContext());
 		}
 
 		void makeCurrent() {
@@ -128,6 +129,10 @@ public class GLContextManager {
 			contexts.releaseContext((TemporaryContext)context);
 	}
 
+	public static GLAutoDrawable getSharedDrawable() {
+		return getSharedDrawable(null);
+	}
+	
 	public synchronized static GLAutoDrawable getSharedDrawable(GLCapabilities capabilities) {
 		if (theSharedDrawable == null) {
 			if (capabilities == null)

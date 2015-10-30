@@ -42,55 +42,27 @@ import ch.fhnw.util.math.Mat4;
  * @author radar
  */
 public interface IRenderManager {
+	/**
+	 * Add view to renderer.
+	 * 
+	 * @throws IllegalArgumentException
+	 *             if view already in renderer.
+	 */
 	void addView(IView view);
 
+	/**
+	 * Remove view from renderer.
+	 * 
+	 * @throws IllegalArgumentException
+	 *             if view not in renderer.
+	 */
 	void removeView(IView view);
-
-	/**
-	 * Add mesh to renderer.
-	 * 
-	 * @param mesh
-	 *            mesh to be added
-	 * @throws IllegalArgumentException
-	 *             if mesh already in renderer.
-	 */
-	void addMesh(IMesh mesh);
-
-	/**
-	 * Remove mesh from renderer.
-	 * 
-	 * @param mesh
-	 *            mesh to be removed
-	 * @throws IllegalArgumentException
-	 *             if mesh not in renderer.
-	 */
-	void removeMesh(IMesh mesh);
-
-	/**
-	 * Add light to renderer..
-	 * 
-	 * @param light
-	 *            light to be added
-	 * @throws IllegalArgumentException
-	 *             if light already in renderer.
-	 */
-	void addLight(ILight light);
-
-	/**
-	 * Remove light from renderer.
-	 * 
-	 * @param light
-	 *            light to be removed
-	 * @throws IllegalArgumentException
-	 *             if light not in renderer.
-	 */
-	void removeLight(ILight light);
 
 	/**
 	 * Get active camera for given view.
 	 */
 	ICamera getCamera(IView view);
-	
+
 	/**
 	 * Set active camera for given view.
 	 */
@@ -105,7 +77,39 @@ public interface IRenderManager {
 	 * Get view-camera state.
 	 */
 	IViewCameraState getViewCameraState(IView view);
-	
+
+	/**
+	 * Add light to renderer.
+	 * 
+	 * @throws IllegalArgumentException
+	 *             if light already in renderer.
+	 */
+	void addLight(ILight light);
+
+	/**
+	 * Remove light from renderer.
+	 * 
+	 * @throws IllegalArgumentException
+	 *             if light not in renderer.
+	 */
+	void removeLight(ILight light);
+
+	/**
+	 * Add mesh to renderer.
+	 * 
+	 * @throws IllegalArgumentException
+	 *             if mesh already in renderer.
+	 */
+	void addMesh(IMesh mesh);
+
+	/**
+	 * Remove mesh from renderer.
+	 * 
+	 * @throws IllegalArgumentException
+	 *             if mesh not in renderer.
+	 */
+	void removeMesh(IMesh mesh);
+
 	/**
 	 * Create render state for next frame and return it as a runnable to be run
 	 * on render thread.

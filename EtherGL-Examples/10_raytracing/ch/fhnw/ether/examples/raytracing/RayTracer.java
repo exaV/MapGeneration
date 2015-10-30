@@ -41,7 +41,6 @@ import ch.fhnw.ether.media.RenderCommandException;
 import ch.fhnw.ether.media.Stateless;
 import ch.fhnw.ether.scene.camera.Camera;
 import ch.fhnw.ether.scene.camera.ICamera;
-import ch.fhnw.ether.scene.light.GenericLight;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.video.AbstractVideoSource;
@@ -128,7 +127,7 @@ public class RayTracer extends AbstractVideoSource<Stateless<IVideoRenderTarget>
 		// diffuse color
 		float f = Math.max(0, lightRay.getDirection().dot(nearest.surface.getNormalAt(nearest.position)));
 		RGBA c = nearest.color;
-		RGB  lc = ((GenericLight)light).getLightSource().getColor();
+		RGB  lc = light.getLightSource().getColor();
 
 		pixels.position((y * w + x) * 4);
 		pixels.put((byte)(f * c.r * lc.r * 255f));
