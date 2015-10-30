@@ -57,8 +57,8 @@ public class Mat4FloatUniform extends AbstractUniform<Mat4> {
 	}
 
 	@Override
-	public final void update() {
-		value = fetch().toArray();
+	public final void update(Object[] data) {
+		value = fetch(data).toArray();
 	}
 
 	@Override

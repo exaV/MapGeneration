@@ -67,8 +67,8 @@ public class SamplerUniform extends AbstractUniform<Texture> {
 	}
 
 	@Override
-	public final void update() {
-		texture = fetch();
+	public final void update(Object[] data) {
+		texture = fetch(data);
 	}
 
 	@Override

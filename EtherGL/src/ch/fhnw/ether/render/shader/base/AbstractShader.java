@@ -69,7 +69,7 @@ public abstract class AbstractShader implements IShader {
 	}
 
 	@Override
-	public final void update(GL3 gl) {
+	public final void update(GL3 gl, Object[] uniformData) {
 		if (program == null) {
 			String vertShader = "glsl/" + source + "_vert.glsl";
 			String fragShader = "glsl/" + source + "_frag.glsl";
@@ -81,7 +81,7 @@ public abstract class AbstractShader implements IShader {
 				System.exit(1);
 			}
 		}
-		uniforms.forEach((attr) -> attr.update());
+		uniforms.forEach((attr) -> attr.update(uniformData));
 	}
 
 	@Override

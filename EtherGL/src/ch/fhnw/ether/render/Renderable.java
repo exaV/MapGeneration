@@ -43,14 +43,11 @@ import ch.fhnw.util.math.Mat4;
 
 public final class Renderable {
 	public static class RenderData {
-		public volatile Object[] materialData;
-		public volatile float[][] geometryData;
-		public volatile Mat4 positionTransform;
-		public volatile Mat3 normalTransform;
+		public final Object[] materialData;
+		public final float[][] geometryData;
+		public final Mat4 positionTransform;
+		public final Mat3 normalTransform;
 
-		public RenderData() {
-		}
-		
 		public RenderData(IMesh mesh, boolean materialChanged, boolean geometryChanged) {
 			if (materialChanged)
 				materialData = mesh.getMaterial().getData().toArray();	
@@ -66,56 +63,32 @@ public final class Renderable {
 				positionTransform = null;
 				normalTransform = null;
 			}
-		}
-		
-		void apply(RenderData data) {
-			materialData = data.materialData;
-			geometryData = data.geometryData;
-			positionTransform = data.positionTransform;
-			normalTransform = data.normalTransform;
-		}
-		
-		void reset() {
-			materialData = null;
-			geometryData = null;
-			positionTransform = null;
-			normalTransform = null;
-		}
+		}		
 	}
 
-	private final RenderData data;
 	private final IShader shader;
 	private final VertexBuffer buffer;
 	private final IMesh.Queue queue;
 	private final Set<IMesh.Flag> flags;
-
 
 	public Renderable(IMesh mesh, Map<IAttribute, Supplier<?>> globals) {
 		this(null, mesh, globals);
 	}
 
 	public Renderable(IShader shader, IMesh mesh, Map<IAttribute, Supplier<?>> globals) {
-		this.data = new RenderData();
-		this.shader = ShaderBuilder.create(shader, mesh.getMaterial(), data, globals);
+		this.shader = ShaderBuilder.create(shader, mesh.getMaterial(), globals);
 		this.buffer = new VertexBuffer(this.shader, mesh.getGeometry().getAttributes());
 		this.queue = mesh.getQueue();
 		this.flags = mesh.getFlags();
 	}
 
 	public void update(GL3 gl, RenderData data) {
-		if (data == null) {
+		if (data == null)
 			return;
-		}
-
-		boolean materialChanged = data.materialData != null;
-		boolean geometryChanged = data.geometryData != null;
-		
-		this.data.apply(data);		
-		if (materialChanged)
-			shader.update(gl);
-		if (geometryChanged)
+		if (data.materialData != null)
+			shader.update(gl, data.materialData);
+		if (data.geometryData != null)
 			buffer.load(gl, shader, data.geometryData, data.positionTransform, data.normalTransform);
-		this.data.reset();
 	}
 
 	public void render(GL3 gl) {

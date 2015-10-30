@@ -63,7 +63,7 @@ public final class ShadowVolumes {
 	private RGBA overlayColor = new RGBA(0, 0, 0, 0.9f);
 
 	public ShadowVolumes(Map<IAttribute, Supplier<?>> globals) {
-		volumeShader = ShaderBuilder.create(new ShadowVolumeShader(() -> lightIndex, () -> extrudeDistance, () -> volumeColor), null, null, globals);
+		volumeShader = ShaderBuilder.create(new ShadowVolumeShader(() -> lightIndex, () -> extrudeDistance, () -> volumeColor), null, globals);
 
 		overlay = new Renderable(new TrivialDeviceSpaceShader(() -> overlayColor), OVERLAY_MESH, globals);
 	}
@@ -88,7 +88,7 @@ public final class ShadowVolumes {
 			gl.glStencilFuncSeparate(GL.GL_BACK, GL.GL_ALWAYS, 0, 0xffffffff);
 			gl.glStencilOpSeparate(GL.GL_BACK, GL.GL_KEEP, GL.GL_INCR_WRAP, GL.GL_KEEP);
 
-			volumeShader.update(gl);
+			volumeShader.update(gl, null);
 			volumeShader.enable(gl);
 			for (Renderable renderable : renderables) {
 				if (renderable.containsFlag(Flag.INTERACTIVE_VIEWS_ONLY) && !interactive)
