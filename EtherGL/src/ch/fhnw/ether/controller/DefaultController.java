@@ -79,8 +79,8 @@ public class DefaultController implements IController {
 	}
 
 	public DefaultController(float fps) {
-		this.scheduler = new DefaultScheduler(this, fps);
 		this.renderManager = new DefaultRenderManager(this);
+		this.scheduler = new DefaultScheduler(this, renderManager.getRenderRunnable(), fps);
 		run((time) -> {
 			this.ui = new UI(this);
 			this.navigationTool = new NavigationTool(this);

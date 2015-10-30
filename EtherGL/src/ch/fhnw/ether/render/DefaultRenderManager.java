@@ -35,6 +35,8 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.GLAutoDrawable;
@@ -231,16 +233,23 @@ public class DefaultRenderManager implements IRenderManager {
 		}
 	}
 
+	private static final int MAX_RENDER_QUEUE_SIZE = 3;
 	private static final ILight DEFAULT_LIGHT = new DirectionalLight(Vec3.Z, RGB.BLACK, RGB.WHITE);
 
 	private final IController controller;
-	private final IRenderer renderer = new ForwardRenderer();
-	private final IRenderProgram program = new DefaultRenderProgram();
 
 	private final SceneState sceneState = new SceneState();
 
+	private final IRenderer renderer = new ForwardRenderer();
+	private final IRenderProgram program = new DefaultRenderProgram();
+
+	private final Thread renderThread;
+	private final BlockingQueue<Runnable> renderQueue = new ArrayBlockingQueue<>(MAX_RENDER_QUEUE_SIZE);
+
 	public DefaultRenderManager(IController controller) {
 		this.controller = controller;
+		this.renderThread = new Thread(this::runRenderThread, "renderthread");
+		renderThread.start();
 	}
 
 	@Override
@@ -305,12 +314,36 @@ public class DefaultRenderManager implements IRenderManager {
 
 	@Override
 	public Runnable getRenderRunnable() {
-		ensureSceneThread();
-		try {
-			return new RenderRunnable(controller, renderer, sceneState.update(program));
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
+		return () -> {
+			ensureSceneThread();
+
+			if (sceneState.views.isEmpty())
+				return;
+
+			try {
+				if (renderQueue.size() < MAX_RENDER_QUEUE_SIZE)
+					renderQueue.put(new RenderRunnable(controller, renderer, sceneState.update(program)));
+				else {
+					System.err.println("scheduler: render queue full");
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		};
+	}
+
+	@Override
+	public boolean isRenderThread() {
+		return Thread.currentThread().equals(renderThread);
+	}
+
+	private void runRenderThread() {
+		while (true) {
+			try {
+				renderQueue.take().run();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -336,6 +369,9 @@ public class DefaultRenderManager implements IRenderManager {
 		@Override
 		public void run() {
 			// update renderables (only once for all views)
+			// note that it's absolutely imperative that this is called for
+			// every render runnable created. otherwise scene-render state will
+			// get out of sync resulting in ugly fails.
 			IGLContext ctx = null;
 			try {
 				ctx = GLContextManager.acquireContext();
@@ -373,7 +409,7 @@ public class DefaultRenderManager implements IRenderManager {
 			try {
 				// XXX: make sure we only render on render thread (e.g. jogl
 				// will do repaints on other threads when resizing windows...)
-				if (!controller.getScheduler().isRenderThread()) {
+				if (!controller.getRenderManager().isRenderThread()) {
 					return;
 				}
 
@@ -391,8 +427,7 @@ public class DefaultRenderManager implements IRenderManager {
 				// update views and lights
 				ViewType type = viewState.view.getConfig().getViewType();
 				renderState.program.getViewInfo().update(gl, viewState.viewCameraState, type);
-				renderState.program.getLightInfo().update(gl, viewState.viewCameraState,
-						renderState.lights);
+				renderState.program.getLightInfo().update(gl, viewState.viewCameraState, renderState.lights);
 
 				// render everything
 				renderer.render(gl, renderState.program);

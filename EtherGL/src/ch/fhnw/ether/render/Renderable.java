@@ -58,7 +58,6 @@ public final class Renderable {
 				materialData = null;
 
 			if (geometryChanged) {
-				// TODO: need to copy data here!
 				geometryData = mesh.getGeometry().getData();
 				positionTransform = Mat4.multiply(Mat4.translate(mesh.getPosition()), mesh.getTransform());
 				normalTransform = new Mat3(positionTransform).inverse().transpose();				

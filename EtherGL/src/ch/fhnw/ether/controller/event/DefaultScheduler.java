@@ -31,8 +31,6 @@ package ch.fhnw.ether.controller.event;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import ch.fhnw.ether.controller.IController;
@@ -40,32 +38,28 @@ import ch.fhnw.ether.ui.UI;
 import ch.fhnw.util.Pair;
 
 public class DefaultScheduler implements IScheduler {
-	private static final int MAX_RENDER_QUEUE_SIZE = 3;
 	
 	private static final long START_TIME = System.nanoTime();
 
 	private final IController controller;
+	private final Runnable runnable;
 
 	private final double interval;
 
 	private final Thread sceneThread;
-	private final Thread renderThread;
 
 	private final List<IAnimationAction> animations = new ArrayList<>();
 	private final List<Pair<Double, IAction>> actions = new ArrayList<>();
 
 	private final AtomicBoolean repaint = new AtomicBoolean();
 
-	private final BlockingQueue<Runnable> renderQueue = new ArrayBlockingQueue<>(MAX_RENDER_QUEUE_SIZE);
-
-	public DefaultScheduler(IController controller, float fps) {
+	public DefaultScheduler(IController controller, Runnable runnable, float fps) {
 		this.controller = controller;
+		this.runnable = runnable;
 		this.interval = 1 / fps;
 		this.sceneThread = new Thread(this::runSceneThread, "scenethread");
-		this.renderThread = new Thread(this::runRenderThread, "renderthread");
 
 		sceneThread.start();
-		renderThread.start();
 	}
 
 	@Override
@@ -104,11 +98,6 @@ public class DefaultScheduler implements IScheduler {
 	@Override
 	public boolean isSceneThread() {
 		return Thread.currentThread().equals(sceneThread);
-	}
-
-	@Override
-	public boolean isRenderThread() {
-		return Thread.currentThread().equals(renderThread);
 	}
 
 	private void runSceneThread() {
@@ -160,11 +149,7 @@ public class DefaultScheduler implements IScheduler {
 
 			if (repaint.getAndSet(false)) {
 				try {
-					if (renderQueue.size() < MAX_RENDER_QUEUE_SIZE)
-						renderQueue.put(controller.getRenderManager().getRenderRunnable());
-					else {
-						System.err.println("scheduler: render queue full");
-					}
+					runnable.run();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -180,16 +165,6 @@ public class DefaultScheduler implements IScheduler {
 				}
 			} else {
 				System.err.println("scheduler: scene thread overload (max=" + s2ms(interval) + "ms used=" + s2ms(time) + "ms)");
-			}
-		}
-	}
-
-	private void runRenderThread() {
-		while (true) {
-			try {
-				renderQueue.take().run();
-			} catch (Exception e) {
-				e.printStackTrace();
 			}
 		}
 	}

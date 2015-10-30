@@ -102,9 +102,4 @@ public interface IScheduler {
 	 * Returns true if caller calls from scene thread.
 	 */
 	boolean isSceneThread();
-
-	/**
-	 * Returns true if caller calls from render thread.
-	 */
-	boolean isRenderThread();
 }

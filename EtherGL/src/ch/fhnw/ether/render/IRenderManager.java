@@ -111,10 +111,13 @@ public interface IRenderManager {
 	void removeMesh(IMesh mesh);
 
 	/**
-	 * Create render state for next frame and return it as a runnable to be run
-	 * on render thread.
-	 * 
-	 * @return runnable to be run on render thread
+	 * Returns runnable to be run at the end of a scene time frame when repaint
+	 * is required.
 	 */
 	Runnable getRenderRunnable();
+
+	/**
+	 * Returns true if caller calls from render thread.
+	 */
+	boolean isRenderThread();
 }

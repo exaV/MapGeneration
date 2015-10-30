@@ -88,7 +88,7 @@ public interface IMaterial extends IUpdateTracker {
 	List<IAttribute> getRequiredAttributes();
 
 	/**
-	 * Get list of provided attribute data.
+	 * Get a copy of the provided attribute data. 
 	 */
 	List<Object> getData();
 }
