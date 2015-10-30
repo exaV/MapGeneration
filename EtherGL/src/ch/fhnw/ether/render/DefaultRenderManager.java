@@ -68,6 +68,7 @@ import ch.fhnw.util.math.Vec3;
  * @author radar
  */
 public class DefaultRenderManager implements IRenderManager {
+	
 	private static final class SceneViewState {
 		ICamera camera = new Camera();
 		IViewCameraState viewCameraState;
@@ -104,7 +105,6 @@ public class DefaultRenderManager implements IRenderManager {
 			SceneViewState vcs = views.remove(view);
 			if (vcs == null)
 				throw new IllegalArgumentException("view not in renderer: " + view);
-			setCamera(view, null);
 		}
 
 		ICamera getCamera(IView view) {

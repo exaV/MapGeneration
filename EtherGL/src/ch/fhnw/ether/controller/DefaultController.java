@@ -202,7 +202,7 @@ public class DefaultController implements IController {
 	@Override
 	public final void viewCreated(IView view) {
 		if (DBG)
-			System.out.println("view created");
+			System.out.println("view created " + view);
 
 		views.add(view);
 		renderManager.addView(view);
@@ -211,18 +211,20 @@ public class DefaultController implements IController {
 	@Override
 	public void viewDisposed(IView view) {
 		if (DBG)
-			System.out.println("view disposed");
+			System.out.println("view disposed " + view);
 
 		views.remove(view);
-		if (currentView == view)
+		if (currentView == view) {
+			navigationTool.deactivate();
 			setCurrentView(null);
+		}
 		renderManager.removeView(view);
 	}
 
 	@Override
 	public void viewGainedFocus(IView view) {
 		if (DBG)
-			System.out.println("view gained focus");
+			System.out.println("view gained focus " + view);
 
 		setCurrentView(view);
 		navigationTool.activate();
@@ -231,7 +233,7 @@ public class DefaultController implements IController {
 	@Override
 	public void viewLostFocus(IView view) {
 		if (DBG)
-			System.out.println("view lost focus");
+			System.out.println("view lost focus " + view);
 
 		if (view == currentView) {
 			navigationTool.deactivate();
@@ -242,7 +244,7 @@ public class DefaultController implements IController {
 	@Override
 	public void viewChanged(IView view) {
 		if (DBG)
-			System.out.println("view changed");
+			System.out.println("view changed " + view);
 
 		getCamera(view).getUpdater().request();
 		currentTool.refresh(view);
@@ -254,7 +256,7 @@ public class DefaultController implements IController {
 	@Override
 	public void keyPressed(IKeyEvent e) {
 		if (DBG)
-			System.out.println("key pressed");
+			System.out.println("key pressed " + e.getView());
 
 		setCurrentView(e.getView());
 
@@ -279,19 +281,19 @@ public class DefaultController implements IController {
 	@Override
 	public void pointerEntered(IPointerEvent e) {
 		// if (DBG)
-		// System.out.println("pointer entered");
+		// System.out.println("pointer entered " + e.getView());
 	}
 
 	@Override
 	public void pointerExited(IPointerEvent e) {
 		// if (DBG)
-		// System.out.println("pointer exited");
+		// System.out.println("pointer exited " + e.getView());
 	}
 
 	@Override
 	public void pointerPressed(IPointerEvent e) {
 		if (DBG)
-			System.out.println("pointer pressed");
+			System.out.println("pointer pressed " + e.getView());
 
 		setCurrentView(e.getView());
 
@@ -309,7 +311,7 @@ public class DefaultController implements IController {
 	@Override
 	public void pointerReleased(IPointerEvent e) {
 		if (DBG)
-			System.out.println("pointer released");
+			System.out.println("pointer released " + e.getView());
 
 		if (ui != null && ui.pointerReleased(e))
 			return;
@@ -323,7 +325,7 @@ public class DefaultController implements IController {
 	@Override
 	public void pointerClicked(IPointerEvent e) {
 		// if (DBG)
-		// System.out.println("pointer clicked");
+		// System.out.println("pointer clicked " + e.getView());
 	}
 
 	// pointer motion listener
@@ -331,7 +333,7 @@ public class DefaultController implements IController {
 	@Override
 	public void pointerMoved(IPointerEvent e) {
 		// if (DBG)
-		// System.out.println("pointer moved");
+		// System.out.println("pointer moved " + e.getView());
 
 		if (ui != null)
 			ui.pointerMoved(e);
@@ -342,7 +344,7 @@ public class DefaultController implements IController {
 	@Override
 	public void pointerDragged(IPointerEvent e) {
 		// if (DBG)
-		// System.out.println("pointer dragged");
+		// System.out.println("pointer dragged " + e.getView());
 
 		// ui has precedence over everything else
 		if (ui != null && ui.pointerDragged(e))
@@ -359,7 +361,7 @@ public class DefaultController implements IController {
 	@Override
 	public void pointerScrolled(IPointerEvent e) {
 		// if (DBG)
-		// System.out.println("pointer scrolled");
+		// System.out.println("pointer scrolled " + e.getView());
 
 		// currently, only navigation tool receives scroll events
 		navigationTool.pointerScrolled(e);
@@ -374,7 +376,7 @@ public class DefaultController implements IController {
 
 	private void setCurrentView(IView view) {
 		if (DBG)
-			System.out.println("set current view");
+			System.out.println("set current view " + view);
 		if (currentView != view) {
 			currentView = view;
 			if (currentView != null)

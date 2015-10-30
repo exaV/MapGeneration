@@ -127,6 +127,11 @@ public class DefaultView implements IView {
 	public IWindow getWindow() {
 		return window;
 	}
+	
+	@Override
+	public String toString() {
+		return "[view " + hashCode() + "]";
+	}
 
 	private void runOnSceneThread(IAction action) {
 		controller.run(action);
