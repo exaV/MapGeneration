@@ -70,7 +70,7 @@ public final class ShaderBuilder {
 		@Override
 		public String toString() {
 			final StringBuffer s = new StringBuffer();
-			attributes.forEach((key, value) -> s.append("[" + key + ", " + value + "] "));
+			attributes.forEach((key, value) -> s.append("[").append(key).append(", ").append(value).append("] "));
 			return s.toString();
 		}
 	}
@@ -84,7 +84,7 @@ public final class ShaderBuilder {
 			List<IAttribute> provided = material.getProvidedAttributes();
 			for (int i = 0; i < provided.size(); ++i) {
 				final int index = i;
-				attributes.provide(provided.get(i), new Pair<Integer, Supplier<?>>(index, null));
+				attributes.provide(provided.get(i), new Pair<>(index, null));
 			}
 			for (IAttribute required : material.getRequiredAttributes()) {
 				attributes.provide(required, null);
@@ -94,7 +94,7 @@ public final class ShaderBuilder {
 		// add global attributes
 		if (globals != null) {
 			globals.forEach((attribute, supplier) -> attributes.provide(attribute,
-					new Pair<Integer, Supplier<?>>(-1, supplier)));
+					new Pair<>(-1, supplier)));
 		}
 
 		// create shader and attach all attributes this shader requires

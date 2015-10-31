@@ -59,6 +59,6 @@ public final class LightInfo {
 	}
 
 	public void getAttributes(Map<IAttribute, Supplier<?>> globals) {
-		globals.put(LightUniformBlock.ATTRIBUTE, () -> uniforms.getBindingPoint());
+		globals.put(LightUniformBlock.ATTRIBUTE, uniforms::getBindingPoint);
 	}
 }

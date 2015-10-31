@@ -32,7 +32,6 @@ import java.awt.event.KeyEvent;
 
 import ch.fhnw.ether.controller.DefaultController;
 import ch.fhnw.ether.controller.IController;
-import ch.fhnw.ether.controller.event.IScheduler;
 import ch.fhnw.ether.scene.DefaultScene;
 import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.scene.mesh.IMesh;
@@ -72,14 +71,11 @@ public final class TransformExample {
 			controller.getUI().addWidget(new Slider(0, 1, "Speed", "Rotation Speed", speed, (slider, view) -> speed = slider.getValue()));
 		});
 
-		controller.animate(new IScheduler.IAnimationAction() {
-			@Override
-			public void run(double time, double interval) {
-				angle += speed;
+		controller.animate((time, interval) -> {
+            angle += speed;
 
-				Mat4 transform = Mat4.multiply(Mat4.rotate(angle, Vec3.Z), Mat4.translate(1, 1, 1));
-				mesh.setTransform(transform);
-			}
-		});
+            Mat4 transform = Mat4.multiply(Mat4.rotate(angle, Vec3.Z), Mat4.translate(1, 1, 1));
+            mesh.setTransform(transform);
+        });
 	}
 }

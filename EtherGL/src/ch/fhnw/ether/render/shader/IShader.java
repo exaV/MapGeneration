@@ -38,15 +38,15 @@ import ch.fhnw.ether.render.variable.IShaderArray;
 import ch.fhnw.ether.render.variable.IShaderUniform;
 
 public interface IShader {
-	public static String VERSION_GL_3_1_GLSL_1_40 = "140";
-	public static String VERSION_GL_3_2_GLSL_1_50 = "150";
-	public static String VERSION_GL_3_3_GLSL_3_30 = "330";
-	public static String VERSION_GL_4_0_GLSL_3_40 = "340";
-	public static String VERSION_GL_4_1_GLSL_4_10 = "410";
-	public static String VERSION_GL_4_2_GLSL_4_20 = "420";
-	public static String VERSION_GL_4_3_GLSL_4_30 = "420";
-	public static String VERSION_GL_4_4_GLSL_4_40 = "440";
-	public static String VERSION_GL_4_5_GLSL_4_50 = "450";
+	String VERSION_GL_3_1_GLSL_1_40 = "140";
+	String VERSION_GL_3_2_GLSL_1_50 = "150";
+	String VERSION_GL_3_3_GLSL_3_30 = "330";
+	String VERSION_GL_4_0_GLSL_3_40 = "340";
+	String VERSION_GL_4_1_GLSL_4_10 = "410";
+	String VERSION_GL_4_2_GLSL_4_20 = "420";
+	String VERSION_GL_4_3_GLSL_4_30 = "420";
+	String VERSION_GL_4_4_GLSL_4_40 = "440";
+	String VERSION_GL_4_5_GLSL_4_50 = "450";
 
 	String id();
 	

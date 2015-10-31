@@ -32,7 +32,7 @@ package ch.fhnw.ether.media;
 
 
 public interface IRenderTarget {
-	public static final double NOT_RENDERING = -1;
+	double NOT_RENDERING = -1;
 
 	boolean                   isRendering();
 	void                      start() throws RenderCommandException;

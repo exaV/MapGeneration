@@ -30,5 +30,5 @@
 package ch.fhnw.util.net.osc;
 
 public interface ExceptionHandler {
-	public void exception(Throwable t, Object source);
+	void exception(Throwable t, Object source);
 }

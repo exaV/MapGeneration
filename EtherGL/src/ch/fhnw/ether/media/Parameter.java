@@ -30,8 +30,8 @@
 package ch.fhnw.ether.media;
 
 public class Parameter {
-	public static enum Type {RANGE, ITEMS};
-	
+	public enum Type {RANGE, ITEMS}
+
 	private final String   name;
 	private final String   description;
 	private final float    min;

@@ -49,7 +49,7 @@ public interface IRenderer {
 		SINGLE_THREADED, DUAL_THREADED, MULTI_THREADED
 	}
 
-	public interface IRenderState {
+	interface IRenderState {
 		List<IView> getViews();
 
 		List<IViewCameraState> getViewCameraStates();

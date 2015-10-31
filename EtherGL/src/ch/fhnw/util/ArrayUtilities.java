@@ -39,7 +39,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.function.Predicate;
 
-public class ArrayUtilities {
+public final class ArrayUtilities {
 
 	@SuppressWarnings("unchecked")
 	static <T> T[] alloc1D(T[] template, int size) {
@@ -494,7 +494,7 @@ public class ArrayUtilities {
 	}	
 
 	private static int[][] COUNT_UP = new int[0][]; 
-	public synchronized static final int[] countUp(int size) {
+	public synchronized static int[] countUp(int size) {
 		if(size > 1024) {
 			int[] result = new int[size];
 			for(int i = 0; i < result.length; i++)

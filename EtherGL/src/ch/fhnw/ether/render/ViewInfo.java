@@ -43,6 +43,6 @@ public final class ViewInfo {
 	}
 
 	public void getAttributes(Map<IAttribute, Supplier<?>> globals) {
-		globals.put(ViewUniformBlock.ATTRIBUTE, () -> uniforms.getBindingPoint());
+		globals.put(ViewUniformBlock.ATTRIBUTE, uniforms::getBindingPoint);
 	}
 }

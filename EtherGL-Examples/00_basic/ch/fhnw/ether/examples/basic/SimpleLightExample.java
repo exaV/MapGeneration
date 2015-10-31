@@ -137,7 +137,7 @@ public final class SimpleLightExample {
 				}
 				getUI().setMessage("light position: " + lightMesh.getPosition());
 				light.setPosition(lightMesh.getPosition());
-			};
+			}
 		};
 
 		controller.run((time) -> {

@@ -43,7 +43,7 @@ import ch.fhnw.util.Log;
 public class RenderProgram<T extends IRenderTarget> extends AbstractRenderCommand<T,RenderProgram.State<T>> {
 	private static Log log = Log.create();
 
-	private List<IRenderTarget> targets = new LinkedList<>();
+	private final List<IRenderTarget> targets = new LinkedList<>();
 
 	static class Update {
 		final AbstractRenderCommand<?,?> oldCmd;

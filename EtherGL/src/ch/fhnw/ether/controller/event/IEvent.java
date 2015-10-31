@@ -32,13 +32,13 @@ package ch.fhnw.ether.controller.event;
 import ch.fhnw.ether.view.IView;
 
 public interface IEvent {
-	static final int SHIFT_MASK = 1 << 0;
-	static final int CONTROL_MASK = 1 << 1;
-	static final int META_MASK = 1 << 2;
-	static final int ALT_MASK = 1 << 3;
-	static final int ALT_GRAPH_MASK = 1 << 4;
+	int SHIFT_MASK = 1 << 0;
+	int CONTROL_MASK = 1 << 1;
+	int META_MASK = 1 << 2;
+	int ALT_MASK = 1 << 3;
+	int ALT_GRAPH_MASK = 1 << 4;
 	
-	static final int MODIFIER_MASK = SHIFT_MASK | CONTROL_MASK | META_MASK | ALT_MASK | ALT_GRAPH_MASK;
+	int MODIFIER_MASK = SHIFT_MASK | CONTROL_MASK | META_MASK | ALT_MASK | ALT_GRAPH_MASK;
 
 	IView getView();
 

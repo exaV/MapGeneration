@@ -39,7 +39,7 @@ import ch.fhnw.ether.media.RenderCommandException;
 import ch.fhnw.ether.media.StateHandle;
 
  public class BandsFFT extends AbstractRenderCommand<IAudioRenderTarget,BandsFFT.State> {
-	 public enum Div {LINEAR, LOGARITHMIC};
+	 public enum Div {LINEAR, LOGARITHMIC}
 
 	 private static final double          BASE = 1.2;
 	 private final float[]                freqs;

@@ -36,8 +36,6 @@ import java.util.function.Supplier;
 
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL3;
-import com.jogamp.opengl.GLAutoDrawable;
-import com.jogamp.opengl.GLRunnable;
 
 import ch.fhnw.ether.render.AbstractRenderer;
 import ch.fhnw.ether.render.Renderable;
@@ -140,17 +138,14 @@ public final class ForwardRenderer extends AbstractRenderer {
 		for (int i = 0; i < views.size(); ++i) {
 			IView view = views.get(i);
 			IViewCameraState vcs = vcss.get(i);
-			views.get(i).getWindow().display(new GLRunnable() {
-				@Override
-				public boolean run(GLAutoDrawable drawable) {
-					try {
-						render(drawable.getGL().getGL3(), renderState, view, vcs);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-					return true;
-				}
-			});
+			views.get(i).getWindow().display(drawable -> {
+                try {
+                    render(drawable.getGL().getGL3(), renderState, view, vcs);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return true;
+            });
 		}
 	}
 
@@ -204,7 +199,7 @@ public final class ForwardRenderer extends AbstractRenderer {
 		gl.glDisable(GL.GL_POLYGON_OFFSET_FILL);
 		// gl.glDisable(GL.GL_CULL_FACE);
 
-		if (true)
+		if (false)
 			renderShadowVolumes(gl, state, Queue.DEPTH, interactive);
 
 		// ---- 2. TRANSPARENCY QUEUE (DEPTH WRITE DISABLED, DEPTH TEST ENABLED,

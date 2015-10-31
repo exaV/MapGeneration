@@ -59,7 +59,7 @@ public class GLSLReader {
 					code.append("#line 1\n");
 					lineNumber++;
 					include(line, code, out);
-					code.append("#line " + lineNumber + "\n");
+					code.append("#line ").append(lineNumber).append("\n");
 				} else {
 					code.append(line);
 					code.append('\n');

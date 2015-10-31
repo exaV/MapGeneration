@@ -154,7 +154,7 @@ public class RayTracer extends AbstractVideoSource<Stateless<IVideoRenderTarget>
 	@Override
 	public long getFrameCount() {
 		return FRAMECOUNT_UNKNOWN;
-	};
+	}
 
 	@Override
 	protected void run(Stateless<IVideoRenderTarget> state) throws RenderCommandException {

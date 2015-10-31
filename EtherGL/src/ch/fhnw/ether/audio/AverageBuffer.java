@@ -124,7 +124,7 @@
 
 	 public void reset() {
 		 Arrays.fill(values, 0f);
-		 index = 0;;
+		 index = 0;
 		 sum = 0;
 	 }
  }

@@ -53,7 +53,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class ClassUtilities {
+public final class ClassUtilities {
 	public static final Class<Object>          CLS_Object          = Object.class;
 	public static final Class<Object[]>        CLS_ObjectA         = Object[].class;
 	public static final Object[]               EMPTY_ObjectA       = new Object[0];
@@ -257,7 +257,7 @@ public class ClassUtilities {
 	public static Field[] getAllFields(Class<?> type) {
 		Field[] result = cls2fields.get(type);
 		if(result == null) {
-			Collection<Field> fields = getAllFields(type, new ArrayList<Field>());
+			Collection<Field> fields = getAllFields(type, new ArrayList<>());
 			result = fields.toArray(new Field[fields.size()]);
 			cls2fields.put(type, result);
 			AccessibleObject.setAccessible(result, true);			
@@ -279,7 +279,7 @@ public class ClassUtilities {
 	public static Method[] getAllMethods(Class<?> type) {
 		Method[] result = cls2methods.get(type);
 		if(result == null) {
-			Collection<Method> methods = getAllMethods(type, new ArrayList<Method>());
+			Collection<Method> methods = getAllMethods(type, new ArrayList<>());
 			result = methods.toArray(new Method[methods.size()]);
 			cls2methods.put(type, result);
 			AccessibleObject.setAccessible(result, true);			
@@ -388,7 +388,7 @@ public class ClassUtilities {
 	}
 
 	public static Class<?>[] getTypeHierarchy(Class<?> cls) {
-		ArrayList<Class<?>> result = getTypeHierarchy(cls, new ArrayList<Class<?>>());	
+		ArrayList<Class<?>> result = getTypeHierarchy(cls, new ArrayList<>());
 		return result.toArray(new Class<?>[result.size()]);
 	}
 
@@ -451,7 +451,7 @@ public class ClassUtilities {
 		return iCounter.addAndGet(1);
 	}
 
-	public static final int identityHashCode(Object x) {
+	public static int identityHashCode(Object x) {
 		if(x instanceof IObjectID)
 			return (int) ((IObjectID) x).getObjectID();
 		else if(x instanceof String || x instanceof Number || x instanceof UUID)

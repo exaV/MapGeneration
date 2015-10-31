@@ -268,8 +268,8 @@ public class ParameterWindow {
 								if(c instanceof JFrame)
 									((JFrame)c).pack();
 								else
-									c.validate();;
-							});
+									c.validate();
+					});
 					int y = 0;
 					for(AbstractRenderCommand<?, ?> cmd : program.getProgram())
 						result.add(createUIRecr(cmd), new GridBagConstraints(1, y++, 1, 1, 1.0, 1.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, insets, 0, 0));

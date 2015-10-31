@@ -52,28 +52,28 @@ public abstract class AbstractVideoFX<S extends PerTargetState<IVideoRenderTarge
 		super(parameters);
 	}
 
-	public final static float toFloat(final byte v) {
+	public static float toFloat(final byte v) {
 		return (v & 0xFF) / 255f;
 	}
 
-	public final static byte toByte(final float v) {
+	public static byte toByte(final float v) {
 		if(v < 0f) return 0;
 		if(v > 1f) return -1;
 		return (byte) (v * 255f);
 	}
 
-	public final static byte toByte(final double v) {
+	public static byte toByte(final double v) {
 		if(v < 0.0) return 0;
 		if(v > 1.0) return -1;
 		return (byte) (v * 255.0);
 	}
 
-	public final static float wrap(final float v) {
+	public static float wrap(final float v) {
 		float result = v % 1f;
 		return result < 0 ? result + 1 : result;
 	}
 
-	public final static float mix(final float val0, final float val1, float w) {
+	public static float mix(final float val0, final float val1, float w) {
 		return val0 * w + (1f-w) * val1;
 	}
 	

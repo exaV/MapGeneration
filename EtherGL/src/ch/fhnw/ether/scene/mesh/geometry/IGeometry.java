@@ -73,7 +73,7 @@ public interface IGeometry extends IUpdateTracker {
 	}
 
 	enum Primitive {
-		POINTS, LINES, TRIANGLES;
+		POINTS, LINES, TRIANGLES
 	}
 
 	// default geometry attributes

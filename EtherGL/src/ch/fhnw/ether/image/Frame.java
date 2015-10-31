@@ -416,7 +416,7 @@ public abstract class Frame extends AbstractMediaTarget<VideoFrame,IVideoRenderT
 
 	public abstract int getARGB(int i, int j);
 
-	protected static final float linearInterpolate(float low, float high, float weight) {
+	protected static float linearInterpolate(float low, float high, float weight) {
 		return low + ((high - low) * weight);
 	}
 

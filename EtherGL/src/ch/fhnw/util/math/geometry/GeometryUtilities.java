@@ -39,7 +39,7 @@ import com.jogamp.opengl.glu.GLUtessellator;
 import com.jogamp.opengl.glu.GLUtessellatorCallback;
 import com.jogamp.opengl.glu.GLUtessellatorCallbackAdapter;
 
-public class GeometryUtilities {
+public final class GeometryUtilities {
 	private static final IntList TRIANGLE = new IntList(new int[] { 0, 1, 2 });
 
 	public static IntList triangulate(List<Vec3> polygon) {
@@ -65,7 +65,7 @@ public class GeometryUtilities {
 			@Override
 			public void vertex(Object vertexData) {
 				if (vertexData instanceof Integer)
-					result.add(((Integer) vertexData).intValue());
+					result.add((Integer) vertexData);
 			}
 
 			@Override
@@ -86,7 +86,7 @@ public class GeometryUtilities {
 			tmp[0] = polygon[i + 0];
 			tmp[1] = polygon[i + 1];
 			tmp[2] = polygon[i + 2];
-			GLU.gluTessVertex(tess, tmp, 0, Integer.valueOf(i / 3));
+			GLU.gluTessVertex(tess, tmp, 0, i / 3);
 		}
 		GLU.gluTessEndContour(tess);
 		GLU.gluTessEndPolygon(tess);

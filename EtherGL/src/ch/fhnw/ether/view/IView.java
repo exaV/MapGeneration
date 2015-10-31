@@ -27,6 +27,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */package ch.fhnw.ether.view;
 
+import java.util.Collections;
 import java.util.EnumSet;
 
 import ch.fhnw.ether.controller.IController;
@@ -50,7 +51,7 @@ public interface IView {
 		SMOOTH_LINES,
 	}
 
-	public static final class Config {
+	final class Config {
 		private final ViewType viewType;
 		private final int fsaaSamples;
 		private final EnumSet<ViewFlag> flags;
@@ -59,8 +60,7 @@ public interface IView {
 			this.viewType = viewType;
 			this.fsaaSamples = fsaaSamples;
 			this.flags = EnumSet.noneOf(ViewFlag.class);
-			for (ViewFlag flag : flags)
-				this.flags.add(flag);
+			Collections.addAll(this.flags, flags);
 		}
 
 		public ViewType getViewType() {

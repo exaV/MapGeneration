@@ -80,7 +80,7 @@ public class GeodesicSphere {
     };
     //@formatter:on
 
-	private static final Vec3[] makeVertices(double[] thetas, double[] phis) {
+	private static Vec3[] makeVertices(double[] thetas, double[] phis) {
 		Vec3[] vertices = new Vec3[thetas.length];
 		for (int i = 0; i < vertices.length; ++i) {
 			vertices[i] = sphericalToCartesian(SCALE, thetas[i], phis[i]);
@@ -88,7 +88,7 @@ public class GeodesicSphere {
 		return vertices;
 	}
 
-	private static final Vec3 sphericalToCartesian(double r, double theta, double phi) {
+	private static Vec3 sphericalToCartesian(double r, double theta, double phi) {
 		double x = r * Math.cos(phi) * Math.cos(theta);
 		double y = r * Math.cos(phi) * Math.sin(theta);
 		double z = r * Math.sin(phi);

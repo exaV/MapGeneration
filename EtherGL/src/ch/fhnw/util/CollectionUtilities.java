@@ -43,15 +43,15 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.Set;
 
-public class CollectionUtilities {
-	public static final <E extends Enum<E>> EnumSet<E> cat(EnumSet<E> collection, E element) {
+public final class CollectionUtilities {
+	public static <E extends Enum<E>> EnumSet<E> cat(EnumSet<E> collection, E element) {
 		EnumSet<E> result = EnumSet.copyOf(collection);
 		result.add(element);
 		return result;
 	}
 
 	@SuppressWarnings("unchecked")
-	public static final <E, T extends Collection<E>> T cat(T collection, E element) {
+	public static <E, T extends Collection<E>> T cat(T collection, E element) {
 		try {
 			T result = (T) collection.getClass().newInstance();
 			CollectionUtilities.addAll(result, collection);
@@ -63,7 +63,7 @@ public class CollectionUtilities {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static final <E, T extends Collection<E>> T cat(T c0, T c1) {
+	public static <E, T extends Collection<E>> T cat(T c0, T c1) {
 		try {
 			T result = (T)c0.getClass().newInstance();
 			CollectionUtilities.addAll(result, c0);
@@ -74,7 +74,7 @@ public class CollectionUtilities {
 		}
 	}
 
-	public static final <E> E last(List<E> list) {
+	public static <E> E last(List<E> list) {
 		return list.get(list.size() - 1);
 	}
 
@@ -152,7 +152,7 @@ public class CollectionUtilities {
 		return -1;
 	}
 
-	public final static <T> boolean removeAll(Collection<T> collection, T toRemove) {
+	public static <T> boolean removeAll(Collection<T> collection, T toRemove) {
 		boolean result = false;
 		for(Iterator<T> i = collection.iterator(); i.hasNext();)
 			if(i.next() == toRemove) {
@@ -162,7 +162,7 @@ public class CollectionUtilities {
 		return result;
 	}
 
-	public final static <T> boolean removeAll(Collection<T> collection, Collection<?> toRemove) {
+	public static <T> boolean removeAll(Collection<T> collection, Collection<?> toRemove) {
 		// optimize == case
 		if(collection == toRemove) {
 			boolean result = !collection.isEmpty();
@@ -171,7 +171,7 @@ public class CollectionUtilities {
 		}
 
 		if(toRemove.size() > 128 && !(toRemove instanceof Set<?>))
-			toRemove = toRemove.getClass().getName().contains("Identity") ? new IdentityHashSet<Object>(toRemove) : new HashSet<Object>(toRemove);
+			toRemove = toRemove.getClass().getName().contains("Identity") ? new IdentityHashSet<>(toRemove) : new HashSet<>(toRemove);
 		
 		if(collection instanceof AbstractSet<?> && collection.size() <= toRemove.size()) 
 			return removeAllFromSet((AbstractSet<?>) collection, toRemove);
@@ -192,14 +192,14 @@ public class CollectionUtilities {
 		return result;
 	}
 	
-	private final static boolean removeAllFromSet(AbstractSet<?> collection, Collection<?> toRemove) {
+	private static boolean removeAllFromSet(AbstractSet<?> collection, Collection<?> toRemove) {
 		boolean result = false;
 		for (Object o : toRemove)
 			result |= collection.remove(o);
 		return result;
 	}
 
-	public final static <T> boolean addAll(Collection<T> collection, Collection<? extends T> toAdd) {
+	public static <T> boolean addAll(Collection<T> collection, Collection<? extends T> toAdd) {
 		int size = toAdd.size();
 		boolean result = false;
 		if(size > 0) {
@@ -213,7 +213,7 @@ public class CollectionUtilities {
 	}
 
 	@SafeVarargs
-	public final static <T> boolean addAll(Collection<T> collection, T ... toAdd) {
+	public static <T> boolean addAll(Collection<T> collection, T ... toAdd) {
 		int size = toAdd.length;
 		boolean result = false;
 		if(size > 0) {

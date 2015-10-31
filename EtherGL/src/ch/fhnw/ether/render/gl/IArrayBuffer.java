@@ -45,7 +45,7 @@ public interface IArrayBuffer {
 
 	boolean isEmpty();
 
-	public static void unbind(GL3 gl) {
+	static void unbind(GL3 gl) {
 		gl.glBindBuffer(GL.GL_ARRAY_BUFFER, 0);
 	}
 }

@@ -33,14 +33,14 @@ import com.jogamp.opengl.GL3;
 
 public interface IVertexBuffer {
 	
-	public int getNumVertices();
+	int getNumVertices();
 
-	public void bind(GL3 gl);
+	void bind(GL3 gl);
 
-	public void unbind(GL3 gl);
+	void unbind(GL3 gl);
 
-	public void enableAttribute(GL3 gl, int bufferIndex, int shaderIndex);
+	void enableAttribute(GL3 gl, int bufferIndex, int shaderIndex);
 
-	public void disableAttribute(GL3 gl, int bufferIndex, int shaderIndex);
+	void disableAttribute(GL3 gl, int bufferIndex, int shaderIndex);
 
 }

@@ -39,5 +39,5 @@ public interface OSCHandler {
 	 *            OSC method signature
 	 * @return the OSC reply or null if now reply
 	 */
-	public Object[] handle(String[] address, int addrIdx, StringBuilder typeString, long timestamp, Object... args);
+	Object[] handle(String[] address, int addrIdx, StringBuilder typeString, long timestamp, Object... args);
 }

@@ -218,7 +218,7 @@ public class RGB8Frame extends Frame {
 		return new RGB8Frame(dimI, dimJ);
 	}
 
-	protected final static byte bits2byte(int val, final int shift, final int size, int m) {
+	protected static byte bits2byte(int val, final int shift, final int size, int m) {
 		val &= m;
 		if (shift > 0)
 			val >>= shift;
