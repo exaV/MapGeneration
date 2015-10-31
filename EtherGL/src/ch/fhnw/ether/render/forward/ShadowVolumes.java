@@ -51,8 +51,7 @@ import ch.fhnw.ether.scene.mesh.material.EmptyMaterial;
 import ch.fhnw.util.color.RGBA;
 
 public final class ShadowVolumes {
-	private static final IMesh OVERLAY_MESH = new DefaultMesh(new EmptyMaterial(), DefaultGeometry.createV(Primitive.TRIANGLES,
-			MeshLibrary.DEFAULT_QUAD_TRIANGLES));
+	private static final IMesh OVERLAY_MESH = new DefaultMesh(new EmptyMaterial(), DefaultGeometry.createV(Primitive.TRIANGLES, MeshLibrary.DEFAULT_QUAD_TRIANGLES));
 
 	private ShadowVolumeShader volumeShader;
 	private Renderable overlay;
@@ -64,7 +63,6 @@ public final class ShadowVolumes {
 
 	public ShadowVolumes(Map<IAttribute, Supplier<?>> globals) {
 		volumeShader = ShaderBuilder.create(new ShadowVolumeShader(() -> lightIndex, () -> extrudeDistance, () -> volumeColor), null, globals);
-
 		overlay = new Renderable(new TrivialDeviceSpaceShader(() -> overlayColor), OVERLAY_MESH, globals);
 	}
 
@@ -107,13 +105,9 @@ public final class ShadowVolumes {
 			gl.glStencilFunc(GL.GL_NOTEQUAL, 0x0, 0xffffffff);
 			gl.glStencilOp(GL.GL_KEEP, GL.GL_KEEP, GL.GL_KEEP);
 
-			// XXX need to find a new solution for shadow volumes...
-			//overlay.update(gl);
-			overlay.render(gl);
+			overlay.render(gl, OVERLAY_MESH);
 
 			gl.glDisable(GL.GL_STENCIL_TEST);
-
-			lightIndex++;
 		}
 		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
 		gl.glDisable(GL.GL_BLEND);

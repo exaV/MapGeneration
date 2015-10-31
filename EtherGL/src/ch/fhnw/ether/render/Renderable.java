@@ -48,6 +48,10 @@ public final class Renderable {
 		public final Mat4 positionTransform;
 		public final Mat3 normalTransform;
 
+		public RenderData(IMesh mesh) {
+			this(mesh, true, true);
+		}
+		
 		public RenderData(IMesh mesh, boolean materialChanged, boolean geometryChanged) {
 			if (materialChanged)
 				materialData = mesh.getMaterial().getData().toArray();	
@@ -95,6 +99,11 @@ public final class Renderable {
 		shader.enable(gl);
 		shader.render(gl, buffer);
 		shader.disable(gl);
+	}
+	
+	public void render(GL3 gl, IMesh mesh) {
+		update(gl, new RenderData(mesh));
+		render(gl);
 	}
 
 	public IMesh.Queue getQueue() {

@@ -161,6 +161,6 @@ public class NavigationTool extends AbstractTool {
 			0, 0, 1, 1, 0, 0, 1, 1
 		};
 
-		return new DefaultMesh(new LineMaterial(RGBA.WHITE, true), DefaultGeometry.createVC(Primitive.LINES, lines, colors));
+		return new DefaultMesh(new LineMaterial(RGBA.WHITE, true), DefaultGeometry.createVC(Primitive.LINES, lines, colors), Queue.TRANSPARENCY);
 	}
 }

@@ -204,7 +204,7 @@ public final class ForwardRenderer extends AbstractRenderer {
 		gl.glDisable(GL.GL_POLYGON_OFFSET_FILL);
 		// gl.glDisable(GL.GL_CULL_FACE);
 
-		if (false)
+		if (true)
 			renderShadowVolumes(gl, state, Queue.DEPTH, interactive);
 
 		// ---- 2. TRANSPARENCY QUEUE (DEPTH WRITE DISABLED, DEPTH TEST ENABLED,
