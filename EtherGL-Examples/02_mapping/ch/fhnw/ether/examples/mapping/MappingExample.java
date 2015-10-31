@@ -50,7 +50,7 @@ public final class MappingExample {
 	 */
 	public MappingExample() {
 		IController controller = new MappingController();
-		controller.run((time) -> {
+		controller.run(time -> {
 			// FIXME: for every view use separate camera with dedicated angle
 			new MappingView(controller, 0, 10, 512, 512, IView.INTERACTIVE_VIEW, "View 0");
 			new MappingView(controller, 530, 0, 400, 400, IView.MAPPED_VIEW, "View 1");

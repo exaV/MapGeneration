@@ -28,6 +28,7 @@
 package ch.fhnw.ether.examples.objloader;
 
 import java.io.IOException;
+import java.net.URL;
 
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.formats.obj.OBJReader;
@@ -37,22 +38,22 @@ import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.gl.DefaultView;
 
 public class ObjLoaderExample {
+	private static final URL obj = ObjLoaderExample.class.getResource("fhnw.obj");
+	
 	public static void main(String[] args) {
 		new ObjLoaderExample();
 	}
 
 	public ObjLoaderExample() {
 		IController controller = new ObjLoaderController();
-		controller.run((time) -> {
+		controller.run(time -> {
 			new DefaultView(controller, 0, 10, 512, 512, IView.INTERACTIVE_VIEW, "Obj View");
 	
 			IScene scene = new DefaultScene(controller);
 			controller.setScene(scene);
 	
 			try {
-				new OBJReader(getClass().getResource("fhnw.obj")).getMeshes().forEach((mesh) -> {
-					scene.add3DObject(mesh);
-				});
+				new OBJReader(obj).getMeshes().forEach(mesh -> scene.add3DObject(mesh));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

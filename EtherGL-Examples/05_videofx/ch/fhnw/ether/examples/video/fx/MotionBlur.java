@@ -29,8 +29,6 @@
 
 package ch.fhnw.ether.examples.video.fx;
 
-import java.nio.ByteBuffer;
-
 import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.media.Parameter;
 import ch.fhnw.ether.media.PerTargetState;
@@ -58,7 +56,7 @@ public class MotionBlur extends AbstractVideoFX<MotionBlur.State> {
 
 			float decay = getVal(DECAY);
 
-			frame.processLines((ByteBuffer pixels, int j) -> {
+			frame.processLines((pixels, j) -> {
 				int           idx     = 0;
 				final float[] bufferJ = buffer[j];
 				for(int i = frame.dimI; --i >= 0;) {

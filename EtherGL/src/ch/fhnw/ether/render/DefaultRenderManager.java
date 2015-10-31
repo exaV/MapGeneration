@@ -204,8 +204,8 @@ public class DefaultRenderManager implements IRenderManager {
 				renderState.renderables.add(state.renderable);
 				renderState.data.add(data);
 			});
-			materials.forEach((material) -> material.getUpdater().clear());
-			geometries.forEach((geometry) -> geometry.getUpdater().clear());
+			materials.forEach(material -> material.getUpdater().clear());
+			geometries.forEach(geometry -> geometry.getUpdater().clear());
 
 			// 4. hey, we're done!
 			return renderState;

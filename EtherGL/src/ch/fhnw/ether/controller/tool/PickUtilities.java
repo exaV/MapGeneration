@@ -36,7 +36,6 @@ import ch.fhnw.ether.scene.I3DObject;
 import ch.fhnw.ether.scene.camera.IViewCameraState;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
-import ch.fhnw.ether.scene.mesh.geometry.IGeometry.IGeometryAttribute;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.ProjectionUtilities;
 import ch.fhnw.util.math.Mat4;
@@ -78,7 +77,7 @@ public final class PickUtilities {
 			IMesh mesh = (IMesh)object;
 			IGeometry geometry = mesh.getGeometry();
 			Mat4 transform = mesh.getTransform();
-			mesh.getGeometry().inspect(0, (IGeometryAttribute attribute, float[] data) -> {
+			mesh.getGeometry().inspect(0, (attribute, data) -> {
 				if (transform != Mat4.ID) {
 					if (data.length > transformedData[0].length)
 						transformedData[0] = new float[data.length];

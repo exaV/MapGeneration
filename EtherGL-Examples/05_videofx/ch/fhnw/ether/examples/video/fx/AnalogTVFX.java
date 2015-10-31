@@ -29,8 +29,6 @@
 
 package ch.fhnw.ether.examples.video.fx;
 
-import java.nio.ByteBuffer;
-
 import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.media.Parameter;
 import ch.fhnw.ether.media.PerTargetState;
@@ -80,7 +78,7 @@ public class AnalogTVFX extends AbstractVideoFX<AnalogTVFX.State> {
 			if(yuvFrame.length != frame.dimJ + VBLANK || yuvFrame[0].length != frame.dimI * 3)
 				yuvFrame = new float[frame.dimJ + VBLANK][frame.dimI * 3];
 
-			frame.processLines((final ByteBuffer pixels, final int j)->{
+			frame.processLines((pixels, j)->{
 				final float[] yuv  = yuvFrame[j];
 				final int     hoff = 3 * (int)((Math.sin(lineCount++ / hf) + 1.0) * ha + hp * j);      
 				ColorUtilities.getYUVfromRGB(pixels, yuv, frame.pixelSize);
@@ -95,7 +93,7 @@ public class AnalogTVFX extends AbstractVideoFX<AnalogTVFX.State> {
 				}
 			});
 
-			frame.processLines((final ByteBuffer pixels, final int j)->{
+			frame.processLines((pixels, j)->{
 				final float[] yuv  = yuvFrame[(j+vOff) % yuvFrame.length];
 				ColorUtilities.putRGBfromYUV(pixels, yuv, frame.pixelSize);
 			});

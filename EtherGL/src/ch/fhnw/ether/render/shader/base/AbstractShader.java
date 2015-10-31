@@ -81,32 +81,32 @@ public abstract class AbstractShader implements IShader {
 				System.exit(1);
 			}
 		}
-		uniforms.forEach((attr) -> attr.update(uniformData));
+		uniforms.forEach(attr -> attr.update(uniformData));
 	}
 
 	@Override
 	public final void enable(GL3 gl) {
 		// enable program & uniforms (set uniforms, enable textures, change gl state)
 		program.enable(gl);
-		uniforms.forEach((attr) -> attr.enable(gl, program));
+		uniforms.forEach(attr -> attr.enable(gl, program));
 	}
 
 	@Override
 	public final void render(GL3 gl, IVertexBuffer buffer) {
 		buffer.bind(gl);
-		arrays.forEach((attr) -> attr.enable(gl, program, buffer));
+		arrays.forEach(attr -> attr.enable(gl, program, buffer));
 		
 		int mode = MODE[type.ordinal()];
 		gl.glDrawArrays(mode, 0, buffer.getNumVertices());
 		
-		arrays.forEach((attr) -> attr.disable(gl, program, buffer));
+		arrays.forEach(attr -> attr.disable(gl, program, buffer));
 		buffer.unbind(gl);
 	}
 
 	@Override
 	public final void disable(GL3 gl) {
 		// disable program and uniforms (disable textures, restore gl state)
-		uniforms.forEach((attr) -> attr.disable(gl, program));
+		uniforms.forEach(attr -> attr.disable(gl, program));
 		program.disable(gl);
 	}
 

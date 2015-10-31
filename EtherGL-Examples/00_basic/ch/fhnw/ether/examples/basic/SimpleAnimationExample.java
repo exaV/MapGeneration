@@ -64,7 +64,7 @@ public final class SimpleAnimationExample {
 	public SimpleAnimationExample() {
 		// Create controller
 		IController controller = new DefaultController();
-		controller.run((time) -> {
+		controller.run(time -> {
 			// Create view
 			new DefaultView(controller, 100, 100, 500, 500, IView.INTERACTIVE_VIEW, "Test");
 	

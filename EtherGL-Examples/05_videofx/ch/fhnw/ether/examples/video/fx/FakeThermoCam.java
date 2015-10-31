@@ -29,8 +29,6 @@
 
 package ch.fhnw.ether.examples.video.fx;
 
-import java.nio.ByteBuffer;
-
 import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.media.Stateless;
 import ch.fhnw.ether.video.IVideoRenderTarget;
@@ -43,7 +41,7 @@ public class FakeThermoCam extends AbstractVideoFX<Stateless<IVideoRenderTarget>
 
 	@Override
 	protected void processFrame(double playOutTime, Stateless<IVideoRenderTarget> state, Frame frame) {
-		frame.processLines((final ByteBuffer pixels, final int j)->{
+		frame.processLines((pixels, j)->{
 			float[] hsb = new float[frame.dimI * 3];
 			int pos = pixels.position();
 			for(int i = 0; i < frame.dimI; i++) {

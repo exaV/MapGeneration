@@ -179,7 +179,7 @@ public class DefaultView implements IView {
 
 		@Override
 		public final void dispose(GLAutoDrawable drawable) {
-			runOnSceneThread((time) -> {
+			runOnSceneThread(time -> {
 				controller.viewDisposed(DefaultView.this);
 				window = null;
 			});
@@ -191,17 +191,17 @@ public class DefaultView implements IView {
 	private WindowListener windowListener = new WindowAdapter() {
 		@Override
 		public void windowGainedFocus(WindowEvent e) {
-			runOnSceneThread((time) -> controller.viewGainedFocus(DefaultView.this));
+			runOnSceneThread(time -> controller.viewGainedFocus(DefaultView.this));
 		}
 
 		@Override
 		public void windowLostFocus(WindowEvent e) {
-			runOnSceneThread((time) -> controller.viewLostFocus(DefaultView.this));
+			runOnSceneThread(time -> controller.viewLostFocus(DefaultView.this));
 		}
 		
 		@Override
 		public void windowResized(WindowEvent e) {
-			runOnSceneThread((time) -> controller.viewChanged(DefaultView.this));
+			runOnSceneThread(time -> controller.viewChanged(DefaultView.this));
 		}
 	};
 
@@ -255,12 +255,12 @@ public class DefaultView implements IView {
 	private KeyListener keyListener = new KeyListener() {
 		@Override
 		public void keyPressed(KeyEvent e) {
-			runOnSceneThread((time) -> controller.keyPressed(new ViewKeyEvent(e)));
+			runOnSceneThread(time -> controller.keyPressed(new ViewKeyEvent(e)));
 		}
 
 		@Override
 		public void keyReleased(KeyEvent e) {
-			runOnSceneThread((time) -> controller.keyReleased(new ViewKeyEvent(e)));
+			runOnSceneThread(time -> controller.keyReleased(new ViewKeyEvent(e)));
 		}
 	};
 
@@ -334,43 +334,43 @@ public class DefaultView implements IView {
 	private MouseListener mouseListener = new MouseListener() {
 		@Override
 		public void mouseEntered(MouseEvent e) {
-			runOnSceneThread((time) -> controller.pointerEntered(new ViewPointerEvent(e)));
+			runOnSceneThread(time -> controller.pointerEntered(new ViewPointerEvent(e)));
 		}
 
 		@Override
 		public void mouseExited(MouseEvent e) {
-			runOnSceneThread((time) -> controller.pointerExited(new ViewPointerEvent(e)));
+			runOnSceneThread(time -> controller.pointerExited(new ViewPointerEvent(e)));
 		}
 
 		@Override
 		public void mousePressed(MouseEvent e) {
 			window.requestFocus();
-			runOnSceneThread((time) -> controller.pointerPressed(new ViewPointerEvent(e)));
+			runOnSceneThread(time -> controller.pointerPressed(new ViewPointerEvent(e)));
 		}
 
 		@Override
 		public void mouseReleased(MouseEvent e) {
-			runOnSceneThread((time) -> controller.pointerReleased(new ViewPointerEvent(e)));
+			runOnSceneThread(time -> controller.pointerReleased(new ViewPointerEvent(e)));
 		}
 
 		@Override
 		public void mouseClicked(MouseEvent e) {
-			runOnSceneThread((time) -> controller.pointerClicked(new ViewPointerEvent(e)));
+			runOnSceneThread(time -> controller.pointerClicked(new ViewPointerEvent(e)));
 		}
 
 		@Override
 		public void mouseMoved(MouseEvent e) {
-			runOnSceneThread((time) -> controller.pointerMoved(new ViewPointerEvent(e)));
+			runOnSceneThread(time -> controller.pointerMoved(new ViewPointerEvent(e)));
 		}
 
 		@Override
 		public void mouseDragged(MouseEvent e) {
-			runOnSceneThread((time) -> controller.pointerDragged(new ViewPointerEvent(e)));
+			runOnSceneThread(time -> controller.pointerDragged(new ViewPointerEvent(e)));
 		}
 
 		@Override
 		public void mouseWheelMoved(MouseEvent e) {
-			runOnSceneThread((time) -> controller.pointerScrolled(new ViewPointerEvent(e)));
+			runOnSceneThread(time -> controller.pointerScrolled(new ViewPointerEvent(e)));
 		}
 	};
 }

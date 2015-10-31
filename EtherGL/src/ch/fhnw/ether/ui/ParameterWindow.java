@@ -222,12 +222,12 @@ public class ParameterWindow {
 						if(uis[i].combo != null)
 							result.add(uis[i].combo, gbc);
 					}
-					addMenuItem(menu, new JCheckBoxMenuItem("Enabled", cmd.isEnabled()), (ActionEvent e)->{
+					addMenuItem(menu, new JCheckBoxMenuItem("Enabled", cmd.isEnabled()), e->{
 						cmd.setEnable(((JCheckBoxMenuItem)e.getSource()).isSelected());
 						setEnablded(result, cmd.isEnabled());
 					});
-					addMenuItem(menu, new JMenuItem("Reset"), (ActionEvent e)->{for(ParamUI p : uis) p.reset();});
-					addMenuItem(menu, new JMenuItem("Zero"), (ActionEvent e)->{for(ParamUI p : uis) p.zero();});
+					addMenuItem(menu, new JMenuItem("Reset"), e->{for(ParamUI p : uis) p.reset();});
+					addMenuItem(menu, new JMenuItem("Zero"), e->{for(ParamUI p : uis) p.zero();});
 				} else {
 					JTextArea text = new JTextArea(cmd.toString(), 1, 30);
 					text.setWrapStyleWord(false);
@@ -257,9 +257,7 @@ public class ParameterWindow {
 				int w = 1;
 				if(src instanceof RenderProgram<?>) {
 					RenderProgram<?> program = (RenderProgram<?>)src;
-					program.addListener((RenderProgram<?> prog,
-							AbstractRenderCommand<?, ?>[] oldProgram,
-							AbstractRenderCommand<?, ?>[] newProgram)->{
+					program.addListener((prog, oldProgram, newProgram)->{
 								result.removeAll();
 								int y = 0;
 								for(AbstractRenderCommand<?, ?> cmd : newProgram)

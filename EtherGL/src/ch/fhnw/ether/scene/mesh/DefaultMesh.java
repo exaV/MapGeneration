@@ -102,7 +102,7 @@ public final class DefaultMesh implements IMesh {
 			bb = new BoundingBox();
 			float[] in = new float[3];
 			float[] out = new float[3];
-			getGeometry().inspect(0, (IGeometryAttribute attribute, float[] data) -> {
+			getGeometry().inspect(0, (attribute, data) -> {
 				if (transform != Mat4.ID) {
 					for (int i = 0; i < data.length; i += 3) {
 						in[0] = data[i + 0];

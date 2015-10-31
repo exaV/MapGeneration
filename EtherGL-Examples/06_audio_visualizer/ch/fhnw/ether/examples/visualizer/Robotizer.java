@@ -43,7 +43,7 @@ public class Robotizer extends AbstractRenderCommand<IAudioRenderTarget, Statele
 	
 	@Override
 	protected void run(Stateless<IAudioRenderTarget> state) throws RenderCommandException {
-		fft.get(state.getTarget()).modifySpectrum((float[] spectrum)->{
+		fft.get(state.getTarget()).modifySpectrum(spectrum->{
 			for(int i = 1; i < spectrum.length; i += 2)
 				spectrum[i] = 0;
 		});

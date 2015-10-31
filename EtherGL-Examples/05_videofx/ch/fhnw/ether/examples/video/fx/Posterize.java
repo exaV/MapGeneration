@@ -29,8 +29,6 @@
 
 package ch.fhnw.ether.examples.video.fx;
 
-import java.nio.ByteBuffer;
-
 import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.media.Parameter;
 import ch.fhnw.ether.media.Stateless;
@@ -49,7 +47,7 @@ public class Posterize extends AbstractVideoFX<Stateless<IVideoRenderTarget>> {
 		final int mask = 0xFF << (int)getVal(MASK);
 
 		if(frame.pixelSize == 4) {
-			frame.processLines((final ByteBuffer pixels, final int j)->{
+			frame.processLines((pixels, j)->{
 				int idx = pixels.position();
 				for(int i = 0; i < frame.dimI; i++) {
 					pixels.put((byte)(pixels.get(idx++) & mask));
@@ -60,7 +58,7 @@ public class Posterize extends AbstractVideoFX<Stateless<IVideoRenderTarget>> {
 				}
 			});
 		} else {
-			frame.processLines((final ByteBuffer pixels, final int j)->{
+			frame.processLines((pixels, j)->{
 				int idx = pixels.position();
 				for(int i = 0; i < frame.dimI; i++) {
 					pixels.put((byte)(pixels.get(idx++) & mask));

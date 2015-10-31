@@ -8,7 +8,6 @@ import java.util.List;
 
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
-import ch.fhnw.ether.scene.mesh.geometry.IGeometry.IGeometryAttribute;
 import ch.fhnw.util.math.Vec3;
 
 public class OBJWriter {
@@ -26,7 +25,7 @@ public class OBJWriter {
 		Group g = new Group(mesh.getName());
 		obj.setCurrentGroup(g);
 		IGeometry geometry = mesh.getGeometry();
-		geometry.inspect(0, (IGeometryAttribute attribute, float[] data) -> {
+		geometry.inspect(0, (attribute, data) -> {
 			switch (geometry.getType()) {
 			case LINES:
 				break;

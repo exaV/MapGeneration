@@ -140,7 +140,7 @@ public final class SimpleLightExample {
 			}
 		};
 
-		controller.run((time) -> {
+		controller.run(time -> {
 			// Create view
 			new DefaultView(controller, 100, 100, 500, 500, IView.INTERACTIVE_VIEW, "Simple Sphere");
 	

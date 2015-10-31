@@ -137,7 +137,7 @@ public class Convolution extends AbstractVideoFX<Convolution.State> {
 			}
 
 			if(frame.pixelSize == 4) {
-				frame.processLines((ByteBuffer pixels, int j) -> {
+				frame.processLines((pixels, j) -> {
 					int idx = 0;
 					for(int i = frame.dimI; --i >= 0;) {
 						pixels.put(toByte(outFrame[j][idx++]));

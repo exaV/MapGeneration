@@ -38,7 +38,6 @@ import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
-import ch.fhnw.ether.scene.mesh.geometry.IGeometry.IGeometryAttribute;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.ColorMapMaterial;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
@@ -77,7 +76,7 @@ public final class SimpleTextureExample {
 	public SimpleTextureExample() {
 		// Create controller
 		IController controller = new DefaultController();
-		controller.run((time) -> {
+		controller.run(time -> {
 			// Create view
 			new DefaultView(controller, 100, 100, 500, 500, IView.INTERACTIVE_VIEW, "Test");
 	
@@ -104,7 +103,7 @@ public final class SimpleTextureExample {
 
 				// apply changes to geometry
 				mesh.setTransform(Mat4.scale(f, f, f));
-				mesh.getGeometry().modify(1, (IGeometryAttribute id, float[] vertices) -> {
+				mesh.getGeometry().modify(1, (id, vertices) -> {
 					for (int i = 0; i < vertices.length; ++i) {
 						if (i % 4 == 3)
 							continue;

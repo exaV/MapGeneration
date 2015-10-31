@@ -29,7 +29,6 @@
 
 package ch.fhnw.ether.examples.video.fx;
 
-import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 import org.jtransforms.fft.FloatFFT_2D;
@@ -71,7 +70,7 @@ public class BandPass extends AbstractVideoFX<BandPass.State> {
 				fft  = new FloatFFT_2D(rows, cols);
 			}
 
-			frame.processLines((ByteBuffer pixels, int j)->{
+			frame.processLines((pixels, j)->{
 				final float[] rj = r[j];
 				final float[] gj = g[j];
 				final float[] bj = b[j];
@@ -106,7 +105,7 @@ public class BandPass extends AbstractVideoFX<BandPass.State> {
 			fft.complexInverse(g, true);
 			fft.complexInverse(b, true);
 
-			frame.processLines((ByteBuffer pixels, int j)->{
+			frame.processLines((pixels, j)->{
 				final float[] rj = r[j];
 				final float[] gj = g[j];
 				final float[] bj = b[j];

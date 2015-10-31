@@ -61,7 +61,7 @@ public class ChromaKey extends AbstractVideoFX<Stateless<IVideoRenderTarget>> {
 		final float hh = wrap(h + r);
 		final float hl = wrap(h - r);
 
-		frame.processLines((final ByteBuffer pixels, final int j)->{
+		frame.processLines((pixels, j)->{
 			final float[] hsb = new float[frame.dimI * 3];
 			final int     pos = pixels.position();
 			ByteBuffer mask = this.mask.pixels.asReadOnlyBuffer();

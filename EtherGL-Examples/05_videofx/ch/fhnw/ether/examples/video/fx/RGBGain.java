@@ -29,8 +29,6 @@
 
 package ch.fhnw.ether.examples.video.fx;
 
-import java.nio.ByteBuffer;
-
 import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.media.Parameter;
 import ch.fhnw.ether.media.Stateless;
@@ -53,7 +51,7 @@ public class RGBGain extends AbstractVideoFX<Stateless<IVideoRenderTarget>> {
 		final float bs = getVal(BLUE);
 
 		if(frame.pixelSize == 4) {
-			frame.processLines((final ByteBuffer pixels, final int j)->{
+			frame.processLines((pixels, j)->{
 				int idx = pixels.position();
 				for(int i = 0; i < frame.dimI; i++) {
 					pixels.put(toByte(toFloat(pixels.get(idx++)) * rs));
@@ -64,7 +62,7 @@ public class RGBGain extends AbstractVideoFX<Stateless<IVideoRenderTarget>> {
 				}
 			});
 		} else {
-			frame.processLines((final ByteBuffer pixels, final int j)->{
+			frame.processLines((pixels, j)->{
 				int idx = pixels.position();
 				for(int i = 0; i < frame.dimI; i++) {
 					pixels.put(toByte(toFloat(pixels.get(idx++)) * rs));

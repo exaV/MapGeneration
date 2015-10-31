@@ -29,7 +29,6 @@
 
 package ch.fhnw.ether.examples.video.fx;
 
-import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -78,7 +77,7 @@ public class SimpleVideoPlayer {
 		final JComboBox<AbstractVideoFX<?>> fxsUI = new JComboBox<>();
 		for(AbstractVideoFX<?> fx : fxs)
 			fxsUI.addItem(fx);
-		fxsUI.addActionListener((ActionEvent e)->{
+		fxsUI.addActionListener(e->{
 			int newIdx = fxsUI.getSelectedIndex();
 			program.replace(fxs.get(current.get()), fxs.get(newIdx));
 			current.set(newIdx);

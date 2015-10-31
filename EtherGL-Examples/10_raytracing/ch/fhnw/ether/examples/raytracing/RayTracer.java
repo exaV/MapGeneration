@@ -180,7 +180,7 @@ public class RayTracer extends AbstractVideoSource<Stateless<IVideoRenderTarget>
 		final Vec3    upVector   = camera.getUp().normalize();
 		final Vec3    sideVector = lookVector.cross(upVector).normalize();
 
-		frame.processLines((ByteBuffer pixels, int line)->{
+		frame.processLines((pixels, line)->{
 			final int j = line - (h / 2);
 			for (int i = -w / 2; i < w / 2; ++i) {
 				final Vec3 x     = sideVector.scale(i * deltaX);
