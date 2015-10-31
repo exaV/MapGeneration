@@ -67,7 +67,7 @@ public final class ShadowVolumes {
 	}
 
 	// http://ogldev.atspace.co.uk/www/tutorial40/tutorial40.html
-	public void render(GL3 gl, IMesh.Queue pass, boolean interactive, List<Renderable> renderables, int numLights) {
+	public void render(GL3 gl, IMesh.Queue pass, List<Renderable> renderables, int numLights) {
 		gl.glEnable(GL.GL_BLEND);
 		gl.glBlendFunc(GL.GL_ZERO, GL.GL_SRC_ALPHA);
 		gl.glDepthMask(false);
@@ -89,8 +89,6 @@ public final class ShadowVolumes {
 			volumeShader.update(gl, null);
 			volumeShader.enable(gl);
 			for (Renderable renderable : renderables) {
-				if (renderable.containsFlag(Flag.INTERACTIVE_VIEWS_ONLY) && !interactive)
-					continue;
 				if (renderable.containsFlag(Flag.DONT_CAST_SHADOW))
 					continue;
 				if (renderable.getQueue() != pass)

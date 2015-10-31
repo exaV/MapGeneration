@@ -34,12 +34,10 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.util.EnumSet;
 
 import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
-import ch.fhnw.ether.scene.mesh.IMesh.Flag;
 import ch.fhnw.ether.scene.mesh.IMesh.Queue;
 import ch.fhnw.ether.scene.mesh.MeshLibrary;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
@@ -81,7 +79,7 @@ class GraphicsPlane {
 		IGeometry geometry = DefaultGeometry.createVM(Primitive.TRIANGLES, vertices, MeshLibrary.DEFAULT_QUAD_TEX_COORDS);
 		IMaterial material = new ColorMapMaterial(texture);
 
-		mesh = new DefaultMesh(material, geometry, Queue.SCREEN_SPACE_OVERLAY, EnumSet.of(Flag.INTERACTIVE_VIEWS_ONLY));
+		mesh = new DefaultMesh(material, geometry, Queue.SCREEN_SPACE_OVERLAY);
 	}
 
 	public final Texture getTexture() {

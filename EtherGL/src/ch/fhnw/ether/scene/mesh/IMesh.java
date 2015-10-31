@@ -51,7 +51,7 @@ public interface IMesh extends I3DObject {
 
 	// FIXME: DONT_CAST_SHADOW should go to material, including CULL_FACE / DONT_CULL_FACE
 	enum Flag {
-		DONT_CAST_SHADOW, INTERACTIVE_VIEWS_ONLY
+		DONT_CAST_SHADOW
 	}
 
 	EnumSet<Flag> NO_FLAGS = EnumSet.noneOf(Flag.class);

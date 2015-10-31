@@ -169,11 +169,11 @@ public final class ForwardRenderer extends AbstractRenderer {
 				return;
 
 			// update views and lights
-			globals.viewInfo.update(gl, vcs, view.getConfig().getViewType());
+			globals.viewInfo.update(gl, vcs);
 			globals.lightInfo.update(gl, vcs, renderState.getLights());
 
 			// render everything
-			render(gl, renderState, view.getConfig().getViewType());
+			render(gl, renderState);
 
 			int error = gl.glGetError();
 			if (error != 0)
@@ -183,8 +183,7 @@ public final class ForwardRenderer extends AbstractRenderer {
 		}
 	}
 
-	private void render(GL3 gl, IRenderState state, IView.ViewType type) {
-		boolean interactive = type == IView.ViewType.INTERACTIVE_VIEW;
+	private void render(GL3 gl, IRenderState state) {
 
 		globals.viewInfo.setCameraSpace(gl);
 
@@ -195,32 +194,32 @@ public final class ForwardRenderer extends AbstractRenderer {
 		gl.glEnable(GL.GL_DEPTH_TEST);
 		gl.glEnable(GL.GL_POLYGON_OFFSET_FILL);
 		gl.glPolygonOffset(1, 3);
-		renderObjects(gl, state, Queue.DEPTH, interactive);
+		renderObjects(gl, state, Queue.DEPTH);
 		gl.glDisable(GL.GL_POLYGON_OFFSET_FILL);
 		// gl.glDisable(GL.GL_CULL_FACE);
 
 		if (false)
-			renderShadowVolumes(gl, state, Queue.DEPTH, interactive);
+			renderShadowVolumes(gl, state, Queue.DEPTH);
 
 		// ---- 2. TRANSPARENCY QUEUE (DEPTH WRITE DISABLED, DEPTH TEST ENABLED,
 		// BLEND ON)
 		gl.glEnable(GL.GL_BLEND);
 		gl.glDepthMask(false);
-		renderObjects(gl, state, Queue.TRANSPARENCY, interactive);
+		renderObjects(gl, state, Queue.TRANSPARENCY);
 
 		// ---- 3. OVERLAY QUEUE (DEPTH WRITE&TEST DISABLED, BLEND ON)
 		gl.glDisable(GL.GL_DEPTH_TEST);
-		renderObjects(gl, state, Queue.OVERLAY, interactive);
+		renderObjects(gl, state, Queue.OVERLAY);
 
 		// ---- 4. DEVICE SPACE OVERLAY QUEUE (DEPTH WRITE&TEST DISABLED, BLEND
 		// ON)
 		globals.viewInfo.setOrthoDeviceSpace(gl);
-		renderObjects(gl, state, Queue.DEVICE_SPACE_OVERLAY, interactive);
+		renderObjects(gl, state, Queue.DEVICE_SPACE_OVERLAY);
 
 		// ---- 5. SCREEN SPACE OVERLAY QUEUE(DEPTH WRITE&TEST DISABLED, BLEND
 		// ON)
 		globals.viewInfo.setOrthoScreenSpace(gl);
-		renderObjects(gl, state, Queue.SCREEN_SPACE_OVERLAY, interactive);
+		renderObjects(gl, state, Queue.SCREEN_SPACE_OVERLAY);
 
 		// ---- 6. CLEANUP: RETURN TO DEFAULTS
 		gl.glDisable(GL.GL_BLEND);
