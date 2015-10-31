@@ -41,7 +41,20 @@ import ch.fhnw.util.UpdateRequest;
 public abstract class AbstractMaterial implements IMaterial {
 
 	private final UpdateRequest update = new UpdateRequest();
+	
+	private String name = "material";
 
+	@Override
+	public final String getName() {
+		return name;
+	}
+	
+	@Override
+	public final void setName(String name) {
+		this.name = name;
+		updateRequest();
+	}
+	
 	@Override
 	public Primitive getType() {
 		// default to triangles, as this is the majority of all materials

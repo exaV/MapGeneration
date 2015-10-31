@@ -32,6 +32,7 @@ package ch.fhnw.ether.scene;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.render.IRenderManager;
@@ -43,31 +44,22 @@ public class DefaultScene implements IScene {
 
 	private final IController controller;
 
-	private final List<ICamera> cameras = new ArrayList<>();
-	private final List<ILight> lights = new ArrayList<>();
-	private final List<IMesh> meshes = new ArrayList<>();
 	private final List<I3DObject> objects = new ArrayList<>();
 
 	public DefaultScene(IController controller) {
 		this.controller = controller;
 	}
 
-	// FIXME: handling if objects are already added (use sets, or throw
-	// exceptions or etc... similar to renderer)
 	@Override
 	public final void add3DObject(I3DObject object) {
+		if (objects.contains(object))
+			throw new IllegalArgumentException("object already in scene: " + object);
+
 		IRenderManager rm = controller.getRenderManager();
-		if (object instanceof ICamera) {
-			cameras.add((ICamera) object);
-		}
-		if (object instanceof ILight) {
-			lights.add((ILight) object);
+		if (object instanceof ILight)
 			rm.addLight((ILight) object);
-		}
-		if (object instanceof IMesh) {
-			meshes.add((IMesh) object);
+		else if (object instanceof IMesh)
 			rm.addMesh((IMesh) object);
-		}
 		objects.add(object);
 	}
 
@@ -79,17 +71,14 @@ public class DefaultScene implements IScene {
 
 	@Override
 	public final void remove3DObject(I3DObject object) {
+		if (!objects.contains(object))
+			throw new IllegalArgumentException("object not in scene: " + object);
+
 		IRenderManager rm = controller.getRenderManager();
-		if (object instanceof ICamera)
-			cameras.remove(object);
-		if (object instanceof ILight) {
-			lights.remove(object);
+		if (object instanceof ILight)
 			rm.removeLight((ILight) object);
-		}
-		if (object instanceof IMesh) {
-			meshes.remove(object);
+		else if (object instanceof IMesh)
 			rm.removeMesh((IMesh) object);
-		}
 		objects.remove(object);
 	}
 
@@ -106,17 +95,17 @@ public class DefaultScene implements IScene {
 
 	@Override
 	public final List<ICamera> getCameras() {
-		return Collections.unmodifiableList(cameras);
+		return objects.stream().filter(p -> p instanceof ICamera).map(p -> (ICamera) p).collect(Collectors.toList());		
 	}
 
 	@Override
 	public final List<ILight> getLights() {
-		return Collections.unmodifiableList(lights);
+		return objects.stream().filter(p -> p instanceof ILight).map(p -> (ILight) p).collect(Collectors.toList());		
 	}
 
 	@Override
 	public final List<IMesh> getMeshes() {
-		return Collections.unmodifiableList(meshes);
+		return objects.stream().filter(p -> p instanceof IMesh).map(p -> (IMesh) p).collect(Collectors.toList());		
 	}
 
 	protected final IController getController() {

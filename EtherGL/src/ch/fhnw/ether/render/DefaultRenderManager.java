@@ -156,6 +156,8 @@ public class DefaultRenderManager implements IRenderManager {
 		 * @param renderer
 		 * @return
 		 */
+		// TODO: there's a lot of room for optimization here: don't rebuild
+		// lists that haven't changed etc.... for now we just don't care...
 		RenderState create(IRenderer renderer) {
 			RenderState renderState = new RenderState();
 
@@ -200,7 +202,8 @@ public class DefaultRenderManager implements IRenderManager {
 					geometryChanged = geometry.getUpdater().test() || mesh.getUpdater().testAndClear();
 				}
 
-				RenderData data = (materialChanged || geometryChanged) ? new RenderData(mesh, materialChanged, geometryChanged) : null;
+				RenderData data = (materialChanged || geometryChanged)
+						? new RenderData(mesh, materialChanged, geometryChanged) : null;
 				renderState.renderables.add(state.renderable);
 				renderState.data.add(data);
 			});

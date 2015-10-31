@@ -73,6 +73,16 @@ public interface IMaterial extends IUpdateTracker {
 	MaterialAttribute<Float> POINT_SIZE = new MaterialAttribute<>("builtin.material.point_size");
 
 	/**
+	 * Get material name.
+	 */
+	String getName();
+	
+	/**
+	 * Set material name.
+	 */
+	void setName(String name);
+	
+	/**
 	 * Get primitive type required by this material.
 	 */
 	Primitive getType();
