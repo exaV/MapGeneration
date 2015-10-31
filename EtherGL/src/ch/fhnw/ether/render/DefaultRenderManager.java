@@ -43,15 +43,12 @@ import ch.fhnw.ether.render.variable.builtin.LightUniformBlock;
 import ch.fhnw.ether.scene.camera.Camera;
 import ch.fhnw.ether.scene.camera.ICamera;
 import ch.fhnw.ether.scene.camera.IViewCameraState;
-import ch.fhnw.ether.scene.light.DirectionalLight;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.ether.view.IView;
-import ch.fhnw.util.color.RGB;
 import ch.fhnw.util.math.Mat4;
-import ch.fhnw.util.math.Vec3;
 
 /**
  * Default render manager. This would also be the place to do various
@@ -61,7 +58,6 @@ import ch.fhnw.util.math.Vec3;
  * @author radar
  */
 public class DefaultRenderManager implements IRenderManager {
-
 	private static final class SceneViewState {
 		ICamera camera = new Camera();
 		IViewCameraState viewCameraState;
@@ -77,7 +73,7 @@ public class DefaultRenderManager implements IRenderManager {
 
 	private final class SceneState {
 		final Map<IView, SceneViewState> views = new IdentityHashMap<>();
-		final List<ILight> lights = new ArrayList<>(Collections.singletonList(DEFAULT_LIGHT));
+		final List<ILight> lights = new ArrayList<>(Collections.singletonList(ILight.DEFAULT_LIGHT));
 		final Set<IMaterial> materials = Collections.newSetFromMap(new IdentityHashMap<>());
 		final Set<IGeometry> geometries = Collections.newSetFromMap(new IdentityHashMap<>());
 		final Map<IMesh, SceneMeshState> renderables = new IdentityHashMap<>();
@@ -122,7 +118,7 @@ public class DefaultRenderManager implements IRenderManager {
 				throw new IllegalArgumentException("light already in renderer: " + light);
 			if (lights.size() == LightUniformBlock.MAX_LIGHTS)
 				throw new IllegalStateException("too many lights in renderer: " + LightUniformBlock.MAX_LIGHTS);
-			if (lights.get(0) == DEFAULT_LIGHT)
+			if (lights.get(0) == ILight.DEFAULT_LIGHT)
 				lights.remove(0);
 			lights.add(light);
 		}
@@ -131,7 +127,7 @@ public class DefaultRenderManager implements IRenderManager {
 			if (!lights.remove(light))
 				throw new IllegalArgumentException("light not in renderer: " + light);
 			if (lights.isEmpty())
-				lights.add(DEFAULT_LIGHT);
+				lights.add(ILight.DEFAULT_LIGHT);
 		}
 
 		void addMesh(IMesh mesh) {
@@ -247,8 +243,6 @@ public class DefaultRenderManager implements IRenderManager {
 			return data;
 		}
 	}
-
-	private static final ILight DEFAULT_LIGHT = new DirectionalLight(Vec3.Z, RGB.BLACK, RGB.WHITE);
 
 	private final IController controller;
 	private final IRenderer renderer;

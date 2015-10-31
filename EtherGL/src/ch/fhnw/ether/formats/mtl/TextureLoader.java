@@ -48,6 +48,7 @@ public class TextureLoader {
 				frame = Frame.create(new File(path));
 				frameCache.put(path, frame);
 			} catch (Exception e) {
+				System.err.println("can't load texture: " + path);
 			}
 		}
 		return frame;

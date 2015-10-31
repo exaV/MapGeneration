@@ -31,8 +31,11 @@ package ch.fhnw.ether.scene.light;
 
 import ch.fhnw.ether.scene.I3DObject;
 import ch.fhnw.ether.scene.light.GenericLight.LightSource;
+import ch.fhnw.util.color.RGB;
+import ch.fhnw.util.math.Vec3;
 
 public interface ILight extends I3DObject {
+	ILight DEFAULT_LIGHT = new DirectionalLight(Vec3.Z, RGB.BLACK, RGB.WHITE);
 
 	LightSource getLightSource();
 
