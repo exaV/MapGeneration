@@ -55,7 +55,7 @@ public class ObjLoaderController extends DefaultController {
 	};
 
 	public ObjLoaderController() {
-		getUI().setMessage("Use 0-6 on keyboard to set camera");
+		run((time) -> getUI().setMessage("Use 0-6 on keyboard to set camera"));
 	}
 
 	@Override
