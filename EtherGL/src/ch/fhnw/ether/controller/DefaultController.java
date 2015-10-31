@@ -45,6 +45,8 @@ import ch.fhnw.ether.controller.tool.NavigationTool;
 import ch.fhnw.ether.controller.tool.PickTool;
 import ch.fhnw.ether.render.DefaultRenderManager;
 import ch.fhnw.ether.render.IRenderManager;
+import ch.fhnw.ether.render.IRenderer;
+import ch.fhnw.ether.render.forward.ForwardRenderer;
 import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.scene.camera.ICamera;
 import ch.fhnw.ether.ui.UI;
@@ -61,6 +63,7 @@ public class DefaultController implements IController {
 	private static final boolean DBG = false;
 
 	private final DefaultScheduler scheduler;
+	private final IRenderer renderer;
 	private final IRenderManager renderManager;
 
 	private IScene scene;
@@ -79,7 +82,8 @@ public class DefaultController implements IController {
 	}
 
 	public DefaultController(float fps) {
-		this.renderManager = new DefaultRenderManager(this);
+		this.renderer = new ForwardRenderer();
+		this.renderManager = new DefaultRenderManager(this, renderer);
 		this.scheduler = new DefaultScheduler(this, renderManager.getRenderRunnable(), fps);
 		run((time) -> {
 			this.ui = new UI(this);

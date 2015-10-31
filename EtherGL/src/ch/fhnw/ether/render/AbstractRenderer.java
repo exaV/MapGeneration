@@ -29,21 +29,38 @@
 
 package ch.fhnw.ether.render;
 
+import java.util.IdentityHashMap;
+import java.util.Map;
+import java.util.function.Supplier;
+
 import com.jogamp.opengl.GL3;
 
 import ch.fhnw.ether.render.forward.ShadowVolumes;
+import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.mesh.IMesh.Flag;
 import ch.fhnw.ether.scene.mesh.IMesh.Queue;
 
 public abstract class AbstractRenderer implements IRenderer {
+	public static final class RenderGlobals {
+		public final Map<IAttribute, Supplier<?>> attributes = new IdentityHashMap<>();
+		public final ViewInfo viewInfo = new ViewInfo();
+		public final LightInfo lightInfo = new LightInfo();
+		
+		private RenderGlobals() {
+			viewInfo.getAttributes(attributes);
+			lightInfo.getAttributes(attributes);
+		}
+	}
+
+	protected final RenderGlobals globals = new RenderGlobals();
 
 	private ShadowVolumes shadowVolumes;
 
 	public AbstractRenderer() {
 	}
 
-	protected void renderObjects(GL3 gl, IRenderProgram program, Queue pass, boolean interactive) {
-		for (Renderable renderable : program.getRenderables()) {
+	protected void renderObjects(GL3 gl, IRenderState state, Queue pass, boolean interactive) {
+		for (Renderable renderable : state.getRenderables()) {
 			if (renderable.containsFlag(Flag.INTERACTIVE_VIEWS_ONLY) && !interactive)
 				continue;
 			if (renderable.getQueue() == pass) {
@@ -52,10 +69,10 @@ public abstract class AbstractRenderer implements IRenderer {
 		}
 	}
 
-	protected void renderShadowVolumes(GL3 gl, IRenderProgram program, Queue pass, boolean interactive) {
+	protected void renderShadowVolumes(GL3 gl, IRenderState state, Queue pass, boolean interactive) {
 		if (shadowVolumes == null) {
-			shadowVolumes = new ShadowVolumes(program.getGlobalAttributes());
+			shadowVolumes = new ShadowVolumes(globals.attributes);
 		}
-		shadowVolumes.render(gl, pass, interactive, program.getRenderables(), program.getLightInfo().getNumLights());
+		shadowVolumes.render(gl, pass, interactive, state.getRenderables(), globals.lightInfo.getNumLights());
 	}
 }

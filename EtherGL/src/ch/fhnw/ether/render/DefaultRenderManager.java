@@ -35,16 +35,10 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-
-import com.jogamp.opengl.GL3;
-import com.jogamp.opengl.GLAutoDrawable;
-import com.jogamp.opengl.GLRunnable;
 
 import ch.fhnw.ether.controller.IController;
+import ch.fhnw.ether.render.IRenderer.IRenderState;
 import ch.fhnw.ether.render.Renderable.RenderData;
-import ch.fhnw.ether.render.forward.ForwardRenderer;
 import ch.fhnw.ether.render.variable.builtin.LightUniformBlock;
 import ch.fhnw.ether.scene.camera.Camera;
 import ch.fhnw.ether.scene.camera.ICamera;
@@ -55,20 +49,19 @@ import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.ether.view.IView;
-import ch.fhnw.ether.view.IView.ViewType;
-import ch.fhnw.ether.view.gl.GLContextManager;
-import ch.fhnw.ether.view.gl.GLContextManager.IGLContext;
 import ch.fhnw.util.color.RGB;
 import ch.fhnw.util.math.Mat4;
 import ch.fhnw.util.math.Vec3;
 
 /**
- * Default render manager.
+ * Default render manager. This would also be the place to do various
+ * optimizations such as geometry / material merging etc. Currently
+ * straightforward, as provided by scene.
  *
  * @author radar
  */
 public class DefaultRenderManager implements IRenderManager {
-	
+
 	private static final class SceneViewState {
 		ICamera camera = new Camera();
 		IViewCameraState viewCameraState;
@@ -82,7 +75,7 @@ public class DefaultRenderManager implements IRenderManager {
 		Renderable renderable;
 	}
 
-	private static final class SceneState {
+	private final class SceneState {
 		final Map<IView, SceneViewState> views = new IdentityHashMap<>();
 		final List<ILight> lights = new ArrayList<>(Collections.singletonList(DEFAULT_LIGHT));
 		final Set<IMaterial> materials = Collections.newSetFromMap(new IdentityHashMap<>());
@@ -153,14 +146,25 @@ public class DefaultRenderManager implements IRenderManager {
 			rebuildMeshes = true;
 		}
 
-		RenderState update(IRenderProgram program) {
-			RenderState renderState = new RenderState(program);
+		/**
+		 * Executed at the end of a scene time slice. Will copy all required
+		 * render state that can be executed on a separate thread. Resets all
+		 * scene update flags, this renderer needs to take care that the
+		 * returned render state is always realized, otherwise the states will
+		 * get out of sync resulting in undefined overall state.
+		 * 
+		 * @param renderer
+		 * @return
+		 */
+		RenderState create(IRenderer renderer) {
+			RenderState renderState = new RenderState();
 
 			// 1. set view matrices for each updated camera, add to render state
 			views.forEach((view, svs) -> {
 				if (svs.camera.getUpdater().test())
 					svs.viewCameraState = new ViewCameraState(view, svs.camera);
-				renderState.views.add(new RenderViewState(view, svs.viewCameraState));
+				renderState.views.add(view);
+				renderState.viewCameraStates.add(svs.viewCameraState);
 			});
 			// two loops required since camera can be active in multiple views
 			views.forEach((view, svs) -> svs.camera.getUpdater().clear());
@@ -188,7 +192,7 @@ public class DefaultRenderManager implements IRenderManager {
 				if (state.renderable == null) {
 					// TODO: optionally we could do the first update() on
 					// drawable already here, using a shared context.
-					state.renderable = program.createRenderable(mesh);
+					state.renderable = renderer.createRenderable(mesh);
 					materialChanged = true;
 					geometryChanged = true;
 				} else {
@@ -209,47 +213,53 @@ public class DefaultRenderManager implements IRenderManager {
 		}
 	}
 
-	private static final class RenderViewState {
-		final IView view;
-		final IViewCameraState viewCameraState;
-
-		RenderViewState(IView view, IViewCameraState vcs) {
-			this.view = view;
-			this.viewCameraState = vcs;
-		}
-	}
-
-	private static final class RenderState {
-		final IRenderProgram program;
-		final List<RenderViewState> views = new ArrayList<>();
+	private static final class RenderState implements IRenderState {
+		final List<IView> views = new ArrayList<>();
+		final List<IViewCameraState> viewCameraStates = new ArrayList<>();
 		final List<ILight> lights = new ArrayList<>();
 		final List<Renderable> renderables = new ArrayList<>();
 		final List<RenderData> data = new ArrayList<>();
 
-		volatile boolean updated;
+		@Override
+		public List<IView> getViews() {
+			return views;
+		}
 
-		public RenderState(IRenderProgram program) {
-			this.program = program;
+		@Override
+		public List<IViewCameraState> getViewCameraStates() {
+			return viewCameraStates;
+		}
+
+		@Override
+		public List<ILight> getLights() {
+			return lights;
+		}
+
+		@Override
+		public List<Renderable> getRenderables() {
+			return renderables;
+		}
+
+		@Override
+		public List<RenderData> getRenderData() {
+			return data;
 		}
 	}
 
-	private static final int MAX_RENDER_QUEUE_SIZE = 3;
 	private static final ILight DEFAULT_LIGHT = new DirectionalLight(Vec3.Z, RGB.BLACK, RGB.WHITE);
 
 	private final IController controller;
+	private final IRenderer renderer;
 
 	private final SceneState sceneState = new SceneState();
 
-	private final IRenderer renderer = new ForwardRenderer();
-	private final IRenderProgram program = new DefaultRenderProgram();
+	public DefaultRenderManager(IRenderer renderer) {
+		this(null, renderer);
+	}
 
-	private final Thread renderThread;
-	private final BlockingQueue<Runnable> renderQueue = new ArrayBlockingQueue<>(MAX_RENDER_QUEUE_SIZE);
-
-	public DefaultRenderManager(IController controller) {
+	public DefaultRenderManager(IController controller, IRenderer renderer) {
 		this.controller = controller;
-		this.renderThread = new Thread(this::runRenderThread, "renderthread");
-		renderThread.start();
+		this.renderer = renderer;
 	}
 
 	@Override
@@ -316,128 +326,14 @@ public class DefaultRenderManager implements IRenderManager {
 	public Runnable getRenderRunnable() {
 		return () -> {
 			ensureSceneThread();
-
 			if (sceneState.views.isEmpty())
 				return;
-
-			try {
-				if (renderQueue.size() < MAX_RENDER_QUEUE_SIZE)
-					renderQueue.put(new RenderRunnable(controller, renderer, sceneState.update(program)));
-				else {
-					System.err.println("scheduler: render queue full");
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			renderer.submit(() -> sceneState.create(renderer));
 		};
 	}
 
-	@Override
-	public boolean isRenderThread() {
-		return Thread.currentThread().equals(renderThread);
-	}
-
-	private void runRenderThread() {
-		while (true) {
-			try {
-				renderQueue.take().run();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
 	private void ensureSceneThread() {
-		if (!controller.getScheduler().isSceneThread())
+		if (controller != null && !controller.getScheduler().isSceneThread())
 			throw new IllegalThreadStateException("must be called on scene thread");
-	}
-
-	/**
-	 * This runnable is created on scene thread and then run on render thread.
-	 */
-	private static class RenderRunnable implements Runnable {
-		final IController controller;
-		final IRenderer renderer;
-		final RenderState renderState;
-
-		RenderRunnable(IController controller, IRenderer renderer, RenderState renderState) {
-			this.controller = controller;
-			this.renderer = renderer;
-			this.renderState = renderState;
-		}
-
-		@Override
-		public void run() {
-			// update renderables (only once for all views)
-			// note that it's absolutely imperative that this is called for
-			// every render runnable created. otherwise scene-render state will
-			// get out of sync resulting in ugly fails.
-			IGLContext ctx = null;
-			try {
-				ctx = GLContextManager.acquireContext();
-				if (!renderState.updated) {
-					renderState.program.setRenderables(renderState.renderables);
-					for (int i = 0; i < renderState.renderables.size(); ++i) {
-						renderState.renderables.get(i).update(ctx.getGL(), renderState.data.get(i));
-					}
-					renderState.updated = true;
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				GLContextManager.releaseContext(ctx);
-			}
-
-			// render all views
-			for (RenderViewState viewState : renderState.views) {
-				viewState.view.getWindow().display(new GLRunnable() {
-					@Override
-					public boolean run(GLAutoDrawable drawable) {
-						try {
-							GL3 gl = drawable.getGL().getGL3();
-							render(gl, renderState, viewState);
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-						return true;
-					}
-				});
-			}
-		}
-
-		void render(GL3 gl, RenderState renderState, RenderViewState viewState) {
-			try {
-				// XXX: make sure we only render on render thread (e.g. jogl
-				// will do repaints on other threads when resizing windows...)
-				if (!controller.getRenderManager().isRenderThread()) {
-					return;
-				}
-
-				// gl = new TraceGL3(gl, System.out);
-				// gl = new DebugGL3(gl);
-
-				// FIXME: currently we clear in DefaultView.display() ... needs
-				// to move
-				// gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT |
-				// GL.GL_STENCIL_BUFFER_BIT);
-
-				if (!viewState.view.isEnabled())
-					return;
-
-				// update views and lights
-				ViewType type = viewState.view.getConfig().getViewType();
-				renderState.program.getViewInfo().update(gl, viewState.viewCameraState, type);
-				renderState.program.getLightInfo().update(gl, viewState.viewCameraState, renderState.lights);
-
-				// render everything
-				renderer.render(gl, renderState.program);
-
-				int error = gl.glGetError();
-				if (error != 0)
-					System.err.println("renderer returned with exisiting GL error 0x" + Integer.toHexString(error));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
 	}
 }

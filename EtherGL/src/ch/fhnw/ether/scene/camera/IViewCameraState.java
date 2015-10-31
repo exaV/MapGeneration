@@ -56,5 +56,4 @@ public interface IViewCameraState {
 	Mat4 getViewProjInvMatrix();
 
 	Mat3 getNormalMatrix();
-
 }

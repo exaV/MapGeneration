@@ -115,9 +115,4 @@ public interface IRenderManager {
 	 * is required.
 	 */
 	Runnable getRenderRunnable();
-
-	/**
-	 * Returns true if caller calls from render thread.
-	 */
-	boolean isRenderThread();
 }

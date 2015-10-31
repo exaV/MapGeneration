@@ -55,7 +55,6 @@ public final class LightInfo {
 	public void update(GL3 gl, IViewCameraState matrices, List<ILight> lights) {
 		LightUniformBlock.loadUniforms(gl, uniforms, lights, matrices);
 		numLights = lights.size();
-		// FIXME: we always bind here. this could be avoided if there's no shader using lights
 		uniforms.bind(gl);
 	}
 

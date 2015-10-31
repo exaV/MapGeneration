@@ -29,9 +29,15 @@
 
 package ch.fhnw.ether.render;
 
-import com.jogamp.opengl.GL3;
+import java.util.List;
+import java.util.function.Supplier;
 
+import ch.fhnw.ether.render.Renderable.RenderData;
 import ch.fhnw.ether.scene.attribute.AbstractAttribute;
+import ch.fhnw.ether.scene.camera.IViewCameraState;
+import ch.fhnw.ether.scene.light.ILight;
+import ch.fhnw.ether.scene.mesh.IMesh;
+import ch.fhnw.ether.view.IView;
 
 /**
  * Simple rendering interface.
@@ -39,15 +45,40 @@ import ch.fhnw.ether.scene.attribute.AbstractAttribute;
  * @author radar
  */
 public interface IRenderer {
+	enum ExecutionPolicy {
+		SINGLE_THREADED, DUAL_THREADED, MULTI_THREADED
+	}
+
+	public interface IRenderState {
+		List<IView> getViews();
+
+		List<IViewCameraState> getViewCameraStates();
+
+		List<ILight> getLights();
+
+		List<Renderable> getRenderables();
+
+		List<RenderData> getRenderData();
+	}
+
 	final class RendererAttribute<T> extends AbstractAttribute<T> {
 		public RendererAttribute(String id) {
 			super(id);
 		}
 	}
-
+	
 	/**
-	 * Called view from render thread to render the meshes. Do not call this
-	 * method otherwise.
+	 * Returns execution policy of this renderer.
 	 */
-	void render(GL3 gl, IRenderProgram program);
+	ExecutionPolicy getExecutionPolicy();
+
+	Renderable createRenderable(IMesh mesh);
+	
+	/**
+	 * Called from a client (usually a render manager) to submit a render state.
+	 * Depending on execution policy, submit waits until rendering is complete
+	 * (single threaded) or defers rendering to other threads (dual threaded,
+	 * multi threaded).
+	 */
+	void submit(Supplier<IRenderState> supplier);
 }
