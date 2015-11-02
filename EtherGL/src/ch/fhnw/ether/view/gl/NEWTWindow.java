@@ -36,8 +36,6 @@ import com.jogamp.common.util.IOUtil.ClassResources;
 import com.jogamp.nativewindow.util.Point;
 import com.jogamp.newt.Display;
 import com.jogamp.newt.Display.PointerIcon;
-import com.jogamp.newt.NewtFactory;
-import com.jogamp.newt.Screen;
 import com.jogamp.newt.event.WindowAdapter;
 import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.newt.opengl.GLWindow;
@@ -58,7 +56,6 @@ final class NEWTWindow implements IWindow {
 	private static int numWindows = 0;
 
 	private GLWindow window;
-	private Display display;
 
 	/**
 	 * Creates undecorated frame.
@@ -88,15 +85,12 @@ final class NEWTWindow implements IWindow {
 	 */
 	public NEWTWindow(int width, int height, String title, Config config) {
 		GLCapabilities capabilities = GLContextManager.getCapabilities(config);
-		if (sharedDrawable == null) {
+		if (sharedDrawable == null)
 			sharedDrawable = GLContextManager.getSharedDrawable(capabilities);
-		}
+
 		numWindows++;
 
-		display = NewtFactory.createDisplay(null);
-		Screen screen = NewtFactory.createScreen(display, numWindows);
-
-		window = GLWindow.create(screen, capabilities);
+		window = GLWindow.create(sharedDrawable.getChosenGLCapabilities());
 		window.setSharedAutoDrawable(sharedDrawable);
 		window.setSize(width, height);
 
