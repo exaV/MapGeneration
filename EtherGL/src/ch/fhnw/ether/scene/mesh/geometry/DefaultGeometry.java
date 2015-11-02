@@ -30,13 +30,9 @@
 package ch.fhnw.ether.scene.mesh.geometry;
 
 import java.util.Arrays;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 // note: position is always expected as first attribute
 public final class DefaultGeometry extends AbstractGeometry {
-
-	private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
 	private final IGeometryAttribute[] attributes;
 	private final float[][] data;
@@ -84,12 +80,7 @@ public final class DefaultGeometry extends AbstractGeometry {
 	 * @return the copy
 	 */
 	public DefaultGeometry copy() {
-		try {
-			lock.readLock().lock();
-			return new DefaultGeometry(getType(), attributes, data);
-		} finally {
-			lock.readLock().unlock();
-		}
+		return new DefaultGeometry(getType(), attributes, data);
 	}
 	
 	@Override
@@ -107,44 +98,24 @@ public final class DefaultGeometry extends AbstractGeometry {
 
 	@Override
 	public void inspect(int index, IAttributeVisitor visitor) {
-		try {
-			lock.readLock().lock();
-			visitor.visit(attributes[index], data[index]);
-		} finally {
-			lock.readLock().unlock();
-		}
+		visitor.visit(attributes[index], data[index]);
 	}
 
 	@Override
 	public void inspect(IAttributesVisitor visitor) {
-		try {
-			lock.readLock().lock();
-			visitor.visit(attributes, data);
-		} finally {
-			lock.readLock().unlock();
-		}
+		visitor.visit(attributes, data);
 	}
 
 	@Override
 	public void modify(int index, IAttributeVisitor visitor) {
-		try {
-			lock.writeLock().lock();
-			visitor.visit(attributes[index], data[index]);
-		} finally {
-			lock.writeLock().unlock();
-		}
+		visitor.visit(attributes[index], data[index]);
 		updateRequest();
 	}
 
 	@Override
 	public void modify(IAttributesVisitor visitor) {
-		try {
-			lock.writeLock().lock();
-			visitor.visit(attributes, data);
-			checkAttributeConsistency(attributes, data);
-		} finally {
-			lock.writeLock().unlock();
-		}
+		visitor.visit(attributes, data);
+		checkAttributeConsistency(attributes, data);
 		updateRequest();
 	}
 
