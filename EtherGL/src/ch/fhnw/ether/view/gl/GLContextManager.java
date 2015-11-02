@@ -44,7 +44,7 @@ import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.IView.Config;
 
 public class GLContextManager {
-	public interface IGLContext {
+	public interface IGLContext extends AutoCloseable {
 		GL3 getGL();
 	}
 
@@ -53,6 +53,10 @@ public class GLContextManager {
 		public GL3 getGL() {
 			return GLContext.getCurrentGL().getGL3();
 		}
+
+		@Override
+		public void close() throws Exception {
+		}		
 	}
 
 	private static final class TemporaryContext implements IGLContext {
@@ -75,6 +79,11 @@ public class GLContextManager {
 		public GL3 getGL() {
 			return GLContext.getCurrentGL().getGL3();
 		}
+		
+		@Override
+		public void close() throws Exception {
+			releaseContext(this);
+		}		
 	}
 
 	private static class ContextPool {
@@ -82,6 +91,7 @@ public class GLContextManager {
 		private final AtomicInteger numContexts = new AtomicInteger();
 		private final BlockingQueue<TemporaryContext> contexts = new LinkedBlockingQueue<>();
 		
+		@SuppressWarnings("resource")
 		TemporaryContext acquireContext(boolean wait) {
 			TemporaryContext context = null;
 			context = contexts.poll();

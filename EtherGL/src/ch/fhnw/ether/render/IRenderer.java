@@ -32,12 +32,13 @@ package ch.fhnw.ether.render;
 import java.util.List;
 import java.util.function.Supplier;
 
-import ch.fhnw.ether.render.Renderable.RenderData;
 import ch.fhnw.ether.scene.attribute.AbstractAttribute;
 import ch.fhnw.ether.scene.camera.IViewCameraState;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.view.IView;
+import ch.fhnw.util.math.Mat3;
+import ch.fhnw.util.math.Mat4;
 
 /**
  * Simple rendering interface.
@@ -49,16 +50,36 @@ public interface IRenderer {
 		SINGLE_THREADED, DUAL_THREADED, MULTI_THREADED
 	}
 
-	interface IRenderState {
-		List<IView> getViews();
+	interface IRenderUpdate {
+		
+		Renderable getRenderable();
 
-		List<IViewCameraState> getViewCameraStates();
+		Object[] getMaterialData();
+
+		float[][] getGeometryData();
+
+		Mat4 getPositionTransform();
+
+		Mat3 getNormalTransform();
+	}
+
+	interface IRenderTargetState {
+		
+		IView getView();
+
+		IViewCameraState getViewCameraState();
 
 		List<ILight> getLights();
 
 		List<Renderable> getRenderables();
 
-		List<RenderData> getRenderData();
+	}
+
+	interface IRenderState {
+		
+		List<IRenderUpdate> getRenderUpdates();
+		
+		List<IRenderTargetState> getRenderStates();
 	}
 
 	final class RendererAttribute<T> extends AbstractAttribute<T> {
@@ -66,14 +87,14 @@ public interface IRenderer {
 			super(id);
 		}
 	}
-	
+
 	/**
 	 * Returns execution policy of this renderer.
 	 */
 	ExecutionPolicy getExecutionPolicy();
 
 	Renderable createRenderable(IMesh mesh);
-	
+
 	/**
 	 * Called from a client (usually a render manager) to submit a render state.
 	 * Depending on execution policy, submit waits until rendering is complete

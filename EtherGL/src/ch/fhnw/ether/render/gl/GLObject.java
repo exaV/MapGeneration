@@ -44,7 +44,7 @@ public class GLObject {
 	}
 
 	public static class GLObjectRef extends Reference<GLObject> {
-		private final Type  type;
+		private final Type type;
 		private final int[] id;
 
 		public GLObjectRef(GLObject referent, ReferenceQueue<? super GLObject> q) {
@@ -56,32 +56,33 @@ public class GLObject {
 		@Override
 		public void dispose() {
 			System.out.println("disposing " + type + " " + id[0]);
-			IGLContext context = GLContextManager.acquireContext();
-			GL3 gl = context.getGL();
-			switch (type) {
-			case TEXTURE:
-				gl.glDeleteTextures(1, id, 0);
-				break;
-			case BUFFER:
-				gl.glDeleteBuffers(1, id, 0);
-				break;
-			case RENDERBUFFER:
-				gl.glDeleteRenderbuffers(1, id, 0);
-				break;
-			case FRAMEBUFFER:
-				gl.glDeleteFramebuffers(1, id, 0);
-				break;
-			case PROGRAM:
-				gl.glDeleteProgram(id[0]);
-				break;
+			try (IGLContext context = GLContextManager.acquireContext()) {
+				GL3 gl = context.getGL();
+				switch (type) {
+				case TEXTURE:
+					gl.glDeleteTextures(1, id, 0);
+					break;
+				case BUFFER:
+					gl.glDeleteBuffers(1, id, 0);
+					break;
+				case RENDERBUFFER:
+					gl.glDeleteRenderbuffers(1, id, 0);
+					break;
+				case FRAMEBUFFER:
+					gl.glDeleteFramebuffers(1, id, 0);
+					break;
+				case PROGRAM:
+					gl.glDeleteProgram(id[0]);
+					break;
+				}
+			} catch (Exception e) {
 			}
-			GLContextManager.releaseContext(context);
 		}
 	}
 
 	private static final AutoDisposer<GLObject> autoDisposer = new AutoDisposer<>(GLObjectRef.class);
 
-	private final Type  type;
+	private final Type type;
 	private final int[] id = new int[1];
 
 	public GLObject(GL3 gl, Type type) {

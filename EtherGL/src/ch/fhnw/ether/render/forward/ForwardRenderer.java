@@ -29,7 +29,6 @@
 
 package ch.fhnw.ether.render.forward;
 
-import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.function.Supplier;
@@ -39,7 +38,6 @@ import com.jogamp.opengl.GL3;
 
 import ch.fhnw.ether.render.AbstractRenderer;
 import ch.fhnw.ether.render.Renderable;
-import ch.fhnw.ether.render.Renderable.RenderData;
 import ch.fhnw.ether.scene.camera.IViewCameraState;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.IMesh.Queue;
@@ -118,38 +116,28 @@ public final class ForwardRenderer extends AbstractRenderer {
 		// note that it's absolutely imperative that this is executed for
 		// every render runnable created. otherwise scene-render state will
 		// get out of sync resulting in ugly fails.
-		IGLContext ctx = null;
-		try {
-			ctx = GLContextManager.acquireContext();
-			List<Renderable> renderables = renderState.getRenderables();
-			List<RenderData> data = renderState.getRenderData();
-			for (int i = 0; i < renderables.size(); ++i) {
-				renderables.get(i).update(ctx.getGL(), data.get(i));
-			}
+		try (IGLContext ctx = GLContextManager.acquireContext()) {
+			renderState.getRenderUpdates().forEach(update -> update.getRenderable().update(ctx.getGL(), update));
 		} catch (Exception e) {
 			e.printStackTrace();
-		} finally {
-			GLContextManager.releaseContext(ctx);
 		}
 
 		// render all views
-		List<IView> views = renderState.getViews();
-		List<IViewCameraState> vcss = renderState.getViewCameraStates();
-		for (int i = 0; i < views.size(); ++i) {
-			IView view = views.get(i);
-			IViewCameraState vcs = vcss.get(i);
-			views.get(i).getWindow().display(drawable -> {
+		renderState.getRenderStates().forEach(targetState -> {
+			IView view = targetState.getView();
+			IViewCameraState vcs = targetState.getViewCameraState();
+			targetState.getView().getWindow().display(drawable -> {
                 try {
-                    render(drawable.getGL().getGL3(), renderState, view, vcs);
+                    render(drawable.getGL().getGL3(), targetState, view, vcs);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                return true;
-            });
-		}
+				return true;
+			});
+		});
 	}
 
-	private void render(GL3 gl, IRenderState renderState, IView view, IViewCameraState vcs) {
+	private void render(GL3 gl, IRenderTargetState renderState, IView view, IViewCameraState vcs) {
 		try {
 			// XXX: make sure we only render on render thread (e.g. jogl
 			// will do repaints on other threads when resizing windows...)
@@ -183,7 +171,7 @@ public final class ForwardRenderer extends AbstractRenderer {
 		}
 	}
 
-	private void render(GL3 gl, IRenderState state) {
+	private void render(GL3 gl, IRenderTargetState state) {
 
 		globals.viewInfo.setCameraSpace(gl);
 

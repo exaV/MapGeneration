@@ -58,7 +58,7 @@ public abstract class AbstractRenderer implements IRenderer {
 	public AbstractRenderer() {
 	}
 
-	protected void renderObjects(GL3 gl, IRenderState state, Queue pass) {
+	protected void renderObjects(GL3 gl, IRenderTargetState state, Queue pass) {
 		for (Renderable renderable : state.getRenderables()) {
 			if (renderable.getQueue() == pass) {
 				renderable.render(gl);
@@ -66,7 +66,7 @@ public abstract class AbstractRenderer implements IRenderer {
 		}
 	}
 
-	protected void renderShadowVolumes(GL3 gl, IRenderState state, Queue pass) {
+	protected void renderShadowVolumes(GL3 gl, IRenderTargetState state, Queue pass) {
 		if (shadowVolumes == null) {
 			shadowVolumes = new ShadowVolumes(globals.attributes);
 		}

@@ -38,7 +38,9 @@ import java.util.Set;
 
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.render.IRenderer.IRenderState;
-import ch.fhnw.ether.render.Renderable.RenderData;
+import ch.fhnw.ether.render.IRenderer.IRenderTargetState;
+import ch.fhnw.ether.render.IRenderer.IRenderUpdate;
+import ch.fhnw.ether.render.Renderable.RenderUpdate;
 import ch.fhnw.ether.render.variable.builtin.LightUniformBlock;
 import ch.fhnw.ether.scene.camera.Camera;
 import ch.fhnw.ether.scene.camera.ICamera;
@@ -76,7 +78,7 @@ public class DefaultRenderManager implements IRenderManager {
 		final List<ILight> lights = new ArrayList<>(Collections.singletonList(ILight.DEFAULT_LIGHT));
 		final Set<IMaterial> materials = Collections.newSetFromMap(new IdentityHashMap<>());
 		final Set<IGeometry> geometries = Collections.newSetFromMap(new IdentityHashMap<>());
-		final Map<IMesh, SceneMeshState> renderables = new IdentityHashMap<>();
+		final Map<IMesh, SceneMeshState> meshes = new IdentityHashMap<>();
 
 		boolean rebuildMeshes = false;
 
@@ -131,13 +133,13 @@ public class DefaultRenderManager implements IRenderManager {
 		}
 
 		void addMesh(IMesh mesh) {
-			if (renderables.putIfAbsent(mesh, new SceneMeshState()) != null)
+			if (meshes.putIfAbsent(mesh, new SceneMeshState()) != null)
 				throw new IllegalArgumentException("mesh already in renderer: " + mesh);
 			rebuildMeshes = true;
 		}
 
 		void removeMesh(IMesh mesh) {
-			if (renderables.remove(mesh) == null)
+			if (meshes.remove(mesh) == null)
 				throw new IllegalArgumentException("mesh not in renderer: " + mesh);
 			rebuildMeshes = true;
 		}
@@ -154,34 +156,21 @@ public class DefaultRenderManager implements IRenderManager {
 		 */
 		// TODO: there's a lot of room for optimization here: don't rebuild
 		// lists that haven't changed etc.... for now we just don't care...
-		RenderState create(IRenderer renderer) {
-			RenderState renderState = new RenderState();
+		IRenderState create(IRenderer renderer) {
 
-			// 1. set view matrices for each updated camera, add to render state
-			views.forEach((view, svs) -> {
-				if (svs.camera.getUpdater().test())
-					svs.viewCameraState = new ViewCameraState(view, svs.camera);
-				renderState.views.add(view);
-				renderState.viewCameraStates.add(svs.viewCameraState);
-			});
-			// two loops required since camera can be active in multiple views
-			views.forEach((view, svs) -> svs.camera.getUpdater().clear());
-
-			// 2. add lights to render state
-			// currently updates are not checked, we simply update everything
-			renderState.lights.addAll(lights);
-
-			// 3. add meshes and mesh updates to render state
+			// 1. add meshes and mesh updates to render state
+			final List<Renderable> renderables = new ArrayList<>();
+			final List<IRenderUpdate> updates = new ArrayList<>();
 			if (rebuildMeshes) {
 				materials.clear();
 				geometries.clear();
-				renderables.forEach((mesh, state) -> {
+				meshes.forEach((mesh, state) -> {
 					materials.add(mesh.getMaterial());
 					geometries.add(mesh.getGeometry());
 				});
 				rebuildMeshes = false;
 			}
-			renderables.forEach((mesh, state) -> {
+			meshes.forEach((mesh, state) -> {
 				IMaterial material = mesh.getMaterial();
 				IGeometry geometry = mesh.getGeometry();
 
@@ -198,49 +187,71 @@ public class DefaultRenderManager implements IRenderManager {
 					geometryChanged = geometry.getUpdater().test() || mesh.getUpdater().testAndClear();
 				}
 
-				RenderData data = (materialChanged || geometryChanged)
-						? new RenderData(mesh, materialChanged, geometryChanged) : null;
-				renderState.renderables.add(state.renderable);
-				renderState.data.add(data);
+				if (materialChanged || geometryChanged) {
+					updates.add(new RenderUpdate(state.renderable, mesh, materialChanged, geometryChanged));
+				}
+				renderables.add(state.renderable);
 			});
+			// second loop required to clear view flags
 			materials.forEach(material -> material.getUpdater().clear());
 			geometries.forEach(geometry -> geometry.getUpdater().clear());
+			
+			// seal collections
+			final List<Renderable> renderRenderables = Collections.unmodifiableList(renderables);
+			final List<IRenderUpdate> renderUpdates = Collections.unmodifiableList(updates);
+
+			
+			// 2. add lights to render state
+			// currently updates are not checked, we simply update everything
+			final List<ILight> renderLights = Collections.unmodifiableList(new ArrayList<>(lights));
+
+			// 3. set view matrices for each updated camera, add to render state
+			final List<IRenderTargetState> targets = new ArrayList<>();
+			views.forEach((view, svs) -> {
+				if (svs.camera.getUpdater().test())
+					svs.viewCameraState = new ViewCameraState(view, svs.camera);
+				targets.add(new IRenderTargetState() {
+					@Override
+					public IView getView() {
+						return view;
+					}
+
+					@Override
+					public IViewCameraState getViewCameraState() {
+						return svs.viewCameraState;
+					}
+					
+					@Override
+					public List<Renderable> getRenderables() {
+						return renderRenderables;
+					}
+					
+					@Override
+					public List<ILight> getLights() {
+						return renderLights;
+					}
+				});
+			});
+			
+			// second loop required to clear view flags
+			views.forEach((view, svs) -> svs.camera.getUpdater().clear());
+			
+			// seal collections
+			final List<IRenderTargetState> renderTargets = Collections.unmodifiableList(targets);
+
 
 			// 4. hey, we're done!
-			return renderState;
-		}
-	}
+			return new IRenderState() {
+				@Override
+				public List<IRenderUpdate> getRenderUpdates() {
+					return renderUpdates;
+				}
 
-	private static final class RenderState implements IRenderState {
-		final List<IView> views = new ArrayList<>();
-		final List<IViewCameraState> viewCameraStates = new ArrayList<>();
-		final List<ILight> lights = new ArrayList<>();
-		final List<Renderable> renderables = new ArrayList<>();
-		final List<RenderData> data = new ArrayList<>();
-
-		@Override
-		public List<IView> getViews() {
-			return views;
-		}
-
-		@Override
-		public List<IViewCameraState> getViewCameraStates() {
-			return viewCameraStates;
-		}
-
-		@Override
-		public List<ILight> getLights() {
-			return lights;
-		}
-
-		@Override
-		public List<Renderable> getRenderables() {
-			return renderables;
-		}
-
-		@Override
-		public List<RenderData> getRenderData() {
-			return data;
+				@Override
+				public List<IRenderTargetState> getRenderStates() {
+					return renderTargets;
+				}
+			};
 		}
 	}
 
