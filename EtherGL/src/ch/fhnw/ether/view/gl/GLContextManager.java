@@ -60,7 +60,7 @@ public class GLContextManager {
 	}
 
 	private static final class TemporaryContext implements IGLContext {
-		private GLContext context;
+		GLContext context;
 
 		TemporaryContext() {
 			GLAutoDrawable drawable = getSharedDrawable();
@@ -87,9 +87,9 @@ public class GLContextManager {
 	}
 
 	private static class ContextPool {
-		private static final int MAX_CONTEXTS = 10;
-		private final AtomicInteger numContexts = new AtomicInteger();
-		private final BlockingQueue<TemporaryContext> contexts = new LinkedBlockingQueue<>();
+		static final int MAX_CONTEXTS = 10;
+		final AtomicInteger numContexts = new AtomicInteger();
+		final BlockingQueue<TemporaryContext> contexts = new LinkedBlockingQueue<>();
 		
 		@SuppressWarnings("resource")
 		TemporaryContext acquireContext(boolean wait) {

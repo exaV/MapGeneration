@@ -31,6 +31,7 @@ package ch.fhnw.ether.render.forward;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
 import com.jogamp.opengl.GL;
@@ -73,7 +74,8 @@ import ch.fhnw.ether.view.gl.GLContextManager.IGLContext;
  * @author radar
  */
 public final class ForwardRenderer extends AbstractRenderer {
-
+	private static final boolean GL_NO_THREADS = System.getProperties().contains("gl_no_threads");
+	
 	// TODO: much of the render queue / threading / view handling can be
 	// extracted into base class or separate execution manager
 
@@ -112,15 +114,21 @@ public final class ForwardRenderer extends AbstractRenderer {
 	}
 
 	private void render(IRenderState renderState) {
+		// XXX GL_NO_THREADS -> LINUX/MESA/INTEL HACK (execute updates only once with first window to render)
+		
 		// update renderables (only once for all views)
 		// note that it's absolutely imperative that this is executed for
 		// every render runnable created. otherwise scene-render state will
 		// get out of sync resulting in ugly fails.
-		try (IGLContext ctx = GLContextManager.acquireContext()) {
-			renderState.getRenderUpdates().forEach(update -> update.getRenderable().update(ctx.getGL(), update));
-		} catch (Exception e) {
-			e.printStackTrace();
+		if (!GL_NO_THREADS) {
+			try (IGLContext ctx = GLContextManager.acquireContext()) {
+				renderState.getRenderUpdates().forEach(update -> update.getRenderable().update(ctx.getGL(), update));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
+		
+		final AtomicBoolean once = GL_NO_THREADS ? new AtomicBoolean(false) : null;
 
 		// render all views
 		renderState.getRenderStates().forEach(targetState -> {
@@ -128,7 +136,11 @@ public final class ForwardRenderer extends AbstractRenderer {
 			IViewCameraState vcs = targetState.getViewCameraState();
 			targetState.getView().getWindow().display(drawable -> {
                 try {
-                    render(drawable.getGL().getGL3(), targetState, view, vcs);
+                	GL3 gl = drawable.getGL().getGL3();
+                	if (GL_NO_THREADS && !once.getAndSet(true)) {
+            			renderState.getRenderUpdates().forEach(update -> update.getRenderable().update(gl, update));                		
+                	}
+                    render(gl, targetState, view, vcs);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
