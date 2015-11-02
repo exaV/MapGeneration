@@ -74,7 +74,7 @@ import ch.fhnw.ether.view.gl.GLContextManager.IGLContext;
  * @author radar
  */
 public final class ForwardRenderer extends AbstractRenderer {
-	private static final boolean GL_NO_THREADS = System.getProperties().contains("gl_no_threads");
+	private static final boolean GL_NO_THREADS = System.getProperties().containsKey("gl_no_threads");
 	
 	// TODO: much of the render queue / threading / view handling can be
 	// extracted into base class or separate execution manager
