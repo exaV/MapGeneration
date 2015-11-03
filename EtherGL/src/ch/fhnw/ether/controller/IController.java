@@ -30,11 +30,10 @@
 import java.util.Collection;
 import java.util.List;
 
+import ch.fhnw.ether.controller.event.IEventScheduler.IAction;
+import ch.fhnw.ether.controller.event.IEventScheduler.IAnimationAction;
 import ch.fhnw.ether.controller.event.IKeyEvent;
 import ch.fhnw.ether.controller.event.IPointerEvent;
-import ch.fhnw.ether.controller.event.IScheduler;
-import ch.fhnw.ether.controller.event.IScheduler.IAction;
-import ch.fhnw.ether.controller.event.IScheduler.IAnimationAction;
 import ch.fhnw.ether.controller.tool.ITool;
 import ch.fhnw.ether.controller.tool.NavigationTool;
 import ch.fhnw.ether.render.IRenderManager;
@@ -141,13 +140,6 @@ public interface IController {
 	IRenderManager getRenderManager();
 
 	/**
-	 * Get the scheduler.
-	 *
-	 * @return the scheduler
-	 */
-	IScheduler getScheduler();
-
-	/**
 	 * Add an action to the model animation loop until it removes itself via
 	 * {@link #kill(IAnimationAction)}. This is a shorthand for
 	 * getScheduler().animate(). Thread-safe.
@@ -190,6 +182,17 @@ public interface IController {
 	 * getScheduler().repaint(). Thread-safe.
 	 */
 	void repaint();
+
+	/**
+	 * Returns true if caller calls from scene thread.
+	 */
+	boolean isSceneThread();
+
+	/**
+	 * Throws {@link java.lang.IllegalThreadStateException} if caller does not
+	 * call from scene thread.
+	 */
+	void ensureSceneThread();
 
 	// a long list of events, redirected from the view. the view will make sure
 	// that these methods are all run on the scene thread.

@@ -36,7 +36,7 @@ package ch.fhnw.ether.controller.event;
  * 
  * @author radar
  */
-public interface IScheduler {
+public interface IEventScheduler {
 	interface IAction {
 		/**
 		 * Action to be run, implemented by client.

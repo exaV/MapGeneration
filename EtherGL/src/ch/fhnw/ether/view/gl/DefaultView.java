@@ -45,7 +45,7 @@ import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.controller.event.IEvent;
 import ch.fhnw.ether.controller.event.IKeyEvent;
 import ch.fhnw.ether.controller.event.IPointerEvent;
-import ch.fhnw.ether.controller.event.IScheduler.IAction;
+import ch.fhnw.ether.controller.event.IEventScheduler.IAction;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.IWindow;
 import ch.fhnw.util.Viewport;

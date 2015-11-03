@@ -340,7 +340,7 @@ public class DefaultRenderManager implements IRenderManager {
 	}
 
 	private void ensureSceneThread() {
-		if (controller != null && !controller.getScheduler().isSceneThread())
-			throw new IllegalThreadStateException("must be called on scene thread");
+		if (controller != null)
+			controller.ensureSceneThread();
 	}
 }

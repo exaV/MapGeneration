@@ -34,12 +34,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import ch.fhnw.ether.controller.event.DefaultScheduler;
+import ch.fhnw.ether.controller.event.DefaultEventScheduler;
+import ch.fhnw.ether.controller.event.IEventScheduler.IAction;
+import ch.fhnw.ether.controller.event.IEventScheduler.IAnimationAction;
 import ch.fhnw.ether.controller.event.IKeyEvent;
 import ch.fhnw.ether.controller.event.IPointerEvent;
-import ch.fhnw.ether.controller.event.IScheduler;
-import ch.fhnw.ether.controller.event.IScheduler.IAction;
-import ch.fhnw.ether.controller.event.IScheduler.IAnimationAction;
 import ch.fhnw.ether.controller.tool.ITool;
 import ch.fhnw.ether.controller.tool.NavigationTool;
 import ch.fhnw.ether.controller.tool.PickTool;
@@ -62,7 +61,7 @@ import ch.fhnw.ether.view.IView;
 public class DefaultController implements IController {
 	private static final boolean DBG = false;
 
-	private final DefaultScheduler scheduler;
+	private final DefaultEventScheduler scheduler;
 	private final IRenderer renderer;
 	private final IRenderManager renderManager;
 
@@ -84,7 +83,7 @@ public class DefaultController implements IController {
 	public DefaultController(float fps) {
 		this.renderer = new ForwardRenderer();
 		this.renderManager = new DefaultRenderManager(this, renderer);
-		this.scheduler = new DefaultScheduler(this, renderManager.getRenderRunnable(), fps);
+		this.scheduler = new DefaultEventScheduler(this, renderManager.getRenderRunnable(), fps);
 		run(time -> {
 			this.ui = new UI(this);
 			this.navigationTool = new NavigationTool(this);
@@ -172,11 +171,6 @@ public class DefaultController implements IController {
 	}
 
 	@Override
-	public final IScheduler getScheduler() {
-		return scheduler;
-	}
-	
-	@Override
 	public void animate(IAnimationAction action) {
 		scheduler.animate(action);
 	}
@@ -199,6 +193,17 @@ public class DefaultController implements IController {
 	@Override
 	public final void repaint() {
 		scheduler.repaint();
+	}
+	
+	@Override
+	public boolean isSceneThread() {
+		return scheduler.isSceneThread();
+	}
+	
+	@Override
+	public void ensureSceneThread() {
+		if (!isSceneThread())
+			throw new IllegalThreadStateException("must be called on scene thread");		
 	}
 
 	// view listener

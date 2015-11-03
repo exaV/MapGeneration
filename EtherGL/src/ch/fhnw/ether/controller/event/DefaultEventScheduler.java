@@ -37,7 +37,7 @@ import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.ui.UI;
 import ch.fhnw.util.Pair;
 
-public class DefaultScheduler implements IScheduler {
+public final class DefaultEventScheduler implements IEventScheduler {
 	
 	private static final long START_TIME = System.nanoTime();
 
@@ -53,7 +53,7 @@ public class DefaultScheduler implements IScheduler {
 
 	private final AtomicBoolean repaint = new AtomicBoolean();
 
-	public DefaultScheduler(IController controller, Runnable runnable, float fps) {
+	public DefaultEventScheduler(IController controller, Runnable runnable, float fps) {
 		this.controller = controller;
 		this.runnable = runnable;
 		this.interval = 1 / fps;
