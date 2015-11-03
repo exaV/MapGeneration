@@ -321,6 +321,10 @@ public final class ArrayUtilities {
 		return Arrays.copyOfRange(a, c, a.length);
 	}
 
+	public static float[] dropFirst(int c,  float[] a) {
+		return Arrays.copyOfRange(a, c, a.length);
+	}
+
 	public static <T> T[] dropLast(int c, T[] a) {
 		return Arrays.copyOf(a, a.length - c);
 	}

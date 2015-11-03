@@ -45,27 +45,27 @@ public final class BlockBuffer {
 	public BlockBuffer(int blockSize, boolean halfOverlap, Window windowType) {
 		this.windowType = windowType;
 		this.c0         = new float[blockSize];
-		this.c1         = new float[blockSize];
-		if(halfOverlap) {
+		this.s1         = blockSize / 2;
+		if(halfOverlap)
 			this.c1 = new float[blockSize];
-			this.s1 = blockSize / 2;
-		}
 	}
 
 	public void add(float[] data) {
 		for(int i = 0; i < data.length; i++) {
+			c0[s0++] = data[i];
 			if(s0 == c0.length) {
 				push(c0);
 				c0 = new float[c0.length];
 				s0 = 0;
 			}
-			c0[s0++] = data[i];
-			if(s1 == c1.length) {
-				push(c1);
-				c1 = new float[c1.length];
-				s1 = 0;
+			if(c1 != null) {
+				c1[s1++] = data[i];
+				if(s1 == c1.length) {
+					push(c1);
+					c1 = new float[c1.length];
+					s1 = 0;
+				}
 			}
-			c1[s1++] = data[i];
 		}
 	}
 
@@ -86,5 +86,10 @@ public final class BlockBuffer {
 		for(int i = 0; i < b.length; i++)
 			block[i*2] = b[i];
 		return true;
+	}
+
+	public void reset() {
+		s0 = 0;
+		s1 = c0.length / 2;
 	}
 }
