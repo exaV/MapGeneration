@@ -31,7 +31,7 @@ package ch.fhnw.ether.examples.basic;
 
 import ch.fhnw.ether.controller.DefaultController;
 import ch.fhnw.ether.controller.IController;
-import ch.fhnw.ether.controller.event.IScheduler;
+import ch.fhnw.ether.controller.event.IEventScheduler;
 import ch.fhnw.ether.scene.DefaultScene;
 import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
@@ -89,7 +89,7 @@ public final class SimpleTextureExample {
 		});
 
 		// Animate (Using event timer)
-		controller.animate(new IScheduler.IAnimationAction() {
+		controller.animate(new IEventScheduler.IAnimationAction() {
 			private int c = 0;
 
 			@Override

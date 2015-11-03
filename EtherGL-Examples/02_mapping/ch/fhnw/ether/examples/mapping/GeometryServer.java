@@ -39,7 +39,7 @@ import java.util.ArrayList;
 
 import javax.swing.Timer;
 
-import ch.fhnw.ether.controller.event.IScheduler;
+import ch.fhnw.ether.controller.event.IEventScheduler;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.net.UDPServer;
 import ch.fhnw.util.net.osc.OSCHandler;
@@ -100,7 +100,7 @@ public class GeometryServer {
 	private void runOSCSun(int port) {
 		sunPosition = controller.getLightPosition();
 		try {
-			controller.animate(new IScheduler.IAnimationAction() {
+			controller.animate(new IEventScheduler.IAnimationAction() {
 				@Override
 				public void run(double time, double interval) {
 					Vec3 p = controller.getLightPosition();

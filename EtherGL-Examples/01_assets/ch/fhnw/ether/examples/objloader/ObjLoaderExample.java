@@ -34,8 +34,11 @@ import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.formats.obj.OBJReader;
 import ch.fhnw.ether.scene.DefaultScene;
 import ch.fhnw.ether.scene.IScene;
+import ch.fhnw.ether.scene.light.DirectionalLight;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.gl.DefaultView;
+import ch.fhnw.util.color.RGB;
+import ch.fhnw.util.math.Vec3;
 
 public class ObjLoaderExample {
 	
@@ -51,9 +54,13 @@ public class ObjLoaderExample {
 	
 			IScene scene = new DefaultScene(controller);
 			controller.setScene(scene);
+			
+			scene.add3DObject(new DirectionalLight(new Vec3(0, 0, 1), RGB.BLACK, RGB.RED));
+			scene.add3DObject(new DirectionalLight(new Vec3(0, 1, 0.5), RGB.BLACK, RGB.BLUE));
 	
 			try {
 				final URL obj = ObjLoaderExample.class.getResource("fhnw.obj");
+				//final URL obj = new URL("file:///Users/radar/Desktop/aventador/aventador_red.obj");
 				new OBJReader(obj).getMeshes().forEach(mesh -> scene.add3DObject(mesh));
 			} catch (IOException e) {
 				e.printStackTrace();
