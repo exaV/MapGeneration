@@ -100,7 +100,7 @@ public class JavaSoundSource extends AbstractAudioSource<Stateless<IAudioRenderT
 		if(source != pSrc) {
 			try {
 				close();
-				line = (TargetDataLine)AudioSystem.getLine(sources.get(pSrc).right);
+				line = (TargetDataLine)AudioSystem.getLine(sources.get(pSrc).second);
 				line.open(new AudioFormat(sampleRate, 16, nChannels, true, true), buffer.length);
 				line.start();
 				source = pSrc;
@@ -159,7 +159,7 @@ public class JavaSoundSource extends AbstractAudioSource<Stateless<IAudioRenderT
 		String[] result = new String[sources.size()];
 		int idx = 0;
 		for(Pair<Mixer.Info, Line.Info> src : sources)
-			result[idx++] = src.left.getName();
+			result[idx++] = src.first.getName();
 		return result;
 	}
 }

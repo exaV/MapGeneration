@@ -105,10 +105,10 @@ public final class ShaderBuilder {
 		for (IShaderUniform<?> uniform : shader.getUniforms()) {
 			if (!uniform.isLinked()) {
 				Pair<Integer, Supplier<?>> link = attributes.getSupplier(shader, uniform);
-				if (link.left == -1)
-					uniform.setSupplier(link.right);
+				if (link.first == -1)
+					uniform.setSupplier(link.second);
 				else
-					uniform.setIndex(link.left);
+					uniform.setIndex(link.first);
 			}
 		}
 

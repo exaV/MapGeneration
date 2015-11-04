@@ -29,29 +29,29 @@
 
 package ch.fhnw.util;
 
-public class Pair<L, R> {
-	public L left;
-	public R right;
+public final class Pair<F, S> {
+	public final F first;
+	public final S second;
 	
-	public Pair(L left, R  right) {
-		this.left  = left;
-		this.right = right;
+	public Pair(F first, S  second) {
+		this.first  = first;
+		this.second = second;
 	}
 	
 	@Override
 	public boolean equals(Object obj) {
 		if(!(obj instanceof Pair)) return false;
 		Pair<?,?> other = (Pair<?,?>)obj;
-		return left.equals(other.left) && right.equals(other.right);
+		return first.equals(other.first) && second.equals(other.second);
 	}
 	
 	@Override
 	public int hashCode() {
-		return left.hashCode();
+		return first.hashCode();
 	}
 	
 	@Override
 	public String toString() {
-		return "(" + left + ',' + right + ')';
+		return "(" + first + ',' + second + ')';
 	}
 }
