@@ -83,7 +83,7 @@ public final class SimpleSphereExample {
 			transparentMeshP.setTransform(Transform.trs(0, 0, 0, 0, 0, 0, 0.1f, 0.1f, 0.1f));
 	
 			IMesh solidMeshT = new DefaultMesh(new ColorMaterial(new RGBA(0.5f, 0.5f, 0.5f, 1)), DefaultGeometry.createV(Primitive.TRIANGLES, sphere.getTriangles()), Queue.DEPTH);
-			IMesh solidMeshL = new DefaultMesh(new ColorMaterial(new RGBA(1, 1, 1, 1)), DefaultGeometry.createV(Primitive.LINES, sphere.getLines()), Queue.DEPTH);
+			IMesh solidMeshL = new DefaultMesh(new LineMaterial(new RGBA(1, 1, 1, 1)), DefaultGeometry.createV(Primitive.LINES, sphere.getLines()), Queue.DEPTH);
 			IMesh solidMeshP = new DefaultMesh(new PointMaterial(new RGBA(1, 1, 0, 1), 8), DefaultGeometry.createV(Primitive.POINTS, sphere.getPoints()), Queue.DEPTH);
 	
 			solidMeshT.setPosition(Vec3.X);
