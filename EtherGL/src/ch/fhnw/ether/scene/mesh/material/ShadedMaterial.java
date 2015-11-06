@@ -29,9 +29,7 @@
 
 package ch.fhnw.ether.scene.mesh.material;
 
-import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
-import ch.fhnw.ether.scene.mesh.geometry.IGeometry.IGeometryAttribute;
 import ch.fhnw.util.color.RGB;
 
 public final class ShadedMaterial extends AbstractMaterial {
@@ -50,13 +48,15 @@ public final class ShadedMaterial extends AbstractMaterial {
 		this(RGB.BLACK, RGB.BLACK, diffuse, RGB.BLACK, 0, 0, 1);
 	}
 
-	public ShadedMaterial(RGB emission, RGB ambient, RGB diffuse, RGB specular, float shininess, float strength,
-			float alpha) {
+	public ShadedMaterial(RGB emission, RGB ambient, RGB diffuse, RGB specular, float shininess, float strength, float alpha) {
 		this(emission, ambient, diffuse, specular, shininess, strength, alpha, null);
 	}
 
-	public ShadedMaterial(RGB emission, RGB ambient, RGB diffuse, RGB specular, float shininess, float strength,
-			float alpha, Texture colorMap) {
+	public ShadedMaterial(RGB emission, RGB ambient, RGB diffuse, RGB specular, float shininess, float strength, float alpha, Texture colorMap) {
+		super(material(IMaterial.EMISSION, IMaterial.AMBIENT, IMaterial.DIFFUSE, IMaterial.SPECULAR,
+					   IMaterial.SHININESS, IMaterial.STRENGTH, IMaterial.ALPHA, colorMap != null ? IMaterial.COLOR_MAP : null),
+			  geometry(IGeometry.POSITION_ARRAY, IGeometry.NORMAL_ARRAY, colorMap != null ? IGeometry.COLOR_MAP_ARRAY : null));
+
 		this.emission = emission;
 		this.ambient = ambient;
 		this.diffuse = diffuse;
@@ -139,22 +139,6 @@ public final class ShadedMaterial extends AbstractMaterial {
 	// this.colorMap = colorMap;
 	// updateRequest();
 	// }
-
-	@Override
-	public IAttribute[] getProvidedAttributes() {
-		if (colorMap != null)
-			return attributes(IMaterial.EMISSION, IMaterial.AMBIENT, IMaterial.DIFFUSE, IMaterial.SPECULAR,
-					IMaterial.SHININESS, IMaterial.STRENGTH, IMaterial.ALPHA, IMaterial.COLOR_MAP);
-		return attributes(IMaterial.EMISSION, IMaterial.AMBIENT, IMaterial.DIFFUSE, IMaterial.SPECULAR,
-				IMaterial.SHININESS, IMaterial.STRENGTH, IMaterial.ALPHA);
-	}
-
-	@Override
-	public IGeometryAttribute[] getGeometryAttributes() {
-		if (colorMap != null)
-			return attributes(IGeometry.POSITION_ARRAY, IGeometry.NORMAL_ARRAY, IGeometry.COLOR_MAP_ARRAY);
-		return attributes(IGeometry.POSITION_ARRAY, IGeometry.NORMAL_ARRAY);
-	}
 
 	@Override
 	public Object[] getData() {

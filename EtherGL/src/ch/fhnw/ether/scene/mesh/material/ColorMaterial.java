@@ -29,23 +29,22 @@
 
 package ch.fhnw.ether.scene.mesh.material;
 
-import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
-import ch.fhnw.ether.scene.mesh.geometry.IGeometry.IGeometryAttribute;
 import ch.fhnw.util.color.RGBA;
 
 public final class ColorMaterial extends AbstractMaterial {
 
 	private RGBA color;
-	private final boolean perVertexColor;
 
 	public ColorMaterial(RGBA color) {
 		this(color, false);
 	}
 
 	public ColorMaterial(RGBA color, boolean perVertexColor) {
+		super(material(IMaterial.COLOR),
+			  geometry(IGeometry.POSITION_ARRAY, perVertexColor ? IGeometry.COLOR_ARRAY : null));		
+				  
 		this.color = color;
-		this.perVertexColor = perVertexColor;
 	}
 
 	public final RGBA getColor() {
@@ -58,24 +57,12 @@ public final class ColorMaterial extends AbstractMaterial {
 	}
 
 	@Override
-	public IAttribute[] getProvidedAttributes() {
-		return attributes(IMaterial.COLOR);
-	}
-
-	@Override
-	public IGeometryAttribute[] getGeometryAttributes() {
-		if (perVertexColor)
-			return attributes(IGeometry.POSITION_ARRAY, IGeometry.COLOR_ARRAY);
-		return attributes(IGeometry.POSITION_ARRAY);
-	}
-
-	@Override
 	public Object[] getData() {
 		return data(color);
 	}
 	
 	@Override
 	public String toString() {
-		return super.toString() + "[" + color + ", " + perVertexColor + "]";
+		return super.toString() + "[" + color + "]";
 	}
 }

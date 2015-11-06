@@ -29,15 +29,12 @@
 
 package ch.fhnw.ether.scene.mesh.material;
 
-import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
-import ch.fhnw.ether.scene.mesh.geometry.IGeometry.IGeometryAttribute;
 import ch.fhnw.util.color.RGBA;
 
 public final class ColorMapMaterial extends AbstractMaterial {
 
 	private RGBA color;
-	private final boolean perVertexColor;
 	private Texture colorMap;
 
 	public ColorMapMaterial(Texture colorMap) {
@@ -49,8 +46,10 @@ public final class ColorMapMaterial extends AbstractMaterial {
 	}
 
 	public ColorMapMaterial(RGBA color, Texture colorMap, boolean perVertexColor) {
+		super(material(IMaterial.COLOR, IMaterial.COLOR_MAP),
+			  geometry(IGeometry.POSITION_ARRAY, perVertexColor ? IGeometry.COLOR_ARRAY : null, IGeometry.COLOR_MAP_ARRAY));		
+			  
 		this.color = color;
-		this.perVertexColor = perVertexColor;
 		this.colorMap = colorMap;
 	}
 
@@ -64,24 +63,12 @@ public final class ColorMapMaterial extends AbstractMaterial {
 	}
 
 	@Override
-	public IAttribute[] getProvidedAttributes() {
-		return attributes(IMaterial.COLOR, IMaterial.COLOR_MAP);
-	}
-
-	@Override
-	public IGeometryAttribute[] getGeometryAttributes() {
-		if (perVertexColor)
-			return attributes(IGeometry.POSITION_ARRAY, IGeometry.COLOR_ARRAY, IGeometry.COLOR_MAP_ARRAY);
-		return attributes(IGeometry.POSITION_ARRAY, IGeometry.COLOR_MAP_ARRAY);
-	}
-
-	@Override
 	public Object[] getData() {
 		return data(color, colorMap);
 	}
 
 	@Override
 	public String toString() {
-		return super.toString() + "[" + color + ", " + perVertexColor + ", " + colorMap + "]";
+		return super.toString() + "[" + color + ", " + colorMap + "]";
 	}
 }

@@ -39,10 +39,10 @@ import ch.fhnw.ether.render.variable.builtin.PositionArray;
 import ch.fhnw.ether.render.variable.builtin.ViewUniformBlock;
 import ch.fhnw.ether.scene.DefaultScene;
 import ch.fhnw.ether.scene.IScene;
-import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.AbstractMaterial;
 import ch.fhnw.ether.scene.mesh.material.ICustomMaterial;
@@ -57,6 +57,8 @@ public final class CustomShaderExample {
 		private float redGain;
 
 		public ExampleCustomMaterial(ExampleCustomShader shader, float redGain) {
+			super(material(new MaterialAttribute<Float>("custom.red_gain")), geometry(IGeometry.POSITION_ARRAY));
+
 			this.shader = shader;
 			this.redGain = redGain;
 		}
@@ -73,11 +75,6 @@ public final class CustomShaderExample {
 		@Override
 		public IShader getShader() {
 			return shader;
-		}
-
-		@Override
-		public IAttribute[] getProvidedAttributes() {
-			return attributes(new MaterialAttribute<Float>("custom.red_gain"));
 		}
 
 		@Override
