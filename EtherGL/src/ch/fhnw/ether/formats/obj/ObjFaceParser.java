@@ -29,34 +29,66 @@
 
 package ch.fhnw.ether.formats.obj;
 
-import ch.fhnw.util.math.Vec2;
+final class ObjFaceParser extends LineParser {
+	private int[] vIndices;
+	private int[] nIndices;
+	private int[] tIndices;
 
-public class TexCoordParser extends LineParser {
-	private Vec2 texCoord;
-
-	public TexCoordParser() {
+	public ObjFaceParser() {
 	}
 
 	@Override
 	public void parse(WavefrontObject object) {
-		float u = 0;
-		float v = 0;
-		try {
-			// OBJ origin is at upper left, OpenGL origin is at lower left
-			if (words.length >= 2)
-				u = Float.parseFloat(words[1]);
+		parseLine(object, words.length - 1);
+	}
 
-			if (words.length >= 3)
-				v = 1 - Float.parseFloat(words[2]);
+	private void parseLine(WavefrontObject object, int vertexCount) {
+		String[] rawFaces = null;
+		int currentValue;
 
-			texCoord = new Vec2(u, v);
-		} catch (Exception e) {
-			throw new RuntimeException("TexCoord Parser Error");
+		vIndices = new int[vertexCount];
+		nIndices = null;
+		tIndices = null;
+
+		for (int i = 0; i < vertexCount; i++) {
+			rawFaces = words[i + 1].split("/");
+
+			// save vertex
+			vIndices[i] = Integer.parseInt(rawFaces[0]) - 1;
+			if(vIndices[i] < 0) 
+				vIndices[i] = object.getVertices().size() + vIndices[i] + 1;
+			
+			if (rawFaces.length == 1)
+				continue;
+
+			// save texcoords
+			if (!rawFaces[1].equals("")) {
+				currentValue = Integer.parseInt(rawFaces[1]);
+				// This is to compensate the fact that if no texture is
+				// in the obj file, sometimes '1' is put instead of
+				// 'blank' (we find coord1/1/coord3 instead of
+				// coord1//coord3 or coord1/coord3)
+				if (currentValue <= object.getTexCoords().size()) {
+					if (tIndices == null)
+						tIndices = new int[vertexCount];
+					tIndices[i] = currentValue - 1;
+				}
+				if(tIndices[i] < 0) tIndices[i] = object.getTexCoords().size() + tIndices[i] + 1;
+			}
+			
+			if (rawFaces.length == 2)
+				continue;
+
+			// save normal
+			if (nIndices == null)
+				nIndices = new int[vertexCount];
+			nIndices[i] = Integer.parseInt(rawFaces[2]) - 1;
+			if(nIndices[i] < 0) nIndices[i] = object.getNormals().size() + nIndices[i] + 1;
 		}
 	}
 
 	@Override
 	public void incoporateResults(WavefrontObject object) {
-		object.getTexCoords().add(texCoord);
+		object.getCurrentGroup().addFace(new Face(vIndices, tIndices, nIndices));
 	}
 }

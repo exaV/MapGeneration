@@ -34,7 +34,7 @@ import java.util.Map;
 
 import ch.fhnw.util.TextUtilities;
 
-public abstract class LineParserFactory {
+abstract class LineParserFactory {
 
 	protected Map<String, LineParser> parsers = new HashMap<>();
 	protected WavefrontObject object = null;
@@ -48,13 +48,13 @@ public abstract class LineParserFactory {
 		// lineType is the first word in the line (except v,vp,vn,vt)
 
 		if (words.length < 1)
-			return new DefaultParser();
+			return new ObjDefaultParser();
 
 		String lineType = words[0];
 
 		LineParser parser = parsers.get(lineType);
 		if (parser == null) {
-			parser = new DefaultParser();
+			parser = new ObjDefaultParser();
 		}
 
 		parser.setWords(words);

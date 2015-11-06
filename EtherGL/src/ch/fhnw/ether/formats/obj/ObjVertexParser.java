@@ -31,10 +31,10 @@ package ch.fhnw.ether.formats.obj;
 
 import ch.fhnw.util.math.Vec3;
 
-public class NormalParser extends LineParser {
-	private Vec3 vertex = null;
+final class ObjVertexParser extends LineParser {
+	private Vec3 vertex;
 
-	public NormalParser() {
+	public ObjVertexParser() {
 	}
 
 	@Override
@@ -42,12 +42,12 @@ public class NormalParser extends LineParser {
 		try {
 			vertex = new Vec3(Float.parseFloat(words[1]), Float.parseFloat(words[2]), Float.parseFloat(words[3]));
 		} catch (Exception e) {
-			throw new RuntimeException("Normal Parser Error");
+			throw new RuntimeException("Vertex Parser Error");
 		}
 	}
 
 	@Override
 	public void incoporateResults(WavefrontObject object) {
-		object.getNormals().add(vertex);
+		object.getVertices().add(vertex);
 	}
 }

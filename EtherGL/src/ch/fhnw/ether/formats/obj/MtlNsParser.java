@@ -27,62 +27,22 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.formats.mtl;
+package ch.fhnw.ether.formats.obj;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
-import ch.fhnw.ether.formats.obj.LineParser;
-import ch.fhnw.ether.formats.obj.WavefrontObject;
-
-public class MaterialFileParser extends LineParser {
-	private final MtlLineParserFactory parserFactory;
-
-	public MaterialFileParser(MtlLineParserFactory parserFactory) {
-		this.parserFactory = parserFactory;
-	}
+final class MtlNsParser extends LineParser {
+	private float ns;
 
 	@Override
 	public void parse(WavefrontObject object) {
-		String filename = words[1];
-
-		String pathToMTL = object.getContextfolder() + filename;
-
-		InputStream fileInput = this.getClass().getResourceAsStream(pathToMTL);
-		if (fileInput == null) {
-			// Could not find the file in the jar.
-			try {
-				File file = new File(pathToMTL);
-				if (file.exists())
-					fileInput = new FileInputStream(file);
-			} catch (Exception e) {
-				throw new RuntimeException("Error parsing: '" + pathToMTL + "'");
-			}
-		}
-
-		if (fileInput == null)
-			return;
-
-		String currentLine = null;
-		try (BufferedReader in = new BufferedReader(new InputStreamReader(fileInput))) {
-			currentLine = null;
-			while ((currentLine = in.readLine()) != null) {
-				LineParser parser = parserFactory.getLineParser(currentLine);
-				if (parser != null) {
-					parser.parse(object);
-					parser.incoporateResults(object);
-				}
-			}
+		try {
+			ns = Float.parseFloat(words[1]);
 		} catch (Exception e) {
-			throw new RuntimeException("Error parsing: '" + pathToMTL + "' on line " + currentLine);
+			throw new RuntimeException("Ns Parser Error");
 		}
-
 	}
 
 	@Override
 	public void incoporateResults(WavefrontObject object) {
+		object.getCurrentMaterial().setShininess(ns);
 	}
 }

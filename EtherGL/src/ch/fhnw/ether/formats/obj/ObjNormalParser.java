@@ -29,15 +29,25 @@
 
 package ch.fhnw.ether.formats.obj;
 
-public class FreeFormParser extends LineParser {
-	public FreeFormParser() {
+import ch.fhnw.util.math.Vec3;
+
+final class ObjNormalParser extends LineParser {
+	private Vec3 vertex = null;
+
+	public ObjNormalParser() {
 	}
 
 	@Override
 	public void parse(WavefrontObject object) {
+		try {
+			vertex = new Vec3(Float.parseFloat(words[1]), Float.parseFloat(words[2]), Float.parseFloat(words[3]));
+		} catch (Exception e) {
+			throw new RuntimeException("Normal Parser Error");
+		}
 	}
 
 	@Override
 	public void incoporateResults(WavefrontObject object) {
+		object.getNormals().add(vertex);
 	}
 }

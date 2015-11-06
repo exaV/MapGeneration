@@ -27,30 +27,18 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.formats.mtl;
+package ch.fhnw.ether.formats.obj;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
+final class ObjMaterialParser extends LineParser {
+	private String materialName = "";
 
-import ch.fhnw.ether.image.Frame;
-
-public class TextureLoader {
-	private TextureLoader() {
+	@Override
+	public void parse(WavefrontObject object) {
+		materialName = words[1];
 	}
 
-	private static final Map<String, Frame> frameCache = new HashMap<>();
-
-	public static Frame loadTexture(String path) {
-		Frame frame = frameCache.get(path);
-		if (frame == null) {
-			try {
-				frame = Frame.create(new File(path));
-				frameCache.put(path, frame);
-			} catch (Exception e) {
-				System.err.println("can't load texture: " + path);
-			}
-		}
-		return frame;
+	@Override
+	public void incoporateResults(WavefrontObject object) {
+		object.getCurrentGroup().setMaterial(object.getMaterials().get(materialName));
 	}
 }

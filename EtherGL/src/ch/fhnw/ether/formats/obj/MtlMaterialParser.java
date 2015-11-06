@@ -27,26 +27,21 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.formats.mtl;
+package ch.fhnw.ether.formats.obj;
 
-import ch.fhnw.ether.formats.obj.LineParser;
-import ch.fhnw.ether.formats.obj.WavefrontObject;
-import ch.fhnw.util.color.RGB;
-
-public class KaParser extends LineParser {
-	private RGB ka = null;
+final class MtlMaterialParser extends LineParser {
+	private String materialName = "";
 
 	@Override
 	public void parse(WavefrontObject object) {
-		try {
-			ka = new RGB(Float.parseFloat(words[1]), Float.parseFloat(words[2]), Float.parseFloat(words[3]));
-		} catch (Exception e) {
-			throw new RuntimeException("Ka Parser Error");
-		}
+		materialName = words[1];
 	}
 
 	@Override
 	public void incoporateResults(WavefrontObject object) {
-		object.getCurrentMaterial().setKa(ka);
+		Material material = new Material(materialName);
+		object.getMaterials().put(materialName, material);
+		object.setCurrentMaterial(material);
 	}
+
 }

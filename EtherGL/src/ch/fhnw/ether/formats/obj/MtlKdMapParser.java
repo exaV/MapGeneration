@@ -29,17 +29,29 @@
 
 package ch.fhnw.ether.formats.obj;
 
-public class GroupParser extends LineParser {
-	private Group group = null;
+import ch.fhnw.ether.image.Frame;
+
+final class MtlKdMapParser extends LineParser {
+	private Frame texture;
+	private String textureName;
+
+	public MtlKdMapParser() {
+	}
 
 	@Override
 	public void parse(WavefrontObject object) {
-		String groupName = words.length == 1 ? "default" : words[1];
-		group = new Group(groupName);
+		String textureFileName = words[words.length - 1];
+		textureName = textureFileName;
+		String pathToTextureBinary = object.getContextfolder() + textureFileName;
+		texture = TextureLoader.loadTexture(pathToTextureBinary);
 	}
 
 	@Override
 	public void incoporateResults(WavefrontObject object) {
-		object.setCurrentGroup(group);
+		if (texture != null) {
+			Material currentMaterial = object.getCurrentMaterial();
+			currentMaterial.setTexture(texture);
+			currentMaterial.setTextureName(textureName);
+		}
 	}
 }

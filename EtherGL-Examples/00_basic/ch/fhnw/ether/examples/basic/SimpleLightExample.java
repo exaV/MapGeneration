@@ -33,7 +33,7 @@ import java.util.List;
 import ch.fhnw.ether.controller.DefaultController;
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.controller.event.IKeyEvent;
-import ch.fhnw.ether.formats.obj.OBJReader;
+import ch.fhnw.ether.formats.obj.ObjReader;
 import ch.fhnw.ether.scene.DefaultScene;
 import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.scene.light.DirectionalLight;
@@ -195,7 +195,7 @@ public final class SimpleLightExample {
 			IMesh solidBunnyT = null;
 			if (ADD_BUNNY) {
 				try {
-					List<IMesh> meshes = new OBJReader(getClass().getResource("assets/bunny_original.obj")).getMeshes();
+					List<IMesh> meshes = new ObjReader(getClass().getResource("assets/bunny_original.obj")).getMeshes();
 					solidBunnyT = new DefaultMesh(solidMaterial, meshes.get(0).getGeometry());
 					solidBunnyT.setTransform(Mat4.trs(2, 0, 0, 90, 0, 0, 4, 4, 4));
 					scene.add3DObject(solidBunnyT);

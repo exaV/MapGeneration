@@ -27,13 +27,11 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.formats.mtl;
+package ch.fhnw.ether.formats.obj;
 
-import ch.fhnw.ether.formats.obj.LineParser;
-import ch.fhnw.ether.formats.obj.WavefrontObject;
 import ch.fhnw.util.color.RGB;
 
-public class KdParser extends LineParser {
+final class MtlKdParser extends LineParser {
 	private RGB kd = null;
 
 	@Override

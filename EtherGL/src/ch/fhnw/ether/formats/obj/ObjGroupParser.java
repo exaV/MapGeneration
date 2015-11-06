@@ -27,21 +27,19 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.formats.mtl;
+package ch.fhnw.ether.formats.obj;
 
-import ch.fhnw.ether.formats.obj.CommentParser;
-import ch.fhnw.ether.formats.obj.LineParserFactory;
-import ch.fhnw.ether.formats.obj.WavefrontObject;
+final class ObjGroupParser extends LineParser {
+	private Group group = null;
 
-public class MtlLineParserFactory extends LineParserFactory {
-	public MtlLineParserFactory(WavefrontObject object) {
-		this.object = object;
-		parsers.put("newmtl", new MaterialParser());
-		parsers.put("Ka", new KaParser());
-		parsers.put("Kd", new KdParser());
-		parsers.put("Ks", new KsParser());
-		parsers.put("Ns", new NsParser());
-		parsers.put("map_Kd", new KdMapParser());
-		parsers.put("#", new CommentParser());
+	@Override
+	public void parse(WavefrontObject object) {
+		String groupName = words.length == 1 ? "default" : words[1];
+		group = new Group(groupName);
+	}
+
+	@Override
+	public void incoporateResults(WavefrontObject object) {
+		object.setCurrentGroup(group);
 	}
 }

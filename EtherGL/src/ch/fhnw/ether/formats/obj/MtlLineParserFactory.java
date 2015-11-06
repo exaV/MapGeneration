@@ -27,26 +27,17 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.formats.mtl;
+package ch.fhnw.ether.formats.obj;
 
-import ch.fhnw.ether.formats.obj.LineParser;
-import ch.fhnw.ether.formats.obj.WavefrontObject;
-import ch.fhnw.util.color.RGB;
-
-public class KsParser extends LineParser {
-	private RGB ks = null;
-
-	@Override
-	public void parse(WavefrontObject object) {
-		try {
-			ks = new RGB(Float.parseFloat(words[1]), Float.parseFloat(words[2]), Float.parseFloat(words[3]));
-		} catch (Exception e) {
-			throw new RuntimeException("Ks Parser Error");
-		}
-	}
-
-	@Override
-	public void incoporateResults(WavefrontObject object) {
-		object.getCurrentMaterial().setKs(ks);
+final class MtlLineParserFactory extends LineParserFactory {
+	public MtlLineParserFactory(WavefrontObject object) {
+		this.object = object;
+		parsers.put("newmtl", new MtlMaterialParser());
+		parsers.put("Ka", new MtlKaParser());
+		parsers.put("Kd", new MtlKdParser());
+		parsers.put("Ks", new MtlKsParser());
+		parsers.put("Ns", new MtlNsParser());
+		parsers.put("map_Kd", new MtlKdMapParser());
+		parsers.put("#", new ObjCommentParser());
 	}
 }

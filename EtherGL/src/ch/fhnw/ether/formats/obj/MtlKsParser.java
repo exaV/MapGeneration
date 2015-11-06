@@ -29,25 +29,22 @@
 
 package ch.fhnw.ether.formats.obj;
 
-import ch.fhnw.util.math.Vec3;
+import ch.fhnw.util.color.RGB;
 
-public class VertexParser extends LineParser {
-	private Vec3 vertex;
-
-	public VertexParser() {
-	}
+final class MtlKsParser extends LineParser {
+	private RGB ks = null;
 
 	@Override
 	public void parse(WavefrontObject object) {
 		try {
-			vertex = new Vec3(Float.parseFloat(words[1]), Float.parseFloat(words[2]), Float.parseFloat(words[3]));
+			ks = new RGB(Float.parseFloat(words[1]), Float.parseFloat(words[2]), Float.parseFloat(words[3]));
 		} catch (Exception e) {
-			throw new RuntimeException("Vertex Parser Error");
+			throw new RuntimeException("Ks Parser Error");
 		}
 	}
 
 	@Override
 	public void incoporateResults(WavefrontObject object) {
-		object.getVertices().add(vertex);
+		object.getCurrentMaterial().setKs(ks);
 	}
 }

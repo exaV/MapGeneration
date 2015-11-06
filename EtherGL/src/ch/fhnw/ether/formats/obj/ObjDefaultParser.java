@@ -29,15 +29,15 @@
 
 package ch.fhnw.ether.formats.obj;
 
-public class CommentParser extends LineParser {
-	public CommentParser() {
+final class ObjDefaultParser extends LineParser {
+	public ObjDefaultParser() {
 	}
-	
+
 	@Override
 	public void parse(WavefrontObject object) {
 	}
 
 	@Override
-	public void incoporateResults(WavefrontObject wavefrontObject) {
+	public void incoporateResults(WavefrontObject object) {
 	}
 }

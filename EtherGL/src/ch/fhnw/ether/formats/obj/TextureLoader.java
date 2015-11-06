@@ -29,15 +29,28 @@
 
 package ch.fhnw.ether.formats.obj;
 
-public class DefaultParser extends LineParser {
-	public DefaultParser() {
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+
+import ch.fhnw.ether.image.Frame;
+
+final class TextureLoader {
+	private TextureLoader() {
 	}
 
-	@Override
-	public void parse(WavefrontObject object) {
-	}
+	private static final Map<String, Frame> frameCache = new HashMap<>();
 
-	@Override
-	public void incoporateResults(WavefrontObject object) {
+	public static Frame loadTexture(String path) {
+		Frame frame = frameCache.get(path);
+		if (frame == null) {
+			try {
+				frame = Frame.create(new File(path));
+				frameCache.put(path, frame);
+			} catch (Exception e) {
+				System.err.println("can't load texture: " + path);
+			}
+		}
+		return frame;
 	}
 }

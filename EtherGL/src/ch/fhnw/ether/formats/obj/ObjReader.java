@@ -36,6 +36,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import ch.fhnw.ether.formats.AbstractModelReader;
 import ch.fhnw.ether.image.Frame;
@@ -47,20 +48,21 @@ import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.ether.scene.mesh.material.ShadedMaterial;
 import ch.fhnw.ether.scene.mesh.material.Texture;
+import ch.fhnw.util.IdentityHashMap;
 import ch.fhnw.util.IntList;
 import ch.fhnw.util.color.RGB;
 import ch.fhnw.util.math.Vec2;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.GeometryUtilities;
 
-public class OBJReader extends AbstractModelReader {
+public final class ObjReader extends AbstractModelReader {
 	private final List<IMesh> meshes = new ArrayList<>();
 
-	public OBJReader(File file) throws IOException {
+	public ObjReader(File file) throws IOException {
 		this(file.toURI().toURL());
 	}
 	
-	public OBJReader(URL resource) throws IOException {
+	public ObjReader(URL resource) throws IOException {
 		super(resource);
 		decode(resource.getFile(), resource.openStream());
 	}
@@ -76,6 +78,8 @@ public class OBJReader extends AbstractModelReader {
 		List<Vec3> normals = obj.getNormals();
 		List<Vec2> texCoords = obj.getTexCoords();
 
+		Map<Material, IMaterial> materials = new IdentityHashMap<>();
+		
 		for (Group group : obj.getGroups()) {
 			List<Face> faces = group.getFaces();
 			if (faces.isEmpty())
@@ -111,12 +115,16 @@ public class OBJReader extends AbstractModelReader {
 
 			// TODO: proper material handling
 			Material mat = group.getMaterial();
-			IMaterial material;
-			if (mat != null) {
-				Frame frame = mat.getTexture();
-				material = new ShadedMaterial(RGB.BLACK, mat.getKa(), mat.getKd(), mat.getKs(), mat.getShininess(), 1, 1, frame != null ? new Texture(mat.getTexture()) : null);
-			} else {
-				material = new ShadedMaterial(RGB.WHITE);
+			IMaterial material = materials.get(mat);
+			if (material == null) {
+				if (mat != null) {
+					Frame frame = mat.getTexture();
+					material = new ShadedMaterial(RGB.BLACK, mat.getKa(), mat.getKd(), mat.getKs(), mat.getShininess(), 1, 1, frame != null ? new Texture(mat.getTexture()) : null);
+				} else {
+					material = new ShadedMaterial(RGB.WHITE);
+				}
+				material.setName(mat.getName());
+				materials.put(mat,  material);
 			}
 			
 			float[] tv = Vec3.toArray(triVertices);
