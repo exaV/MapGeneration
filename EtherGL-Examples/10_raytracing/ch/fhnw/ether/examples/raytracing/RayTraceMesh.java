@@ -44,9 +44,9 @@ import ch.fhnw.util.math.geometry.Line;
 
 public class RayTraceMesh implements IMesh {
 	private final IParametricSurface surface;
-	private Vec3                     position = Vec3.ZERO;
-	private RGBA                     color    = RGBA.WHITE;
-	
+	private Vec3 position = Vec3.ZERO;
+	private RGBA color = RGBA.WHITE;
+
 	private String name = "ray_trace_mesh";
 
 	public RayTraceMesh(IParametricSurface surface) {
@@ -89,12 +89,12 @@ public class RayTraceMesh implements IMesh {
 	public Queue getQueue() {
 		return Queue.DEPTH;
 	}
-	
+
 	@Override
 	public boolean hasFlag(Flag flag) {
 		return false;
 	}
-	
+
 	@Override
 	public EnumSet<Flag> getFlags() {
 		return NO_FLAGS;
@@ -109,29 +109,29 @@ public class RayTraceMesh implements IMesh {
 	public IGeometry getGeometry() {
 		return null;
 	}
-	
+
 	@Override
 	public Mat4 getTransform() {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	@Override
 	public void setTransform(Mat4 transform) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public String getName() {
 		return name;
 	}
-	
+
 	@Override
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	@Override
 	public UpdateRequest getUpdater() {
 		return new UpdateRequest();

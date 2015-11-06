@@ -158,7 +158,7 @@ public final class DefaultMesh implements IMesh {
 	public Set<Flag> getFlags() {
 		return flags;
 	}
-	
+
 	@Override
 	public boolean hasFlag(Flag flag) {
 		return flags.contains(flag);
@@ -189,17 +189,28 @@ public final class DefaultMesh implements IMesh {
 	}
 
 	@Override
-	public String toString() {
-		return name;
-	}
-	
-	@Override
 	public UpdateRequest getUpdater() {
 		return update;
 	}
 
 	private void updateRequest() {
 		update.request();
+	}
+
+	// we purposely leave equals and hashcode at default (identity)
+	@Override
+	public boolean equals(Object obj) {
+		return super.equals(obj);
+	}
+
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+
+	@Override
+	public String toString() {
+		return name;
 	}
 
 	private static void checkAttributeConsistency(IMaterial material, IGeometry geometry) {
@@ -210,9 +221,12 @@ public final class DefaultMesh implements IMesh {
 			throw new IllegalArgumentException("primitive types of material and geometry do not match: " + m + " " + g);
 
 		// geometry must provide all materials required by material
-		List<IGeometryAttribute> ga = Arrays.asList(geometry.getAttributes());
-		List<IAttribute> ma = material.getRequiredAttributes();
-		if (!ga.containsAll(ma))
-			throw new IllegalArgumentException("primitive types of material and geometry do not match: " + m + " " + g);
+		List<IGeometryAttribute> geometryAttributes = Arrays.asList(geometry.getAttributes());
+		for (IAttribute attr : material.getRequiredAttributes()) {
+			if (attr == null)
+				continue;
+			if (!geometryAttributes.contains(attr))
+				throw new IllegalArgumentException("geometry does not provide required attribute: " + attr);				
+		}
 	}
 }

@@ -29,16 +29,13 @@
 
 package ch.fhnw.ether.scene.mesh.material;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import ch.fhnw.ether.scene.attribute.IAttribute;
-import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.util.UpdateRequest;
 
 public abstract class AbstractMaterial implements IMaterial {
+	protected static final IAttribute[] NO_ATTRIBUTES = {};
+	protected static final Object[] NO_DATA = {};
 
 	private final UpdateRequest update = new UpdateRequest();
 	
@@ -60,25 +57,38 @@ public abstract class AbstractMaterial implements IMaterial {
 		// default to triangles, as this is the majority of all materials
 		return Primitive.TRIANGLES;
 	}
-
+	
 	@Override
-	public List<IAttribute> getProvidedAttributes() {
-		return new ArrayList<>();
+	public IAttribute[] getProvidedAttributes() {
+		return NO_ATTRIBUTES;
 	}
 
 	@Override
-	public List<IAttribute> getRequiredAttributes() {
-		return new ArrayList<>(Collections.singletonList(IGeometry.POSITION_ARRAY));
+	public IAttribute[] getRequiredAttributes() {
+		return NO_ATTRIBUTES;
 	}
-
+	
 	@Override
-	public List<Object> getData() {
-		return new ArrayList<>();
+	public Object[] getData() {
+		return NO_DATA;
 	}
 
 	@Override
 	public final UpdateRequest getUpdater() {
 		return update;
+	}
+	
+	@Override
+	public String toString() {
+		return name;
+	}
+	
+	protected final IAttribute[] attributes(IAttribute... attributes) {
+		return attributes;
+	}
+	
+	protected final Object[] data(Object... data) {
+		return data;
 	}
 	
 	protected final void updateRequest() {

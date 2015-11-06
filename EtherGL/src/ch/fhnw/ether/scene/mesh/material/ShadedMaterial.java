@@ -29,13 +29,11 @@
 
 package ch.fhnw.ether.scene.mesh.material;
 
-import java.util.List;
-
 import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.util.color.RGB;
 
-public class ShadedMaterial extends AbstractMaterial {
+public final class ShadedMaterial extends AbstractMaterial {
 
 	private RGB emission;
 	private RGB ambient;
@@ -51,11 +49,13 @@ public class ShadedMaterial extends AbstractMaterial {
 		this(RGB.BLACK, RGB.BLACK, diffuse, RGB.BLACK, 0, 0, 1);
 	}
 
-	public ShadedMaterial(RGB emission, RGB ambient, RGB diffuse, RGB specular, float shininess, float strength, float alpha) {
+	public ShadedMaterial(RGB emission, RGB ambient, RGB diffuse, RGB specular, float shininess, float strength,
+			float alpha) {
 		this(emission, ambient, diffuse, specular, shininess, strength, alpha, null);
 	}
 
-	public ShadedMaterial(RGB emission, RGB ambient, RGB diffuse, RGB specular, float shininess, float strength, float alpha, Texture colorMap) {
+	public ShadedMaterial(RGB emission, RGB ambient, RGB diffuse, RGB specular, float shininess, float strength,
+			float alpha, Texture colorMap) {
 		this.emission = emission;
 		this.ambient = ambient;
 		this.diffuse = diffuse;
@@ -140,43 +140,25 @@ public class ShadedMaterial extends AbstractMaterial {
 	// }
 
 	@Override
-	public List<IAttribute> getProvidedAttributes() {
-		List<IAttribute> attributes = super.getProvidedAttributes();
-		attributes.add(IMaterial.EMISSION);
-		attributes.add(IMaterial.AMBIENT);
-		attributes.add(IMaterial.DIFFUSE);
-		attributes.add(IMaterial.SPECULAR);
-		attributes.add(IMaterial.SHININESS);
-		attributes.add(IMaterial.STRENGTH);
-		attributes.add(IMaterial.ALPHA);
-		if (colorMap != null) {
-			attributes.add(IMaterial.COLOR_MAP);
-		}
-		return attributes;
+	public IAttribute[] getProvidedAttributes() {
+		return attributes(IMaterial.EMISSION, IMaterial.AMBIENT, IMaterial.DIFFUSE, IMaterial.SPECULAR,
+				IMaterial.SHININESS, IMaterial.STRENGTH, IMaterial.ALPHA,
+				colorMap != null ? IMaterial.COLOR_MAP : null);
 	}
 
 	@Override
-	public List<IAttribute> getRequiredAttributes() {		
-		List<IAttribute> attributes = super.getRequiredAttributes();
-		if (colorMap != null) {
-			attributes.add(IGeometry.COLOR_MAP_ARRAY);
-		}
-		return attributes;
+	public IAttribute[] getRequiredAttributes() {
+		return attributes(colorMap != null ? IGeometry.COLOR_MAP_ARRAY : null);
 	}
-	
+
 	@Override
-	public List<Object> getData() {
-		List<Object> data = super.getData();
-		data.add(emission);
-		data.add(ambient);
-		data.add(diffuse);
-		data.add(specular);
-		data.add(shininess);
-		data.add(strength);
-		data.add(alpha);
-		if (colorMap != null) {
-			data.add(colorMap);
-		}
-		return data;
+	public Object[] getData() {
+		return data(emission, ambient, diffuse, specular, shininess, strength, alpha, colorMap);
+	}
+
+	@Override
+	public String toString() {
+		// TODO
+		return super.toString();
 	}
 }

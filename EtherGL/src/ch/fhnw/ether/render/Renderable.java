@@ -57,7 +57,7 @@ public final class Renderable {
 		public RenderUpdate(Renderable renderable, IMesh mesh, boolean materialChanged, boolean geometryChanged) {
 			this.renderable = renderable;
 			if (materialChanged)
-				materialData = mesh.getMaterial().getData().toArray();	
+				materialData = mesh.getMaterial().getData();	
 			else
 				materialData = null;
 

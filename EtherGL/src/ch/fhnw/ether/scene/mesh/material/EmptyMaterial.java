@@ -29,8 +29,12 @@
 
 package ch.fhnw.ether.scene.mesh.material;
 
-
-public class EmptyMaterial extends AbstractMaterial {
+public final class EmptyMaterial extends AbstractMaterial {
 	public EmptyMaterial() {
+	}
+
+	@Override
+	public String toString() {
+		return super.toString() + "[empty]";
 	}
 }

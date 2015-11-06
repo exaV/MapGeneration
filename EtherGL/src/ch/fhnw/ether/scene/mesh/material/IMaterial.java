@@ -29,8 +29,6 @@
 
 package ch.fhnw.ether.scene.mesh.material;
 
-import java.util.List;
-
 import ch.fhnw.ether.scene.attribute.AbstractAttribute;
 import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.attribute.ITypedAttribute;
@@ -88,17 +86,17 @@ public interface IMaterial extends IUpdateTracker {
 	Primitive getType();
 
 	/**
-	 * Get list of provided attributes.
+	 * Get array of provided attributes.
 	 */
-	List<IAttribute> getProvidedAttributes();
+	IAttribute[] getProvidedAttributes();
 
 	/**
-	 * Get list of required attributes.
+	 * Get array of required attributes.
 	 */
-	List<IAttribute> getRequiredAttributes();
+	IAttribute[] getRequiredAttributes();
 
 	/**
 	 * Get a copy of the provided attribute data. 
 	 */
-	List<Object> getData();
+	Object[] getData();
 }
