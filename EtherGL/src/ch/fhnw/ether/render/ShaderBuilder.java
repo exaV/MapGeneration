@@ -64,7 +64,7 @@ public final class ShaderBuilder {
 				if (entry.getKey().id().equals(uniform.id()))
 					return entry.getValue();
 			}
-			throw new IllegalArgumentException("shader " + shader + " requires attribute " + uniform.id());
+			throw new IllegalArgumentException("shader " + shader + " requires uniform attribute " + uniform.id());
 		}
 
 		@Override
@@ -97,7 +97,7 @@ public final class ShaderBuilder {
 		if (shader == null)
 			shader = (S) createShader(material, Collections.unmodifiableSet(attributes.attributes.keySet()));
 
-		// attach attribute suppliers to uniforms
+		// attach material attributes to uniforms
 		for (IShaderUniform<?> uniform : shader.getUniforms()) {
 			if (!uniform.isLinked()) {
 				Pair<Integer, Supplier<?>> link = attributes.getSupplier(shader, uniform);
