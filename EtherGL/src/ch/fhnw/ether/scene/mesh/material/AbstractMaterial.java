@@ -30,6 +30,8 @@
 package ch.fhnw.ether.scene.mesh.material;
 
 import ch.fhnw.ether.scene.attribute.IAttribute;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry.IGeometryAttribute;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.util.UpdateRequest;
 
@@ -64,8 +66,8 @@ public abstract class AbstractMaterial implements IMaterial {
 	}
 
 	@Override
-	public IAttribute[] getRequiredAttributes() {
-		return NO_ATTRIBUTES;
+	public IGeometryAttribute[] getGeometryAttributes() {
+		return attributes(IGeometry.POSITION_ARRAY);
 	}
 	
 	@Override
@@ -84,6 +86,10 @@ public abstract class AbstractMaterial implements IMaterial {
 	}
 	
 	protected final IAttribute[] attributes(IAttribute... attributes) {
+		return attributes;
+	}
+
+	protected final IGeometryAttribute[] attributes(IGeometryAttribute... attributes) {
 		return attributes;
 	}
 	

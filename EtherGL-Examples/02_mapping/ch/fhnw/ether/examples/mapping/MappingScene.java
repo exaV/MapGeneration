@@ -33,7 +33,7 @@ import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.scene.DefaultScene;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
-import ch.fhnw.ether.scene.mesh.MeshLibrary;
+import ch.fhnw.ether.scene.mesh.MeshUtilities;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
@@ -48,7 +48,7 @@ public class MappingScene extends DefaultScene {
 		super(controller);
 		IMaterial material = new ColorMaterial(RGBA.WHITE);
 		for (int i = 0; i < 10; ++i) {
-			IGeometry geometry = DefaultGeometry.createV(Primitive.TRIANGLES, MeshLibrary.UNIT_CUBE_TRIANGLES);
+			IGeometry geometry = DefaultGeometry.createV(Primitive.TRIANGLES, MeshUtilities.UNIT_CUBE_TRIANGLES);
 			float s = 0.1f + 0.1f * (float) Math.random();
 			float tx = -1 + 2 * (float) Math.random();
 			float ty = -1 + 2 * (float) Math.random();

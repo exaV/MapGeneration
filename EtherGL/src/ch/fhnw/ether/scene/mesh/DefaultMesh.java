@@ -30,10 +30,8 @@
 package ch.fhnw.ether.scene.mesh;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Set;
 
 import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
@@ -47,7 +45,7 @@ import ch.fhnw.util.math.geometry.BoundingBox;
 
 public final class DefaultMesh implements IMesh {
 	private final Queue queue;
-	private final Set<Flag> flags;
+	private final EnumSet<Flag> flags;
 	private final IMaterial material;
 	private final IGeometry geometry;
 	private volatile Vec3 position = Vec3.ZERO;
@@ -90,7 +88,7 @@ public final class DefaultMesh implements IMesh {
 		this.material = material;
 		this.geometry = geometry;
 		this.queue = queue;
-		this.flags = Collections.unmodifiableSet(flags);
+		this.flags = flags;
 		checkAttributeConsistency(material, geometry);
 	}
 
@@ -154,7 +152,7 @@ public final class DefaultMesh implements IMesh {
 	}
 
 	@Override
-	public Set<Flag> getFlags() {
+	public EnumSet<Flag> getFlags() {
 		return flags;
 	}
 
@@ -221,9 +219,7 @@ public final class DefaultMesh implements IMesh {
 
 		// geometry must provide all materials required by material
 		List<IGeometryAttribute> geometryAttributes = Arrays.asList(geometry.getAttributes());
-		for (IAttribute attr : material.getRequiredAttributes()) {
-			if (attr == null)
-				continue;
+		for (IAttribute attr : material.getGeometryAttributes()) {
 			if (!geometryAttributes.contains(attr))
 				throw new IllegalArgumentException("geometry does not provide required attribute: " + attr);				
 		}

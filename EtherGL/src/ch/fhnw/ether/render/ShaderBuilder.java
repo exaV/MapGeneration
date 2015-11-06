@@ -82,14 +82,11 @@ public final class ShaderBuilder {
 		// add material & geometry attributes
 		if (material != null) {
 			IAttribute[] provided = material.getProvidedAttributes();
-			for (int i = 0; i < provided.length; ++i) {
-				if (provided[i] != null)
-					attributes.provide(provided[i], new Pair<>(i, null));
-			}
-			for (IAttribute required : material.getRequiredAttributes()) {
-				if (required != null)
-					attributes.provide(required, null);
-			}
+			for (int i = 0; i < provided.length; ++i)
+				attributes.provide(provided[i], new Pair<>(i, null));
+
+			for (IAttribute required : material.getGeometryAttributes())
+				attributes.provide(required, null);
 		}
 
 		// add global attributes

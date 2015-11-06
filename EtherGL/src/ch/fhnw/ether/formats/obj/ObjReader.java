@@ -120,10 +120,11 @@ public final class ObjReader extends AbstractModelReader {
 				if (mat != null) {
 					Frame frame = mat.getTexture();
 					material = new ShadedMaterial(RGB.BLACK, mat.getKa(), mat.getKd(), mat.getKs(), mat.getShininess(), 1, 1, frame != null ? new Texture(mat.getTexture()) : null);
+					material.setName(mat.getName());
 				} else {
 					material = new ShadedMaterial(RGB.WHITE);
 				}
-				material.setName(mat.getName());
+				
 				materials.put(mat,  material);
 			}
 			

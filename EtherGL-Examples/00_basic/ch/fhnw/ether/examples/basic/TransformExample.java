@@ -35,7 +35,7 @@ import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.scene.DefaultScene;
 import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.scene.mesh.IMesh;
-import ch.fhnw.ether.scene.mesh.MeshLibrary;
+import ch.fhnw.ether.scene.mesh.MeshUtilities;
 import ch.fhnw.ether.ui.Button;
 import ch.fhnw.ether.ui.Slider;
 import ch.fhnw.ether.view.IView;
@@ -63,7 +63,7 @@ public final class TransformExample {
 			IScene scene = new DefaultScene(controller);
 			controller.setScene(scene);
 	
-			mesh = MeshLibrary.createCube();
+			mesh = MeshUtilities.createCube();
 			scene.add3DObject(mesh);
 	
 			// Add an exit button

@@ -31,6 +31,7 @@ package ch.fhnw.ether.scene.mesh.material;
 
 import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry.IGeometryAttribute;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.util.color.RGBA;
 
@@ -80,8 +81,14 @@ public final class PointMaterial extends AbstractMaterial {
 	}
 
 	@Override
-	public IAttribute[] getRequiredAttributes() {
-		return attributes(perVertexColor ? IGeometry.COLOR_ARRAY : null, perVertexSize ? IGeometry.POINT_SIZE_ARRAY : null);
+	public IGeometryAttribute[] getGeometryAttributes() {
+		if (perVertexColor && perVertexSize)
+			return attributes(IGeometry.POSITION_ARRAY, IGeometry.COLOR_ARRAY, IGeometry.POINT_SIZE_ARRAY);
+		else if (perVertexColor)
+			return attributes(IGeometry.POSITION_ARRAY, IGeometry.COLOR_ARRAY);
+		else if (perVertexSize)
+			return attributes(IGeometry.POSITION_ARRAY, IGeometry.POINT_SIZE_ARRAY);
+		return attributes(IGeometry.POSITION_ARRAY);
 	}
 
 	@Override

@@ -39,7 +39,7 @@ import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.IMesh.Queue;
-import ch.fhnw.ether.scene.mesh.MeshLibrary;
+import ch.fhnw.ether.scene.mesh.MeshUtilities;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
@@ -76,7 +76,7 @@ public class GraphicsPlane {
 		this.h = h;
 
 		float[] vertices = { x, y, 0, x + w, y, 0, x + w, y + h, 0, x, y, 0, x + w, y + h, 0, x, y + h, 0 };
-		IGeometry geometry = DefaultGeometry.createVM(Primitive.TRIANGLES, vertices, MeshLibrary.DEFAULT_QUAD_TEX_COORDS);
+		IGeometry geometry = DefaultGeometry.createVM(Primitive.TRIANGLES, vertices, MeshUtilities.DEFAULT_QUAD_TEX_COORDS);
 		IMaterial material = new ColorMapMaterial(texture);
 
 		mesh = new DefaultMesh(material, geometry, Queue.SCREEN_SPACE_OVERLAY);

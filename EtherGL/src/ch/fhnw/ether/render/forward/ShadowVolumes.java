@@ -44,14 +44,14 @@ import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.IMesh.Flag;
-import ch.fhnw.ether.scene.mesh.MeshLibrary;
+import ch.fhnw.ether.scene.mesh.MeshUtilities;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.EmptyMaterial;
 import ch.fhnw.util.color.RGBA;
 
 public final class ShadowVolumes {
-	private static final IMesh OVERLAY_MESH = new DefaultMesh(new EmptyMaterial(), DefaultGeometry.createV(Primitive.TRIANGLES, MeshLibrary.DEFAULT_QUAD_TRIANGLES));
+	private static final IMesh OVERLAY_MESH = new DefaultMesh(new EmptyMaterial(), DefaultGeometry.createV(Primitive.TRIANGLES, MeshUtilities.DEFAULT_QUAD_TRIANGLES));
 
 	private ShadowVolumeShader volumeShader;
 	private Renderable overlay;

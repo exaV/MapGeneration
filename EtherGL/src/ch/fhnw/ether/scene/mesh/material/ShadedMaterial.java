@@ -31,6 +31,7 @@ package ch.fhnw.ether.scene.mesh.material;
 
 import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry.IGeometryAttribute;
 import ch.fhnw.util.color.RGB;
 
 public final class ShadedMaterial extends AbstractMaterial {
@@ -141,14 +142,18 @@ public final class ShadedMaterial extends AbstractMaterial {
 
 	@Override
 	public IAttribute[] getProvidedAttributes() {
+		if (colorMap != null)
+			return attributes(IMaterial.EMISSION, IMaterial.AMBIENT, IMaterial.DIFFUSE, IMaterial.SPECULAR,
+					IMaterial.SHININESS, IMaterial.STRENGTH, IMaterial.ALPHA, IMaterial.COLOR_MAP);
 		return attributes(IMaterial.EMISSION, IMaterial.AMBIENT, IMaterial.DIFFUSE, IMaterial.SPECULAR,
-				IMaterial.SHININESS, IMaterial.STRENGTH, IMaterial.ALPHA,
-				colorMap != null ? IMaterial.COLOR_MAP : null);
+				IMaterial.SHININESS, IMaterial.STRENGTH, IMaterial.ALPHA);
 	}
 
 	@Override
-	public IAttribute[] getRequiredAttributes() {
-		return attributes(colorMap != null ? IGeometry.COLOR_MAP_ARRAY : null);
+	public IGeometryAttribute[] getGeometryAttributes() {
+		if (colorMap != null)
+			return attributes(IGeometry.POSITION_ARRAY, IGeometry.NORMAL_ARRAY, IGeometry.COLOR_MAP_ARRAY);
+		return attributes(IGeometry.POSITION_ARRAY, IGeometry.NORMAL_ARRAY);
 	}
 
 	@Override

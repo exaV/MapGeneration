@@ -31,6 +31,7 @@ package ch.fhnw.ether.scene.mesh.material;
 
 import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry.IGeometryAttribute;
 import ch.fhnw.util.color.RGBA;
 
 public final class ColorMapMaterial extends AbstractMaterial {
@@ -68,8 +69,10 @@ public final class ColorMapMaterial extends AbstractMaterial {
 	}
 
 	@Override
-	public IAttribute[] getRequiredAttributes() {
-		return attributes(perVertexColor ? IGeometry.COLOR_ARRAY : null, IGeometry.COLOR_MAP_ARRAY);
+	public IGeometryAttribute[] getGeometryAttributes() {
+		if (perVertexColor)
+			return attributes(IGeometry.POSITION_ARRAY, IGeometry.COLOR_ARRAY, IGeometry.COLOR_MAP_ARRAY);
+		return attributes(IGeometry.POSITION_ARRAY, IGeometry.COLOR_MAP_ARRAY);
 	}
 
 	@Override

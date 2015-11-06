@@ -44,7 +44,7 @@ import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.IMesh.Flag;
 import ch.fhnw.ether.scene.mesh.IMesh.Queue;
-import ch.fhnw.ether.scene.mesh.MeshLibrary;
+import ch.fhnw.ether.scene.mesh.MeshUtilities;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
@@ -163,7 +163,7 @@ public final class SimpleLightExample {
 			scene.add3DObject(new PointLight(new Vec3(2, 0, 2), RGB.BLACK, RGB.BLUE));
 	
 			// Add a ground plane
-			IMesh ground = MeshLibrary.createGroundPlane();
+			IMesh ground = MeshUtilities.createGroundPlane();
 			scene.add3DObject(ground);
 	
 			// Add an exit button
@@ -186,7 +186,7 @@ public final class SimpleLightExample {
 					s.getTexCoords()));
 			texturedMeshT.setTransform(Mat4.trs(1, 0, 0.5f, 0, 0, 0, 1, 1, 1));
 	
-			IMesh solidCubeT = MeshLibrary.createCube(solidMaterial);
+			IMesh solidCubeT = MeshUtilities.createCube(solidMaterial);
 			solidCubeT.setTransform(Mat4.trs(0, 0, 0.5f, 0, 0, 0, 0.8f, 0.8f, 0.8f));
 	
 			scene.add3DObjects(solidMeshT, solidMeshL, texturedMeshT, solidCubeT);

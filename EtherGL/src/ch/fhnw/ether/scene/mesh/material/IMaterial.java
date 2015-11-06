@@ -32,6 +32,7 @@ package ch.fhnw.ether.scene.mesh.material;
 import ch.fhnw.ether.scene.attribute.AbstractAttribute;
 import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.attribute.ITypedAttribute;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry.IGeometryAttribute;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.util.UpdateRequest.IUpdateTracker;
 import ch.fhnw.util.math.IVec3;
@@ -93,7 +94,7 @@ public interface IMaterial extends IUpdateTracker {
 	/**
 	 * Get array of required attributes.
 	 */
-	IAttribute[] getRequiredAttributes();
+	IGeometryAttribute[] getGeometryAttributes();
 
 	/**
 	 * Get a copy of the provided attribute data. 

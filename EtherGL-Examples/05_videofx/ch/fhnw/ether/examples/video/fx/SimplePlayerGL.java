@@ -45,7 +45,7 @@ import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.IMesh.Queue;
-import ch.fhnw.ether.scene.mesh.MeshLibrary;
+import ch.fhnw.ether.scene.mesh.MeshUtilities;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.ColorMapMaterial;
@@ -79,7 +79,7 @@ public class SimplePlayerGL implements Runnable {
 			IScene scene = new DefaultScene(controller);
 			controller.setScene(scene);
 
-			DefaultGeometry g = DefaultGeometry.createVM(Primitive.TRIANGLES, MeshLibrary.DEFAULT_QUAD_TRIANGLES, MeshLibrary.DEFAULT_QUAD_TEX_COORDS); 
+			DefaultGeometry g = DefaultGeometry.createVM(Primitive.TRIANGLES, MeshUtilities.DEFAULT_QUAD_TRIANGLES, MeshUtilities.DEFAULT_QUAD_TEX_COORDS); 
 			IMesh mesh = new DefaultMesh(new ColorMapMaterial(texture), g, Queue.TRANSPARENCY);
 			mesh.setTransform(Mat4.trs(0, 0, 0, 90, 0, 0, SCALE * source.getWidth() / source.getHeight(), SCALE, SCALE));			
 			scene.add3DObject(mesh);
