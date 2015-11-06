@@ -40,7 +40,7 @@ import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.ether.scene.mesh.material.ShadedMaterial;
-import ch.fhnw.util.ArrayUtilities;
+import ch.fhnw.util.FloatList;
 import ch.fhnw.util.color.RGB;
 import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Vec3;
@@ -190,9 +190,9 @@ public final class MeshUtilities {
 			System.out.println(System.currentTimeMillis());
 			IMaterial material = first.getMaterial();
 			IGeometryAttribute[] attributes = material.getGeometryAttributes();
-			float data[][] = new float[attributes.length][];
+			FloatList data[] = new FloatList[attributes.length];
 			for (int i = 0; i < data.length; ++i)
-				data[i] = new float[0];
+				data[i] = new FloatList();
 			
 			for (IMesh mesh : same) {
 				IGeometryAttribute[] ga = mesh.getGeometry().getAttributes();
@@ -200,8 +200,8 @@ public final class MeshUtilities {
 				for (int i = 0; i < attributes.length; ++i) {
 					for (int j = 0; j < ga.length; j++) {
 						if (attributes[i].equals(ga[j])) {
-							// TODO: baking
-							data[i] = ArrayUtilities.cat(data[i], gd[j]);
+							// TODO: position / normal baking
+							data[i].addAll(gd[j]);
 							continue;
 						}
 					}

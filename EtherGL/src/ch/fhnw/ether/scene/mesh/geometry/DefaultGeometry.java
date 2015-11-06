@@ -31,6 +31,8 @@ package ch.fhnw.ether.scene.mesh.geometry;
 
 import java.util.Arrays;
 
+import ch.fhnw.util.FloatList;
+
 // note: position is always expected as first attribute
 public final class DefaultGeometry extends AbstractGeometry {
 
@@ -53,17 +55,20 @@ public final class DefaultGeometry extends AbstractGeometry {
 	 */
 	public DefaultGeometry(Primitive type, IGeometryAttribute[] attributes, float[][] data) {
 		super(type);
-
-		if (attributes[0] != POSITION_ARRAY)
-			throw new IllegalArgumentException("first attribute must be position");
-		if (attributes.length != data.length)
-			throw new IllegalArgumentException("# attribute type != # attribute data");
-		checkAttributeConsistency(attributes, data);
-
 		this.attributes = Arrays.copyOf(attributes, attributes.length);
 		this.data = new float[data.length][];
 		for (int i = 0; i < data.length; ++i)
 			this.data[i] = Arrays.copyOf(data[i], data[i].length);
+		checkAttributeConsistency(attributes, this.data);
+	}
+	
+	public DefaultGeometry(Primitive type, IGeometryAttribute[] attributes, FloatList[] data) {
+		super(type);
+		this.attributes = Arrays.copyOf(attributes, attributes.length);
+		this.data = new float[data.length][];
+		for (int i = 0; i < data.length; ++i)
+			this.data[i] = data[i].toArray();
+		checkAttributeConsistency(attributes, this.data);
 	}
 	
 	private DefaultGeometry(DefaultGeometry g) {
@@ -120,6 +125,12 @@ public final class DefaultGeometry extends AbstractGeometry {
 	}
 
 	private static void checkAttributeConsistency(IGeometryAttribute[] attributes, float[][] data) {
+		// check basic setup
+		if (attributes[0] != POSITION_ARRAY)
+			throw new IllegalArgumentException("first attribute must be position");
+		if (attributes.length != data.length)
+			throw new IllegalArgumentException("# attribute types != # attribute data");
+
 		// check for correct individual lengths
 		for (int i = 0; i < attributes.length; ++i) {
 			if (data[i].length % attributes[i].getNumComponents() != 0)

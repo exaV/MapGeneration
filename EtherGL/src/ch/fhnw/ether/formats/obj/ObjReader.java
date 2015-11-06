@@ -35,6 +35,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -48,7 +49,6 @@ import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.ether.scene.mesh.material.ShadedMaterial;
 import ch.fhnw.ether.scene.mesh.material.Texture;
-import ch.fhnw.util.IdentityHashMap;
 import ch.fhnw.util.IntList;
 import ch.fhnw.util.color.RGB;
 import ch.fhnw.util.math.Vec2;

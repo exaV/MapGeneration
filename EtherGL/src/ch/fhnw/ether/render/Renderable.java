@@ -64,7 +64,7 @@ public final class Renderable {
 			if (geometryChanged) {
 				geometryData = mesh.getGeometry().getData();
 				positionTransform = Mat4.multiply(Mat4.translate(mesh.getPosition()), mesh.getTransform());
-				normalTransform = new Mat3(positionTransform).inverse().transpose();				
+				normalTransform = new Mat3(positionTransform).inverse().transpose();
 			} else {
 				geometryData = null;
 				positionTransform = null;
