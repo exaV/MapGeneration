@@ -114,7 +114,6 @@ public final class DefaultMesh implements IMesh {
 						out[2] += position.z;
 						bb.add(out);
 					}
-
 				} else {
 					for (int i = 0; i < data.length; i += 3) {
 						bb.add(data[i + 0] + position.x, data[i + 1] + position.y, data[i + 2] + position.z);

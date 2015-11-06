@@ -97,6 +97,8 @@ public final class Mat3 implements IFloatArrayCopyProvider {
 	 *            the second factor of the matrix product
 	 */
 	public Mat3 postMultiply(Mat3 mat) {
+		if (this == ID)
+			return mat;
 		return multiply(this, mat);
 	}
 
@@ -107,6 +109,8 @@ public final class Mat3 implements IFloatArrayCopyProvider {
 	 *            the first factor of the matrix product
 	 */
 	public Mat3 preMultiply(Mat3 mat) {
+		if (this == ID)
+			return mat;
 		return multiply(mat, this);
 	}
 
@@ -118,6 +122,8 @@ public final class Mat3 implements IFloatArrayCopyProvider {
 	 * @return the transformed vector
 	 */
 	public Vec3 transform(Vec3 vec) {
+		if (this == ID)
+			return vec;
 		float x = m00 * vec.x + m01 * vec.y + m02 * vec.z;
 		float y = m10 * vec.x + m11 * vec.y + m12 * vec.z;
 		float z = m20 * vec.x + m21 * vec.y + m22 * vec.z;
@@ -135,10 +141,12 @@ public final class Mat3 implements IFloatArrayCopyProvider {
 	 * @return the transformed result
 	 */
 	public float[] transform(float[] xyz, float[] result) {
-		if (xyz == null)
-			return null;
 		if (result == null)
 			result = new float[xyz.length];
+		if (this == ID) {
+			System.arraycopy(xyz, 0, result, 0, xyz.length);
+			return result;
+		}
 		for (int i = 0; i < xyz.length; i += 3) {
 			float x = m00 * xyz[i] + m01 * xyz[i + 1] + m02 * xyz[i + 2];
 			float y = m10 * xyz[i] + m11 * xyz[i + 1] + m12 * xyz[i + 2];
@@ -167,6 +175,8 @@ public final class Mat3 implements IFloatArrayCopyProvider {
 	 * @return the transpose matrix
 	 */
 	public Mat3 transpose() {
+		if (this == ID)
+			return ID;
 		return new Mat3(m00, m01, m02, m10, m11, m12, m20, m21, m22);
 	}
 
@@ -176,8 +186,9 @@ public final class Mat3 implements IFloatArrayCopyProvider {
 	 * @return the determinant
 	 */
 	public float determinant() {
-		return m00 * m11 * m22 + m01 * m12 * m20 + m02 * m10 * m21 - m00 * m12 * m21 - m01 * m10 * m22
-				- m02 * m11 * m20;
+		if (this == ID)
+			return 1;
+		return m00 * m11 * m22 + m01 * m12 * m20 + m02 * m10 * m21 - m00 * m12 * m21 - m01 * m10 * m22 - m02 * m11 * m20;
 	}
 
 	/**
@@ -186,6 +197,8 @@ public final class Mat3 implements IFloatArrayCopyProvider {
 	 * @return the inverse or null if a is singular
 	 */
 	public Mat3 inverse() {
+		if (this == ID)
+			return ID;
 		float d = determinant();
 		if (d == 0)
 			return null;
@@ -213,6 +226,10 @@ public final class Mat3 implements IFloatArrayCopyProvider {
 	 * @return a * b
 	 */
 	public static Mat3 multiply(Mat3 a, Mat3 b) {
+		if (a == ID)
+			return b;
+		if (b == ID)
+			return a;
 		float v00 = a.m00 * b.m00 + a.m01 * b.m10 + a.m02 * b.m20;
 		float v01 = a.m00 * b.m01 + a.m01 * b.m11 + a.m02 * b.m21;
 		float v02 = a.m00 * b.m02 + a.m01 * b.m12 + a.m02 * b.m22;

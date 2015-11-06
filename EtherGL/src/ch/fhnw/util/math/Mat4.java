@@ -143,6 +143,8 @@ public final class Mat4 implements IFloatArrayCopyProvider {
 	 *            the second factor of the matrix product
 	 */
 	public Mat4 postMultiply(Mat4 mat) {
+		if (this == ID)
+			return mat;
 		return multiply(this, mat);
 	}
 
@@ -153,6 +155,8 @@ public final class Mat4 implements IFloatArrayCopyProvider {
 	 *            the first factor of the matrix product
 	 */
 	public Mat4 preMultiply(Mat4 mat) {
+		if (this == ID)
+			return mat;
 		return multiply(mat, this);
 	}
 	
@@ -164,6 +168,8 @@ public final class Mat4 implements IFloatArrayCopyProvider {
 	 * @return the transformed vector
 	 */
 	public Vec4 transform(Vec4 vec) {
+		if (this == ID)
+			return vec;
 		float x = m00 * vec.x + m01 * vec.y + m02 * vec.z + m03 * vec.w;
 		float y = m10 * vec.x + m11 * vec.y + m12 * vec.z + m13 * vec.w;
 		float z = m20 * vec.x + m21 * vec.y + m22 * vec.z + m23 * vec.w;
@@ -179,6 +185,8 @@ public final class Mat4 implements IFloatArrayCopyProvider {
 	 * @return the transformed vector
 	 */
 	public Vec3 transform(Vec3 vec) {
+		if (this == ID)
+			return vec;
 		float x = m00 * vec.x + m01 * vec.y + m02 * vec.z + m03;
 		float y = m10 * vec.x + m11 * vec.y + m12 * vec.z + m13;
 		float z = m20 * vec.x + m21 * vec.y + m22 * vec.z + m23;
@@ -196,10 +204,12 @@ public final class Mat4 implements IFloatArrayCopyProvider {
 	 * @return the transformed result
 	 */
 	public float[] transform(float[] xyz, float[] result) {
-		if (xyz == null)
-			return null;
 		if (result == null)
 			result = new float[xyz.length];
+		if (this == ID) {
+			System.arraycopy(xyz, 0, result, 0, xyz.length);
+			return result;
+		}
 		for (int i = 0; i < xyz.length; i += 3) {
 			float x = m00 * xyz[i] + m01 * xyz[i + 1] + m02 * xyz[i + 2] + m03;
 			float y = m10 * xyz[i] + m11 * xyz[i + 1] + m12 * xyz[i + 2] + m13;
@@ -238,6 +248,8 @@ public final class Mat4 implements IFloatArrayCopyProvider {
 	 * @return the determinant
 	 */
 	public float determinant() {
+		if (this == ID)
+			return 1;
 		//@formatter:off
 		return m30 * m21 * m12 * m03 - m20 * m31 * m12 * m03 - m30 * m11 * m22 * m03 
 			 + m10 * m31 * m22 * m03 + m20 * m11 * m32 * m03 - m10 * m21 * m32 * m03
@@ -256,6 +268,8 @@ public final class Mat4 implements IFloatArrayCopyProvider {
 	 * @return the inverse or null if a is singular
 	 */
 	public Mat4 inverse() {
+		if (this == ID)
+			return ID;
 		float d = determinant();
 		if (d == 0)
 			return null;
@@ -290,6 +304,10 @@ public final class Mat4 implements IFloatArrayCopyProvider {
 	 * @return a * b
 	 */
 	public static Mat4 multiply(Mat4 a, Mat4 b) {
+		if (a == ID)
+			return b;
+		if (b == ID)
+			return a;
 		float m00 = a.m00 * b.m00 + a.m01 * b.m10 + a.m02 * b.m20 + a.m03 * b.m30;
 		float m10 = a.m10 * b.m00 + a.m11 * b.m10 + a.m12 * b.m20 + a.m13 * b.m30;
 		float m20 = a.m20 * b.m00 + a.m21 * b.m10 + a.m22 * b.m20 + a.m23 * b.m30;
