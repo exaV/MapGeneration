@@ -57,7 +57,7 @@ import ch.fhnw.ether.video.URLVideoSource;
 import ch.fhnw.ether.view.IView.Config;
 import ch.fhnw.ether.view.IView.ViewType;
 import ch.fhnw.ether.view.gl.DefaultView;
-import ch.fhnw.util.math.Transform;
+import ch.fhnw.util.math.Mat4;
 
 public class SimplePlayerGL implements Runnable {
 	private static final float  SCALE  = 3.5f;
@@ -81,7 +81,7 @@ public class SimplePlayerGL implements Runnable {
 
 			DefaultGeometry g = DefaultGeometry.createVM(Primitive.TRIANGLES, MeshLibrary.DEFAULT_QUAD_TRIANGLES, MeshLibrary.DEFAULT_QUAD_TEX_COORDS); 
 			IMesh mesh = new DefaultMesh(new ColorMapMaterial(texture), g, Queue.TRANSPARENCY);
-			mesh.setTransform(Transform.trs(0, 0, 0, 90, 0, 0, SCALE * source.getWidth() / source.getHeight(), SCALE, SCALE));			
+			mesh.setTransform(Mat4.trs(0, 0, 0, 90, 0, 0, SCALE * source.getWidth() / source.getHeight(), SCALE, SCALE));			
 			scene.add3DObject(mesh);
 
 			texture.useProgram(new RenderProgram<>(source));

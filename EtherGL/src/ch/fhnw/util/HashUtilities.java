@@ -27,17 +27,36 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.util.math;
+package ch.fhnw.util;
 
-public final class Transform {
+public final class HashUtilities {
 
-	// M = T * RX * RY * RZ * S
-	public static Mat4 trs(float tx, float ty, float tz, float rx, float ry, float rz, float sx, float sy, float sz) {
-		return Mat4.multiply(Mat4.translate(tx, ty, tz), Mat4.rotate(rx, Vec3.X), Mat4.rotate(ry, Vec3.Y), Mat4.rotate(rz, Vec3.Z), Mat4.scale(sx, sy, sz));
+	public static int hash(float v0) {
+		return Float.floatToIntBits(v0);
 	}
 
-	// M = T * RX * RY * RZ * S
-	public static Mat4 trs(Vec3 t, Vec3 r, Vec3 s) {
-		return trs(t.x, t.y, t.z, r.x, r.y, r.z, s.x, s.y, s.z);
+	public static int hash(float v0, float v1) {
+		return Float.floatToIntBits(v0 + v1);
+	}
+
+	public static int hash(float v0, float v1, float v2) {
+		return Float.floatToIntBits(v0 + v1 + v2);
+	}
+
+	public static int hash(float v0, float v1, float v2, float v3) {
+		return Float.floatToIntBits(v0 + v1 + v2 + v3);
+	}
+
+	public static int hash(float v0, float v1, float v2, float v3, float v4, float v5) {
+		return Float.floatToIntBits(v0 + v1 + v2 + v3 + v4 + v5);
+	}
+
+	public static int hash(float v0, float v1, float v2, float v3, float v4, float v5, float v6, float v7, float v8) {
+		return Float.floatToIntBits(v0 + v1 + v2 + v3 + v4 + v5 + v6 + v7 + v8);
+	}
+
+	public static int hash(float v0, float v1, float v2, float v3, float v4, float v5, float v6, float v7, float v8,
+			float v9, float v10, float v11, float v12, float v13, float v14, float v15) {
+		return Float.floatToIntBits(v0 + v1 + v2 + v3 + v4 + v5 + v6 + v7 + v8 + v9 + v10 + v11 + v12 + v13 + v14 + v15);
 	}
 }

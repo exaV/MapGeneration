@@ -29,10 +29,12 @@
 
 package ch.fhnw.util.math;
 
+import ch.fhnw.util.HashUtilities;
 import ch.fhnw.util.IFloatArrayCopyProvider;
 
 /**
- * 3x3 matrix for dealing with OpenGL 3x3 matrices (column major). Mat3 is immutable.
+ * 3x3 matrix for dealing with OpenGL 3x3 matrices (column major). Mat3 is
+ * immutable.
  *
  * @author radar
  */
@@ -60,7 +62,9 @@ public final class Mat3 implements IFloatArrayCopyProvider {
 	/**
 	 * Create 3x3 matrix from 9 float values.
 	 */
-	public Mat3(float m00, float m10, float m20, float m01, float m11, float m21, float m02, float m12, float m22) {
+	public Mat3(float m00, float m10, float m20,
+			    float m01, float m11, float m21, 
+			    float m02, float m12, float m22) {
 		this.m00 = m00;
 		this.m10 = m10;
 		this.m20 = m20;
@@ -126,7 +130,8 @@ public final class Mat3 implements IFloatArrayCopyProvider {
 	 * @param xyz
 	 *            the input array of vectors to be transformed
 	 * @param result
-	 *            the array where to store the transformed vectors or NULL to create a new array
+	 *            the array where to store the transformed vectors or NULL to
+	 *            create a new array
 	 * @return the transformed result
 	 */
 	public float[] transform(float[] xyz, float[] result) {
@@ -171,7 +176,8 @@ public final class Mat3 implements IFloatArrayCopyProvider {
 	 * @return the determinant
 	 */
 	public float determinant() {
-		return m00 * m11 * m22 + m01 * m12 * m20 + m02 * m10 * m21 - m00 * m12 * m21 - m01 * m10 * m22 - m02 * m11 * m20;
+		return m00 * m11 * m22 + m01 * m12 * m20 + m02 * m10 * m21 - m00 * m12 * m21 - m01 * m10 * m22
+				- m02 * m11 * m20;
 	}
 
 	/**
@@ -255,7 +261,8 @@ public final class Mat3 implements IFloatArrayCopyProvider {
 	}
 
 	/**
-	 * Multiplies an arbitrary sequence of matrices (result = a * b * c * d * ...).
+	 * Multiplies an arbitrary sequence of matrices (result = a * b * c * d *
+	 * ...).
 	 *
 	 * @param a
 	 *            Sequence of 3x3 matrices in column-major order
@@ -264,7 +271,7 @@ public final class Mat3 implements IFloatArrayCopyProvider {
 	public static Mat3 multiply(Mat3... a) {
 		return multiply(0, a);
 	}
-	
+
 	// TODO: optimize for memory allocation
 	private static Mat3 multiply(int i, Mat3[] a) {
 		if (i == a.length - 1)
@@ -365,6 +372,28 @@ public final class Mat3 implements IFloatArrayCopyProvider {
 	@Override
 	public float[] toArray() {
 		return new float[] { m00, m10, m20, m01, m11, m21, m02, m12, m22 };
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+
+		if (obj instanceof Mat3) {
+			final Mat3 v = (Mat3) obj;
+			//@formatter:off
+			return m00 == v.m00 && m10 == v.m10 && m20 == v.m20 && 
+				   m01 == v.m01 && m11 == v.m11 && m21 == v.m21 && 
+				   m02 == v.m02 && m12 == v.m12 && m22 == v.m22;
+			//@formatter:on
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return HashUtilities.hash(m00, m10, m20, m01, m11, m21, m02, m12, m22);
 	}
 
 	@Override

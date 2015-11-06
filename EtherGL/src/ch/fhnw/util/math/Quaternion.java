@@ -33,6 +33,7 @@
  */
 package ch.fhnw.util.math;
 
+import ch.fhnw.util.HashUtilities;
 import ch.fhnw.util.Pair;
 
 /**
@@ -518,6 +519,11 @@ public final class Quaternion {
 		return false;
 	}
 
+	@Override
+	public int hashCode() {
+		return HashUtilities.hash(x, y, z, w);
+	}
+	
 	@Override
 	public String toString() {
 		return "Q" + "[" + x + ", " + y + ", " + z + ", " + w + "]";

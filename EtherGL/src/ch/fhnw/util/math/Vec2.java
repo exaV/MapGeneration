@@ -31,6 +31,7 @@ package ch.fhnw.util.math;
 
 import java.util.Collection;
 
+import ch.fhnw.util.HashUtilities;
 import ch.fhnw.util.IFloatArrayCopyProvider;
 
 /**
@@ -98,6 +99,11 @@ public final class Vec2 implements IFloatArrayCopyProvider {
 	}
 
 	@Override
+	public float[] toArray() {
+		return new float[] { x, y };
+	}
+
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -105,14 +111,14 @@ public final class Vec2 implements IFloatArrayCopyProvider {
 
 		if (obj instanceof Vec2) {
 			final Vec2 v = (Vec2) obj;
-			return (x == v.x) && (y == v.y);
+			return x == v.x && y == v.y;
 		}
 		return false;
 	}
-
+	
 	@Override
-	public float[] toArray() {
-		return new float[] { x, y };
+	public int hashCode() {
+		return HashUtilities.hash(x, y);
 	}
 
 	@Override

@@ -29,6 +29,7 @@
 
 package ch.fhnw.util.math;
 
+import ch.fhnw.util.HashUtilities;
 import ch.fhnw.util.IFloatArrayCopyProvider;
 
 /**
@@ -67,8 +68,10 @@ public final class Mat4 implements IFloatArrayCopyProvider {
 	/**
 	 * Create 4x4 matrix from 16 float values.
 	 */
-	public Mat4(float m00, float m10, float m20, float m30, float m01, float m11, float m21, float m31, float m02, float m12, float m22, float m32, float m03,
-			float m13, float m23, float m33) {
+	public Mat4(float m00, float m10, float m20, float m30, 
+			    float m01, float m11, float m21, float m31, 
+			    float m02, float m12, float m22, float m32, 
+			    float m03, float m13, float m23, float m33) {
 		this.m00 = m00;
 		this.m10 = m10;
 		this.m20 = m20;
@@ -622,9 +625,46 @@ public final class Mat4 implements IFloatArrayCopyProvider {
 		return new Mat4(m00, 0, 0, 0, 0, m11, 0, 0, 0, 0, m22, 0, m03, m13, m23, m33);
 	}
 
+	/**
+	 * Create Trans-Rot-Scale matrix from components (M = T * RX * RY * RZ * S). 
+	 */
+	public static Mat4 trs(float tx, float ty, float tz, float rx, float ry, float rz, float sx, float sy, float sz) {
+		return Mat4.multiply(Mat4.translate(tx, ty, tz), Mat4.rotate(rx, Vec3.X), Mat4.rotate(ry, Vec3.Y), Mat4.rotate(rz, Vec3.Z), Mat4.scale(sx, sy, sz));
+	}
+
+	/**
+	 * Create Trans-Rot-Scale matrix from vectors (M = T * RX * RY * RZ * S). 
+	 */
+	public static Mat4 trs(Vec3 t, Vec3 r, Vec3 s) {
+		return trs(t.x, t.y, t.z, r.x, r.y, r.z, s.x, s.y, s.z);
+	}
+
 	@Override
 	public float[] toArray() {
 		return new float[] { m00, m10, m20, m30, m01, m11, m21, m31, m02, m12, m22, m32, m03, m13, m23, m33 };
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+
+		if (obj instanceof Mat4) {
+			final Mat4 v = (Mat4) obj;
+			//@formatter:off
+			return m00 == v.m00 && m10 == v.m10 && m20 == v.m20 && m30 == v.m30 &&
+				   m01 == v.m01 && m11 == v.m11 && m21 == v.m21 && m31 == v.m31 &&
+				   m02 == v.m02 && m12 == v.m12 && m22 == v.m22 && m32 == v.m32 &&
+				   m03 == v.m03 && m13 == v.m13 && m23 == v.m23 && m33 == v.m33;
+			//@formatter:off
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return HashUtilities.hash(m00, m10, m20, m30, m01, m11, m21, m31, m02, m12, m22, m32, m03, m13, m23, m33);
 	}
 
 	@Override

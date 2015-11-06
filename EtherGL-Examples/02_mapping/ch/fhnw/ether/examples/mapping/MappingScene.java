@@ -40,7 +40,7 @@ import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.util.color.RGBA;
-import ch.fhnw.util.math.Transform;
+import ch.fhnw.util.math.Mat4;
 
 public class MappingScene extends DefaultScene {
 
@@ -54,7 +54,7 @@ public class MappingScene extends DefaultScene {
 			float ty = -1 + 2 * (float) Math.random();
 			float rz = 360f * (float) Math.random();
 			IMesh mesh = new DefaultMesh(material, geometry);
-			mesh.setTransform(Transform.trs(tx, ty, s * 0.5f, 0, 0, rz, s, s, s));
+			mesh.setTransform(Mat4.trs(tx, ty, s * 0.5f, 0, 0, rz, s, s, s));
 			add3DObject(mesh);
 		}
 	}

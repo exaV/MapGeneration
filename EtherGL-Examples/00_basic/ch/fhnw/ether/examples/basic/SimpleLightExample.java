@@ -57,7 +57,7 @@ import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.gl.DefaultView;
 import ch.fhnw.util.color.RGB;
 import ch.fhnw.util.color.RGBA;
-import ch.fhnw.util.math.Transform;
+import ch.fhnw.util.math.Mat4;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.GeodesicSphere;
 
@@ -152,7 +152,7 @@ public final class SimpleLightExample {
 			GeodesicSphere s = new GeodesicSphere(4);
 	
 			lightMesh = new DefaultMesh(new ColorMaterial(RGBA.YELLOW), DefaultGeometry.createV(Primitive.TRIANGLES, s.getTriangles()), Flag.DONT_CAST_SHADOW);
-			lightMesh.setTransform(Transform.trs(0, 0, 0, 0, 0, 0, 0.1f, 0.1f, 0.1f));
+			lightMesh.setTransform(Mat4.trs(0, 0, 0, 0, 0, 0, 0.1f, 0.1f, 0.1f));
 			lightMesh.setPosition(new Vec3(0, 0, 2));
 			light.setPosition(lightMesh.getPosition());
 	
@@ -179,15 +179,15 @@ public final class SimpleLightExample {
 			IMesh solidMeshT = new DefaultMesh(solidMaterial, DefaultGeometry.createVN(Primitive.TRIANGLES, s.getTriangles(), s.getNormals()));
 			IMesh solidMeshL = new DefaultMesh(lineMaterial, DefaultGeometry.createV(Primitive.LINES, s.getLines()), Queue.TRANSPARENCY);
 	
-			solidMeshT.setTransform(Transform.trs(-1, 0, 0.5f, 0, 0, 0, 1, 1, 1));
-			solidMeshL.setTransform(Transform.trs(-1, 0, 0.5f, 0, 0, 0, 1, 1, 1));
+			solidMeshT.setTransform(Mat4.trs(-1, 0, 0.5f, 0, 0, 0, 1, 1, 1));
+			solidMeshL.setTransform(Mat4.trs(-1, 0, 0.5f, 0, 0, 0, 1, 1, 1));
 	
 			IMesh texturedMeshT = new DefaultMesh(textureMaterial, DefaultGeometry.createVNM(Primitive.TRIANGLES, s.getTriangles(), s.getNormals(),
 					s.getTexCoords()));
-			texturedMeshT.setTransform(Transform.trs(1, 0, 0.5f, 0, 0, 0, 1, 1, 1));
+			texturedMeshT.setTransform(Mat4.trs(1, 0, 0.5f, 0, 0, 0, 1, 1, 1));
 	
 			IMesh solidCubeT = MeshLibrary.createCube(solidMaterial);
-			solidCubeT.setTransform(Transform.trs(0, 0, 0.5f, 0, 0, 0, 0.8f, 0.8f, 0.8f));
+			solidCubeT.setTransform(Mat4.trs(0, 0, 0.5f, 0, 0, 0, 0.8f, 0.8f, 0.8f));
 	
 			scene.add3DObjects(solidMeshT, solidMeshL, texturedMeshT, solidCubeT);
 	
@@ -197,7 +197,7 @@ public final class SimpleLightExample {
 				try {
 					List<IMesh> meshes = new OBJReader(getClass().getResource("assets/bunny_original.obj")).getMeshes();
 					solidBunnyT = new DefaultMesh(solidMaterial, meshes.get(0).getGeometry());
-					solidBunnyT.setTransform(Transform.trs(2, 0, 0, 90, 0, 0, 4, 4, 4));
+					solidBunnyT.setTransform(Mat4.trs(2, 0, 0, 90, 0, 0, 4, 4, 4));
 					scene.add3DObject(solidBunnyT);
 				} catch (Throwable throwable) {
 					throwable.printStackTrace();
