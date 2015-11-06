@@ -187,7 +187,7 @@ public final class ForwardRenderer extends AbstractRenderer {
 
 		globals.viewInfo.setCameraSpace(gl);
 
-		// ---- 1. DEPTH QUEUE (DEPTH WRITE&TEST ENABLED, BLEND OFF)
+		// 1. DEPTH QUEUE (DEPTH WRITE&TEST ENABLED, BLEND OFF)
 		// FIXME: where do we deal with two-sided vs one-sided? mesh options?
 		// shader dependent?
 		// gl.glEnable(GL.GL_CULL_FACE);
@@ -201,27 +201,24 @@ public final class ForwardRenderer extends AbstractRenderer {
 		if (false)
 			renderShadowVolumes(gl, state, Queue.DEPTH);
 
-		// ---- 2. TRANSPARENCY QUEUE (DEPTH WRITE DISABLED, DEPTH TEST ENABLED,
-		// BLEND ON)
+		// 2. TRANSPARENCY QUEUE (DEPTH WRITE DISABLED, DEPTH TEST ENABLED, BLEND ON)
 		gl.glEnable(GL.GL_BLEND);
 		gl.glDepthMask(false);
 		renderObjects(gl, state, Queue.TRANSPARENCY);
 
-		// ---- 3. OVERLAY QUEUE (DEPTH WRITE&TEST DISABLED, BLEND ON)
+		// 3. OVERLAY QUEUE (DEPTH WRITE&TEST DISABLED, BLEND ON)
 		gl.glDisable(GL.GL_DEPTH_TEST);
 		renderObjects(gl, state, Queue.OVERLAY);
 
-		// ---- 4. DEVICE SPACE OVERLAY QUEUE (DEPTH WRITE&TEST DISABLED, BLEND
-		// ON)
+		// 4. DEVICE SPACE OVERLAY QUEUE (DEPTH WRITE&TEST DISABLED, BLEND ON)
 		globals.viewInfo.setOrthoDeviceSpace(gl);
 		renderObjects(gl, state, Queue.DEVICE_SPACE_OVERLAY);
 
-		// ---- 5. SCREEN SPACE OVERLAY QUEUE(DEPTH WRITE&TEST DISABLED, BLEND
-		// ON)
+		// 5. SCREEN SPACE OVERLAY QUEUE(DEPTH WRITE&TEST DISABLED, BLEND ON)
 		globals.viewInfo.setOrthoScreenSpace(gl);
 		renderObjects(gl, state, Queue.SCREEN_SPACE_OVERLAY);
 
-		// ---- 6. CLEANUP: RETURN TO DEFAULTS
+		// 6. CLEANUP: RETURN TO DEFAULTS
 		gl.glDisable(GL.GL_BLEND);
 		gl.glDepthMask(true);
 	}

@@ -38,6 +38,7 @@ import ch.fhnw.ether.scene.light.DirectionalLight;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.gl.DefaultView;
 import ch.fhnw.util.color.RGB;
+import ch.fhnw.util.math.Mat4;
 import ch.fhnw.util.math.Vec3;
 
 public class ObjLoaderExample {
@@ -61,7 +62,11 @@ public class ObjLoaderExample {
 			try {
 				final URL obj = ObjLoaderExample.class.getResource("fhnw.obj");
 				//final URL obj = new URL("file:///Users/radar/Desktop/aventador/aventador_red.obj");
-				new OBJReader(obj).getMeshes().forEach(mesh -> scene.add3DObject(mesh));
+				//final URL obj = new URL("file:///Users/radar/Desktop/berlin_mitte/berlin_mitte_o2_o3/o2_small.obj");
+				new OBJReader(obj).getMeshes().forEach(mesh -> {
+					mesh.setTransform(Mat4.rotate(90, Vec3.X)); scene.add3DObject(mesh);
+				});
+				System.out.println("number of meshes: " + scene.getMeshes().size());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

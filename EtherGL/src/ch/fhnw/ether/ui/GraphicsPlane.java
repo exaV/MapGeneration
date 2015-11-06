@@ -48,7 +48,7 @@ import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.ether.scene.mesh.material.Texture;
 import ch.fhnw.util.UpdateRequest;
 
-class GraphicsPlane {
+public class GraphicsPlane {
 	public static final Font FONT = new Font("SansSerif", Font.BOLD, 12);
 
 	private static final Color CLEAR_COLOR = new Color(0, 0, 0, 0);
