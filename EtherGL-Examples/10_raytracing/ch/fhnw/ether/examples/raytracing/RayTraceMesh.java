@@ -119,7 +119,18 @@ public class RayTraceMesh implements IMesh {
 	@Override
 	public void setTransform(Mat4 transform) {
 		// TODO Auto-generated method stub
-
+	}
+	
+	@Override
+	public float[] getTransformedPositionData() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public float[][] getTransformedGeometryData() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override

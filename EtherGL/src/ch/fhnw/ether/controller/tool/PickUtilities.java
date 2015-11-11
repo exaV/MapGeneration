@@ -38,7 +38,6 @@ import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.ProjectionUtilities;
-import ch.fhnw.util.math.Mat4;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.BoundingBox;
 import ch.fhnw.util.math.geometry.GeometryUtilities;
@@ -59,7 +58,6 @@ public final class PickUtilities {
 	public static Map<Float, I3DObject> pickFromScene(PickMode mode, int x, int y, int w, int h, IView view) {
 		IViewCameraState vcs = view.getController().getRenderManager().getViewCameraState(view);
 		final Map<Float, I3DObject> pickables = new TreeMap<>();
-		float[][] transformedData = new float[1][0];
 		for (I3DObject object : view.getController().getScene().get3DObjects()) {
 			BoundingBox b = object.getBounds();
 			
@@ -76,29 +74,22 @@ public final class PickUtilities {
 			
 			IMesh mesh = (IMesh)object;
 			IGeometry geometry = mesh.getGeometry();
-			Mat4 transform = mesh.getTransform();
-			mesh.getGeometry().inspect(0, (attribute, data) -> {
-				if (transform != Mat4.ID) {
-					if (data.length > transformedData[0].length)
-						transformedData[0] = new float[data.length];
-					data = transform.transform(data, transformedData[0]);
-				}
-				
-				float dd = Float.POSITIVE_INFINITY;
-				switch (geometry.getType()) {
-				case LINES:
-					dd = pickEdges(mode, x, y, w, h, vcs, data);
-					break;
-				case POINTS:
-					dd = pickPoints(mode, x, y, w, h, vcs, data);
-					break;
-				case TRIANGLES:
-					dd = pickTriangles(mode, x, y, w, h, vcs, data);
-					break;
-				}
-				if (dd < Float.POSITIVE_INFINITY)
-					pickables.put(dd, object);
-			});
+			float[] data = mesh.getTransformedPositionData();
+			
+			float dd = Float.POSITIVE_INFINITY;
+			switch (geometry.getType()) {
+			case LINES:
+				dd = pickEdges(mode, x, y, w, h, vcs, data);
+				break;
+			case POINTS:
+				dd = pickPoints(mode, x, y, w, h, vcs, data);
+				break;
+			case TRIANGLES:
+				dd = pickTriangles(mode, x, y, w, h, vcs, data);
+				break;
+			}
+			if (dd < Float.POSITIVE_INFINITY)
+				pickables.put(dd, object);
 		}
 		return pickables;
 	}

@@ -42,7 +42,7 @@ public final class ShadedMaterial extends AbstractMaterial {
 	private float strength;
 	private float alpha;
 
-	private volatile Texture colorMap;
+	private Texture colorMap;
 
 	public ShadedMaterial(RGB diffuse) {
 		this(RGB.BLACK, RGB.BLACK, diffuse, RGB.BLACK, 0, 0, 1);

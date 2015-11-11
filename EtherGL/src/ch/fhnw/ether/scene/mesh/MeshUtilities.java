@@ -177,17 +177,14 @@ public final class MeshUtilities {
 	public static List<IMesh> mergeMeshes(List<IMesh> meshes) {
 		// make a copy of input because we're going to modify the list
 		meshes = new ArrayList<>(meshes);
-		
+
 		final List<IMesh> result = new ArrayList<>();		
 		while (!meshes.isEmpty()) {
-			System.out.println("---");
-			System.out.println(System.currentTimeMillis());
 			final IMesh first = meshes.get(0);
 			List<IMesh> same = meshes.stream().filter(m -> m.getMaterial().equals(first.getMaterial()) &&
 														   m.getQueue().equals(first.getQueue()) && 
 														   m.getFlags().equals(first.getFlags())).collect(Collectors.toList());
 			
-			System.out.println(System.currentTimeMillis());
 			IMaterial material = first.getMaterial();
 			IGeometryAttribute[] attributes = material.getGeometryAttributes();
 			FloatList data[] = new FloatList[attributes.length];
@@ -196,22 +193,18 @@ public final class MeshUtilities {
 			
 			for (IMesh mesh : same) {
 				IGeometryAttribute[] ga = mesh.getGeometry().getAttributes();
-				float[][] gd = mesh.getGeometry().getData();
+				float[][] gd = mesh.getTransformedGeometryData();
 				for (int i = 0; i < attributes.length; ++i) {
 					for (int j = 0; j < ga.length; j++) {
-						if (attributes[i].equals(ga[j])) {
-							// TODO: position / normal baking
+						if (attributes[i].id().equals(ga[j].id())) {
 							data[i].addAll(gd[j]);
 							continue;
 						}
 					}
 				}
-			}
-			System.out.println(System.currentTimeMillis());
-			
+			}			
 			result.add(new DefaultMesh(material, new DefaultGeometry(material.getType(), attributes, data), first.getQueue(), first.getFlags()));
 			meshes.removeAll(same);
-			System.out.println(System.currentTimeMillis());
 		}
 		return result;
 	}	

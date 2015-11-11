@@ -109,7 +109,8 @@ public interface IGeometry extends IUpdateTracker {
 	IGeometryAttribute[] getAttributes();
 
 	/**
-	 * Get a copy of the data this geometry provides.
+	 * Get data this geometry provides. Warning: Does not copy and returns
+	 * internal arrays.
 	 */
 	float[][] getData();
 

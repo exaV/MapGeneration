@@ -39,11 +39,8 @@ import ch.fhnw.ether.render.gl.FloatArrayBuffer;
 import ch.fhnw.ether.render.gl.IArrayBuffer;
 import ch.fhnw.ether.render.shader.IShader;
 import ch.fhnw.ether.render.variable.IShaderArray;
-import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.IGeometryAttribute;
 import ch.fhnw.util.BufferUtilities;
-import ch.fhnw.util.math.Mat3;
-import ch.fhnw.util.math.Mat4;
 
 // TODO: deal with max vbo size & multiple vbos, memory optimization, handle non-float arrays, indexed buffers
 
@@ -88,21 +85,14 @@ public final class VertexBuffer implements IVertexBuffer {
 		this.stride = stride;
 	}
 
-	public void load(GL3 gl, IShader shader, float[][] data, Mat4 positionTransform, Mat3 normalTransform) {
+	public void load(GL3 gl, IShader shader, float[][] data) {
 		List<IShaderArray<?>> arrays = shader.getArrays();
 		float[][] sources = new float[arrays.size()][];
 
-		int bufferIndex = 0;
 		int size = 0;
-		for (IShaderArray<?> array : arrays) {
+		for (int bufferIndex = 0; bufferIndex < arrays.size(); ++bufferIndex) {
 			float[] source = data[attributeIndices[bufferIndex]];
-			if (array.id().equals(IGeometry.POSITION_ARRAY.id()))
-				sources[bufferIndex] = positionTransform.transform(source);
-			else if (array.id().equals(IGeometry.NORMAL_ARRAY.id()))
-				sources[bufferIndex] = normalTransform.transform(source);
-			else
-				sources[bufferIndex] = source;
-			bufferIndex++;
+			sources[bufferIndex] = source;
 			size += source.length;
 		}
 		FloatBuffer buffer = TARGET.get();
@@ -113,7 +103,7 @@ public final class VertexBuffer implements IVertexBuffer {
 		buffer.clear();
 		buffer.limit(size);
 		interleave(buffer, sources, sizes);
-		this.buffer.load(gl, TARGET.get());
+		this.buffer.load(gl, buffer);
 	}
 	
 	@Override

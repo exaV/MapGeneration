@@ -68,10 +68,10 @@ public class DefaultController implements IController {
 	private IScene scene;
 
 	private final ArrayList<IView> views = new ArrayList<>();
-	private volatile UI ui;
+	private UI ui;
 
-	private volatile NavigationTool navigationTool;
-	private volatile PickTool pickTool;
+	private NavigationTool navigationTool;
+	private PickTool pickTool;
 
 	private IView currentView;
 	private ITool currentTool;

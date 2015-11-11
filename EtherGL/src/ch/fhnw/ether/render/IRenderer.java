@@ -37,8 +37,6 @@ import ch.fhnw.ether.scene.camera.IViewCameraState;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.view.IView;
-import ch.fhnw.util.math.Mat3;
-import ch.fhnw.util.math.Mat4;
 
 /**
  * Simple rendering interface.
@@ -57,10 +55,6 @@ public interface IRenderer {
 		Object[] getMaterialData();
 
 		float[][] getGeometryData();
-
-		Mat4 getPositionTransform();
-
-		Mat3 getNormalTransform();
 	}
 
 	interface IRenderTargetState {
