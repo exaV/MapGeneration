@@ -58,7 +58,6 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.sound.sampled.spi.AudioFileReader;
 
-import ch.fhnw.ether.media.PerTargetState;
 import ch.fhnw.ether.media.RenderCommandException;
 import ch.fhnw.util.ClassUtilities;
 import ch.fhnw.util.IDisposable;
@@ -66,7 +65,7 @@ import ch.fhnw.util.Log;
 import ch.fhnw.util.TextUtilities;
 
 
-public class URLAudioSource extends AbstractAudioSource<URLAudioSource.State> {
+public class URLAudioSource extends AbstractAudioSource implements Runnable, IDisposable {
 	private static final Log log = Log.create();
 
 	private static final float         S2F    = Short.MAX_VALUE;
@@ -76,7 +75,6 @@ public class URLAudioSource extends AbstractAudioSource<URLAudioSource.State> {
 	private       double             frameSize;
 	private final URL                url;
 	private final AudioFormat        fmt;       
-	private final int                numPlays;
 	private final long               frameCount;
 	private int                      noteOn;
 	private final TreeSet<MidiEvent> notes = new TreeSet<>(new Comparator<MidiEvent>() {
@@ -86,6 +84,10 @@ public class URLAudioSource extends AbstractAudioSource<URLAudioSource.State> {
 			return result == 0 ? o1.getMessage().getMessage()[1] - o2.getMessage().getMessage()[1] : result;
 		}
 	});
+	private final BlockingQueue<float[]> data = new LinkedBlockingQueue<>();
+	private final AtomicInteger          numPlays     = new AtomicInteger();
+	private       long                   samples;
+	private       Semaphore              bufSemaphore = new Semaphore(512);
 
 	public URLAudioSource(URL url) throws IOException {
 		this(url, Integer.MAX_VALUE, -128);
@@ -97,7 +99,7 @@ public class URLAudioSource extends AbstractAudioSource<URLAudioSource.State> {
 
 	public URLAudioSource(final URL url, final int numPlays, double frameSizeInSec) throws IOException {
 		this.url       = url;
-		this.numPlays  = numPlays;
+		this.numPlays.set(numPlays);
 		this.frameSize = frameSizeInSec;
 
 		try {
@@ -134,6 +136,7 @@ public class URLAudioSource extends AbstractAudioSource<URLAudioSource.State> {
 		} catch (UnsupportedAudioFileException e) {
 			throw new IOException(e);
 		}
+		rewind();
 	}
 
 	private AudioInputStream getStream(URL url) throws UnsupportedAudioFileException {
@@ -179,96 +182,79 @@ public class URLAudioSource extends AbstractAudioSource<URLAudioSource.State> {
 	}
 
 	@Override
-	protected void run(State state) throws RenderCommandException {
-		state.runInternal();
-	}
-
-	@Override
 	public float getSampleRate() {
 		return fmt.getSampleRate();
 	}
 
-	class State extends PerTargetState<IAudioRenderTarget> implements Runnable, IDisposable {
-		private final BlockingQueue<float[]> data = new LinkedBlockingQueue<>();
-		private final AtomicInteger          numPlays     = new AtomicInteger();
-		private       long                   samples;
-		private       Semaphore              bufSemaphore = new Semaphore(512);
+	@Override
+	public void run() {
+		try {
+			byte[] buffer = new byte[frameSize > 0 
+			                         ? fmt.getChannels() * fmt.getSampleSizeInBits() / 8 * (int)(frameSize * fmt.getSampleRate())
+			                        		 : fmt.getChannels() * fmt.getSampleSizeInBits() / 8 * (int)-frameSize];
 
-		public State(IAudioRenderTarget target) {
-			super(target);
-			rewind();
-		}
+			do {
+				try (AudioInputStream in = getStream(url)) {
+					int   bytesPerSample = fmt.getSampleSizeInBits() / 8;
 
-		@Override
-		public void run() {
-			try {
-				byte[] buffer = new byte[frameSize > 0 
-				                         ? fmt.getChannels() * fmt.getSampleSizeInBits() / 8 * (int)(frameSize * fmt.getSampleRate())
-				                        		 : fmt.getChannels() * fmt.getSampleSizeInBits() / 8 * (int)-frameSize];
-
-				do {
-					try (AudioInputStream in = getStream(url)) {
-						int   bytesPerSample = fmt.getSampleSizeInBits() / 8;
-
-						for(;;) {
-							int read = in.read(buffer);
-							if(read < 0) break;								
-							float[] fbuffer = new float[read / bytesPerSample];
-							int     idx     = 0;
-							if(fmt.isBigEndian()) {
-								for(int i = 0; i < read; i += 2) {
-									int s = buffer[i] << 8 | (buffer[i+1] & 0xFF);
-									fbuffer[idx++] = s / S2F;
-								}
-							} else {
-								for(int i = 0; i < read; i += 2) {
-									int s = buffer[i+1] << 8 | (buffer[i] & 0xFF);
-									fbuffer[idx++] = s / S2F;
-								}
+					for(;;) {
+						int read = in.read(buffer);
+						if(read < 0) break;								
+						float[] fbuffer = new float[read / bytesPerSample];
+						int     idx     = 0;
+						if(fmt.isBigEndian()) {
+							for(int i = 0; i < read; i += 2) {
+								int s = buffer[i] << 8 | (buffer[i+1] & 0xFF);
+								fbuffer[idx++] = s / S2F;
 							}
-							data.add(fbuffer);
-							bufSemaphore.acquire();
+						} else {
+							for(int i = 0; i < read; i += 2) {
+								int s = buffer[i+1] << 8 | (buffer[i] & 0xFF);
+								fbuffer[idx++] = s / S2F;
+							}
 						}
+						data.add(fbuffer);
+						bufSemaphore.acquire();
 					}
-				} while(numPlays.decrementAndGet() > 0);
-			} catch(Throwable t) {
-				t.printStackTrace();
-			}
-		}
-
-		void runInternal() throws RenderCommandException {
-			try {
-				final float[] outData = data.take();
-				bufSemaphore.release();
-				AudioFrame frame = createAudioFrame(samples, outData);
-				frame.setLast(data.isEmpty() && numPlays.get() <= 0);
-				getTarget().setFrame(frame);
-				samples += outData.length;
-			} catch(Throwable t) {
-				throw new RenderCommandException(t);
-			}
-		}
-
-		@Override
-		public void dispose() {
-			try {
-				numPlays.set(0);
-				while(numPlays.get() >= 0) {
-					if(data.poll(10, TimeUnit.MILLISECONDS) != null)
-						bufSemaphore.release();
 				}
-			} catch(Throwable t) {
-				log.warning(t);
-			}
+			} while(numPlays.decrementAndGet() > 0);
+		} catch(Throwable t) {
+			t.printStackTrace();
 		}
+	}
 
-		public void rewind() {
-			numPlays.set(URLAudioSource.this.numPlays);
-			Thread t = new Thread(this, "AudioReader:" + url.toExternalForm());
-			t.setDaemon(true);
-			t.setPriority(Thread.MIN_PRIORITY);
-			t.start();
+	@Override
+	protected void run(final IAudioRenderTarget target) throws RenderCommandException {
+		try {
+			final float[] outData = data.take();
+			bufSemaphore.release();
+			AudioFrame frame = createAudioFrame(samples, outData);
+			frame.setLast(data.isEmpty() && numPlays.get() <= 0);
+			target.setFrame(frame);
+			samples += outData.length;
+		} catch(Throwable t) {
+			throw new RenderCommandException(t);
 		}
+	}
+
+	@Override
+	public void dispose() {
+		try {
+			numPlays.set(0);
+			while(numPlays.get() >= 0) {
+				if(data.poll(10, TimeUnit.MILLISECONDS) != null)
+					bufSemaphore.release();
+			}
+		} catch(Throwable t) {
+			log.warning(t);
+		}
+	}
+
+	public void rewind() {
+		Thread t = new Thread(this, "AudioReader:" + url.toExternalForm());
+		t.setDaemon(true);
+		t.setPriority(Thread.MIN_PRIORITY);
+		t.start();
 	}
 
 	public MidiEvent[] getMidi(double time, double timeWindow) {
@@ -340,11 +326,6 @@ public class URLAudioSource extends AbstractAudioSource<URLAudioSource.State> {
 	}
 
 	@Override
-	protected State createState(IAudioRenderTarget target) {
-		return new State(target);
-	}
-
-	@Override
 	public String toString() {
 		return url.toString();
 	}
@@ -361,9 +342,5 @@ public class URLAudioSource extends AbstractAudioSource<URLAudioSource.State> {
 
 	public double getLengthInSeconds() {
 		return frameCount / fmt.getFrameRate();
-	}
-
-	public void rewind(IAudioRenderTarget target) throws RenderCommandException {
-		state(target).rewind();
 	}
 }

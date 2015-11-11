@@ -1,7 +1,5 @@
 package ch.fhnw.ether.audio;
 
-import java.util.Map;
-import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -10,8 +8,6 @@ import org.jtransforms.fft.FloatFFT_1D;
 import ch.fhnw.ether.audio.AudioUtilities.Window;
 import ch.fhnw.ether.media.AbstractFrame;
 import ch.fhnw.ether.media.AbstractFrameSource;
-import ch.fhnw.ether.media.AbstractRenderCommand;
-import ch.fhnw.ether.media.PerTargetState;
 import ch.fhnw.ether.media.RenderCommandException;
 import ch.fhnw.ether.media.RenderProgram;
 import ch.fhnw.util.Log;
@@ -20,18 +16,17 @@ import ch.fhnw.util.math.MathUtilities;
 public class SpectrumAudioTarget implements IAudioRenderTarget {
 	private static final Log log = Log.create();
 
-	private final int                                                                                  numChannels;
-	private final float                                                                                sRate;
-	private double                                                                                     sTime;
-	private RenderProgram<IAudioRenderTarget>                                                          program;
-	private final AtomicReference<AudioFrame>                                                          frame = new AtomicReference<>();
-	private final Map<AbstractRenderCommand<IAudioRenderTarget,?>, PerTargetState<IAudioRenderTarget>> state = new WeakHashMap<>();
-	private final FloatFFT_1D                                                                          fft;
-	private final BlockBuffer                                                                          buffer;
-	private final int                                                                                  fftSize;
-	private final AtomicBoolean                                                                        isRendering = new AtomicBoolean();
-	private       AudioFrame                                                                           currentFrame;
-	private       boolean                                                                              done;
+	private final int                         numChannels;
+	private final float                       sRate;
+	private double                            sTime;
+	private RenderProgram<IAudioRenderTarget> program;
+	private final AtomicReference<AudioFrame> frame = new AtomicReference<>();
+	private final FloatFFT_1D                 fft;
+	private final BlockBuffer                 buffer;
+	private final int                         fftSize;
+	private final AtomicBoolean               isRendering = new AtomicBoolean();
+	private       AudioFrame                  currentFrame;
+	private       boolean                     done;
 
 	public SpectrumAudioTarget(int numChannels, float sampleRate, float minFreq, Window windowType) {
 		this.numChannels = numChannels;
@@ -104,19 +99,6 @@ public class SpectrumAudioTarget implements IAudioRenderTarget {
 		return isRendering.get();
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public PerTargetState<?> getState(AbstractRenderCommand<?, ?> cmd) throws RenderCommandException {
-		synchronized (state) {
-			PerTargetState<IAudioRenderTarget> result = state.get(cmd);
-			if(result == null) {
-				result = cmd.createStateInternal(this);
-				state.put((AbstractRenderCommand<IAudioRenderTarget,?>) cmd, result);
-			}
-			return result;
-		}
-	}
-
 	@Override
 	public void sleepUntil(double time) {}
 
@@ -127,7 +109,7 @@ public class SpectrumAudioTarget implements IAudioRenderTarget {
 	public void stop() throws RenderCommandException {}
 
 	@Override
-	public AbstractFrameSource<?, ?> getFrameSource() {
+	public AbstractFrameSource<?> getFrameSource() {
 		return program.getFrameSource();
 	}
 
@@ -144,6 +126,6 @@ public class SpectrumAudioTarget implements IAudioRenderTarget {
 	@Override
 	public void useProgram(RenderProgram<IAudioRenderTarget> program) throws RenderCommandException {
 		this.program = program;
-		program.addTarget(this);
+		program.setTarget(this);
 	}
 }

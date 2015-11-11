@@ -31,23 +31,24 @@ package ch.fhnw.ether.audio;
 
 import java.util.Arrays;
 
-import ch.fhnw.ether.media.PerTargetState;
 import ch.fhnw.ether.media.RenderCommandException;
 import ch.fhnw.util.FloatList;
 
 
-public class ArrayAudioSource extends AbstractAudioSource<ArrayAudioSource.State> {
-	private final int     numPlays;
+public class ArrayAudioSource extends AbstractAudioSource {
+	private       int     numPlays;
 	private final long    frameCount;
 	private final int     nChannels;
 	private final float[] data;
 	private final float   sRate;
 	private final int     frameSz;
+	private       long    samples;
+	private       int     rdPtr;
 
 	public ArrayAudioSource(FloatList samples, int numChannels, float samplingRate, final int numPlays) {
 		this(samples.toArray(), numChannels, samplingRate, numPlays);
 	}
-	
+
 	public ArrayAudioSource(final float[] samples, int numChannels, float samplingRate, final int numPlays) {
 		this.frameSz    = 128 * numChannels;
 		this.numPlays   = numPlays;
@@ -58,47 +59,27 @@ public class ArrayAudioSource extends AbstractAudioSource<ArrayAudioSource.State
 	}
 
 	@Override
-	protected void run(State state) throws RenderCommandException {
-		state.runInternal();
+	protected void run(IAudioRenderTarget target) throws RenderCommandException {
+		try {
+			int to = rdPtr + frameSz;
+			if(to >= data.length) {
+				to = data.length;
+				numPlays--;
+			}
+			final float[] outData = Arrays.copyOfRange(data, rdPtr, to);
+			AudioFrame frame = createAudioFrame(samples, outData);
+			frame.setLast(numPlays <= 0);
+			target.setFrame(frame);
+			samples += outData.length;
+			rdPtr = to % data.length;
+		} catch(Throwable t) {
+			throw new RenderCommandException(t);
+		}
 	}
 
 	@Override
 	public float getSampleRate() {
 		return sRate;
-	}
-
-	class State extends PerTargetState<IAudioRenderTarget> {
-		private       int   numPlays;
-		private       long  samples;
-		private       int   rdPtr;
-
-		public State(IAudioRenderTarget target, int numPlays) {
-			super(target);
-			this.numPlays = data.length == 0 ? 0 : numPlays;
-		}
-
-		void runInternal() throws RenderCommandException {
-			try {
-				int to = rdPtr + frameSz;
-				if(to >= data.length) {
-					to = data.length;
-					numPlays--;
-				}
-				final float[] outData = Arrays.copyOfRange(data, rdPtr, to);
-				AudioFrame frame = createAudioFrame(samples, outData);
-				frame.setLast(numPlays <= 0);
-				getTarget().setFrame(frame);
-				samples += outData.length;
-				rdPtr = to % data.length;
-			} catch(Throwable t) {
-				throw new RenderCommandException(t);
-			}
-		}
-	}
-
-	@Override
-	protected State createState(IAudioRenderTarget target) {
-		return new State(target, numPlays);
 	}
 
 	@Override

@@ -30,17 +30,14 @@
 package ch.fhnw.ether.examples.video.fx;
 
 import ch.fhnw.ether.image.Frame;
-import ch.fhnw.ether.media.Stateless;
 import ch.fhnw.ether.video.IVideoRenderTarget;
 import ch.fhnw.ether.video.fx.AbstractVideoFX;
 import ch.fhnw.util.color.ColorUtilities;
 
-public class FakeThermoCam extends AbstractVideoFX<Stateless<IVideoRenderTarget>> {
-	public FakeThermoCam() {
-	}
+public class FakeThermoCam extends AbstractVideoFX {
 
 	@Override
-	protected void processFrame(double playOutTime, Stateless<IVideoRenderTarget> state, Frame frame) {
+	protected void processFrame(final double playOutTime, final IVideoRenderTarget target, final Frame frame) {
 		frame.processLines((pixels, j)->{
 			float[] hsb = new float[frame.dimI * 3];
 			int pos = pixels.position();

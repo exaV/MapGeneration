@@ -29,29 +29,26 @@
 
 package ch.fhnw.ether.media;
 
-import java.util.Map;
-import java.util.WeakHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import ch.fhnw.util.Log;
 
-public abstract class AbstractMediaTarget<F extends AbstractFrame, T extends IRenderTarget> implements IRenderTarget {
+public abstract class AbstractMediaTarget<F extends AbstractFrame, T extends IRenderTarget> implements IRenderTarget, IScheduler {
 	private static final Log log = Log.create();
 
 	public static final double SEC2NS = 1000 * 1000 * 1000;
 	public static final double SEC2US = 1000 * 1000;
 	public static final double SEC2MS = 1000;
 
-	private   final int                                                priority;
-	protected RenderProgram<T>                                         program;
-	protected final AtomicBoolean                                      isRendering  = new AtomicBoolean();
-	private   final Map<AbstractRenderCommand<T,?>, PerTargetState<T>> state        = new WeakHashMap<>();
-	private   final long                                               startTime    = System.nanoTime();
-	private   final AtomicReference<F>                                 frame        = new AtomicReference<>();
-	private         F                                                  currentFrame;
-	private         CountDownLatch                                     startLatch;
+	private   final int                priority;
+	protected RenderProgram<T>         program;
+	protected final AtomicBoolean      isRendering  = new AtomicBoolean();
+	private   final long               startTime    = System.nanoTime();
+	private   final AtomicReference<F> frame        = new AtomicReference<>();
+	private         F                  currentFrame;
+	private         CountDownLatch     startLatch;
 
 	protected AbstractMediaTarget(int threadPriority) {
 		this.priority = threadPriority;
@@ -92,7 +89,7 @@ public abstract class AbstractMediaTarget<F extends AbstractFrame, T extends IRe
 	}
 
 	protected void runOneCycle() throws RenderCommandException {
-		program.runInternal(this);
+		program.run(this);
 		AbstractFrame tmp = getFrame();
 		if(tmp != null) {
 			render();
@@ -103,22 +100,9 @@ public abstract class AbstractMediaTarget<F extends AbstractFrame, T extends IRe
 	}
 
 	@SuppressWarnings("unchecked")
-	@Override
-	public PerTargetState<?> getState(AbstractRenderCommand<?,?> cmd) throws RenderCommandException {
-		synchronized (state) {
-			PerTargetState<T> result = state.get(cmd);
-			if(result == null) {
-				result = cmd.createStateInternal(this);
-				state.put((AbstractRenderCommand<T,?>) cmd, result);
-			}
-			return result;
-		}
-	}
-
-	@SuppressWarnings("unused")
 	public void useProgram(RenderProgram<T> program) throws RenderCommandException {
 		this.program = program;	
-		program.addTarget(this);
+		program.setTarget((T)this);
 	}
 
 	@Override
@@ -178,7 +162,7 @@ public abstract class AbstractMediaTarget<F extends AbstractFrame, T extends IRe
 	}
 
 	@Override
-	public AbstractFrameSource<T, ?> getFrameSource() {
+	public AbstractFrameSource<T> getFrameSource() {
 		return program.getFrameSource();
 	}	
 }

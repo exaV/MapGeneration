@@ -34,12 +34,11 @@ import java.net.URL;
 
 import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.image.RGBA8Frame;
-import ch.fhnw.ether.video.IVideoRenderTarget;
 import ch.fhnw.ether.video.URLVideoSource;
 import ch.fhnw.util.AutoDisposer;
 import ch.fhnw.util.AutoDisposer.Reference;
 
-public final class AVAsset extends URLVideoSource.State {
+public final class AVAsset extends URLVideoSource.Track {
 	private static boolean READY = true;
 
 	public static class AVAssetRef extends Reference<AVAsset> {
@@ -77,8 +76,8 @@ public final class AVAsset extends URLVideoSource.State {
 	private int    width;
 	private int    height;
 	
-	public AVAsset(IVideoRenderTarget target, URL url, int numPlays) {
-		super(target, url, numPlays);		
+	public AVAsset(URL url, int numPlays) {
+		super(url, numPlays);		
 		nativeHandle = nativeCreate(url.toString());
 		if (nativeHandle == 0)
 			throw new IllegalArgumentException("cannot create avasset from " + url);

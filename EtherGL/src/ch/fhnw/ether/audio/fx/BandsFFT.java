@@ -29,72 +29,43 @@
 
  import java.util.Arrays;
 
-import ch.fhnw.ether.audio.AudioUtilities;
-import ch.fhnw.ether.audio.FFT;
-import ch.fhnw.ether.audio.IAudioRenderTarget;
-import ch.fhnw.ether.audio.Smooth;
-import ch.fhnw.ether.media.AbstractRenderCommand;
-import ch.fhnw.ether.media.PerTargetState;
-import ch.fhnw.ether.media.RenderCommandException;
-import ch.fhnw.ether.media.StateHandle;
+ import ch.fhnw.ether.audio.AudioUtilities;
+ import ch.fhnw.ether.audio.FFT;
+ import ch.fhnw.ether.audio.IAudioRenderTarget;
+ import ch.fhnw.ether.audio.Smooth;
+ import ch.fhnw.ether.media.AbstractRenderCommand;
+ import ch.fhnw.ether.media.RenderCommandException;
 
- public class BandsFFT extends AbstractRenderCommand<IAudioRenderTarget,BandsFFT.State> {
+ public class BandsFFT extends AbstractRenderCommand<IAudioRenderTarget> {
 	 public enum Div {LINEAR, LOGARITHMIC}
 
-	 private static final double          BASE = 1.2;
-	 private final float[]                freqs;
-	 private final float[]                scales;
-	 private final StateHandle<FFT.State> spectrum;
-	 private int                          nHarmonics;
+	 private static final double BASE = 1.2;
+	 private final float[]       freqs;
+	 private final float[]       scales;
+	 private final FFT           spectrum;
+	 private int                 nHarmonics;
+	 private Smooth              smooth;
+	 private  float[]            power;
 
-	 public class State extends PerTargetState<IAudioRenderTarget> {
-		 private final Smooth  smooth = new Smooth(freqs.length - 1, 0.05f);
-		 private final float[] power  = new float[smooth.size()];
 
-		 public State(IAudioRenderTarget target) {
-			 super(target);
-		 }
-
-		 void process() throws RenderCommandException {
-			 final IAudioRenderTarget target = getTarget();
-
-			 final float[] spec = spectrum.get(target).power().clone();
-
-			 AudioUtilities.multiplyHarmonics(spec, nHarmonics);
-
-			 for(int band = 0; band < power.length; band++)
-				 power[band] = scales[band] * spectrum.get(target).power(freqs[band], freqs[band+1], spec);
-
-			 smooth.update(target.getTime(), power);			
-		 }
-
-		 public float power(int i) {
-			 return smooth.get(i);
-		 }
-
-		 public float[] power(float[] values) {
-			 return smooth.get(values);
-		 }
+	 public BandsFFT(FFT fft, float ... freqs) {
+		 this(fft, freqs, null);
 	 }
 
-	 public BandsFFT(StateHandle<FFT.State> fftState, float ... freqs) {
-		 this(fftState, freqs, null);
-	 }
-
-	 public BandsFFT(StateHandle<FFT.State> fftState, float[] freqs, float[] scales) {
+	 public BandsFFT(FFT fft, float[] freqs, float[] scales) {
 		 this.freqs    = freqs.clone();
 		 this.scales   = new float[freqs.length - 1];
-		 this.spectrum = fftState;
+		 this.spectrum = fft;
 		 if(scales == null)
 			 Arrays.fill(this.scales, 1f);
 		 else
 			 System.arraycopy(scales, 0, this.scales, 0, Math.min(this.scales.length, scales.length));
 	 }
 
-	 public BandsFFT(StateHandle<FFT.State> fftState, float low, float high, int nBands, Div bands) {
+	 public BandsFFT(FFT fft, float low, float high, int nBands, Div bands) {
 		 this.freqs    = new float[nBands+1];
 		 this.scales   = new float[nBands];
-		 this.spectrum = fftState;
+		 this.spectrum = fft;
 		 switch(bands) {
 		 case LINEAR:
 			 float delta = (high - low) / nBands;
@@ -120,6 +91,12 @@ import ch.fhnw.ether.media.StateHandle;
 		 }
 	 }
 
+	 @Override
+	 protected void init(IAudioRenderTarget target) throws RenderCommandException {
+		 smooth = new Smooth(freqs.length - 1, 0.05f);
+		 power  = new float[smooth.size()];
+	 }
+
 	 public void setHarmonics(int nHarmonics) {
 		 this.nHarmonics = nHarmonics;
 	 }
@@ -129,12 +106,22 @@ import ch.fhnw.ether.media.StateHandle;
 	 }
 
 	 @Override
-	 protected void run(State state) throws RenderCommandException {
-		 state.process();
+	 protected void run(final IAudioRenderTarget target) throws RenderCommandException {
+		 final float[] spec = spectrum.power().clone();
+
+		 AudioUtilities.multiplyHarmonics(spec, nHarmonics);
+
+		 for(int band = 0; band < power.length; band++)
+			 power[band] = scales[band] * spectrum.power(freqs[band], freqs[band+1], spec);
+
+		 smooth.update(target.getTime(), power);			
 	 }	
 
-	 @Override
-	 protected State createState(IAudioRenderTarget target) throws RenderCommandException {
-		 return new State(target);
+	 public float power(int i) {
+		 return smooth.get(i);
+	 }
+
+	 public float[] power(float[] values) {
+		 return smooth.get(values);
 	 }
  }

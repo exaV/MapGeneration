@@ -43,10 +43,9 @@ import javax.sound.sampled.TargetDataLine;
 
 import ch.fhnw.ether.media.Parameter;
 import ch.fhnw.ether.media.RenderCommandException;
-import ch.fhnw.ether.media.Stateless;
 import ch.fhnw.util.Pair;
 
-public class JavaSoundSource extends AbstractAudioSource<Stateless<IAudioRenderTarget>> implements Runnable {
+public class JavaSoundSource extends AbstractAudioSource implements Runnable {
 	private static final float       S2F    = Short.MAX_VALUE;
 
 	private final float sampleRate;
@@ -94,7 +93,7 @@ public class JavaSoundSource extends AbstractAudioSource<Stateless<IAudioRenderT
 	}
 
 	@Override
-	protected void run(Stateless<IAudioRenderTarget> state) throws RenderCommandException {
+	protected void run(final IAudioRenderTarget target) throws RenderCommandException {
 		if(lastErr != null) throw new RenderCommandException(lastErr);
 		int pSrc = (int) getVal(SOURCE);
 		if(source != pSrc) {
@@ -116,7 +115,7 @@ public class JavaSoundSource extends AbstractAudioSource<Stateless<IAudioRenderT
 		}
 		try {
 			while(data.size() > 4) data.take();
-			state.getTarget().setFrame(createAudioFrame(samples, data.take()));
+			target.setFrame(createAudioFrame(samples, data.take()));
 		} catch(InterruptedException e) {
 			throw new RenderCommandException(e);
 		}

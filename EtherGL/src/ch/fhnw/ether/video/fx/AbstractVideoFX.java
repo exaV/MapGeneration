@@ -35,13 +35,12 @@ import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.image.RGBA8Frame;
 import ch.fhnw.ether.media.AbstractRenderCommand;
 import ch.fhnw.ether.media.Parameter;
-import ch.fhnw.ether.media.PerTargetState;
 import ch.fhnw.ether.media.RenderCommandException;
 import ch.fhnw.ether.video.IVideoRenderTarget;
 import ch.fhnw.ether.video.VideoFrame;
 import ch.fhnw.util.TextUtilities;
 
-public abstract class AbstractVideoFX<S extends PerTargetState<IVideoRenderTarget>> extends AbstractRenderCommand<IVideoRenderTarget, S> {
+public abstract class AbstractVideoFX extends AbstractRenderCommand<IVideoRenderTarget> {
 	protected final Frame EMPTY = new RGBA8Frame(1,1);
 	
 	protected long                        frame;
@@ -78,12 +77,12 @@ public abstract class AbstractVideoFX<S extends PerTargetState<IVideoRenderTarge
 	}
 	
 	@Override
-	protected final void run(S state) throws RenderCommandException {
-		VideoFrame frame = state.getTarget().getFrame();
-		processFrame(frame.playOutTime, state, frame.frame);
+	protected final void run(IVideoRenderTarget target) throws RenderCommandException {
+		VideoFrame frame = target.getFrame();
+		processFrame(frame.playOutTime, target, frame.frame);
 	}
 	
-	protected abstract void processFrame(double playOutTime, S state, Frame frame);
+	protected abstract void processFrame(double playOutTime, IVideoRenderTarget target, Frame frame);
 	
 	@Override
 	public String toString() {

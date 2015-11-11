@@ -30,7 +30,6 @@
 package ch.fhnw.ether.media;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -40,17 +39,17 @@ import ch.fhnw.util.IDisposable;
 import ch.fhnw.util.IdentityHashSet;
 import ch.fhnw.util.Log;
 
-public class RenderProgram<T extends IRenderTarget> extends AbstractRenderCommand<T,RenderProgram.State<T>> {
+public class RenderProgram<T extends IRenderTarget> extends AbstractRenderCommand<T> {
 	private static Log log = Log.create();
 
-	private final List<IRenderTarget> targets = new LinkedList<>();
+	private final AtomicReference<T> target = new AtomicReference<>();
 
 	static class Update {
-		final AbstractRenderCommand<?,?> oldCmd;
-		final AbstractRenderCommand<?,?> newCmd;
-		final boolean                    first;
+		final AbstractRenderCommand<?> oldCmd;
+		final AbstractRenderCommand<?> newCmd;
+		final boolean                  first;
 
-		Update(AbstractRenderCommand<?,?> oldCmd, AbstractRenderCommand<?,?> newCmd, boolean first) {
+		Update(AbstractRenderCommand<?> oldCmd, AbstractRenderCommand<?> newCmd, boolean first) {
 			this.oldCmd = oldCmd;
 			this.newCmd = newCmd;
 			this.first  = first;
@@ -68,68 +67,67 @@ public class RenderProgram<T extends IRenderTarget> extends AbstractRenderComman
 			return newCmd == null && oldCmd != null;
 		}
 
-		void add(List<AbstractRenderCommand<?,?>> program) {
+		void add(List<AbstractRenderCommand<?>> program) {
 			if(first)
 				program.add(0, newCmd);
 			else
 				program.add(newCmd);
 		}
 
-		void replace(List<AbstractRenderCommand<?,?>> program) {
+		void replace(List<AbstractRenderCommand<?>> program) {
 			program.set(program.indexOf(oldCmd), newCmd);
 		}
 
-		void remove(List<AbstractRenderCommand<?,?>> program) {
+		void remove(List<AbstractRenderCommand<?>> program) {
 			program.remove(oldCmd);
 		}
 	}
 
-	private final AtomicReference<AbstractRenderCommand<T,?>[]> program   = new AtomicReference<>();
-	private final List<IRenderProgramListener>                  listeners = new ArrayList<>();
+	private final AtomicReference<AbstractRenderCommand<T>[]> program   = new AtomicReference<>();
 
 	@SafeVarargs
-	public RenderProgram(AbstractFrameSource<T,?> source, AbstractRenderCommand<T,?> ... commands) {
+	public RenderProgram(AbstractFrameSource<T> source, AbstractRenderCommand<T> ... commands) {
 		program.set(ArrayUtilities.prepend(source, commands));
 	}
 
-	public Update createAddFirst(AbstractRenderCommand<T,?> cmd) {
+	public Update createAddFirst(AbstractRenderCommand<T> cmd) {
 		return new Update(null, cmd, true);
 	}
 
-	public Update createAddLast(AbstractRenderCommand<T,?> cmd) {
+	public Update createAddLast(AbstractRenderCommand<T> cmd) {
 		return new Update(null, cmd, false);
 	}
 
-	public Update createRemove(AbstractRenderCommand<T,?> cmd) {
+	public Update createRemove(AbstractRenderCommand<T> cmd) {
 		return new Update(cmd, null, false);
 	}
 
-	public Update createReplace(AbstractRenderCommand<T,?> oldCmd, AbstractRenderCommand<T,?> newCmd) {
+	public Update createReplace(AbstractRenderCommand<T> oldCmd, AbstractRenderCommand<T> newCmd) {
 		return new Update(oldCmd, newCmd, false);
 	}
 
-	public void addFirst(AbstractRenderCommand<T,?> cmd) {
+	public void addFirst(AbstractRenderCommand<T> cmd) {
 		update(createAddFirst(cmd));
 	}
 
-	public void addLast(AbstractRenderCommand<T,?> cmd) {
+	public void addLast(AbstractRenderCommand<T> cmd) {
 		update(createAddLast(cmd));
 	}
 
-	public void remove(AbstractRenderCommand<T,?> cmd) {
+	public void remove(AbstractRenderCommand<T> cmd) {
 		update(createRemove(cmd));
 	}
 
-	public void replace(AbstractFrameSource<T, ?> source) {
+	public void replace(AbstractFrameSource<T> source) {
 		update(createReplace(program.get()[0], source)) ; 
 	}
 
-	public void replace(AbstractRenderCommand<T,?> oldCmd, AbstractRenderCommand<T,?> newCmd) {
+	public void replace(AbstractRenderCommand<T> oldCmd, AbstractRenderCommand<T> newCmd) {
 		update(createReplace(oldCmd, newCmd)) ; 
 	}
 
 	public void update(Update ... updates) {
-		List<AbstractRenderCommand<?,?>> tmp = new ArrayList<>(program.get().length + updates.length);
+		List<AbstractRenderCommand<?>> tmp = new ArrayList<>(program.get().length + updates.length);
 		CollectionUtilities.addAll(tmp, program.get());
 
 		for(Update update : updates) {
@@ -145,81 +143,65 @@ public class RenderProgram<T extends IRenderTarget> extends AbstractRenderComman
 	}
 
 	@SuppressWarnings("unchecked")
-	private synchronized void setProgram(List<AbstractRenderCommand<?,?>> program) {
-		AbstractRenderCommand<T,?>[] oldProgram = this.program.get(); 
-		AbstractRenderCommand<T,?>[] newProgram = program.toArray(new AbstractRenderCommand[program.size()]);
+	private synchronized void setProgram(List<AbstractRenderCommand<?>> program) {
+		AbstractRenderCommand<T>[] oldProgram = this.program.get(); 
+		AbstractRenderCommand<T>[] newProgram = program.toArray(new AbstractRenderCommand[program.size()]);
 
-		final IdentityHashSet<AbstractRenderCommand<T,?>> removed = new IdentityHashSet<>(oldProgram);		
+		final IdentityHashSet<AbstractRenderCommand<T>> removed = new IdentityHashSet<>(oldProgram);		
 		removed.removeAll(new IdentityHashSet<>(newProgram));
 
 		new Thread(()->{
 			try {
-				 // Give all targets some time to switch to the changed program
+				// Give all targets some time to switch to the changed program
 				// before disposing any commands. Very hacky...
 				Thread.sleep(500);
 			} catch (Throwable t) {}
-			for(AbstractRenderCommand<T,?> cmd : removed) {
-				IRenderTarget[] ts = null;
-				synchronized (targets) {ts = targets.toArray(new IRenderTarget[targets.size()]);}
-				for(IRenderTarget target : ts) {
-					try {
-						PerTargetState<?> state = target.getState(cmd);
-						if(state instanceof IDisposable)
-							((IDisposable)state).dispose();
-					} catch(Throwable t) {
-						log.warning(t);
-					}
+			for(AbstractRenderCommand<T> cmd : removed) {
+				try {
+					if(cmd instanceof IDisposable)
+						((IDisposable)cmd).dispose();
+				} catch(Throwable t) {
+					log.warning(t);
 				}
 			}
 		}, "disposing:" + removed).start();
 
-		for(IRenderProgramListener l : listeners)
-			l.programChanged(this, oldProgram, newProgram);
 		this.program.set(newProgram);
 	}
 
-	@Override
-	protected void run(State<T> state) throws RenderCommandException {
-		final T target = state.getTarget();
-		AbstractRenderCommand<T,?>[] commands = program.get(); 
-		for(AbstractRenderCommand<T,?> command : commands)
-			command.runInternal(target);
+	protected void run() throws RenderCommandException {
+		AbstractRenderCommand<T>[] commands = program.get(); 
+		for(AbstractRenderCommand<T> command : commands)
+			command.run(target.get());
 	}
 
-	@Override
-	protected State<T> createState(T target) {
-		return new State<>(target);
-	}
 
-	static class State<T extends IRenderTarget> extends PerTargetState<T> {
-		public State(T target) {
-			super(target);
-		}
-	}
-
-	public AbstractRenderCommand<T, ?>[] getProgram() {
+	public AbstractRenderCommand<T>[] getProgram() {
 		return program.get();
 	}
 
-	public synchronized void addListener(IRenderProgramListener listener) {
-		CollectionUtilities.addIfUnique(listeners, listener);
-	}
-
-	public synchronized void removeListener(IRenderProgramListener listener) {
-		CollectionUtilities.removeAll(listeners, listener);
-	}
-
-	public AbstractFrameSource<T, ?> getFrameSource() {
-		AbstractRenderCommand<T,?>[] commands = program.get(); 
-		for(AbstractRenderCommand<T,?> command : commands)
+	public AbstractFrameSource<T> getFrameSource() {
+		AbstractRenderCommand<T>[] commands = program.get(); 
+		for(AbstractRenderCommand<T> command : commands)
 			if(command instanceof AbstractFrameSource)
-				return (AbstractFrameSource<T, ?>) command;
+				return (AbstractFrameSource<T>) command;
 		return null;
 	}
 
-	public void addTarget(IRenderTarget target) {
-		synchronized (targets) {
-			targets.add(target);
-		}
+	public void setTarget(T target) throws RenderCommandException {
+		this.target.set(target);
+		AbstractRenderCommand<T>[] commands = program.get(); 
+		for(AbstractRenderCommand<T> command : commands)
+			command.init(target);
+	}
+
+	@Override
+	protected void run(IRenderTarget target) throws RenderCommandException {
+		run();
+	}
+
+	@Override
+	protected void init(T target) throws RenderCommandException {
+		setTarget(target);
 	}
 }

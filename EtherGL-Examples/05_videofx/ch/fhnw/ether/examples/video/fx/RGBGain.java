@@ -31,11 +31,10 @@ package ch.fhnw.ether.examples.video.fx;
 
 import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.media.Parameter;
-import ch.fhnw.ether.media.Stateless;
 import ch.fhnw.ether.video.IVideoRenderTarget;
 import ch.fhnw.ether.video.fx.AbstractVideoFX;
 
-public class RGBGain extends AbstractVideoFX<Stateless<IVideoRenderTarget>> {
+public class RGBGain extends AbstractVideoFX {
 	private static final Parameter RED   = new Parameter("red",   "Red Gain",   0, 2, 1);
 	private static final Parameter GREEN = new Parameter("green", "Green Gain", 0, 2, 1);
 	private static final Parameter BLUE  = new Parameter("blue",  "Blue Gain",  0, 2, 1);
@@ -45,7 +44,7 @@ public class RGBGain extends AbstractVideoFX<Stateless<IVideoRenderTarget>> {
 	}
 
 	@Override
-	protected void processFrame(double playOutTime, Stateless<IVideoRenderTarget> state, Frame frame) {
+	protected void processFrame(final double playOutTime, final IVideoRenderTarget target, final Frame frame) {
 		final float rs = getVal(RED);
 		final float gs = getVal(GREEN);
 		final float bs = getVal(BLUE);

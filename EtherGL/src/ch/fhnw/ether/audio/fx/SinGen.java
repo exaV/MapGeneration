@@ -34,9 +34,8 @@ import ch.fhnw.ether.audio.IAudioRenderTarget;
 import ch.fhnw.ether.media.AbstractRenderCommand;
 import ch.fhnw.ether.media.Parameter;
 import ch.fhnw.ether.media.RenderCommandException;
-import ch.fhnw.ether.media.Stateless;
 
-public class SinGen extends AbstractRenderCommand<IAudioRenderTarget, Stateless<IAudioRenderTarget>> {
+public class SinGen extends AbstractRenderCommand<IAudioRenderTarget> {
 	private static final double PI2 = Math.PI * 2;
 
 	private static final Parameter GAIN  = new Parameter("gain",  "Gain",        0, 1,          0.5f);
@@ -51,8 +50,8 @@ public class SinGen extends AbstractRenderCommand<IAudioRenderTarget, Stateless<
 	}
 
 	@Override
-	protected void run(Stateless<IAudioRenderTarget> state) throws RenderCommandException {
-		final AudioFrame frame     = state.getTarget().getFrame();
+	protected void run(final IAudioRenderTarget target) throws RenderCommandException {
+		final AudioFrame frame     = target.getFrame();
 		final float      gain      = getVal(GAIN);
 		final float      f         = getVal(F);
 		final double     phi       = getVal(PHI);

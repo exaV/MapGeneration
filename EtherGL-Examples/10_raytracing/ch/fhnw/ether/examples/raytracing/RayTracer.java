@@ -38,7 +38,6 @@ import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.image.RGBA8Frame;
 import ch.fhnw.ether.media.AbstractFrame;
 import ch.fhnw.ether.media.RenderCommandException;
-import ch.fhnw.ether.media.Stateless;
 import ch.fhnw.ether.scene.camera.Camera;
 import ch.fhnw.ether.scene.camera.ICamera;
 import ch.fhnw.ether.scene.light.ILight;
@@ -52,7 +51,7 @@ import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.Line;
 
-public class RayTracer extends AbstractVideoSource<Stateless<IVideoRenderTarget>>{
+public class RayTracer extends AbstractVideoSource {
 	private static final Log log = Log.create();
 	
 	private static final RGBA BACKGROUND_COLOR   = RGBA.WHITE;
@@ -157,7 +156,7 @@ public class RayTracer extends AbstractVideoSource<Stateless<IVideoRenderTarget>
 	}
 
 	@Override
-	protected void run(Stateless<IVideoRenderTarget> state) throws RenderCommandException {
+	protected void run(final IVideoRenderTarget target) throws RenderCommandException {
 		if(lights.isEmpty()) return;
 
 		RGBA8Frame frame = new RGBA8Frame(w, h);
@@ -191,7 +190,7 @@ public class RayTracer extends AbstractVideoSource<Stateless<IVideoRenderTarget>
 			}
 		});
 
-		state.getTarget().setFrame(new VideoFrame(AbstractFrame.ASAP, frame));
+		target.setFrame(new VideoFrame(AbstractFrame.ASAP, frame));
 	}
 
 	public void setLights(List<ILight> lights) {

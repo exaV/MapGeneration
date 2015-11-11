@@ -35,104 +35,43 @@ import java.net.URL;
 import javax.imageio.ImageIO;
 
 import ch.fhnw.ether.image.Frame;
-import ch.fhnw.ether.media.PerTargetState;
 import ch.fhnw.ether.media.RenderCommandException;
-import ch.fhnw.ether.video.avfoundation.AVAsset;
-import ch.fhnw.ether.video.jcodec.SequentialVideoTrack;
-import ch.fhnw.util.Log;
 import ch.fhnw.util.TextUtilities;
 
-public class URLVideoSource extends AbstractVideoSource<URLVideoSource.State> {
-	private static final Log log = Log.create();
-	
-	private static final boolean USE_AV_FOUNDATION = true;
+public class URLVideoSource extends AbstractVideoSource {
+	private int         width;
+	private int         height;
+	private double      frameRate  = FRAMERATE_UNKNOWN;
+	private long        frameCount = FRAMECOUNT_UNKNOWN;
+	protected final URL url;
+	protected double    playOutTime;
+	protected int       numPlays;
+	protected double    startTime = -1;
+	private final Frame frame;
 
-	private final URL    url;
-	private final int    numPlays;
-	private int          width;
-	private int          height;
-	private double       frameRate  = FRAMERATE_UNKNOWN;
-	private long         frameCount = FRAMECOUNT_UNKNOWN;
-
-	public URLVideoSource(URL url) {
+	public URLVideoSource(URL url) throws IOException {
 		this(url, Integer.MAX_VALUE);
 	}
 
-	public URLVideoSource(URL url, int numPlays) {
+	public URLVideoSource(URL url, int numPlays) throws IOException {
 		this.url      = url;
 		this.numPlays = numPlays;
-		try {
-			createState(null);
-		} catch(Throwable t) {
-			log.warning(t);
-		}
+		this.frame    = Frame.create(url);
 	}
 
 	@Override
-	protected void run(State state) throws RenderCommandException {
-		state.runInternal();
+	protected void run(IVideoRenderTarget target) throws RenderCommandException {
+		if(startTime <= 0)
+			startTime = target.getTime();
+		target.setFrame(new VideoFrame(startTime + getPlayOutTime(), getNextFrame()));
 	}
 
-	public static class State extends PerTargetState<IVideoRenderTarget> {
-		protected final URL url;
-		protected double    playOutTime;
-		protected int       numPlays;
-		protected double    startTime = -1;
-		private final Frame frame;
-
-		State(IVideoRenderTarget target, URL url) throws IOException {
-			super(target);
-			this.frame    = Frame.create(url);
-			this.url      = url;
-			this.numPlays = 0;
-		}
-
-		protected State(IVideoRenderTarget target, URL url, int numPlays) {
-			super(target);
-			this.frame    = null;
-			this.url      = url;
-			this.numPlays = numPlays;
-		}
-
-		public double getPlayOutTime() {
-			return playOutTime;
-		}
-
-		public void runInternal() {
-			if(startTime <= 0)
-				startTime = getTarget().getTime();
-			getTarget().setFrame(new VideoFrame(startTime + getPlayOutTime(), getNextFrame()));
-		}
-
-		protected Frame getNextFrame() {
-			return frame;
-		}
-		protected int getWidth() {
-			return frame.dimI;
-		}
-		protected int getHeight() {
-			return frame.dimJ;
-		}
-		protected double getFrameRate() {
-			return FRAMERATE_UNKNOWN;
-		}
-		protected long getFrameCount() {
-			return 1;
-		}
+	public double getPlayOutTime() {
+		return playOutTime;
 	}
 
-	@Override
-	protected State createState(IVideoRenderTarget target) throws RenderCommandException {
-		try {
-			State result = isStillImage(url) ? new State(target, url) : USE_AV_FOUNDATION ? new AVAsset(target, url, numPlays) : new SequentialVideoTrack(target, url, numPlays);
-			width      = result.getWidth();
-			height     = result.getHeight();
-			frameRate  = result.getFrameRate();
-			frameCount = result.getFrameCount();
-			return result;
-		} catch(Throwable t) {
-			throw new RenderCommandException(t);
-		}
+	protected Frame getNextFrame() {
+		return frame;
 	}
 
 	public static boolean isStillImage(URL url) {
@@ -162,5 +101,45 @@ public class URLVideoSource extends AbstractVideoSource<URLVideoSource.State> {
 	@Override
 	public long getFrameCount() {
 		return frameCount;
+	}
+	
+	public static class Track {
+		protected final URL url;
+		protected double    playOutTime;
+		protected int       numPlays;
+		protected double    startTime = -1;
+		private final Frame frame;
+
+		Track(URL url) throws IOException {
+			this.frame    = Frame.create(url);
+			this.url      = url;
+			this.numPlays = 0;
+		}
+
+		protected Track(URL url, int numPlays) {
+			this.frame    = null;
+			this.url      = url;
+			this.numPlays = numPlays;
+		}
+
+		public double getPlayOutTime() {
+			return playOutTime;
+		}
+
+		protected Frame getNextFrame() {
+			return frame;
+		}
+		protected int getWidth() {
+			return frame.dimI;
+		}
+		protected int getHeight() {
+			return frame.dimJ;
+		}
+		protected double getFrameRate() {
+			return FRAMERATE_UNKNOWN;
+		}
+		protected long getFrameCount() {
+			return 1;
+		}
 	}
 }

@@ -27,84 +27,76 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */package ch.fhnw.ether.audio.fx;
 
-import ch.fhnw.ether.audio.AudioFrame;
+ import ch.fhnw.ether.audio.AudioFrame;
 import ch.fhnw.ether.audio.AudioUtilities;
 import ch.fhnw.ether.audio.IAudioRenderTarget;
 import ch.fhnw.ether.media.AbstractRenderCommand;
 import ch.fhnw.ether.media.Parameter;
-import ch.fhnw.ether.media.PerTargetState;
 import ch.fhnw.ether.media.RenderCommandException;
 
-public class AutoGain extends AbstractRenderCommand<IAudioRenderTarget,AutoGain.State> {
-	private static final Parameter TARGET  = new Parameter("gain",    "Gain [dB]", -120, 0,  -10);
-	private static final Parameter ATTACK  = new Parameter("attack",  "Attack",       0, 1,   0.3f);
-	private static final Parameter SUSTAIN = new Parameter("sustain", "Sustain",      0, 10,  5);
-	private static final Parameter DECAY   = new Parameter("decay",   "Decay",        0, 1,   0.1f);
-	
-	private final static double MAX2AVG      = 0.5;
-	private static final double SMOOTH_DELAY = 0.1;
-	private static final double MIN_LEVEL    = AudioUtilities.dbToLevel(-40.0);
-	private static final double ACCURACY     = AudioUtilities.dbToLevel(1.0); // Width of 'void' range, where no correction occurs
+ public class AutoGain extends AbstractRenderCommand<IAudioRenderTarget> {
+	 private static final Parameter TARGET  = new Parameter("gain",    "Gain [dB]", -120, 0,  -10);
+	 private static final Parameter ATTACK  = new Parameter("attack",  "Attack",       0, 1,   0.3f);
+	 private static final Parameter SUSTAIN = new Parameter("sustain", "Sustain",      0, 10,  5);
+	 private static final Parameter DECAY   = new Parameter("decay",   "Decay",        0, 1,   0.1f);
 
-	public class State extends PerTargetState<IAudioRenderTarget> {
+	 private final static double MAX2AVG      = 0.5;
+	 private static final double SMOOTH_DELAY = 0.1;
+	 private static final double MIN_LEVEL    = AudioUtilities.dbToLevel(-40.0);
+	 private static final double ACCURACY     = AudioUtilities.dbToLevel(1.0); // Width of 'void' range, where no correction occurs
 
-		private final GainEngine gainEngine;
-		private float            correction;
-		
-		public State(IAudioRenderTarget target) {
-			super(target);
-			gainEngine   = new GainEngine(target.getSampleRate(), target.getNumChannels(), SMOOTH_DELAY, getVal(SUSTAIN), getVal(ATTACK), getVal(DECAY), MIN_LEVEL);
-		}
+	 private GainEngine gainEngine;
+	 private float      correction;
 
-		public void process(AudioFrame frame) {
-			gainEngine.setAttackSpeed(getVal(ATTACK));
-			gainEngine.setSustainSpeed(getVal(SUSTAIN));
-			gainEngine.setDecaySpeed(getVal(DECAY));
-			
-			double targetUpper    = AudioUtilities.dbToLevel(getVal(TARGET));
-			double targetLower    = targetUpper / ACCURACY;
-			double thresholdLevel = MIN_LEVEL * MAX2AVG;
+	 public AutoGain() {
+		 super(TARGET, ATTACK, SUSTAIN, DECAY);
+	 }
 
-			gainEngine.process(frame);
+	 @Override
+	protected void init(IAudioRenderTarget target) {
+		 gainEngine   = new GainEngine(target.getSampleRate(), target.getNumChannels(), SMOOTH_DELAY, getVal(SUSTAIN), getVal(ATTACK), getVal(DECAY), MIN_LEVEL);
+	 }
 
-			double gain = gainEngine.getGain();
-			if (gain < thresholdLevel)
-				gain = thresholdLevel;
+	 public void process(AudioFrame frame) {
 
-			float correction = 1.0f;
-			if (gain < targetLower)
-				correction = (float)(targetLower / gain);
-			else if (gain > targetUpper)
-				correction = (float)(gain / targetUpper);
+	 }
 
-			this.correction = correction;
-			final float[] samples = frame.samples;
-			for (int i = 0; i < samples.length; i++)
-				samples[i] *= correction;
-			
-			frame.modified();
-		}
+	 public float gain() {
+		 return correction;
+	 }
 
-		public float gain() {
-			return correction;
-		}
-		
-		public void reset() {
-			gainEngine.reset();
-		}
-	}
+	 public void reset() {
+		 gainEngine.reset();
+	 }
 
-	public AutoGain() {
-		super(TARGET, ATTACK, SUSTAIN, DECAY);
-	}
-	
-	@Override
-	protected void run(AutoGain.State state) throws RenderCommandException {
-		state.process(state.getTarget().getFrame());
-	}
-	
-	@Override
-	public State createState(IAudioRenderTarget target) throws RenderCommandException {
-		return new State(target);
-	}
-}
+	 @Override
+	 protected void run(final IAudioRenderTarget target) throws RenderCommandException {
+		 final AudioFrame frame = target.getFrame();
+		 
+		 gainEngine.setAttackSpeed(getVal(ATTACK));
+		 gainEngine.setSustainSpeed(getVal(SUSTAIN));
+		 gainEngine.setDecaySpeed(getVal(DECAY));
+
+		 double targetUpper    = AudioUtilities.dbToLevel(getVal(TARGET));
+		 double targetLower    = targetUpper / ACCURACY;
+		 double thresholdLevel = MIN_LEVEL * MAX2AVG;
+
+		 gainEngine.process(frame);
+
+		 double gain = gainEngine.getGain();
+		 if (gain < thresholdLevel)
+			 gain = thresholdLevel;
+
+		 float correction = 1.0f;
+		 if (gain < targetLower)
+			 correction = (float)(targetLower / gain);
+		 else if (gain > targetUpper)
+			 correction = (float)(gain / targetUpper);
+
+		 this.correction = correction;
+		 final float[] samples = frame.samples;
+		 for (int i = 0; i < samples.length; i++)
+			 samples[i] *= correction;
+
+		 frame.modified(); }
+ }

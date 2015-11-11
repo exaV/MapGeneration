@@ -33,13 +33,12 @@ import java.nio.ByteBuffer;
 
 import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.media.Parameter;
-import ch.fhnw.ether.media.Stateless;
 import ch.fhnw.ether.video.IVideoRenderTarget;
 import ch.fhnw.ether.video.fx.AbstractVideoFX;
 import ch.fhnw.util.color.ColorUtilities;
 
 
-public class ChromaKey extends AbstractVideoFX<Stateless<IVideoRenderTarget>> {
+public class ChromaKey extends AbstractVideoFX {
 	private static final Parameter HUE    = new Parameter("hue",   "Hue",                0, 1,    0.5f);
 	private static final Parameter RANGE  = new Parameter("range", "Color Range",        0, 0.5f, 0.1f);
 	private static final Parameter S_MIN  = new Parameter("sMin",  "Saturation Minimum", 0, 1,    0.1f);
@@ -53,7 +52,7 @@ public class ChromaKey extends AbstractVideoFX<Stateless<IVideoRenderTarget>> {
 	}
 
 	@Override
-	protected void processFrame(double playOutTime, Stateless<IVideoRenderTarget> state, Frame frame) {
+	protected void processFrame(final double playOutTime, final IVideoRenderTarget target, final Frame frame) {
 		final float h  = getVal(HUE);
 		final float r  = getVal(RANGE);
 		final float s  = getVal(S_MIN);

@@ -31,11 +31,10 @@ package ch.fhnw.ether.examples.video.fx;
 
 import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.media.Parameter;
-import ch.fhnw.ether.media.Stateless;
 import ch.fhnw.ether.video.IVideoRenderTarget;
 import ch.fhnw.ether.video.fx.AbstractVideoFX;
 
-public class Posterize extends AbstractVideoFX<Stateless<IVideoRenderTarget>> {
+public class Posterize extends AbstractVideoFX {
 	private static final Parameter MASK = new Parameter("mask", "Bit Mask", 0, 7, 0);
 
 	public Posterize() {
@@ -43,7 +42,7 @@ public class Posterize extends AbstractVideoFX<Stateless<IVideoRenderTarget>> {
 	}
 
 	@Override
-	protected void processFrame(double playOutTime, Stateless<IVideoRenderTarget> state, Frame frame) {
+	protected void processFrame(final double playOutTime, final IVideoRenderTarget target, final Frame frame) {
 		final int mask = 0xFF << (int)getVal(MASK);
 
 		if(frame.pixelSize == 4) {

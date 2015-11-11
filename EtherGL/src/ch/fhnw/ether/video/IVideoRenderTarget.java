@@ -30,8 +30,9 @@
 package ch.fhnw.ether.video;
 
 import ch.fhnw.ether.media.IRenderTarget;
+import ch.fhnw.ether.media.IScheduler;
 
-public interface IVideoRenderTarget extends IRenderTarget {
+public interface IVideoRenderTarget extends IRenderTarget, IScheduler {
 	void       setFrame(VideoFrame frame);
 	VideoFrame getFrame();
 }

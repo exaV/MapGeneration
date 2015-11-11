@@ -34,14 +34,13 @@ import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.github.sarxos.webcam.Webcam;
+
 import ch.fhnw.ether.image.RGB8Frame;
 import ch.fhnw.ether.media.AbstractFrame;
 import ch.fhnw.ether.media.RenderCommandException;
-import ch.fhnw.ether.media.Stateless;
 
-import com.github.sarxos.webcam.Webcam;
-
-public class CameraSource extends AbstractVideoSource<Stateless<IVideoRenderTarget>> {
+public class CameraSource extends AbstractVideoSource {
 	private static final Method getFPS = getMethod("getFPS");
 
 	private final Webcam                cam;
@@ -67,7 +66,7 @@ public class CameraSource extends AbstractVideoSource<Stateless<IVideoRenderTarg
 	}
 
 	@Override
-	protected void run(Stateless<IVideoRenderTarget> state) throws RenderCommandException {
+	protected void run(IVideoRenderTarget target) throws RenderCommandException {
 		if(!(cam.isOpen())) return;
 		Dimension size  = cam.getViewSize();
 		RGB8Frame frame = new RGB8Frame(size.width, size.height);
@@ -82,7 +81,7 @@ public class CameraSource extends AbstractVideoSource<Stateless<IVideoRenderTarg
 				dst.put(src.get());
 			}
 		}
-		state.getTarget().setFrame(new VideoFrame(AbstractFrame.ASAP, frame));
+		target.setFrame(new VideoFrame(AbstractFrame.ASAP, frame));
 	}
 
 	public void setSize(int width, int height) {

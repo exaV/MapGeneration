@@ -32,14 +32,6 @@ package ch.fhnw.ether.media;
 
 
 public interface IRenderTarget {
-	double NOT_RENDERING = -1;
-
-	boolean                   isRendering();
-	void                      start() throws RenderCommandException;
-	void                      render() throws RenderCommandException;
-	void                      stop() throws RenderCommandException;
-	PerTargetState<?>         getState(AbstractRenderCommand<?,?> cmd) throws RenderCommandException;
-	void                      sleepUntil(double time);
-	double                    getTime();
-	AbstractFrameSource<?, ?> getFrameSource();
+	void                   render() throws RenderCommandException;
+	AbstractFrameSource<?> getFrameSource();
 }

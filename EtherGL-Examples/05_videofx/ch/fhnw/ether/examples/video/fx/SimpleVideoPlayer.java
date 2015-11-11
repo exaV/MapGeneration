@@ -52,8 +52,8 @@ public class SimpleVideoPlayer {
 		URLVideoSource track    = new URLVideoSource(new File(args[0]).toURI().toURL());
 		URLVideoSource mask     = args.length > 1 ? new URLVideoSource(new File(args[1]).toURI().toURL()) : null;
 		AWTFrameTarget videoOut = new AWTFrameTarget();
-	
-		List<AbstractVideoFX<?>> fxs = CollectionUtilities.asList(
+
+		List<AbstractVideoFX> fxs = CollectionUtilities.asList(
 				new AnalogTVFX(),
 				new BandPass(),
 				new Convolution(),
@@ -62,7 +62,7 @@ public class SimpleVideoPlayer {
 				new MotionBlur(),
 				new Posterize(),
 				new RGBGain());
-		
+
 		AtomicInteger current = new AtomicInteger(0);
 
 		if(mask != null) {
@@ -71,11 +71,11 @@ public class SimpleVideoPlayer {
 			fxs.add(new ChromaKey(maskOut));
 			maskOut.start();
 		}
-		
+
 		final RenderProgram<IVideoRenderTarget> program = new RenderProgram<>(track, fxs.get(current.get()));
 
-		final JComboBox<AbstractVideoFX<?>> fxsUI = new JComboBox<>();
-		for(AbstractVideoFX<?> fx : fxs)
+		final JComboBox<AbstractVideoFX> fxsUI = new JComboBox<>();
+		for(AbstractVideoFX fx : fxs)
 			fxsUI.addItem(fx);
 		fxsUI.addActionListener(e->{
 			int newIdx = fxsUI.getSelectedIndex();

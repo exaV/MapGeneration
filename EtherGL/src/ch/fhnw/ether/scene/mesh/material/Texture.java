@@ -29,6 +29,7 @@
 
 package ch.fhnw.ether.scene.mesh.material;
 
+import java.io.IOException;
 import java.net.URL;
 
 import ch.fhnw.ether.image.Frame;
@@ -65,25 +66,25 @@ public class Texture extends AbstractMediaTarget<VideoFrame, IVideoRenderTarget>
 		setData(frame);
 	}
 
-	public Texture(URL url) {
+	public Texture(URL url) throws IOException {
 		this(url, true);
 	}
 
-	public Texture(URL url, boolean autoStart) {
+	public Texture(URL url, boolean autoStart) throws IOException {
 		super(Thread.MIN_PRIORITY);
 		setData(url);
 	}
 
-	public Texture(AbstractVideoSource<?> source) {
+	public Texture(AbstractVideoSource source) {
 		this(source, true);
 	}
 
-	public Texture(AbstractVideoSource<?> source, boolean autoStart) {
+	public Texture(AbstractVideoSource source, boolean autoStart) {
 		super(Thread.MIN_PRIORITY);
 		setData(source);
 	}
 
-	public void setData(URL url) {
+	public void setData(URL url) throws IOException {
 		if(URLVideoSource.isStillImage(url)) {
 			try {
 				setData(Frame.create(url));
@@ -95,7 +96,7 @@ public class Texture extends AbstractMediaTarget<VideoFrame, IVideoRenderTarget>
 			setData(new URLVideoSource(url));
 	}
 
-	public void setData(AbstractVideoSource<?> source) {
+	public void setData(AbstractVideoSource source) {
 		try {
 			singleFrame = null;
 			useProgram(new RenderProgram<>(source));

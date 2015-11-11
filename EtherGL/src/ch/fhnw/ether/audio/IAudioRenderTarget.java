@@ -30,10 +30,11 @@
 package ch.fhnw.ether.audio;
 
 import ch.fhnw.ether.media.IRenderTarget;
+import ch.fhnw.ether.media.IScheduler;
 import ch.fhnw.ether.media.RenderCommandException;
 import ch.fhnw.ether.media.RenderProgram;
 
-public interface IAudioRenderTarget extends IRenderTarget {
+public interface IAudioRenderTarget extends IRenderTarget, IScheduler {
 	void       setFrame(AudioFrame frame);
 	AudioFrame getFrame();
 	int        getNumChannels();

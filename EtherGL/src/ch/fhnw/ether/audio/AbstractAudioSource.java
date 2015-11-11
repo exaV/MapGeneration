@@ -31,9 +31,8 @@ package ch.fhnw.ether.audio;
 
 import ch.fhnw.ether.media.AbstractFrameSource;
 import ch.fhnw.ether.media.Parameter;
-import ch.fhnw.ether.media.PerTargetState;
 
-public abstract class AbstractAudioSource<S extends PerTargetState<IAudioRenderTarget>> extends AbstractFrameSource<IAudioRenderTarget, S> {
+public abstract class AbstractAudioSource extends AbstractFrameSource<IAudioRenderTarget> {
 
 	protected AbstractAudioSource(Parameter ... parameters) {
 		super(parameters);

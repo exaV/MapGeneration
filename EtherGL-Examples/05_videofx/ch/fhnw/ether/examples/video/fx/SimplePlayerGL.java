@@ -62,10 +62,10 @@ import ch.fhnw.util.math.Transform;
 public class SimplePlayerGL implements Runnable {
 	private static final float  SCALE  = 3.5f;
 
-	private final AbstractVideoSource<?> source;
-	private final Texture                texture = new Texture(new RGB8Frame(16, 16));
+	private final AbstractVideoSource source;
+	private final Texture             texture = new Texture(new RGB8Frame(16, 16));
 
-	public SimplePlayerGL(AbstractVideoSource<?> source) {
+	public SimplePlayerGL(AbstractVideoSource source) {
 		this.source = source;
 	}
 
@@ -92,7 +92,7 @@ public class SimplePlayerGL implements Runnable {
 	}
 
 	public static void main(String[] args) throws IOException {
-		AbstractVideoSource<?> source;
+		AbstractVideoSource source;
 		if(args.length == 0)
 			source =  CameraSource.create(CameraInfo.getInfos()[0]);
 		else {

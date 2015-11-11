@@ -40,15 +40,14 @@ import org.jcodec.common.SeekableByteChannel;
 
 import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.image.RGB8Frame;
-import ch.fhnw.ether.video.IVideoRenderTarget;
 import ch.fhnw.ether.video.URLVideoSource;
 
-public final class SequentialVideoTrack extends URLVideoSource.State {
+public final class SequentialVideoTrack extends URLVideoSource.Track {
 	private   SeekableByteChannel channel;
 	protected FrameGrab           grab;
 
-	public SequentialVideoTrack(IVideoRenderTarget target, URL url, int numPlays) throws IOException, URISyntaxException {
-		super(target, url, numPlays);
+	public SequentialVideoTrack(URL url, int numPlays) throws IOException, URISyntaxException {
+		super(url, numPlays);
 		this.channel = NIOUtils.readableFileChannel(new File(url.toURI()));
 		try {
 			this.grab    = new FrameGrab(channel);

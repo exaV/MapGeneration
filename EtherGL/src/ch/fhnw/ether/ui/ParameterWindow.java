@@ -75,15 +75,15 @@ public class ParameterWindow {
 	AtomicReference<JFrame> frame = new AtomicReference<>();
 
 	static class ParamUI implements ChangeListener, ActionListener {
-		JLabel                     label;
-		JSlider                    slider;
-		JComboBox<String>          combo;
-		AbstractRenderCommand<?,?> cmd;
-		Parameter                  p;
-		float                      def;
-		Timer                      t;
+		JLabel                   label;
+		JSlider                  slider;
+		JComboBox<String>        combo;
+		AbstractRenderCommand<?> cmd;
+		Parameter                p;
+		float                    def;
+		Timer                    t;
 
-		ParamUI(AbstractRenderCommand<?,?> cmd, Parameter param) {
+		ParamUI(AbstractRenderCommand<?> cmd, Parameter param) {
 			Hashtable<Integer, JLabel> labels = new Hashtable<>();
 			float d = param.getMax() - param.getMin();
 			for(int i = 0; i < NUM_TICKS; i++) {
@@ -160,7 +160,7 @@ public class ParameterWindow {
 		}
 	}
 
-	public ParameterWindow(final AbstractRenderCommand<?,?> src, Flag ... flags) {
+	public ParameterWindow(final AbstractRenderCommand<?> src, Flag ... flags) {
 		this(null, src, flags);
 	}
 
@@ -171,7 +171,7 @@ public class ParameterWindow {
 		return false;
 	}
 
-	public ParameterWindow(final JComponent addOn, final AbstractRenderCommand<?,?> src, Flag ... flags) {
+	public ParameterWindow(final JComponent addOn, final AbstractRenderCommand<?> src, Flag ... flags) {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
@@ -193,7 +193,7 @@ public class ParameterWindow {
 				menu.add(item);
 			}
 
-			JComponent createUI(AbstractRenderCommand<?,?> cmd) {
+			JComponent createUI(AbstractRenderCommand<?> cmd) {
 				if(cmd.getClass().getName().equals(cmd.toString()) && cmd.getParameters().length == 0) {
 					JLabel result = new JLabel(cmd.toString());
 					result.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
@@ -249,27 +249,35 @@ public class ParameterWindow {
 				}
 			}
 
-			JPanel createUIRecr(AbstractRenderCommand<?,?> src) {
+			JPanel createUIRecr(AbstractRenderCommand<?> src) {
 				Insets insets = new Insets(0, 0, 0, 0);
 				JPanel result = new JPanel();
 				result.setLayout(new GridBagLayout());
 				JComponent cmp = createUI(src);
 				int w = 1;
 				if(src instanceof RenderProgram<?>) {
-					RenderProgram<?> program = (RenderProgram<?>)src;
-					program.addListener((prog, oldProgram, newProgram)->{
+					final RenderProgram<?> program = (RenderProgram<?>)src;
+					Timer t = new Timer(40, new ActionListener() {
+						AbstractRenderCommand<?>[] lastProgram = program.getProgram();
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							if(lastProgram != program.getProgram()) {
+								lastProgram = program.getProgram();
 								result.removeAll();
 								int y = 0;
-								for(AbstractRenderCommand<?, ?> cmd : newProgram)
+								for(AbstractRenderCommand<?> cmd : lastProgram)
 									result.add(createUIRecr(cmd), new GridBagConstraints(1, y++, 1, 1, 1.0, 1.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 								Component c = SwingUtilities.getRoot(result);
 								if(c instanceof JFrame)
 									((JFrame)c).pack();
 								else
 									c.validate();
+							}
+						}
 					});
+					t.start();
 					int y = 0;
-					for(AbstractRenderCommand<?, ?> cmd : program.getProgram())
+					for(AbstractRenderCommand<?> cmd : program.getProgram())
 						result.add(createUIRecr(cmd), new GridBagConstraints(1, y++, 1, 1, 1.0, 1.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 				} else {
 					result.add(cmp, new GridBagConstraints(0, 0, w, 1, 1.0, 1.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, insets, 0, 0));
