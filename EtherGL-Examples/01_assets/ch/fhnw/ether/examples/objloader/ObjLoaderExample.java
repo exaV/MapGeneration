@@ -62,9 +62,9 @@ public class ObjLoaderExample {
 			scene.add3DObject(new DirectionalLight(new Vec3(0, 1, 0.5), RGB.BLACK, RGB.BLUE));
 	
 			try {
-				//final URL obj = ObjLoaderExample.class.getResource("fhnw.obj");
+				final URL obj = ObjLoaderExample.class.getResource("fhnw.obj");
 				//final URL obj = new URL("file:///Users/radar/Desktop/aventador/aventador_red.obj");
-				final URL obj = new URL("file:///Users/radar/Desktop/berlin_mitte/berlin_mitte_o2_o3/o2_small.obj");
+				//final URL obj = new URL("file:///Users/radar/Desktop/demopolis/berlin_mitte_o2_o3/o2_small.obj");
 				final List<IMesh> meshes = new ArrayList<>();
 				new ObjReader(obj).getMeshes().forEach(mesh -> meshes.add(mesh));
 				System.out.println("number of meshes before merging: " + meshes.size());
