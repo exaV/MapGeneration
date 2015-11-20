@@ -107,7 +107,7 @@ public abstract class AbstractMaterial implements IMaterial {
 		return attributes;
 	}
 	
-	protected final Object[] data(Object... data) {
+	protected static Object[] data(Object... data) {
 		return data;
 	}
 	
