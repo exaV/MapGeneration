@@ -183,13 +183,14 @@ public class RGBA8Frame extends RGB8Frame {
 	public BufferedImage toBufferedImage() {
 		BufferedImage result = new BufferedImage(dimI, dimJ, BufferedImage.TYPE_INT_ARGB);
 		int[] data = new int[dimI];
-		pixels.clear();
+		final ByteBuffer src = pixels.asReadOnlyBuffer();
+		src.clear();
 		for (int j = dimJ; --j >= 0;) {
 			for (int i = 0; i < data.length; i++) {
-				int tmp = (pixels.get() & 0xFF) << 16;
-				tmp |= (pixels.get() & 0xFF) << 8;
-				tmp |= (pixels.get() & 0xFF);
-				tmp |= (pixels.get() & 0xFF) << 24;
+				int tmp = (src.get() & 0xFF) << 16;
+				tmp |= (src.get() & 0xFF) << 8;
+				tmp |= (src.get() & 0xFF);
+				tmp |= (src.get() & 0xFF) << 24;
 				data[i] = tmp;
 			}
 			result.setRGB(0, j, dimI, 1, data, 0, dimI);

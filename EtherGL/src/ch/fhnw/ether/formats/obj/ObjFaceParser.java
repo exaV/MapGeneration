@@ -27,62 +27,68 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.formats.mtl;
+package ch.fhnw.ether.formats.obj;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+final class ObjFaceParser extends LineParser {
+	private int[] vIndices;
+	private int[] nIndices;
+	private int[] tIndices;
 
-import ch.fhnw.ether.formats.obj.LineParser;
-import ch.fhnw.ether.formats.obj.WavefrontObject;
-
-public class MaterialFileParser extends LineParser {
-	private final MtlLineParserFactory parserFactory;
-
-	public MaterialFileParser(MtlLineParserFactory parserFactory) {
-		this.parserFactory = parserFactory;
+	public ObjFaceParser() {
 	}
 
 	@Override
 	public void parse(WavefrontObject object) {
-		String filename = words[1];
+		parseLine(object, words.length - 1);
+	}
 
-		String pathToMTL = object.getContextfolder() + filename;
+	private void parseLine(WavefrontObject object, int vertexCount) {
+		String[] rawFaces = null;
+		int currentValue;
 
-		InputStream fileInput = this.getClass().getResourceAsStream(pathToMTL);
-		if (fileInput == null) {
-			// Could not find the file in the jar.
-			try {
-				File file = new File(pathToMTL);
-				if (file.exists())
-					fileInput = new FileInputStream(file);
-			} catch (Exception e) {
-				throw new RuntimeException("Error parsing: '" + pathToMTL + "'");
-			}
-		}
+		vIndices = new int[vertexCount];
+		nIndices = null;
+		tIndices = null;
 
-		if (fileInput == null)
-			return;
+		for (int i = 0; i < vertexCount; i++) {
+			rawFaces = words[i + 1].split("/");
 
-		String currentLine = null;
-		try (BufferedReader in = new BufferedReader(new InputStreamReader(fileInput))) {
-			currentLine = null;
-			while ((currentLine = in.readLine()) != null) {
-				LineParser parser = parserFactory.getLineParser(currentLine);
-				if (parser != null) {
-					parser.parse(object);
-					parser.incoporateResults(object);
+			// save vertex
+			vIndices[i] = Integer.parseInt(rawFaces[0]) - 1;
+			if(vIndices[i] < 0) 
+				vIndices[i] = object.getVertices().size() + vIndices[i] + 1;
+			
+			if (rawFaces.length == 1)
+				continue;
+
+			// save texcoords
+			if (!rawFaces[1].equals("")) {
+				currentValue = Integer.parseInt(rawFaces[1]);
+				// This is to compensate the fact that if no texture is
+				// in the obj file, sometimes '1' is put instead of
+				// 'blank' (we find coord1/1/coord3 instead of
+				// coord1//coord3 or coord1/coord3)
+				if (currentValue <= object.getTexCoords().size()) {
+					if (tIndices == null)
+						tIndices = new int[vertexCount];
+					tIndices[i] = currentValue - 1;
 				}
+				if(tIndices[i] < 0) tIndices[i] = object.getTexCoords().size() + tIndices[i] + 1;
 			}
-		} catch (Exception e) {
-			throw new RuntimeException("Error parsing: '" + pathToMTL + "' on line " + currentLine);
-		}
+			
+			if (rawFaces.length == 2)
+				continue;
 
+			// save normal
+			if (nIndices == null)
+				nIndices = new int[vertexCount];
+			nIndices[i] = Integer.parseInt(rawFaces[2]) - 1;
+			if(nIndices[i] < 0) nIndices[i] = object.getNormals().size() + nIndices[i] + 1;
+		}
 	}
 
 	@Override
 	public void incoporateResults(WavefrontObject object) {
+		object.getCurrentGroup().addFace(new Face(vIndices, tIndices, nIndices));
 	}
 }

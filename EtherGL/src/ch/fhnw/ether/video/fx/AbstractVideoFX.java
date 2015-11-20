@@ -31,24 +31,44 @@ package ch.fhnw.ether.video.fx;
 
 import java.util.Set;
 
+import com.jogamp.opengl.GL3;
+
 import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.image.RGBA8Frame;
 import ch.fhnw.ether.media.AbstractRenderCommand;
 import ch.fhnw.ether.media.Parameter;
 import ch.fhnw.ether.media.RenderCommandException;
+import ch.fhnw.ether.render.gl.FrameBuffer;
+import ch.fhnw.ether.render.shader.IShader;
+import ch.fhnw.ether.scene.attribute.IAttribute;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry.IGeometryAttribute;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
+import ch.fhnw.ether.scene.mesh.material.Texture;
 import ch.fhnw.ether.video.IVideoRenderTarget;
 import ch.fhnw.ether.video.VideoFrame;
+import ch.fhnw.ether.view.gl.GLContextManager;
+import ch.fhnw.ether.view.gl.GLContextManager.IGLContext;
 import ch.fhnw.util.TextUtilities;
+import ch.fhnw.util.UpdateRequest;
 
 public abstract class AbstractVideoFX extends AbstractRenderCommand<IVideoRenderTarget> {
 	protected final Frame EMPTY = new RGBA8Frame(1,1);
+
+	private static final IGeometryAttribute[] GATTRS = {IGeometry.POSITION_ARRAY, IGeometry.COLOR_MAP_ARRAY};
 	
 	protected long                        frame;
 	protected Class<? extends Frame>[]    frameTypes;
 	protected Set<Class<? extends Frame>> preferredTypes;
+	protected Texture                     texture;
+	private   String                      name = getClass().getName();
+	private   IAttribute[]                attrs;
 
 	protected AbstractVideoFX(Parameter ... parameters) {
 		super(parameters);
+		attrs = new IAttribute[parameters.length];
+		for(int i = 0; i < attrs.length; i++)
+			attrs[i] = parameters[i];
 	}
 
 	public static float toFloat(final byte v) {
@@ -75,17 +95,59 @@ public abstract class AbstractVideoFX extends AbstractRenderCommand<IVideoRender
 	public static float mix(final float val0, final float val1, float w) {
 		return val0 * w + (1f-w) * val1;
 	}
-	
+
 	@Override
 	protected final void run(IVideoRenderTarget target) throws RenderCommandException {
-		VideoFrame frame = target.getFrame();
-		processFrame(frame.playOutTime, target, frame.frame);
+		if(this instanceof IVideoGLFX) {
+			try(IGLContext ctx = GLContextManager.acquireContext()) {
+				final GL3 gl = ctx.getGL();
+				FrameBuffer fbo = target.getFBO();
+				fbo.bind(gl);
+			} catch(Throwable t) {
+
+			}
+		} else if(this instanceof IVideoFrameFX) {
+			VideoFrame frame = target.getFrame();
+			((IVideoFrameFX)this).processFrame(frame.playOutTime, target, frame.getFrame());
+		}
 	}
-	
-	protected abstract void processFrame(double playOutTime, IVideoRenderTarget target, Frame frame);
-	
+
 	@Override
 	public String toString() {
 		return TextUtilities.getShortClassName(this);
+	}
+	
+	public IShader getShader() {
+		return null;
+	}
+	
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public Primitive getType() {
+		return Primitive.TRIANGLES;
+	}
+
+	public IAttribute[] getProvidedAttributes() {
+		return attrs;
+	}
+
+	public IGeometryAttribute[] getGeometryAttributes() {
+		return GATTRS;
+	}
+
+	public Object[] getData() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public UpdateRequest getUpdater() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

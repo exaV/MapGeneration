@@ -38,6 +38,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.JComboBox;
 
 import ch.fhnw.ether.image.RGBA8Frame;
+import ch.fhnw.ether.media.IScheduler;
 import ch.fhnw.ether.media.RenderCommandException;
 import ch.fhnw.ether.media.RenderProgram;
 import ch.fhnw.ether.ui.ParameterWindow;
@@ -48,20 +49,20 @@ import ch.fhnw.ether.video.fx.AbstractVideoFX;
 import ch.fhnw.util.CollectionUtilities;
 
 public class SimpleVideoPlayer {
-	public static void main(String[] args) throws MalformedURLException, IOException, InterruptedException, RenderCommandException {
+	public static void main(String[] args) throws MalformedURLException, IOException, RenderCommandException {
 		URLVideoSource track    = new URLVideoSource(new File(args[0]).toURI().toURL());
 		URLVideoSource mask     = args.length > 1 ? new URLVideoSource(new File(args[1]).toURI().toURL()) : null;
 		AWTFrameTarget videoOut = new AWTFrameTarget();
 
 		List<AbstractVideoFX> fxs = CollectionUtilities.asList(
+				new RGBGain(),
 				new AnalogTVFX(),
 				new BandPass(),
 				new Convolution(),
 				new FadeToColor(),
 				new FakeThermoCam(),
 				new MotionBlur(),
-				new Posterize(),
-				new RGBGain());
+				new Posterize());
 
 		AtomicInteger current = new AtomicInteger(0);
 
@@ -86,8 +87,7 @@ public class SimpleVideoPlayer {
 
 		videoOut.useProgram(program);
 		videoOut.start();
-		Thread.sleep(5 * 60 * 1000);
-		videoOut.stop();
+		videoOut.sleepUntil(IScheduler.NOT_RENDERING);
 	}
 
 }

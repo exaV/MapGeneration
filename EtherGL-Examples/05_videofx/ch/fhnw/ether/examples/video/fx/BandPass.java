@@ -37,8 +37,9 @@ import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.media.Parameter;
 import ch.fhnw.ether.video.IVideoRenderTarget;
 import ch.fhnw.ether.video.fx.AbstractVideoFX;
+import ch.fhnw.ether.video.fx.IVideoFrameFX;
 
-public class BandPass extends AbstractVideoFX {
+public class BandPass extends AbstractVideoFX implements IVideoFrameFX {
 	private static final Parameter LOW  = new Parameter("low",  "low cutoff frequency",  0, 1, 0);
 	private static final Parameter HIGH = new Parameter("high", "high cutoff frequency", 0, 1, 1);
 
@@ -55,7 +56,7 @@ public class BandPass extends AbstractVideoFX {
 
 
 	@Override
-	protected void processFrame(final double playOutTime, final IVideoRenderTarget target, final Frame frame) {
+	public void processFrame(final double playOutTime, final IVideoRenderTarget target, final Frame frame) {
 		if(rows != frame.dimJ || cols != frame.dimI) {
 			rows = frame.dimJ;
 			cols = frame.dimI;

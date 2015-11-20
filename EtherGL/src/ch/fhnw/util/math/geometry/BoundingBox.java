@@ -31,6 +31,7 @@ package ch.fhnw.util.math.geometry;
 
 import java.util.Collection;
 
+import ch.fhnw.util.HashUtilities;
 import ch.fhnw.util.math.Vec3;
 
 /**
@@ -254,6 +255,24 @@ public final class BoundingBox {
 
 	public boolean contains2D(Vec3 vertex) {
 		return contains2D(vertex.x, vertex.y);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+
+		if (obj instanceof BoundingBox) {
+			final BoundingBox b = (BoundingBox) obj;
+			return minX == b.minX && maxX == b.maxX && minY == b.minY && maxY == b.maxY && minZ == b.minZ && maxZ == b.maxZ;
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return HashUtilities.hash(minX, maxX, minY, maxY, minZ, maxZ);
 	}
 
 	@Override

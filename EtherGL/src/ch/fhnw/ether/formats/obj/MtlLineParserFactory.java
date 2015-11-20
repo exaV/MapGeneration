@@ -27,12 +27,17 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.video;
+package ch.fhnw.ether.formats.obj;
 
-import ch.fhnw.ether.media.IRenderTarget;
-import ch.fhnw.ether.media.IScheduler;
-
-public interface IVideoRenderTarget extends IRenderTarget, IScheduler {
-	void       setFrame(VideoFrame frame);
-	VideoFrame getFrame();
+final class MtlLineParserFactory extends LineParserFactory {
+	public MtlLineParserFactory(WavefrontObject object) {
+		this.object = object;
+		parsers.put("newmtl", new MtlMaterialParser());
+		parsers.put("Ka", new MtlKaParser());
+		parsers.put("Kd", new MtlKdParser());
+		parsers.put("Ks", new MtlKsParser());
+		parsers.put("Ns", new MtlNsParser());
+		parsers.put("map_Kd", new MtlKdMapParser());
+		parsers.put("#", new ObjCommentParser());
+	}
 }

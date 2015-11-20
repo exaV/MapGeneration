@@ -27,19 +27,24 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.scene.mesh.material;
+package ch.fhnw.ether.formats.obj;
 
-import ch.fhnw.ether.render.shader.IShader;
+import ch.fhnw.util.color.RGB;
 
-public class CustomMaterial extends AbstractMaterial {
+final class MtlKsParser extends LineParser {
+	private RGB ks = null;
 
-	private final IShader shader;
-
-	public CustomMaterial(IShader shader) {
-		this.shader = shader;
+	@Override
+	public void parse(WavefrontObject object) {
+		try {
+			ks = new RGB(Float.parseFloat(words[1]), Float.parseFloat(words[2]), Float.parseFloat(words[3]));
+		} catch (Exception e) {
+			throw new RuntimeException("Ks Parser Error");
+		}
 	}
 
-	public IShader getShader() {
-		return shader;
+	@Override
+	public void incoporateResults(WavefrontObject object) {
+		object.getCurrentMaterial().setKs(ks);
 	}
 }

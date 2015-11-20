@@ -31,13 +31,49 @@ package ch.fhnw.ether.video;
 
 import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.media.AbstractFrame;
+import ch.fhnw.ether.scene.mesh.material.Texture;
 
 public class VideoFrame extends AbstractFrame {
-	public final Frame frame;
-	
+	private final FrameAccess framea;
+	private       Frame       frame;
+	private       boolean     frameRead;
+
 	public VideoFrame(double playOutTime, Frame frame) {
 		super(playOutTime);
-		this.frame = frame;
+		this.framea = null;
+		this.frame  = frame;
+		frameRead   = true;
 	}
 
+	public VideoFrame(double playOutTime, FrameAccess framea) {
+		super(playOutTime);
+		this.framea = framea;
+	}
+
+	public synchronized Frame getFrame() {
+		if(frame == null && !(frameRead)) {
+			frame     = framea.getNextFrame();
+			frameRead = true;
+		}
+		return frame;
+	}
+
+	public synchronized void skip() {
+		if(!(frameRead)) {
+			framea.skipFrame();
+			frameRead = true;
+		}
+	}
+
+	@Override
+	public synchronized void dispose() {
+		skip();
+	}
+
+	public synchronized Texture getTexture() {
+		if(frame != null)
+			return frame.getTexture();
+		frameRead = true;
+		return framea.getNextTexture();
+	}	
 }

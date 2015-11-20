@@ -35,7 +35,7 @@ import ch.fhnw.ether.scene.DefaultScene;
 import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.scene.camera.Camera;
 import ch.fhnw.ether.scene.camera.ICamera;
-import ch.fhnw.ether.scene.mesh.MeshLibrary;
+import ch.fhnw.ether.scene.mesh.MeshUtilities;
 import ch.fhnw.ether.ui.Button;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.gl.DefaultView;
@@ -63,7 +63,7 @@ public final class SimpleCubeExample {
 			controller.setCamera(view, camera);
 			
 			// Add cube
-			scene.add3DObject(MeshLibrary.createCube());
+			scene.add3DObject(MeshUtilities.createCube());
 			
 			// Add an exit button
 			controller.getUI().addWidget(new Button(0, 0, "Quit", "Quit", KeyEvent.VK_ESCAPE, (button, v) -> System.exit(0)));

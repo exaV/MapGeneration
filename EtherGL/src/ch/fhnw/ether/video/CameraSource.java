@@ -37,7 +37,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import com.github.sarxos.webcam.Webcam;
 
 import ch.fhnw.ether.image.RGB8Frame;
-import ch.fhnw.ether.media.AbstractFrame;
+import ch.fhnw.ether.media.IScheduler;
 import ch.fhnw.ether.media.RenderCommandException;
 
 public class CameraSource extends AbstractVideoSource {
@@ -81,7 +81,7 @@ public class CameraSource extends AbstractVideoSource {
 				dst.put(src.get());
 			}
 		}
-		target.setFrame(new VideoFrame(AbstractFrame.ASAP, frame));
+		setFrame(target, new VideoFrame(IScheduler.ASAP, frame));
 	}
 
 	public void setSize(int width, int height) {
@@ -91,17 +91,22 @@ public class CameraSource extends AbstractVideoSource {
 	}
 
 	@Override
-	public double getFrameRate() {
+	public float getFrameRate() {
 		try {
-			return Math.max(10.0, ((Double)getFPS.invoke(cam)).doubleValue());
+			return Math.max(10.0f, ((Double)getFPS.invoke(cam)).floatValue());
 		} catch(Throwable t) {
 			return FRAMERATE_UNKNOWN;
 		}
 	}
 	
 	@Override
-	public long getFrameCount() {
+	public long getLengthInFrames() {
 		return FRAMECOUNT_UNKNOWN;
+	}
+	
+	@Override
+	public double getLengthInSeconds() {
+		return LENGTH_INFINITE;
 	}
 	
 	@Override

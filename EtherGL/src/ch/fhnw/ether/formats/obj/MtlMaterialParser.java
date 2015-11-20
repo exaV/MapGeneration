@@ -29,15 +29,19 @@
 
 package ch.fhnw.ether.formats.obj;
 
-public class CommentParser extends LineParser {
-	public CommentParser() {
-	}
-	
+final class MtlMaterialParser extends LineParser {
+	private String materialName = "";
+
 	@Override
 	public void parse(WavefrontObject object) {
+		materialName = words[1];
 	}
 
 	@Override
-	public void incoporateResults(WavefrontObject wavefrontObject) {
+	public void incoporateResults(WavefrontObject object) {
+		Material material = new Material(materialName);
+		object.getMaterials().put(materialName, material);
+		object.setCurrentMaterial(material);
 	}
+
 }

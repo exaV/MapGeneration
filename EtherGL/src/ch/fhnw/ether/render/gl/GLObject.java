@@ -31,31 +31,39 @@ package ch.fhnw.ether.render.gl;
 
 import java.lang.ref.ReferenceQueue;
 
+import com.jogamp.opengl.GL3;
+
 import ch.fhnw.ether.view.gl.GLContextManager;
 import ch.fhnw.ether.view.gl.GLContextManager.IGLContext;
 import ch.fhnw.util.AutoDisposer;
 import ch.fhnw.util.AutoDisposer.Reference;
-
-import com.jogamp.opengl.GL3;
+import ch.fhnw.util.IDisposable;
+import ch.fhnw.util.Log;
 
 public class GLObject {
+	private static final Log log = Log.create();
+	
 	public enum Type {
 		TEXTURE, BUFFER, RENDERBUFFER, FRAMEBUFFER, PROGRAM
 	}
 
 	public static class GLObjectRef extends Reference<GLObject> {
-		private final Type type;
-		private final int[] id;
-
+		private final Type        type;
+		private final int[]       id;
+		private final IDisposable userData;
+		
 		public GLObjectRef(GLObject referent, ReferenceQueue<? super GLObject> q) {
 			super(referent, q);
-			type = referent.getType();
-			id = referent.id;
+			type     = referent.getType();
+			id       = referent.id;
+			userData = referent.userData;
 		}
 
 		@Override
 		public void dispose() {
 			System.out.println("disposing " + type + " " + id[0]);
+			if(userData != null)
+				userData.dispose();
 			try (IGLContext context = GLContextManager.acquireContext()) {
 				GL3 gl = context.getGL();
 				switch (type) {
@@ -75,18 +83,25 @@ public class GLObject {
 					gl.glDeleteProgram(id[0]);
 					break;
 				}
-			} catch (Exception e) {
+			} catch(Throwable t) {
+				log.severe(t);
 			}
 		}
 	}
 
 	private static final AutoDisposer<GLObject> autoDisposer = new AutoDisposer<>(GLObjectRef.class);
 
-	private final Type type;
-	private final int[] id = new int[1];
+	private final Type        type;
+	private final int[]       id = new int[1];
+	private final IDisposable userData;
 
 	public GLObject(GL3 gl, Type type) {
-		this.type = type;
+		this(gl, type, null);
+	}
+	
+	public GLObject(GL3 gl, Type type, IDisposable userData) {
+		this.type     = type;
+		this.userData = userData;
 		switch (type) {
 		case TEXTURE:
 			gl.glGenTextures(1, id, 0);
@@ -106,17 +121,21 @@ public class GLObject {
 		}
 		autoDisposer.add(this);
 	}
-
+	
 	public Type getType() {
 		return type;
 	}
 
-	public int id() {
+	public int getId() {
 		return id[0];
+	}
+	
+	public IDisposable getUserData() {
+		return userData;
 	}
 
 	@Override
 	public String toString() {
-		return type + ":" + id();
+		return type + ":" + getId();
 	}
 }

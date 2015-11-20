@@ -29,7 +29,9 @@
 
 package ch.fhnw.ether.media;
 
-public class Parameter {
+import ch.fhnw.ether.scene.attribute.IAttribute;
+
+public class Parameter implements IAttribute {
 	public enum Type {RANGE, ITEMS}
 
 	private final String   name;
@@ -113,5 +115,10 @@ public class Parameter {
 
 	public String[] getItems() {
 		return items;
+	}
+
+	@Override
+	public String id() {
+		return name;
 	}
 }

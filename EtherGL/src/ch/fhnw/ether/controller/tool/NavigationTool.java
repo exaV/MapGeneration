@@ -40,7 +40,7 @@ import ch.fhnw.ether.scene.camera.DefaultCameraControl;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.IMesh.Queue;
-import ch.fhnw.ether.scene.mesh.MeshLibrary;
+import ch.fhnw.ether.scene.mesh.MeshUtilities;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.LineMaterial;
@@ -112,6 +112,7 @@ public class NavigationTool extends AbstractTool {
 		}
 		mouseX = e.getX();
 		mouseY = e.getY();
+		getController().viewChanged(e.getView());
 	}
 
 	@Override
@@ -124,6 +125,7 @@ public class NavigationTool extends AbstractTool {
 		} else {
 			control.addToDistance(e.getScrollY() * zoomFactor);
 		}
+		getController().viewChanged(e.getView());
 	}
 
 	private static IMesh makeGrid() {
@@ -134,16 +136,16 @@ public class NavigationTool extends AbstractTool {
 
 		// add axis lines
 		float e = 0.5f * gridSpacing * (gridNumLines + 1);
-		MeshLibrary.addLine(lines, -e, 0, e, 0);
-		MeshLibrary.addLine(lines, 0, -e, 0, e);
+		MeshUtilities.addLine(lines, -e, 0, e, 0);
+		MeshUtilities.addLine(lines, 0, -e, 0, e);
 
 		// add grid lines
 		int n = gridNumLines / 2;
 		for (int i = 1; i <= n; ++i) {
-			MeshLibrary.addLine(lines, i * gridSpacing, -e, i * gridSpacing, e);
-			MeshLibrary.addLine(lines, -i * gridSpacing, -e, -i * gridSpacing, e);
-			MeshLibrary.addLine(lines, -e, i * gridSpacing, e, i * gridSpacing);
-			MeshLibrary.addLine(lines, -e, -i * gridSpacing, e, -i * gridSpacing);
+			MeshUtilities.addLine(lines, i * gridSpacing, -e, i * gridSpacing, e);
+			MeshUtilities.addLine(lines, -i * gridSpacing, -e, -i * gridSpacing, e);
+			MeshUtilities.addLine(lines, -e, i * gridSpacing, e, i * gridSpacing);
+			MeshUtilities.addLine(lines, -e, -i * gridSpacing, e, -i * gridSpacing);
 		}
 
 		return new DefaultMesh(new LineMaterial(RGBA.GRAY), DefaultGeometry.createV(Primitive.LINES, Vec3.toArray(lines)), Queue.TRANSPARENCY);

@@ -72,7 +72,8 @@ public class URLAudioSource extends AbstractAudioSource implements Runnable, IDi
 	private static final double        SEC2US = 1000000;
 	private static final MidiEvent[]   EMPTY_MidiEventA = new MidiEvent[0];
 
-	private       double             frameSize;
+	private       double             frameSizeInSec;
+	private       int                frameSizeInBytes;
 	private final URL                url;
 	private final AudioFormat        fmt;       
 	private final long               frameCount;
@@ -98,9 +99,9 @@ public class URLAudioSource extends AbstractAudioSource implements Runnable, IDi
 	}
 
 	public URLAudioSource(final URL url, final int numPlays, double frameSizeInSec) throws IOException {
-		this.url       = url;
+		this.url            = url;
 		this.numPlays.set(numPlays);
-		this.frameSize = frameSizeInSec;
+		this.frameSizeInSec = frameSizeInSec;
 
 		try {
 			if(TextUtilities.hasFileExtension(url.getPath(), "mid")) {
@@ -159,7 +160,7 @@ public class URLAudioSource extends AbstractAudioSource implements Runnable, IDi
 			throw new UnsupportedAudioFileException("could not get audio input stream from input URL");
 		}
 
-		AudioFormat      format = result.getFormat();
+		AudioFormat format = result.getFormat();
 		if(format.getEncoding() != Encoding.PCM_SIGNED || format.getSampleSizeInBits() < 0) {
 			AudioFormat fmt = new AudioFormat(Encoding.PCM_SIGNED, format.getSampleRate(), 16, format.getChannels(), format.getChannels() * 2, format.getSampleRate(), false);
 			return AudioSystem.getAudioInputStream(fmt, result);
@@ -189,9 +190,10 @@ public class URLAudioSource extends AbstractAudioSource implements Runnable, IDi
 	@Override
 	public void run() {
 		try {
-			byte[] buffer = new byte[frameSize > 0 
-			                         ? fmt.getChannels() * fmt.getSampleSizeInBits() / 8 * (int)(frameSize * fmt.getSampleRate())
-			                        		 : fmt.getChannels() * fmt.getSampleSizeInBits() / 8 * (int)-frameSize];
+			frameSizeInBytes = frameSizeInSec > 0 
+                    ? fmt.getChannels() * fmt.getSampleSizeInBits() / 8 * (int)(frameSizeInSec * fmt.getSampleRate())
+                   		 : fmt.getChannels() * fmt.getSampleSizeInBits() / 8 * (int)-frameSizeInSec;
+			byte[] buffer = new byte[frameSizeInBytes];
 
 			do {
 				try (AudioInputStream in = getStream(url)) {
@@ -230,7 +232,7 @@ public class URLAudioSource extends AbstractAudioSource implements Runnable, IDi
 			bufSemaphore.release();
 			AudioFrame frame = createAudioFrame(samples, outData);
 			frame.setLast(data.isEmpty() && numPlays.get() <= 0);
-			target.setFrame(frame);
+			setFrame(target, frame);
 			samples += outData.length;
 		} catch(Throwable t) {
 			throw new RenderCommandException(t);
@@ -331,8 +333,13 @@ public class URLAudioSource extends AbstractAudioSource implements Runnable, IDi
 	}
 
 	@Override
-	public long getFrameCount() {
-		return frameCount;
+	public long getLengthInFrames() {
+		if(frameCount < 0) return FRAMECOUNT_UNKNOWN;
+		long result = frameCount;
+		result *= fmt.getChannels();
+		result *= fmt.getSampleSizeInBits();
+		result /= frameSizeInBytes * 8;
+		return result;
 	}
 
 	@Override
@@ -340,7 +347,17 @@ public class URLAudioSource extends AbstractAudioSource implements Runnable, IDi
 		return fmt.getChannels();
 	}
 
+	@Override
 	public double getLengthInSeconds() {
-		return frameCount / fmt.getFrameRate();
+		if(frameCount < 0) return LENGTH_UNKNOWN;
+		double result = frameCount;
+		result /= fmt.getFrameRate();
+		return result;
+	}
+	
+	@Override
+	public float getFrameRate() {
+		double result = (fmt.getChannels() * fmt.getSampleSizeInBits() * fmt.getFrameRate()) / (8 * frameSizeInBytes);
+		return (float)result;
 	}
 }

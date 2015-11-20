@@ -29,20 +29,24 @@
 
 package ch.fhnw.ether.scene.mesh;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import ch.fhnw.ether.scene.mesh.IMesh.Flag;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry.IGeometryAttribute;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.ether.scene.mesh.material.ShadedMaterial;
+import ch.fhnw.util.FloatList;
 import ch.fhnw.util.color.RGB;
 import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.GeometryUtilities;
 
-public class MeshLibrary {
+public final class MeshUtilities {
 
 	//@formatter:off
 	public static final float[] UNIT_CUBE_TRIANGLES = {
@@ -170,4 +174,45 @@ public class MeshLibrary {
 		}
 	}
 	
+	public static List<IMesh> mergeMeshes(List<IMesh> meshes) {
+		// make a copy of input because we're going to modify the list
+		meshes = new ArrayList<>(meshes);
+		
+		final List<IMesh> result = new ArrayList<>();		
+		while (!meshes.isEmpty()) {
+			System.out.println("---");
+			System.out.println(System.currentTimeMillis());
+			final IMesh first = meshes.get(0);
+			List<IMesh> same = meshes.stream().filter(m -> m.getMaterial().equals(first.getMaterial()) &&
+														   m.getQueue().equals(first.getQueue()) && 
+														   m.getFlags().equals(first.getFlags())).collect(Collectors.toList());
+			
+			System.out.println(System.currentTimeMillis());
+			IMaterial material = first.getMaterial();
+			IGeometryAttribute[] attributes = material.getGeometryAttributes();
+			FloatList data[] = new FloatList[attributes.length];
+			for (int i = 0; i < data.length; ++i)
+				data[i] = new FloatList();
+			
+			for (IMesh mesh : same) {
+				IGeometryAttribute[] ga = mesh.getGeometry().getAttributes();
+				float[][] gd = mesh.getGeometry().getData();
+				for (int i = 0; i < attributes.length; ++i) {
+					for (int j = 0; j < ga.length; j++) {
+						if (attributes[i].equals(ga[j])) {
+							// TODO: position / normal baking
+							data[i].addAll(gd[j]);
+							continue;
+						}
+					}
+				}
+			}
+			System.out.println(System.currentTimeMillis());
+			
+			result.add(new DefaultMesh(material, new DefaultGeometry(material.getType(), attributes, data), first.getQueue(), first.getFlags()));
+			meshes.removeAll(same);
+			System.out.println(System.currentTimeMillis());
+		}
+		return result;
+	}	
 }

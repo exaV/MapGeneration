@@ -57,14 +57,14 @@ public final class Renderable {
 		public RenderUpdate(Renderable renderable, IMesh mesh, boolean materialChanged, boolean geometryChanged) {
 			this.renderable = renderable;
 			if (materialChanged)
-				materialData = mesh.getMaterial().getData().toArray();	
+				materialData = mesh.getMaterial().getData();	
 			else
 				materialData = null;
 
 			if (geometryChanged) {
 				geometryData = mesh.getGeometry().getData();
 				positionTransform = Mat4.multiply(Mat4.translate(mesh.getPosition()), mesh.getTransform());
-				normalTransform = new Mat3(positionTransform).inverse().transpose();				
+				normalTransform = new Mat3(positionTransform).inverse().transpose();
 			} else {
 				geometryData = null;
 				positionTransform = null;

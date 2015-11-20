@@ -43,13 +43,13 @@ public class RenderBuffer {
 		if (rbo == null) {
 			rbo = new GLObject(gl, Type.RENDERBUFFER);
 		}
-		gl.glBindRenderbuffer(GL3.GL_RENDERBUFFER, rbo.id());
+		gl.glBindRenderbuffer(GL3.GL_RENDERBUFFER, rbo.getId());
 		gl.glRenderbufferStorage(GL3.GL_RENDERBUFFER, format, width, height);
 		unbind(gl);
 	}
 	
 	int id() {
-		return rbo.id();
+		return rbo.getId();
 	}
 
 	public static void unbind(GL3 gl) {

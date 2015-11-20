@@ -29,13 +29,10 @@
 
 package ch.fhnw.ether.scene.mesh.material;
 
-import java.util.List;
-
-import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.util.color.RGB;
 
-public class ShadedMaterial extends AbstractMaterial {
+public final class ShadedMaterial extends AbstractMaterial {
 
 	private RGB emission;
 	private RGB ambient;
@@ -56,6 +53,10 @@ public class ShadedMaterial extends AbstractMaterial {
 	}
 
 	public ShadedMaterial(RGB emission, RGB ambient, RGB diffuse, RGB specular, float shininess, float strength, float alpha, Texture colorMap) {
+		super(material(IMaterial.EMISSION, IMaterial.AMBIENT, IMaterial.DIFFUSE, IMaterial.SPECULAR,
+					   IMaterial.SHININESS, IMaterial.STRENGTH, IMaterial.ALPHA, colorMap != null ? IMaterial.COLOR_MAP : null),
+			  geometry(IGeometry.POSITION_ARRAY, IGeometry.NORMAL_ARRAY, colorMap != null ? IGeometry.COLOR_MAP_ARRAY : null));
+
 		this.emission = emission;
 		this.ambient = ambient;
 		this.diffuse = diffuse;
@@ -140,43 +141,13 @@ public class ShadedMaterial extends AbstractMaterial {
 	// }
 
 	@Override
-	public List<IAttribute> getProvidedAttributes() {
-		List<IAttribute> attributes = super.getProvidedAttributes();
-		attributes.add(IMaterial.EMISSION);
-		attributes.add(IMaterial.AMBIENT);
-		attributes.add(IMaterial.DIFFUSE);
-		attributes.add(IMaterial.SPECULAR);
-		attributes.add(IMaterial.SHININESS);
-		attributes.add(IMaterial.STRENGTH);
-		attributes.add(IMaterial.ALPHA);
-		if (colorMap != null) {
-			attributes.add(IMaterial.COLOR_MAP);
-		}
-		return attributes;
+	public Object[] getData() {
+		return data(emission, ambient, diffuse, specular, shininess, strength, alpha, colorMap);
 	}
 
 	@Override
-	public List<IAttribute> getRequiredAttributes() {		
-		List<IAttribute> attributes = super.getRequiredAttributes();
-		if (colorMap != null) {
-			attributes.add(IGeometry.COLOR_MAP_ARRAY);
-		}
-		return attributes;
-	}
-	
-	@Override
-	public List<Object> getData() {
-		List<Object> data = super.getData();
-		data.add(emission);
-		data.add(ambient);
-		data.add(diffuse);
-		data.add(specular);
-		data.add(shininess);
-		data.add(strength);
-		data.add(alpha);
-		if (colorMap != null) {
-			data.add(colorMap);
-		}
-		return data;
+	public String toString() {
+		// TODO
+		return super.toString();
 	}
 }

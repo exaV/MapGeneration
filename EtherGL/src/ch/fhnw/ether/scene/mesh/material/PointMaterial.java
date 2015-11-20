@@ -29,28 +29,25 @@
 
 package ch.fhnw.ether.scene.mesh.material;
 
-import java.util.List;
-
-import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.util.color.RGBA;
 
-public class PointMaterial extends AbstractMaterial {
+public final class PointMaterial extends AbstractMaterial {
+	
 	private RGBA color;
 	private float size;
-	private final boolean perVertexColor;
-	private final boolean perVertexSize;
 
 	public PointMaterial(RGBA color, float size) {
 		this(color, size, false, false);
 	}
 
 	public PointMaterial(RGBA color, float size, boolean perVertexColor, boolean perVertexSize) {
+		super(material(IMaterial.COLOR, IMaterial.POINT_SIZE),
+			  geometry(IGeometry.POSITION_ARRAY, perVertexColor ? IGeometry.COLOR_ARRAY : null, perVertexSize ? IGeometry.POINT_SIZE_ARRAY : null));		
+				  
 		this.color = color;
 		this.size = size;
-		this.perVertexColor = perVertexColor;
-		this.perVertexSize = perVertexSize;
 	}
 
 	public final RGBA getColor() {
@@ -77,28 +74,12 @@ public class PointMaterial extends AbstractMaterial {
 	}
 
 	@Override
-	public List<IAttribute> getProvidedAttributes() {
-		List<IAttribute> attributes = super.getProvidedAttributes();
-		attributes.add(IMaterial.COLOR);
-		attributes.add(IMaterial.POINT_SIZE);
-		return attributes;
+	public Object[] getData() {
+		return data(color, size);
 	}
 
 	@Override
-	public List<IAttribute> getRequiredAttributes() {
-		List<IAttribute> attributes = super.getRequiredAttributes();
-		if (perVertexColor)
-			attributes.add(IGeometry.COLOR_ARRAY);
-		if (perVertexSize)
-			attributes.add(IGeometry.POINT_SIZE_ARRAY);
-		return attributes;
-	}
-
-	@Override
-	public List<Object> getData() {
-		List<Object> data = super.getData();
-		data.add(color);
-		data.add(size);
-		return data;
+	public String toString() {
+		return super.toString() + "[" + color + ", " + size + "]";
 	}
 }

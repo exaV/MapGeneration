@@ -128,7 +128,7 @@ public final class TextUtilities {
 	static DecimalFormat[] DECIMAL_FORMATS = new DecimalFormat[0];
 
 
-	public static DecimalFormat decimalFormatFix(int numDecimals) {
+	public static DecimalFormat decimalFormat(int numDecimals) {
 		if(DECIMAL_FORMATS_FIX.length < numDecimals + 1) {
 			for(int i = DECIMAL_FORMATS_FIX.length; i < numDecimals + 1; i++) {
 				DecimalFormatSymbols symbols = new DecimalFormatSymbols();
@@ -1009,11 +1009,11 @@ public final class TextUtilities {
 
 	public static String toMemSize(long size) {
 		if(size > 1024 * 1024 * 1024)
-			return decimalFormatFix(3).format(size / (1024.0 * 1024.0 * 1024.0)) + " GB";
+			return decimalFormat(3).format(size / (1024.0 * 1024.0 * 1024.0)) + " GB";
 		else if(size > 1024 * 1024) 
-			return decimalFormatFix(3).format(size / (1024.0 * 1024.0)) + " MB";
+			return decimalFormat(3).format(size / (1024.0 * 1024.0)) + " MB";
 		else if(size > 1024) 
-			return decimalFormatFix(3).format(size / 1024.0) + " kB";
+			return decimalFormat(3).format(size / 1024.0) + " kB";
 		return Long.toString(size) + "B";
 	}
 

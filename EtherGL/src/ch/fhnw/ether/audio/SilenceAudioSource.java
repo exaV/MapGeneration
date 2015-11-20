@@ -47,15 +47,20 @@ public class SilenceAudioSource extends AbstractAudioSource {
 
 	@Override
 	protected void run(final IAudioRenderTarget target) throws RenderCommandException {
-		target.setFrame(createAudioFrame(samples, frameSize));
+		setFrame(target, createAudioFrame(samples, frameSize));
 		samples += frameSize;
 	}	
 
 	@Override
-	public long getFrameCount() {
+	public long getLengthInFrames() {
 		return FRAMECOUNT_UNKNOWN;
 	}
 
+	@Override
+	public double getLengthInSeconds() {
+		return LENGTH_INFINITE;
+	}
+	
 	@Override
 	public float getSampleRate() {
 		return sampleRate;
@@ -64,5 +69,11 @@ public class SilenceAudioSource extends AbstractAudioSource {
 	@Override
 	public int getNumChannels() {
 		return nChannels;
+	}
+	
+	@Override
+	public float getFrameRate() {
+		double result = (frameSize / getNumChannels()) * sampleRate;
+		return (float)result;
 	}
 }

@@ -33,8 +33,9 @@ import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.media.Parameter;
 import ch.fhnw.ether.video.IVideoRenderTarget;
 import ch.fhnw.ether.video.fx.AbstractVideoFX;
+import ch.fhnw.ether.video.fx.IVideoFrameFX;
 
-public class MotionBlur extends AbstractVideoFX {
+public class MotionBlur extends AbstractVideoFX implements IVideoFrameFX {
 	private static final Parameter DECAY = new Parameter("decay", "Decay", 0.01f, 1f, 1f);
 
 	private float[][] buffer  = new float[1][1];
@@ -44,7 +45,7 @@ public class MotionBlur extends AbstractVideoFX {
 	}
 
 	@Override
-	protected void processFrame(final double playOutTime, final IVideoRenderTarget target, final Frame frame) {
+	public void processFrame(final double playOutTime, final IVideoRenderTarget target, final Frame frame) {
 		if(buffer[0].length != frame.dimI *3 || buffer.length != frame.dimJ)
 			buffer  = new float[frame.dimJ][frame.dimI * 3];
 

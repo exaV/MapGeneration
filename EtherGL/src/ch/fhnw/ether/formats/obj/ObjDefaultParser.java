@@ -29,34 +29,15 @@
 
 package ch.fhnw.ether.formats.obj;
 
-import ch.fhnw.util.math.Vec2;
-
-public class TexCoordParser extends LineParser {
-	private Vec2 texCoord;
-
-	public TexCoordParser() {
+final class ObjDefaultParser extends LineParser {
+	public ObjDefaultParser() {
 	}
 
 	@Override
 	public void parse(WavefrontObject object) {
-		float u = 0;
-		float v = 0;
-		try {
-			// OBJ origin is at upper left, OpenGL origin is at lower left
-			if (words.length >= 2)
-				u = Float.parseFloat(words[1]);
-
-			if (words.length >= 3)
-				v = 1 - Float.parseFloat(words[2]);
-
-			texCoord = new Vec2(u, v);
-		} catch (Exception e) {
-			throw new RuntimeException("TexCoord Parser Error");
-		}
 	}
 
 	@Override
 	public void incoporateResults(WavefrontObject object) {
-		object.getTexCoords().add(texCoord);
 	}
 }

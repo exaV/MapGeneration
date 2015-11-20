@@ -33,8 +33,9 @@ import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.media.Parameter;
 import ch.fhnw.ether.video.IVideoRenderTarget;
 import ch.fhnw.ether.video.fx.AbstractVideoFX;
+import ch.fhnw.ether.video.fx.IVideoFrameFX;
 
-public class FadeToColor extends AbstractVideoFX {
+public class FadeToColor extends AbstractVideoFX implements IVideoFrameFX {
 	private static final Parameter FADE  = new Parameter("fade",  "Fade",  0, 1, 1);
 	private static final Parameter RED   = new Parameter("red",   "Red",   0, 1, 0);
 	private static final Parameter GREEN = new Parameter("green", "Green", 0, 1, 0);
@@ -45,7 +46,7 @@ public class FadeToColor extends AbstractVideoFX {
 	}
 
 	@Override
-	protected void processFrame(final double playOutTime, final IVideoRenderTarget target, final Frame frame) {
+	public void processFrame(final double playOutTime, final IVideoRenderTarget target, final Frame frame) {
 		final float w  = getVal(FADE);
 		final float rs = getVal(RED);
 		final float gs = getVal(GREEN);

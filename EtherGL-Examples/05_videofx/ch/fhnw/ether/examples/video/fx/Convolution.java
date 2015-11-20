@@ -35,9 +35,10 @@ import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.media.Parameter;
 import ch.fhnw.ether.video.IVideoRenderTarget;
 import ch.fhnw.ether.video.fx.AbstractVideoFX;
+import ch.fhnw.ether.video.fx.IVideoFrameFX;
 import ch.fhnw.util.math.Mat3;
 
-public class Convolution extends AbstractVideoFX {
+public class Convolution extends AbstractVideoFX implements IVideoFrameFX {
 	private static final Parameter KERNEL = new Parameter("kernel", "Effect", 0, 
 			"Identity", 
 			"Edge Detection1", 
@@ -105,7 +106,7 @@ public class Convolution extends AbstractVideoFX {
 	private float[][] outFrame = new float[1][1];
 
 	@Override
-	protected void processFrame(final double playOutTime, final IVideoRenderTarget target, final Frame frame) {
+	public void processFrame(final double playOutTime, final IVideoRenderTarget target, final Frame frame) {
 		if(frame.dimJ != outFrame.length || frame.dimI != outFrame[0].length * 3)
 			outFrame = new float[frame.dimJ][frame.dimI * 3];
 

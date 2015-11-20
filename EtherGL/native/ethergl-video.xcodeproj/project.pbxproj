@@ -15,6 +15,7 @@
 		0C774A051960199C0030CB55 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C774A041960199C0030CB55 /* CoreVideo.framework */; };
 		0C774A0719601C7F0030CB55 /* JavaNativeFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C774A0619601C7F0030CB55 /* JavaNativeFoundation.framework */; };
 		0C774A09196025510030CB55 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C774A08196025510030CB55 /* CoreMedia.framework */; };
+		8CAE8C0D1BFCEB2400F5EA0C /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CAE8C0C1BFCEB2400F5EA0C /* OpenGL.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +33,7 @@
 		0C774A041960199C0030CB55 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		0C774A0619601C7F0030CB55 /* JavaNativeFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaNativeFoundation.framework; path = ../../../../../../../System/Library/Frameworks/JavaVM.framework/Versions/A/Frameworks/JavaNativeFoundation.framework; sourceTree = "<group>"; };
 		0C774A08196025510030CB55 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		8CAE8C0C1BFCEB2400F5EA0C /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -39,6 +41,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8CAE8C0D1BFCEB2400F5EA0C /* OpenGL.framework in Frameworks */,
 				0C7749D0195FFE0E0030CB55 /* Cocoa.framework in Frameworks */,
 				0C774A031960193D0030CB55 /* AVFoundation.framework in Frameworks */,
 				0C774A09196025510030CB55 /* CoreMedia.framework in Frameworks */,
@@ -63,6 +66,7 @@
 		0C7749CE195FFE0E0030CB55 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				8CAE8C0C1BFCEB2400F5EA0C /* OpenGL.framework */,
 				0C7749CF195FFE0E0030CB55 /* Cocoa.framework */,
 				0C774A021960193D0030CB55 /* AVFoundation.framework */,
 				0C774A08196025510030CB55 /* CoreMedia.framework */,
@@ -142,7 +146,7 @@
 		0C7749C4195FFE0E0030CB55 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0610;
+				LastUpgradeCheck = 0710;
 				ORGANIZATIONNAME = "Corebounce Association";
 			};
 			buildConfigurationList = 0C7749C7195FFE0E0030CB55 /* Build configuration list for PBXProject "ethergl-video" */;
@@ -219,6 +223,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				ENABLE_TESTABILITY = YES;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_OPTIMIZATION_LEVEL = s;
@@ -281,6 +286,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_ARC = NO;
+				COMBINE_HIDPI_IMAGES = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -297,6 +303,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_ARC = NO;
+				COMBINE_HIDPI_IMAGES = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = (

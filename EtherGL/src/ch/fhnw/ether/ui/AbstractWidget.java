@@ -32,7 +32,7 @@ package ch.fhnw.ether.ui;
 import ch.fhnw.ether.controller.event.IKeyEvent;
 import ch.fhnw.ether.controller.event.IPointerEvent;
 
-abstract class AbstractWidget implements IWidget {
+public abstract class AbstractWidget implements IWidget {
 	private UI ui;
 	private int x;
 	private int y;

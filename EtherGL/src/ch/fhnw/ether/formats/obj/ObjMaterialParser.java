@@ -27,25 +27,18 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.formats.mtl;
+package ch.fhnw.ether.formats.obj;
 
-import ch.fhnw.ether.formats.obj.LineParser;
-import ch.fhnw.ether.formats.obj.WavefrontObject;
-
-public class NsParser extends LineParser {
-	private float ns;
+final class ObjMaterialParser extends LineParser {
+	private String materialName = "";
 
 	@Override
 	public void parse(WavefrontObject object) {
-		try {
-			ns = Float.parseFloat(words[1]);
-		} catch (Exception e) {
-			throw new RuntimeException("Ns Parser Error");
-		}
+		materialName = words[1];
 	}
 
 	@Override
 	public void incoporateResults(WavefrontObject object) {
-		object.getCurrentMaterial().setShininess(ns);
+		object.getCurrentGroup().setMaterial(object.getMaterials().get(materialName));
 	}
 }

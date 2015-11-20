@@ -33,8 +33,10 @@ import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.media.Parameter;
 import ch.fhnw.ether.video.IVideoRenderTarget;
 import ch.fhnw.ether.video.fx.AbstractVideoFX;
+import ch.fhnw.ether.video.fx.IVideoFrameFX;
+import ch.fhnw.ether.video.fx.IVideoGLFX;
 
-public class RGBGain extends AbstractVideoFX {
+public class RGBGain extends AbstractVideoFX implements IVideoFrameFX, IVideoGLFX {
 	private static final Parameter RED   = new Parameter("red",   "Red Gain",   0, 2, 1);
 	private static final Parameter GREEN = new Parameter("green", "Green Gain", 0, 2, 1);
 	private static final Parameter BLUE  = new Parameter("blue",  "Blue Gain",  0, 2, 1);
@@ -44,7 +46,7 @@ public class RGBGain extends AbstractVideoFX {
 	}
 
 	@Override
-	protected void processFrame(final double playOutTime, final IVideoRenderTarget target, final Frame frame) {
+	public void processFrame(final double playOutTime, final IVideoRenderTarget target, final Frame frame) {
 		final float rs = getVal(RED);
 		final float gs = getVal(GREEN);
 		final float bs = getVal(BLUE);

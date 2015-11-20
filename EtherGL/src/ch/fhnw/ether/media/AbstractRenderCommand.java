@@ -32,7 +32,7 @@ package ch.fhnw.ether.media;
 import ch.fhnw.util.ClassUtilities;
 import ch.fhnw.util.IObjectID;
 
-public abstract class AbstractRenderCommand<T extends IRenderTarget> implements IObjectID {
+public abstract class AbstractRenderCommand<T extends IRenderTarget<?>> implements IObjectID {
 	private final long id = ClassUtilities.createObjectID();
 
 	protected final Parameter[]    parameters;

@@ -27,34 +27,17 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.formats.mtl;
+package ch.fhnw.ether.formats.obj;
 
-import ch.fhnw.ether.formats.obj.LineParser;
-import ch.fhnw.ether.formats.obj.Material;
-import ch.fhnw.ether.formats.obj.WavefrontObject;
-import ch.fhnw.ether.image.Frame;
-
-public class KdMapParser extends LineParser {
-	private Frame texture;
-	private String textureName;
-
-	public KdMapParser() {
+final class ObjCommentParser extends LineParser {
+	public ObjCommentParser() {
 	}
-
+	
 	@Override
 	public void parse(WavefrontObject object) {
-		String textureFileName = words[words.length - 1];
-		textureName = textureFileName;
-		String pathToTextureBinary = object.getContextfolder() + textureFileName;
-		texture = TextureLoader.loadTexture(pathToTextureBinary);
 	}
 
 	@Override
-	public void incoporateResults(WavefrontObject object) {
-		if (texture != null) {
-			Material currentMaterial = object.getCurrentMaterial();
-			currentMaterial.setTexture(texture);
-			currentMaterial.setTextureName(textureName);
-		}
+	public void incoporateResults(WavefrontObject wavefrontObject) {
 	}
 }

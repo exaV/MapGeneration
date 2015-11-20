@@ -29,23 +29,19 @@
 
 package ch.fhnw.ether.formats.obj;
 
-//import java.util.Hashtable;
-import ch.fhnw.ether.formats.mtl.MaterialFileParser;
-import ch.fhnw.ether.formats.mtl.MtlLineParserFactory;
-
-public class ObjLineParserFactory extends LineParserFactory {
+final class ObjLineParserFactory extends LineParserFactory {
 	public ObjLineParserFactory(WavefrontObject object) {
 		this.object = object;
-		parsers.put("v", new VertexParser());
-		parsers.put("vn", new NormalParser());
-		parsers.put("vp", new FreeFormParser());
-		parsers.put("vt", new TexCoordParser());
-		parsers.put("f", new FaceParser());
-		parsers.put("#", new CommentParser());
-		parsers.put("mtllib", new MaterialFileParser(new MtlLineParserFactory(object)));
-		parsers.put("usemtl", new MaterialParser());
-		parsers.put("g", new GroupParser());
-		parsers.put("o", new GroupParser());
+		parsers.put("v", new ObjVertexParser());
+		parsers.put("vn", new ObjNormalParser());
+		parsers.put("vp", new ObjFreeFormParser());
+		parsers.put("vt", new ObjTexCoordParser());
+		parsers.put("f", new ObjFaceParser());
+		parsers.put("#", new ObjCommentParser());
+		parsers.put("mtllib", new MtlFileParser(new MtlLineParserFactory(object)));
+		parsers.put("usemtl", new ObjMaterialParser());
+		parsers.put("g", new ObjGroupParser());
+		parsers.put("o", new ObjGroupParser());
 	}
 
 }

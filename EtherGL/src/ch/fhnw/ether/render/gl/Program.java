@@ -132,27 +132,27 @@ public final class Program {
 		String id = "";
 		for (Shader shader : shaders) {
 			if (shader != null) {
-				gl.glAttachShader(programObject.id(), shader.shaderObject);
+				gl.glAttachShader(programObject.getId(), shader.shaderObject);
 				id += shader.path + " ";
 			}
 		}
 		this.id = id;
 
-		gl.glLinkProgram(programObject.id());
-		if (!checkStatus(gl, programObject.id(), GL3.GL_LINK_STATUS, out)) {
+		gl.glLinkProgram(programObject.getId());
+		if (!checkStatus(gl, programObject.getId(), GL3.GL_LINK_STATUS, out)) {
 			out.println("failed to link program: " + this);
 			throw new IllegalArgumentException("failed to link program: " + this);
 		}
 
-		gl.glValidateProgram(programObject.id());
-		if (!checkStatus(gl, programObject.id(), GL3.GL_VALIDATE_STATUS, out)) {
+		gl.glValidateProgram(programObject.getId());
+		if (!checkStatus(gl, programObject.getId(), GL3.GL_VALIDATE_STATUS, out)) {
 			out.println("failed to validate program: " + this);
 			throw new IllegalArgumentException("failed to validate program: " + this);
 		}
 	}
 
 	public void enable(GL3 gl) {
-		gl.glUseProgram(programObject.id());
+		gl.glUseProgram(programObject.getId());
 	}
 
 	public void disable(GL3 gl) {
@@ -201,19 +201,19 @@ public final class Program {
 	}
 
 	public int getAttributeLocation(GL3 gl, String name) {
-		return gl.glGetAttribLocation(programObject.id(), name);
+		return gl.glGetAttribLocation(programObject.getId(), name);
 	}
 
 	public int getUniformLocation(GL3 gl, String name) {
-		return gl.glGetUniformLocation(programObject.id(), name);
+		return gl.glGetUniformLocation(programObject.getId(), name);
 	}
 
 	public int getUniformBlockIndex(GL3 gl, String name) {
-		return gl.glGetUniformBlockIndex(programObject.id(), name);
+		return gl.glGetUniformBlockIndex(programObject.getId(), name);
 	}
 
 	public void bindUniformBlock(GL3 gl, int index, int bindingPoint) {
-		gl.glUniformBlockBinding(programObject.id(), index, bindingPoint);
+		gl.glUniformBlockBinding(programObject.getId(), index, bindingPoint);
 	}
 
 	@Override

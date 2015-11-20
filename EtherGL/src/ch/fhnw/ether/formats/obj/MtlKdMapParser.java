@@ -27,21 +27,31 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.formats.mtl;
+package ch.fhnw.ether.formats.obj;
 
-import ch.fhnw.ether.formats.obj.CommentParser;
-import ch.fhnw.ether.formats.obj.LineParserFactory;
-import ch.fhnw.ether.formats.obj.WavefrontObject;
+import ch.fhnw.ether.image.Frame;
 
-public class MtlLineParserFactory extends LineParserFactory {
-	public MtlLineParserFactory(WavefrontObject object) {
-		this.object = object;
-		parsers.put("newmtl", new MaterialParser());
-		parsers.put("Ka", new KaParser());
-		parsers.put("Kd", new KdParser());
-		parsers.put("Ks", new KsParser());
-		parsers.put("Ns", new NsParser());
-		parsers.put("map_Kd", new KdMapParser());
-		parsers.put("#", new CommentParser());
+final class MtlKdMapParser extends LineParser {
+	private Frame texture;
+	private String textureName;
+
+	public MtlKdMapParser() {
+	}
+
+	@Override
+	public void parse(WavefrontObject object) {
+		String textureFileName = words[words.length - 1];
+		textureName = textureFileName;
+		String pathToTextureBinary = object.getContextfolder() + textureFileName;
+		texture = TextureLoader.loadTexture(pathToTextureBinary);
+	}
+
+	@Override
+	public void incoporateResults(WavefrontObject object) {
+		if (texture != null) {
+			Material currentMaterial = object.getCurrentMaterial();
+			currentMaterial.setTexture(texture);
+			currentMaterial.setTextureName(textureName);
+		}
 	}
 }

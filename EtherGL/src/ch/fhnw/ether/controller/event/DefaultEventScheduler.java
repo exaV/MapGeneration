@@ -110,7 +110,7 @@ public final class DefaultEventScheduler implements IEventScheduler {
 				synchronized (actions) {
 					aa = new ArrayList<>();
 					for (Pair<Double, IAction> p : actions) {
-						if (time > p.left)
+						if (time > p.first)
 							aa.add(p);
 					}
 					if (!aa.isEmpty())
@@ -118,7 +118,7 @@ public final class DefaultEventScheduler implements IEventScheduler {
 				}
 				for (Pair<Double, IAction> a : aa) {
 					try {
-						a.right.run(time);
+						a.second.run(time);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}

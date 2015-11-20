@@ -30,20 +30,24 @@
 package ch.fhnw.ether.video.avfoundation;
 
 import java.lang.ref.ReferenceQueue;
-import java.net.URL;
 
 import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.image.RGBA8Frame;
+import ch.fhnw.ether.scene.mesh.material.Texture;
+import ch.fhnw.ether.video.FrameAccess;
 import ch.fhnw.ether.video.URLVideoSource;
 import ch.fhnw.util.AutoDisposer;
 import ch.fhnw.util.AutoDisposer.Reference;
+import ch.fhnw.util.IDisposable;
+import ch.fhnw.util.Log;
 
-public final class AVAsset extends URLVideoSource.Track {
-	private static boolean READY = true;
+public final class AVAsset extends FrameAccess {
+	private static final Log log   = Log.create();
+	private static boolean   READY = true;
 
 	public static class AVAssetRef extends Reference<AVAsset> {
 		private final long nativeHandle;
-		
+
 		public AVAssetRef(AVAsset referent, ReferenceQueue<? super AVAsset> q) {
 			super(referent, q);
 			nativeHandle = referent.nativeHandle;
@@ -56,7 +60,7 @@ public final class AVAsset extends URLVideoSource.Track {
 	}
 
 	public static final AutoDisposer<AVAsset> autoDispose = new AutoDisposer<>(AVAssetRef.class);
-	
+
 	static {
 		try {
 			System.loadLibrary("etherglvideo");
@@ -69,37 +73,36 @@ public final class AVAsset extends URLVideoSource.Track {
 		return READY;
 	}
 
-	private long   nativeHandle;
-	private double duration;
-	private double frameRate;
-	private long   frameCount;
-	private int    width;
-	private int    height;
-	
-	public AVAsset(URL url, int numPlays) {
-		super(url, numPlays);		
-		nativeHandle = nativeCreate(url.toString());
+	private long    nativeHandle;
+	private double  duration;
+	private float   frameRate;
+	private long    frameCount;
+	private int     width;
+	private int     height;
+	private long    frameNo;
+	private boolean skippedFrames;
+
+	public AVAsset(URLVideoSource src, int numPlays) {
+		super(src, numPlays);		
+		nativeHandle = nativeCreate(src.toString());
 		if (nativeHandle == 0)
-			throw new IllegalArgumentException("cannot create avasset from " + url);
-		
+			throw new IllegalArgumentException("cannot create avasset from " + src.getURL());
+
 		autoDispose.add(this);
 		duration   = nativeGetDuration(nativeHandle);
-		frameRate  = nativeGetFrameRate(nativeHandle);
+		frameRate  = (float)nativeGetFrameRate(nativeHandle);
 		frameCount = nativeGetFrameCount(nativeHandle);
 		width      = nativeGetWidth(nativeHandle);
 		height     = nativeGetHeight(nativeHandle);
 	}
 
-	public URL getURL() {
-		return url;
-	}
-
+	@Override
 	public double getDuration() {
 		return duration;
 	}
 
 	@Override
-	public double getFrameRate() {
+	public float getFrameRate() {
 		return frameRate;
 	}
 
@@ -119,33 +122,82 @@ public final class AVAsset extends URLVideoSource.Track {
 	}
 
 	public void rewind() {
-		playOutTime = 0;
-		startTime   = -1;
+		frameNo = 0;
+		numPlays--;
 		nativeRewind(nativeHandle);
 	}
-	
+
+	@Override
+	protected boolean skipFrame() {
+		frameNo++;
+		boolean result = frameNo < frameCount;
+		if(!(result))
+			numPlays--;
+		return result;
+	}
+
 	@Override
 	protected Frame getNextFrame() {
-		playOutTime += 1.0 / getFrameRate();
-		byte[] pixels = nativeGetNextFrame(nativeHandle);
+		byte[] pixels;
+		if(skippedFrames) {
+			pixels        = nativeGetFrame(nativeHandle, frameNo / frameRate);
+			skippedFrames = false;
+		} else
+			pixels = nativeGetNextFrame(nativeHandle);
 		if(pixels == null) {
-			if(--numPlays <= 0)
-				return null;
 			rewind();
+			if(numPlays <= 0)
+				return null;
 			pixels = nativeGetNextFrame(nativeHandle);
 		}
+		frameNo++;
 		return new RGBA8Frame(getWidth(), getHeight(), pixels);
 	}
 
+	static class Data implements IDisposable {
+		long[] data = new long[IDX_COUNT];
+		
+		public Data(long nativeHandle) {
+			data[IDX_HANDLE] = nativeHandle;
+		}
+
+		@Override
+		public void dispose() {
+			nativeUnlockTexture(data[IDX_HANDLE], data);
+		}
+	}
 	
 	@Override
-	public String toString() {
-		return getURL() + " (d=" + getDuration() + " fr=" + getFrameRate() + " fc=" + getFrameCount() + " w=" + getWidth() + " h=" + getHeight() + ")";
+	public Texture getNextTexture() {
+		return getNextFrame().getTexture();
+		/*
+		try(IGLContext ctx = GLContextManager.acquireContext()) {
+			Data data = new Data(nativeHandle);
+			int result = nativeGetNextTextureAndLock(nativeHandle, data.data);
+			if(data.data[IDX_TARGET] != GL.GL_TEXTURE_2D)
+				throw new RenderCommandException("Wrong target. Expected " + GL.GL_TEXTURE_2D + ", got " + data.data[IDX_TARGET]);
+			return result == 0 ? new Texture(new GLObject(ctx.getGL(), Type.TEXTURE, data), (int)data.data[IDX_WIDTH], (int)data.data[IDX_HEIGHT]) : null;
+		} catch(Throwable t) {
+			log.warning(t);
+			return null;
+		}
+		*/
 	}
 
-	private double frameToTime(long frame) {
-		return getDuration() * getFrameRate() / frame;
+	@Override
+	public String toString() {
+		return src.getURL() + " (d=" + getDuration() + " fr=" + getFrameRate() + " fc=" + getFrameCount() + " w=" + getWidth() + " h=" + getHeight() + ")";
 	}
+
+	private static final int IDX_HANDLE  = 0;
+	private static final int IDX_TARGET  = 1;
+	private static final int IDX_NAME    = 2;
+	private static final int IDX_WIDTH   = 3;
+	private static final int IDX_HEIGHT  = 4;
+	private static final int IDX_SAMPLE  = 5;
+	private static final int IDX_TEXTURE = 6;
+	private static final int IDX_COUNT   = 7;
+
 
 	private static native long nativeCreate(String url);
 
@@ -167,7 +219,7 @@ public final class AVAsset extends URLVideoSource.Track {
 
 	private static native byte[] nativeGetNextFrame(long nativeHandle);
 
-	private static native int nativeLoadFrame(long nativeHandle, double time, int textureId);
+	private static native int nativeGetNextTextureAndLock(long nativeHandle, long[] data);
 
-	private static native int nativeLoadFrames(long nativeHandle, int numFrames, int textureId);
+	private static native int nativeUnlockTexture(long nativeHandle, long[] data);
 }

@@ -32,7 +32,6 @@ package ch.fhnw.ether.video;
 import ch.fhnw.ether.media.AbstractFrameSource;
 
 public abstract class AbstractVideoSource extends AbstractFrameSource<IVideoRenderTarget> {
-	public abstract int    getWidth();
-	public abstract int    getHeight();
-	public abstract double getFrameRate();
+	public abstract int        getWidth();
+	public abstract int        getHeight();	
 }

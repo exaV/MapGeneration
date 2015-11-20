@@ -29,7 +29,7 @@
 
 package ch.fhnw.ether.formats.obj;
 
-public abstract class LineParser {
+abstract class LineParser {
 	protected String[] words = null;
 
 	public void setWords(String[] words) {

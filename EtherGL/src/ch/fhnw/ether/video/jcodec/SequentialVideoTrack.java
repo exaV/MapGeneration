@@ -32,7 +32,6 @@ package ch.fhnw.ether.video.jcodec;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.net.URL;
 
 import org.jcodec.api.JCodecException;
 import org.jcodec.common.NIOUtils;
@@ -40,15 +39,21 @@ import org.jcodec.common.SeekableByteChannel;
 
 import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.image.RGB8Frame;
+import ch.fhnw.ether.scene.mesh.material.Texture;
+import ch.fhnw.ether.video.AbstractVideoSource;
+import ch.fhnw.ether.video.FrameAccess;
 import ch.fhnw.ether.video.URLVideoSource;
+import ch.fhnw.util.Log;
 
-public final class SequentialVideoTrack extends URLVideoSource.Track {
+public final class SequentialVideoTrack extends FrameAccess {
+	private static final Log log = Log.create();
+
 	private   SeekableByteChannel channel;
 	protected FrameGrab           grab;
 
-	public SequentialVideoTrack(URL url, int numPlays) throws IOException, URISyntaxException {
-		super(url, numPlays);
-		this.channel = NIOUtils.readableFileChannel(new File(url.toURI()));
+	public SequentialVideoTrack(URLVideoSource src, int numPlays) throws IOException, URISyntaxException {
+		super(src, numPlays);
+		this.channel = NIOUtils.readableFileChannel(new File(src.getURL().toURI()));
 		try {
 			this.grab    = new FrameGrab(channel);
 		} catch(JCodecException e) {
@@ -65,22 +70,30 @@ public final class SequentialVideoTrack extends URLVideoSource.Track {
 		this.grab    = null;
 	}
 
-	public URL getURL() {
-		return url;
-	}
-
+	@Override
 	public double getDuration() {
-		return grab.getVideoTrack().getMeta().getTotalDuration();
+		try {
+			return grab.sdt().getMeta().getTotalDuration();
+		} catch (JCodecException e) {
+			log.warning(e);
+			return AbstractVideoSource.LENGTH_UNKNOWN;
+		}
 	}
 
 	@Override
-	public double getFrameRate() {
-		return getFrameCount() / getDuration();
+	public float getFrameRate() {
+		double result = getFrameCount() / getDuration();
+		return (float)result;
 	}
 
 	@Override
 	public long getFrameCount() {
-		return grab.getVideoTrack().getMeta().getTotalFrames();
+		try {
+			return grab.sdt().getMeta().getTotalFrames();
+		} catch (JCodecException e) {
+			log.warning(e);
+			return AbstractVideoSource.FRAMECOUNT_UNKNOWN;
+		}
 	}
 
 	@Override
@@ -95,33 +108,46 @@ public final class SequentialVideoTrack extends URLVideoSource.Track {
 
 	@Override
 	public String toString() {
-		return getURL() + " (d=" + getDuration() + " fr=" + getFrameRate() + " fc=" + getFrameCount() + " w=" + getWidth() + " h=" + getHeight() + ")";
+		return src.getURL() + " (d=" + getDuration() + " fr=" + getFrameRate() + " fc=" + getFrameCount() + " w=" + getWidth() + " h=" + getHeight() + ")";
 	}
 
 	public void rewind() {
 		try {
-			playOutTime = 0;
-			startTime   = -1;
+			numPlays--;
 			grab.seekToFramePrecise(0);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
+
 	@Override
-	protected Frame getNextFrame() {
-		playOutTime += 1.0 / getFrameRate();
-		RGB8Frame frame = new RGB8Frame(getWidth(), getHeight());
+	protected boolean skipFrame() {
+		boolean result = false;
 		try {
-			grab.grabAndSet(frame);
+			result = grab.skipFrame();
 		} catch(Throwable t) {
 			rewind();
 			try {
-				grab.grabAndSet(frame);
-			} catch(Throwable t0) {
-				return null;
-			}
+				result = grab.skipFrame();
+			} catch(Throwable t0) {}
 		}
+		if(!(result))
+			numPlays--;
+		return result;
+	}
+
+	@Override
+	protected Frame getNextFrame() {
+		RGB8Frame frame = new RGB8Frame(getWidth(), getHeight());
+		try {
+			grab.grabAndSet(frame);
+		} catch(Throwable t) {}
 		return frame;
+	}
+
+	@Override
+	public Texture getNextTexture() {
+		return getNextFrame().getTexture();
 	}
 }

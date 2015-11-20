@@ -31,6 +31,8 @@ package ch.fhnw.util.math;
 
 import java.util.List;
 
+import ch.fhnw.util.HashUtilities;
+
 /**
  * 3D vector for basic vector algebra. Instances are immutable.
  *
@@ -127,19 +129,6 @@ public final class Vec3 implements IVec3 {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-
-		if (obj instanceof Vec3) {
-			final Vec3 v = (Vec3) obj;
-			return (x == v.x) && (y == v.y) && (z == v.z);
-		}
-		return false;
-	}
-	
-	@Override
 	public Vec3 toVec3() {
 		return this;
 	}
@@ -147,6 +136,24 @@ public final class Vec3 implements IVec3 {
 	@Override
 	public float[] toArray() {
 		return new float[] { x, y, z };
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+
+		if (obj instanceof Vec3) {
+			final Vec3 v = (Vec3) obj;
+			return x == v.x && y == v.y && z == v.z;
+		}
+		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		return HashUtilities.hash(x, y, z);
 	}
 
 	@Override

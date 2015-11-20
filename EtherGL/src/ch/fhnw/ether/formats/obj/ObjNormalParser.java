@@ -27,27 +27,27 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.formats.mtl;
+package ch.fhnw.ether.formats.obj;
 
-import ch.fhnw.ether.formats.obj.LineParser;
-import ch.fhnw.ether.formats.obj.WavefrontObject;
-import ch.fhnw.util.color.RGB;
+import ch.fhnw.util.math.Vec3;
 
-public class KdParser extends LineParser {
-	private RGB kd = null;
+final class ObjNormalParser extends LineParser {
+	private Vec3 vertex = null;
+
+	public ObjNormalParser() {
+	}
 
 	@Override
 	public void parse(WavefrontObject object) {
 		try {
-			kd = new RGB(Float.parseFloat(words[1]), Float.parseFloat(words[2]), Float.parseFloat(words[3]));
+			vertex = new Vec3(Float.parseFloat(words[1]), Float.parseFloat(words[2]), Float.parseFloat(words[3]));
 		} catch (Exception e) {
-			throw new RuntimeException("Kd Parser Error");
+			throw new RuntimeException("Normal Parser Error");
 		}
 	}
 
 	@Override
 	public void incoporateResults(WavefrontObject object) {
-		object.getCurrentMaterial().setKd(kd);
+		object.getNormals().add(vertex);
 	}
-
 }

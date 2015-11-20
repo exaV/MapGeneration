@@ -32,7 +32,5 @@ package ch.fhnw.ether.midi;
 import ch.fhnw.ether.media.IRenderTarget;
 import ch.fhnw.ether.media.IScheduler;
 
-public interface IMidiRenderTarget extends IRenderTarget, IScheduler {
-	void      setFrame(MidiFrame frame);
-	MidiFrame getFrame();
+public interface IMidiRenderTarget extends IRenderTarget<MidiFrame>, IScheduler {
 }

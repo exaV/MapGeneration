@@ -61,7 +61,8 @@ public class URLMidiSource extends AbstractFrameSource<IMidiRenderTarget> {
 	private       int               numPlays;
 	private       double            startTime  = -1;
 	private final List<MidiMessage> msgs = new ArrayList<>();
-	int count;
+	private final double            length;
+	int                             count;
 
 	public URLMidiSource(URL url) throws InvalidMidiDataException, IOException {
 		this(url, Integer.MAX_VALUE);
@@ -84,6 +85,7 @@ public class URLMidiSource extends AbstractFrameSource<IMidiRenderTarget> {
 		int[]   trackspos = new int[tracks.length];
 		long    lasttick   = -1;
 		int     msgs       = 0;
+		curtime            = 0;
 		
 		frameLoop:
 			for(;;) {
@@ -106,10 +108,16 @@ public class URLMidiSource extends AbstractFrameSource<IMidiRenderTarget> {
 
 					trackspos[seltrack]++;
 					long tick = selevent.getTick();
+					
 					if(lasttick < 0)
 						lasttick = tick;
+					if (divtype == Sequence.PPQ)
+						curtime += ((tick - lasttick) * mpq) / seqres;
+					else
+						curtime = tick;
 					boolean setFrame = lasttick != tick;
 					lasttick = tick;
+					
 					MidiMessage msg = selevent.getMessage();
 					if(!(msg instanceof MetaMessage))
 						msgs++;
@@ -121,6 +129,8 @@ public class URLMidiSource extends AbstractFrameSource<IMidiRenderTarget> {
 			}
 
 		this.frameCount = frameCount;
+		this.length     = curtime;
+		this.curtime    = 0;
 	}
 
 	@Override
@@ -173,7 +183,7 @@ public class URLMidiSource extends AbstractFrameSource<IMidiRenderTarget> {
 			if(setFrame && !msgs.isEmpty())
 				break;
 		}
-		target.setFrame(new MidiFrame(startTime + (curtime / AbstractMediaTarget.SEC2US), msgs.toArray(new MidiMessage[msgs.size()])));
+		setFrame(target, new MidiFrame(startTime + (curtime / AbstractMediaTarget.SEC2US), msgs.toArray(new MidiMessage[msgs.size()])));
 		msgs.clear();
 	}
 
@@ -183,7 +193,18 @@ public class URLMidiSource extends AbstractFrameSource<IMidiRenderTarget> {
 	}
 
 	@Override
-	public long getFrameCount() {
+	public long getLengthInFrames() {
 		return frameCount;
+	}
+	
+	@Override
+	public double getLengthInSeconds() {
+		return length;
+	}
+	
+	@Override
+	public float getFrameRate() {
+		double result = getLengthInFrames() / getLengthInSeconds();
+		return (float)result;
 	}
 }

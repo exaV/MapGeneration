@@ -130,13 +130,14 @@ public final class Grey16Frame extends Frame {
 	@Override
 	public BufferedImage toBufferedImage() {
 		BufferedImage result = new BufferedImage(dimI, dimJ, BufferedImage.TYPE_USHORT_GRAY);
-		pixels.clear();
+		final ByteBuffer src = pixels.asReadOnlyBuffer();
+		src.clear();
 		short[] line = new short[dimI];
 		for (int j = dimJ; --j >= 0;) {
 			for (int i = 0; i < line.length; i++) {
 				// assume little endian
-				short tmp = (short) (pixels.get() & 0xFF);
-				tmp |= (short) ((pixels.get() & 0xFF) << 8);
+				short tmp = (short) (src.get() & 0xFF);
+				tmp |= (short) ((src.get() & 0xFF) << 8);
 				line[i] = tmp;
 			}
 			result.getRaster().setDataElements(0, j, dimI, 1, line);

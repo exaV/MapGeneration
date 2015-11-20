@@ -29,17 +29,23 @@
 
 package ch.fhnw.ether.formats.obj;
 
-public class GroupParser extends LineParser {
-	private Group group = null;
+import ch.fhnw.util.color.RGB;
+
+final class MtlKdParser extends LineParser {
+	private RGB kd = null;
 
 	@Override
 	public void parse(WavefrontObject object) {
-		String groupName = words.length == 1 ? "default" : words[1];
-		group = new Group(groupName);
+		try {
+			kd = new RGB(Float.parseFloat(words[1]), Float.parseFloat(words[2]), Float.parseFloat(words[3]));
+		} catch (Exception e) {
+			throw new RuntimeException("Kd Parser Error");
+		}
 	}
 
 	@Override
 	public void incoporateResults(WavefrontObject object) {
-		object.setCurrentGroup(group);
+		object.getCurrentMaterial().setKd(kd);
 	}
+
 }

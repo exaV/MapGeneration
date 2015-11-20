@@ -183,6 +183,22 @@ public class GenericLight implements ILight {
 	public final UpdateRequest getUpdater() {
 		return update;
 	}
+
+	// we purposely leave equals and hashcode at default (identity)
+	@Override
+	public final boolean equals(Object obj) {
+		return super.equals(obj);
+	}
+
+	@Override
+	public final int hashCode() {
+		return super.hashCode();
+	}
+	
+	@Override
+	public String toString() {
+		return name;
+	}
 	
 	protected final void updateRequest() {
 		update.request();

@@ -99,7 +99,7 @@ public class JavaSoundSource extends AbstractAudioSource implements Runnable {
 		if(source != pSrc) {
 			try {
 				close();
-				line = (TargetDataLine)AudioSystem.getLine(sources.get(pSrc).right);
+				line = (TargetDataLine)AudioSystem.getLine(sources.get(pSrc).second);
 				line.open(new AudioFormat(sampleRate, 16, nChannels, true, true), buffer.length);
 				line.start();
 				source = pSrc;
@@ -115,22 +115,33 @@ public class JavaSoundSource extends AbstractAudioSource implements Runnable {
 		}
 		try {
 			while(data.size() > 4) data.take();
-			target.setFrame(createAudioFrame(samples, data.take()));
+			setFrame(target, createAudioFrame(samples, data.take()));
 		} catch(InterruptedException e) {
 			throw new RenderCommandException(e);
 		}
 	}	
 
 	@Override
-	public long getFrameCount() {
+	public long getLengthInFrames() {
 		return FRAMECOUNT_UNKNOWN;
 	}
 
+	@Override
+	public double getLengthInSeconds() {
+		return LENGTH_INFINITE;
+	}
+	
 	@Override
 	public float getSampleRate() {
 		return sampleRate;
 	}
 
+	@Override
+	public float getFrameRate() {
+		double result = (frameSize / getNumChannels()) * sampleRate;
+		return (float)result;
+	}
+	
 	@Override
 	public int getNumChannels() {
 		return nChannels;
@@ -158,7 +169,7 @@ public class JavaSoundSource extends AbstractAudioSource implements Runnable {
 		String[] result = new String[sources.size()];
 		int idx = 0;
 		for(Pair<Mixer.Info, Line.Info> src : sources)
-			result[idx++] = src.left.getName();
+			result[idx++] = src.first.getName();
 		return result;
 	}
 }

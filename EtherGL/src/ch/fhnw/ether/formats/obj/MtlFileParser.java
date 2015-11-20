@@ -27,17 +27,59 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.util.math;
+package ch.fhnw.ether.formats.obj;
 
-public final class Transform {
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
-	// M = T * RX * RY * RZ * S
-	public static Mat4 trs(float tx, float ty, float tz, float rx, float ry, float rz, float sx, float sy, float sz) {
-		return Mat4.multiply(Mat4.translate(tx, ty, tz), Mat4.rotate(rx, Vec3.X), Mat4.rotate(ry, Vec3.Y), Mat4.rotate(rz, Vec3.Z), Mat4.scale(sx, sy, sz));
+public final class MtlFileParser extends LineParser {
+	private final MtlLineParserFactory parserFactory;
+
+	public MtlFileParser(MtlLineParserFactory parserFactory) {
+		this.parserFactory = parserFactory;
 	}
 
-	// M = T * RX * RY * RZ * S
-	public static Mat4 trs(Vec3 t, Vec3 r, Vec3 s) {
-		return trs(t.x, t.y, t.z, r.x, r.y, r.z, s.x, s.y, s.z);
+	@Override
+	public void parse(WavefrontObject object) {
+		String filename = words[1];
+
+		String pathToMTL = object.getContextfolder() + filename;
+
+		InputStream fileInput = this.getClass().getResourceAsStream(pathToMTL);
+		if (fileInput == null) {
+			// Could not find the file in the jar.
+			try {
+				File file = new File(pathToMTL);
+				if (file.exists())
+					fileInput = new FileInputStream(file);
+			} catch (Exception e) {
+				throw new RuntimeException("Error parsing: '" + pathToMTL + "'");
+			}
+		}
+
+		if (fileInput == null)
+			return;
+
+		String currentLine = null;
+		try (BufferedReader in = new BufferedReader(new InputStreamReader(fileInput))) {
+			currentLine = null;
+			while ((currentLine = in.readLine()) != null) {
+				LineParser parser = parserFactory.getLineParser(currentLine);
+				if (parser != null) {
+					parser.parse(object);
+					parser.incoporateResults(object);
+				}
+			}
+		} catch (Exception e) {
+			throw new RuntimeException("Error parsing: '" + pathToMTL + "' on line " + currentLine);
+		}
+
+	}
+
+	@Override
+	public void incoporateResults(WavefrontObject object) {
 	}
 }

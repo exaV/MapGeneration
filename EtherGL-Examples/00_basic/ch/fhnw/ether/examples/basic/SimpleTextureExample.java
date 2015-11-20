@@ -32,6 +32,7 @@ package ch.fhnw.ether.examples.basic;
 import ch.fhnw.ether.controller.DefaultController;
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.controller.event.IEventScheduler;
+import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.scene.DefaultScene;
 import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
@@ -41,7 +42,6 @@ import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.ColorMapMaterial;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
-import ch.fhnw.ether.scene.mesh.material.Texture;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.gl.DefaultView;
 import ch.fhnw.util.color.RGBA;
@@ -60,7 +60,7 @@ public final class SimpleTextureExample {
 
 		
 		try {
-			IMaterial m = new ColorMapMaterial(RGBA.WHITE, new Texture(SimpleTextureExample.class.getResource("assets/fhnw_logo.jpg")), true);
+			IMaterial m = new ColorMapMaterial(RGBA.WHITE, Frame.create(SimpleTextureExample.class.getResource("assets/fhnw_logo.jpg")).getTexture(), true);
 			IGeometry g = DefaultGeometry.createVCM(Primitive.TRIANGLES, vertices, colors, texCoords);
 			return new DefaultMesh(m, g);
 		} catch (Exception e) {

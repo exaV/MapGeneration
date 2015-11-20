@@ -27,27 +27,10 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.formats.obj;
+package ch.fhnw.ether.scene.mesh.material;
 
-import ch.fhnw.util.math.Vec3;
+import ch.fhnw.ether.render.shader.IShader;
 
-public class NormalParser extends LineParser {
-	private Vec3 vertex = null;
-
-	public NormalParser() {
-	}
-
-	@Override
-	public void parse(WavefrontObject object) {
-		try {
-			vertex = new Vec3(Float.parseFloat(words[1]), Float.parseFloat(words[2]), Float.parseFloat(words[3]));
-		} catch (Exception e) {
-			throw new RuntimeException("Normal Parser Error");
-		}
-	}
-
-	@Override
-	public void incoporateResults(WavefrontObject object) {
-		object.getNormals().add(vertex);
-	}
+public interface ICustomMaterial extends IMaterial {
+	IShader getShader();
 }

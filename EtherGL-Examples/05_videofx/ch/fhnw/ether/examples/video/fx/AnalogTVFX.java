@@ -33,9 +33,10 @@ import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.media.Parameter;
 import ch.fhnw.ether.video.IVideoRenderTarget;
 import ch.fhnw.ether.video.fx.AbstractVideoFX;
+import ch.fhnw.ether.video.fx.IVideoFrameFX;
 import ch.fhnw.util.color.ColorUtilities;
 
-public class AnalogTVFX extends AbstractVideoFX {
+public class AnalogTVFX extends AbstractVideoFX implements IVideoFrameFX {
 	private static final int VBLANK = 32;
 
 	private static final Parameter Y  = new Parameter("y",  "Y Gain",        0, 4, 1);
@@ -57,7 +58,7 @@ public class AnalogTVFX extends AbstractVideoFX {
 	}
 
 	@Override
-	protected void processFrame(final double playOutTime, final IVideoRenderTarget target, final Frame frame) {
+	public void processFrame(final double playOutTime, final IVideoRenderTarget target, final Frame frame) {
 		final  float  y  = getVal(Y);
 		final  float  a  = getVal(A);
 		final  float  p  = getVal(P);

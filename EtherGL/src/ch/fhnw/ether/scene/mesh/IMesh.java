@@ -30,7 +30,6 @@
 package ch.fhnw.ether.scene.mesh;
 
 import java.util.EnumSet;
-import java.util.Set;
 
 import ch.fhnw.ether.scene.I3DObject;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
@@ -58,7 +57,7 @@ public interface IMesh extends I3DObject {
 
 	Queue getQueue();
 
-	Set<Flag> getFlags();
+	EnumSet<Flag> getFlags();
 
 	boolean hasFlag(Flag flag);
 

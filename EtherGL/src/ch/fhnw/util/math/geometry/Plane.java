@@ -29,6 +29,7 @@
 
 package ch.fhnw.util.math.geometry;
 
+import ch.fhnw.util.HashUtilities;
 import ch.fhnw.util.math.Vec3;
 
 /**
@@ -72,5 +73,28 @@ public class Plane {
 			return null;
 		float k = -(offset + normal.dot(line.getOrigin())) / dot;
 		return line.getOrigin().add(line.getDirection().scale(k));
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+
+		if (obj instanceof Plane) {
+			final Plane p = (Plane) obj;
+			return offset == p.offset && origin.equals(p.origin) && normal.equals(p.normal);
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return origin.hashCode() + normal.hashCode() + HashUtilities.hash(offset);
+	}
+
+	@Override
+	public String toString() {
+		return "[origin:" + origin + ", normal:" + normal + ", offset:" + offset + "]";
 	}
 }

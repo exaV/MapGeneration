@@ -39,7 +39,7 @@ import ch.fhnw.util.IDisposable;
 import ch.fhnw.util.IdentityHashSet;
 import ch.fhnw.util.Log;
 
-public class RenderProgram<T extends IRenderTarget> extends AbstractRenderCommand<T> {
+public class RenderProgram<T extends IRenderTarget<?>> extends AbstractRenderCommand<T> {
 	private static Log log = Log.create();
 
 	private final AtomicReference<T> target = new AtomicReference<>();
@@ -189,19 +189,25 @@ public class RenderProgram<T extends IRenderTarget> extends AbstractRenderComman
 	}
 
 	public void setTarget(T target) throws RenderCommandException {
+		if(target != null && this.target.get() != null)
+			throw new RenderCommandException("Cannot replace target '" + this.target + "'  by '" + target + "'");
 		this.target.set(target);
 		AbstractRenderCommand<T>[] commands = program.get(); 
 		for(AbstractRenderCommand<T> command : commands)
 			command.init(target);
 	}
-
+	
 	@Override
-	protected void run(IRenderTarget target) throws RenderCommandException {
+	protected void run(T target) throws RenderCommandException {
 		run();
 	}
 
 	@Override
 	protected void init(T target) throws RenderCommandException {
 		setTarget(target);
+	}
+	
+	public T getTarget() {
+		return target.get();
 	}
 }

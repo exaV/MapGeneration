@@ -31,6 +31,8 @@ package ch.fhnw.util.math;
 
 import java.util.List;
 
+import ch.fhnw.util.HashUtilities;
+
 /**
  * 4D vector for basic vector algebra. Instances are immutable.
  *
@@ -136,19 +138,6 @@ public final class Vec4 implements IVec4 {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-
-		if (obj instanceof Vec4) {
-			final Vec4 v = (Vec4) obj;
-			return (x == v.x) && (y == v.y) && (z == v.z) && (w == v.w);
-		}
-		return false;
-	}
-	
-	@Override
 	public Vec4 toVec4() {
 		return this;
 	}
@@ -158,6 +147,24 @@ public final class Vec4 implements IVec4 {
 		return new float[] { x, y, z, w };
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+
+		if (obj instanceof Vec4) {
+			final Vec4 v = (Vec4) obj;
+			return x == v.x && y == v.y && z == v.z && w == v.w;
+		}
+		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		return HashUtilities.hash(x, y, z, w);
+	}
+	
 	@Override
 	public String toString() {
 		return "[" + x + ", " + y + ", " + z + ", " + w + "]";

@@ -71,7 +71,25 @@ public final class Line {
 	}
 
 	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+
+		if (obj instanceof Line) {
+			final Line l = (Line) obj;
+			return origin.equals(l.origin) && direction.equals(l.direction);
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return origin.hashCode() + direction.hashCode();
+	}
+
+	@Override
 	public String toString() {
 		return "[origin:" + origin + ", direction:" + direction + "]";
-	}	
+	}
 }

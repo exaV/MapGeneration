@@ -69,7 +69,7 @@ public class ArrayAudioSource extends AbstractAudioSource {
 			final float[] outData = Arrays.copyOfRange(data, rdPtr, to);
 			AudioFrame frame = createAudioFrame(samples, outData);
 			frame.setLast(numPlays <= 0);
-			target.setFrame(frame);
+			setFrame(target, frame);
 			samples += outData.length;
 			rdPtr = to % data.length;
 		} catch(Throwable t) {
@@ -83,7 +83,7 @@ public class ArrayAudioSource extends AbstractAudioSource {
 	}
 
 	@Override
-	public long getFrameCount() {
+	public long getLengthInFrames() {
 		return frameCount;
 	}
 
@@ -92,6 +92,13 @@ public class ArrayAudioSource extends AbstractAudioSource {
 		return nChannels;
 	}
 
+	@Override
+	public float getFrameRate() {
+		double result = getLengthInFrames() / getLengthInSeconds();
+		return (float)result;
+	}
+	
+	@Override
 	public double getLengthInSeconds() {
 		return data.length / nChannels / getSampleRate();
 	}

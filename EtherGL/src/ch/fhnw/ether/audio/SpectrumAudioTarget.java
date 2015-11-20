@@ -103,6 +103,9 @@ public class SpectrumAudioTarget implements IAudioRenderTarget {
 	public void sleepUntil(double time) {}
 
 	@Override
+	public void sleepUntil(double time, Runnable callback) {}
+
+	@Override
 	public void start() throws RenderCommandException {}
 
 	@Override

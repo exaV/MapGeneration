@@ -27,30 +27,48 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.formats.mtl;
+package ch.fhnw.util;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
+public final class HashUtilities {
+	private static final int SEED = 17;
 
-import ch.fhnw.ether.image.Frame;
+	// this is only very basic. for better recommendations see
+	// http://developer.android.com/reference/java/lang/Object.html
 
-public class TextureLoader {
-	private TextureLoader() {
+	public static int hash(boolean v) {
+		return SEED + (v ? 1 : 0);
 	}
 
-	private static final Map<String, Frame> frameCache = new HashMap<>();
+	public static int hash(int v) {
+		return SEED + v;
+	}
 
-	public static Frame loadTexture(String path) {
-		Frame frame = frameCache.get(path);
-		if (frame == null) {
-			try {
-				frame = Frame.create(new File(path));
-				frameCache.put(path, frame);
-			} catch (Exception e) {
-				System.err.println("can't load texture: " + path);
-			}
-		}
-		return frame;
+	public static int hash(float v0) {
+		return SEED + Float.floatToIntBits(v0);
+	}
+
+	public static int hash(float v0, float v1) {
+		return SEED + Float.floatToIntBits(v0 + v1);
+	}
+
+	public static int hash(float v0, float v1, float v2) {
+		return SEED + Float.floatToIntBits(v0 + v1 + v2);
+	}
+
+	public static int hash(float v0, float v1, float v2, float v3) {
+		return SEED + Float.floatToIntBits(v0 + v1 + v2 + v3);
+	}
+
+	public static int hash(float v0, float v1, float v2, float v3, float v4, float v5) {
+		return SEED + Float.floatToIntBits(v0 + v1 + v2 + v3 + v4 + v5);
+	}
+
+	public static int hash(float v0, float v1, float v2, float v3, float v4, float v5, float v6, float v7, float v8) {
+		return SEED + Float.floatToIntBits(v0 + v1 + v2 + v3 + v4 + v5 + v6 + v7 + v8);
+	}
+
+	public static int hash(float v0, float v1, float v2, float v3, float v4, float v5, float v6, float v7, float v8,
+			float v9, float v10, float v11, float v12, float v13, float v14, float v15) {
+		return SEED + Float.floatToIntBits(v0 + v1 + v2 + v3 + v4 + v5 + v6 + v7 + v8 + v9 + v10 + v11 + v12 + v13 + v14 + v15);
 	}
 }

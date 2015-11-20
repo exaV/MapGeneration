@@ -42,7 +42,7 @@ public class FrameBuffer {
 	}
 	
 	public void bind(GL3 gl) {
-		gl.glBindFramebuffer(GL3.GL_DRAW_FRAMEBUFFER, fbo.id());
+		gl.glBindFramebuffer(GL3.GL_DRAW_FRAMEBUFFER, fbo.getId());
 	}
 	
 	public static void unbind(GL3 gl) {

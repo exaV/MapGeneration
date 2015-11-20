@@ -34,20 +34,21 @@ import java.net.URL;
 
 import javax.imageio.ImageIO;
 
-import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.media.RenderCommandException;
+import ch.fhnw.ether.video.avfoundation.AVAsset;
+import ch.fhnw.ether.video.jcodec.SequentialVideoTrack;
 import ch.fhnw.util.TextUtilities;
 
 public class URLVideoSource extends AbstractVideoSource {
-	private int         width;
-	private int         height;
-	private double      frameRate  = FRAMERATE_UNKNOWN;
-	private long        frameCount = FRAMECOUNT_UNKNOWN;
-	protected final URL url;
-	protected double    playOutTime;
-	protected int       numPlays;
-	protected double    startTime = -1;
-	private final Frame frame;
+	private static final boolean USE_AV_FOUNDATION = true;
+
+	private final int    width;
+	private final int    height;
+	private final float  frameRate;
+	private final long   frameCount;
+	private final double length;
+	protected final URL  url;
+	private final FrameAccess  asset;
 
 	public URLVideoSource(URL url) throws IOException {
 		this(url, Integer.MAX_VALUE);
@@ -55,23 +56,24 @@ public class URLVideoSource extends AbstractVideoSource {
 
 	public URLVideoSource(URL url, int numPlays) throws IOException {
 		this.url      = url;
-		this.numPlays = numPlays;
-		this.frame    = Frame.create(url);
+		try {
+			asset      = isStillImage(url) ? new FrameAccess(this) : USE_AV_FOUNDATION ? new AVAsset(this, numPlays) : new SequentialVideoTrack(this, numPlays);
+			width      = asset.getWidth();
+			height     = asset.getHeight();
+			frameRate  = asset.getFrameRate();
+			frameCount = asset.getFrameCount();
+			length     = asset.getDuration();
+		} catch(Throwable t) {
+			throw new IOException(t);
+		}
 	}
 
 	@Override
 	protected void run(IVideoRenderTarget target) throws RenderCommandException {
-		if(startTime <= 0)
-			startTime = target.getTime();
-		target.setFrame(new VideoFrame(startTime + getPlayOutTime(), getNextFrame()));
-	}
-
-	public double getPlayOutTime() {
-		return playOutTime;
-	}
-
-	protected Frame getNextFrame() {
-		return frame;
+		VideoFrame frame = new VideoFrame(getTotalElapsedFrames() / getFrameRate(), asset);
+		if(asset.numPlays <= 0)
+			frame.setLast(true);
+		setFrame(target, frame);
 	}
 
 	public static boolean isStillImage(URL url) {
@@ -94,52 +96,21 @@ public class URLVideoSource extends AbstractVideoSource {
 	}
 
 	@Override
-	public double getFrameRate() {
+	public float getFrameRate() {
 		return frameRate;
 	}
 
 	@Override
-	public long getFrameCount() {
+	public long getLengthInFrames() {
 		return frameCount;
 	}
-	
-	public static class Track {
-		protected final URL url;
-		protected double    playOutTime;
-		protected int       numPlays;
-		protected double    startTime = -1;
-		private final Frame frame;
 
-		Track(URL url) throws IOException {
-			this.frame    = Frame.create(url);
-			this.url      = url;
-			this.numPlays = 0;
-		}
+	@Override
+	public double getLengthInSeconds() {
+		return length;
+	}	
 
-		protected Track(URL url, int numPlays) {
-			this.frame    = null;
-			this.url      = url;
-			this.numPlays = numPlays;
-		}
-
-		public double getPlayOutTime() {
-			return playOutTime;
-		}
-
-		protected Frame getNextFrame() {
-			return frame;
-		}
-		protected int getWidth() {
-			return frame.dimI;
-		}
-		protected int getHeight() {
-			return frame.dimJ;
-		}
-		protected double getFrameRate() {
-			return FRAMERATE_UNKNOWN;
-		}
-		protected long getFrameCount() {
-			return 1;
-		}
+	public URL getURL() {
+		return url;
 	}
 }

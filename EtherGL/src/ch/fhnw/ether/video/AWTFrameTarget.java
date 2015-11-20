@@ -38,15 +38,13 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import javax.swing.SwingUtilities;
 
-import ch.fhnw.ether.media.AbstractMediaTarget;
-
-public class AWTFrameTarget extends AbstractMediaTarget<VideoFrame,IVideoRenderTarget> implements IVideoRenderTarget, Runnable {
+public class AWTFrameTarget extends AbstractVideoTarget implements Runnable {
 	private Canvas                         canvas;
 	private AtomicReference<BufferedImage> image  = new AtomicReference<>();
 	private boolean                        resize = true;
 
 	public AWTFrameTarget() {
-		super(Thread.MIN_PRIORITY);
+		super(Thread.MIN_PRIORITY, true);
 		SwingUtilities.invokeLater(this);
 	}
 
@@ -83,9 +81,9 @@ public class AWTFrameTarget extends AbstractMediaTarget<VideoFrame,IVideoRenderT
 
 	@Override
 	public void render() {
-		image.set(getFrame().frame.toBufferedImage());
+		image.set(getFrame().getFrame().toBufferedImage());
 		sleepUntil(getFrame().playOutTime);
 		if(canvas == null) return;
 		canvas.repaint();
-	}
+	}	
 }

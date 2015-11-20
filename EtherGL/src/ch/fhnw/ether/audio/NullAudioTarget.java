@@ -1,14 +1,12 @@
 package ch.fhnw.ether.audio;
 
-import ch.fhnw.ether.media.AbstractMediaTarget;
-
-public class NullAudioTarget extends AbstractMediaTarget<AudioFrame,IAudioRenderTarget> implements IAudioRenderTarget {
+public class NullAudioTarget extends AbstractAudioTarget {
 	private final int   numChannels;
 	private final float sRate;
 	private double      sTime;
 
 	public NullAudioTarget(int numChannels, float sampleRate) {
-		super(Thread.NORM_PRIORITY);
+		super(Thread.NORM_PRIORITY, false);
 		this.numChannels = numChannels;
 		this.sRate       = sampleRate;
 	}

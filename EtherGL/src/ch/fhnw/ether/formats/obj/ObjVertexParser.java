@@ -27,26 +27,27 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.formats.mtl;
+package ch.fhnw.ether.formats.obj;
 
-import ch.fhnw.ether.formats.obj.LineParser;
-import ch.fhnw.ether.formats.obj.WavefrontObject;
-import ch.fhnw.util.color.RGB;
+import ch.fhnw.util.math.Vec3;
 
-public class KsParser extends LineParser {
-	private RGB ks = null;
+final class ObjVertexParser extends LineParser {
+	private Vec3 vertex;
+
+	public ObjVertexParser() {
+	}
 
 	@Override
 	public void parse(WavefrontObject object) {
 		try {
-			ks = new RGB(Float.parseFloat(words[1]), Float.parseFloat(words[2]), Float.parseFloat(words[3]));
+			vertex = new Vec3(Float.parseFloat(words[1]), Float.parseFloat(words[2]), Float.parseFloat(words[3]));
 		} catch (Exception e) {
-			throw new RuntimeException("Ks Parser Error");
+			throw new RuntimeException("Vertex Parser Error");
 		}
 	}
 
 	@Override
 	public void incoporateResults(WavefrontObject object) {
-		object.getCurrentMaterial().setKs(ks);
+		object.getVertices().add(vertex);
 	}
 }

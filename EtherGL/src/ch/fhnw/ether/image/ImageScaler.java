@@ -85,25 +85,6 @@ public final class ImageScaler {
 		return result;
 	}
 
-	public static BufferedImage getScaledInstance(BufferedImage img, int maxArea) {
-		if (img == null)
-			return null;
-
-		int w = img.getWidth();
-		int h = img.getHeight();
-		int a = w * h;
-
-		if (a < maxArea)
-			return img;
-
-		double scalar = Math.sqrt((double) maxArea / a);
-
-		int sw = (int) (w * scalar);
-		int sh = (int) (h * scalar);
-
-		return ImageScaler.getScaledInstance(img, sw, sh, RenderingHints.VALUE_INTERPOLATION_BILINEAR, false);
-	}
-
 	/**
 	 * Convenience method that returns a scaled instance of the provided {@code BufferedImage}.
 	 *

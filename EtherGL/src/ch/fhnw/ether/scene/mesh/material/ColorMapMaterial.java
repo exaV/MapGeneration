@@ -29,16 +29,18 @@
 
 package ch.fhnw.ether.scene.mesh.material;
 
-import java.util.List;
-
-import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.util.color.RGBA;
 
-public class ColorMapMaterial extends ColorMaterial {
+public final class ColorMapMaterial extends AbstractMaterial {
 
+	private RGBA    color;
 	private Texture colorMap;
 
+	public ColorMapMaterial() {
+		this(Texture.TRANSPARENT_1x1);
+	}
+	
 	public ColorMapMaterial(Texture colorMap) {
 		this(RGBA.WHITE, colorMap);
 	}
@@ -48,7 +50,10 @@ public class ColorMapMaterial extends ColorMaterial {
 	}
 
 	public ColorMapMaterial(RGBA color, Texture colorMap, boolean perVertexColor) {
-		super(color, perVertexColor);
+		super(material(IMaterial.COLOR, IMaterial.COLOR_MAP),
+			  geometry(IGeometry.POSITION_ARRAY, perVertexColor ? IGeometry.COLOR_ARRAY : null, IGeometry.COLOR_MAP_ARRAY));		
+			  
+		this.color = color;
 		this.colorMap = colorMap;
 	}
 
@@ -62,23 +67,16 @@ public class ColorMapMaterial extends ColorMaterial {
 	}
 
 	@Override
-	public List<IAttribute> getProvidedAttributes() {
-		List<IAttribute> attributes = super.getProvidedAttributes();
-		attributes.add(IMaterial.COLOR_MAP);
-		return attributes;
+	public Object[] getData() {
+		return data(color, colorMap);
 	}
 
 	@Override
-	public List<IAttribute> getRequiredAttributes() {
-		List<IAttribute> attributes = super.getRequiredAttributes();
-		attributes.add(IGeometry.COLOR_MAP_ARRAY);
-		return attributes;
+	public String toString() {
+		return super.toString() + "[" + color + ", " + colorMap + "]";
 	}
 
-	@Override
-	public List<Object> getData() {
-		List<Object> data = super.getData();
-		data.add(colorMap);
-		return data;
+	public Texture getTexture() {
+		return colorMap;
 	}
 }

@@ -9,6 +9,7 @@
 #import "JavaNativeFoundation/JNFJNI.h"
 
 #include <string>
+#include <OpenGL/gl3.h>
 
 #import <AVFoundation/AVFoundation.h>
 
@@ -166,7 +167,7 @@ public:
             return nullptr;
         }
         
-        AVAssetReaderTrackOutput* output = [reader.outputs objectAtIndex:0];
+        AVAssetReaderOutput* output = [reader.outputs objectAtIndex:0];
         CMSampleBufferRef sampleBuffer = [output copyNextSampleBuffer];
         if (!sampleBuffer) {
             MSG("get next frame: could not copy sample buffer\n");
@@ -216,14 +217,42 @@ public:
         return array;
     }
     
-    int loadFrame(double time, int textureId) {
-        // XXX currently unimplemented
-        return -1;
+    int getNextTextureAndLock(uint64_t* data) {
+        if ([reader status] != AVAssetReaderStatusReading) {
+            MSG("load next frame: reached end of movie\n");
+            return -1;
+        }
+        
+        AVAssetReaderOutput* output = [reader.outputs objectAtIndex:0];
+        CMSampleBufferRef sampleBuffer = [output copyNextSampleBuffer];
+        if (!sampleBuffer) {
+            MSG("load next frame: could not copy sample buffer\n");
+            return -2;
+        }
+        
+        CVOpenGLTextureRef image = CVOpenGLTextureRef(sampleBuffer);
+        if(!image) {
+            MSG("load next frame: could not get image buffer\n");
+            return -3;
+        }
+        
+        // lock the image buffer
+        CVOpenGLTextureRetain(image);
+
+        data[ch_fhnw_ether_video_avfoundation_AVAsset_IDX_TARGET]  = CVOpenGLTextureGetTarget(image);
+        data[ch_fhnw_ether_video_avfoundation_AVAsset_IDX_NAME]    = CVOpenGLTextureGetName(image);
+        data[ch_fhnw_ether_video_avfoundation_AVAsset_IDX_WIDTH]   = getWidth();
+        data[ch_fhnw_ether_video_avfoundation_AVAsset_IDX_HEIGHT]  = getHeight();
+        data[ch_fhnw_ether_video_avfoundation_AVAsset_IDX_SAMPLE]  = (uint64_t)sampleBuffer;
+        data[ch_fhnw_ether_video_avfoundation_AVAsset_IDX_TEXTURE] = (uint64_t)image;
+
+        return 0;
     }
     
-    int loadFrames(int numFrames, int textureId) {
-        // XXX currently unimplemented
-        return -1;
+    int unlockTexture(uint64_t* data) {
+        CVOpenGLTextureRelease((CVOpenGLTextureRef)data[ch_fhnw_ether_video_avfoundation_AVAsset_IDX_TEXTURE]);
+        CFRelease((CMSampleBufferRef)data[ch_fhnw_ether_video_avfoundation_AVAsset_IDX_SAMPLE]);
+        return 0;
     }
 };
 
@@ -382,29 +411,38 @@ JNIEXPORT jbyteArray JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativ
 
 /*
  * Class:     ch_fhnw_ether_video_avfoundation_AVAsset
- * Method:    nativeLoadFrame
- * Signature: (JDI)I
+ * Method:    nativeGetNextTextureAndLock
+ * Signature: (J[J)I
  */
-JNIEXPORT jint JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeLoadFrame
-(JNIEnv * env, jclass, jlong nativeHandle, jdouble time, jint textureId) {
+JNIEXPORT jint JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGetNextTextureAndLock
+(JNIEnv* env, jclass, jlong nativeHandle, jlongArray data) {
     JNF_COCOA_ENTER(env);
     
-    return ((AVAssetWrapper*)nativeHandle)->loadFrame(time, textureId);
+    uint64_t* arrayElements = (uint64_t*)env->GetLongArrayElements(data, nullptr);
+    
+    int result = ((AVAssetWrapper*)nativeHandle)->getNextTextureAndLock(arrayElements);
+    
+    env->SetLongArrayRegion(data, 0, env->GetArrayLength(data), (jlong*)arrayElements);
+
+    return result;
     
     JNF_COCOA_EXIT(env);
 }
 
 /*
  * Class:     ch_fhnw_ether_video_avfoundation_AVAsset
- * Method:    nativeLoadFrames
- * Signature: (JII)I
+ * Method:    nativeUnlockTexture
+ * Signature: (J[J)I
  */
-JNIEXPORT jint JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeLoadFrames
-(JNIEnv * env, jclass, jlong nativeHandle, jint numFrames, jint textureId) {
+JNIEXPORT jint JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeUnlockTexture
+(JNIEnv* env, jclass, jlong nativeHandle, jlongArray data) {
     JNF_COCOA_ENTER(env);
     
-    return ((AVAssetWrapper*)nativeHandle)->loadFrames(numFrames, textureId);
+    uint64_t* arrayElements = (uint64_t*)env->GetLongArrayElements(data, nullptr);
+    
+    return ((AVAssetWrapper*)nativeHandle)->unlockTexture(arrayElements);
     
     JNF_COCOA_EXIT(env);
 }
+
 

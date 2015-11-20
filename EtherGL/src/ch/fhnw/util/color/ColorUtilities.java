@@ -35,15 +35,15 @@ import ch.fhnw.ether.video.fx.AbstractVideoFX;
 
 public final class ColorUtilities {
 	public static final float EPS = 216.f / 24389.f;
-	public static final float K   = 24389.f / 27.f;
+	public static final float K = 24389.f / 27.f;
 
-	public static final float XR   = 0.964221f; // reference white D50
-	public static final float YR   = 1.0f;
-	public static final float ZR   = 0.825211f;
+	public static final float XR = 0.964221f; // reference white D50
+	public static final float YR = 1.0f;
+	public static final float ZR = 0.825211f;
 
 	public static float[] getLUVfromRGB(final ByteBuffer pixels, final float[] result, int pixelSize) {
 		int idx = 0;
-		for(int i = result.length / 3; --i >= 0;) {
+		for (int i = result.length / 3; --i >= 0;) {
 			// http://www.brucelindbloom.com
 
 			float r, g, b, X, Y, Z, yr;
@@ -81,8 +81,9 @@ public final class ColorUtilities {
 				b = (float) Math.pow((b + 0.055) / 1.055, 2.4);
 
 			/*
-			 * X = 0.436052025f*r + 0.385081593f*g + 0.143087414f *b; Y = 0.222491598f*r + 0.71688606f *g + 0.060621486f *b;
-			 * Z = 0.013929122f*r + 0.097097002f*g + 0.71418547f *b;
+			 * X = 0.436052025f*r + 0.385081593f*g + 0.143087414f *b; Y =
+			 * 0.222491598f*r + 0.71688606f *g + 0.060621486f *b; Z =
+			 * 0.013929122f*r + 0.097097002f*g + 0.71418547f *b;
 			 */
 
 			X = 0.4360747f * r + 0.3850649f * g + 0.1430804f * b;
@@ -114,9 +115,11 @@ public final class ColorUtilities {
 			result[idx++] = v;
 			// System.out.println("L="+L+" u="+u+" v="+v);
 			/*
-			 * luv[0] = (int) (2.55*L + .5); luv[1] = (int) (u + .5); luv[2] = (int) (v + .5);
+			 * luv[0] = (int) (2.55*L + .5); luv[1] = (int) (u + .5); luv[2] =
+			 * (int) (v + .5);
 			 */
-			if(pixelSize == 4) pixels.get();
+			if (pixelSize == 4)
+				pixels.get();
 		}
 
 		return result;
@@ -124,18 +127,20 @@ public final class ColorUtilities {
 
 	public static float[] getHSBfromRGB(final ByteBuffer pixels, final float[] result, int pixelSize) {
 		int idx = 0;
-		for(int i = result.length / 3; --i >= 0;) {
-			float       hue;
+		for (int i = result.length / 3; --i >= 0;) {
+			float hue;
 			final float saturation;
 			final float brightness;
-			final int   r = pixels.get() & 0xFF;
-			final int   g = pixels.get() & 0xFF;
-			final int   b = pixels.get() & 0xFF;
+			final int r = pixels.get() & 0xFF;
+			final int g = pixels.get() & 0xFF;
+			final int b = pixels.get() & 0xFF;
 
 			int cmax = (r > g) ? r : g;
-			if (b > cmax) cmax = b;
+			if (b > cmax)
+				cmax = b;
 			int cmin = (r < g) ? r : g;
-			if (b < cmin) cmin = b;
+			if (b < cmin)
+				cmin = b;
 
 			brightness = (cmax) / 255.0f;
 			saturation = cmax != 0 ? ((float) (cmax - cmin)) / ((float) cmax) : 0f;
@@ -159,51 +164,52 @@ public final class ColorUtilities {
 			result[idx++] = hue;
 			result[idx++] = saturation;
 			result[idx++] = brightness;
-			if(pixelSize == 4) pixels.get();
+			if (pixelSize == 4)
+				pixels.get();
 		}
 		return result;
 	}
 
 	public static void putRGBfromHSB(final ByteBuffer pixels, final float[] hsb, int pixelSize) {
 		int idx = 0;
-		for(int i = hsb.length / 3; --i >= 0;) {
+		for (int i = hsb.length / 3; --i >= 0;) {
 			int r = 0, g = 0, b = 0;
-			if (hsb[idx+1] == 0)
-				r = g = b = (int) (hsb[idx+2] * 255.0f + 0.5f);
+			if (hsb[idx + 1] == 0)
+				r = g = b = (int) (hsb[idx + 2] * 255.0f + 0.5f);
 			else {
-				float h = (hsb[idx+0] - (float)Math.floor(hsb[idx+0])) * 6.0f;
-				float f = h - (float)Math.floor(h);
-				float p = hsb[idx+2] * (1.0f - hsb[idx+1]);
-				float q = hsb[idx+2] * (1.0f - hsb[idx+1] * f);
-				float t = hsb[idx+2] * (1.0f - (hsb[idx+1] * (1.0f - f)));
+				float h = (hsb[idx + 0] - (float) Math.floor(hsb[idx + 0])) * 6.0f;
+				float f = h - (float) Math.floor(h);
+				float p = hsb[idx + 2] * (1.0f - hsb[idx + 1]);
+				float q = hsb[idx + 2] * (1.0f - hsb[idx + 1] * f);
+				float t = hsb[idx + 2] * (1.0f - (hsb[idx + 1] * (1.0f - f)));
 				switch ((int) h) {
 				case 0:
-					r = (int) (hsb[idx+2] * 255.0f + 0.5f);
+					r = (int) (hsb[idx + 2] * 255.0f + 0.5f);
 					g = (int) (t * 255.0f + 0.5f);
 					b = (int) (p * 255.0f + 0.5f);
 					break;
 				case 1:
 					r = (int) (q * 255.0f + 0.5f);
-					g = (int) (hsb[idx+2] * 255.0f + 0.5f);
+					g = (int) (hsb[idx + 2] * 255.0f + 0.5f);
 					b = (int) (p * 255.0f + 0.5f);
 					break;
 				case 2:
 					r = (int) (p * 255.0f + 0.5f);
-					g = (int) (hsb[idx+2] * 255.0f + 0.5f);
+					g = (int) (hsb[idx + 2] * 255.0f + 0.5f);
 					b = (int) (t * 255.0f + 0.5f);
 					break;
 				case 3:
 					r = (int) (p * 255.0f + 0.5f);
 					g = (int) (q * 255.0f + 0.5f);
-					b = (int) (hsb[idx+2] * 255.0f + 0.5f);
+					b = (int) (hsb[idx + 2] * 255.0f + 0.5f);
 					break;
 				case 4:
 					r = (int) (t * 255.0f + 0.5f);
 					g = (int) (p * 255.0f + 0.5f);
-					b = (int) (hsb[idx+2] * 255.0f + 0.5f);
+					b = (int) (hsb[idx + 2] * 255.0f + 0.5f);
 					break;
 				case 5:
-					r = (int) (hsb[idx+2] * 255.0f + 0.5f);
+					r = (int) (hsb[idx + 2] * 255.0f + 0.5f);
 					g = (int) (p * 255.0f + 0.5f);
 					b = (int) (q * 255.0f + 0.5f);
 					break;
@@ -212,21 +218,54 @@ public final class ColorUtilities {
 			pixels.put((byte) r);
 			pixels.put((byte) g);
 			pixels.put((byte) b);
-			if(pixelSize == 4) pixels.get();
+			if (pixelSize == 4)
+				pixels.get();
+			idx += 3;
+		}
+	}
+
+	public static float[] getYPbPrfromRGB(final ByteBuffer pixels, final float[] result, int pixelSize) {
+		int idx = 0;
+		for (int i = result.length / 3; --i >= 0;) {
+			final float r = AbstractVideoFX.toFloat(pixels.get());
+			final float g = AbstractVideoFX.toFloat(pixels.get());
+			final float b = AbstractVideoFX.toFloat(pixels.get());
+			result[idx + 0] = 0.299f * r + 0.587f * g + 0.114f * b;
+			result[idx + 1] = -0.168736f * r - 0.331264f * g + 0.5f      * b;
+			result[idx + 2] =  0.5f      * r - 0.418688f * g - 0.081312f * b;
+			if (pixelSize == 4)
+				pixels.get();
+			idx += 3;
+		}
+		return result;
+	}
+
+	public static void putRGBfromYPbPr(final ByteBuffer pixels, final float[] yPbPr, int pixelSize) {
+		int idx = 0;
+		for (int i = yPbPr.length / 3; --i >= 0;) {
+			final float r = yPbPr[idx]                            + 1.402f    * yPbPr[idx+2];
+			final float g = yPbPr[idx] - 0.344136f * yPbPr[idx+1] - 0.714136f * yPbPr[idx+2];
+			final float b = yPbPr[idx] + 1.772f    * yPbPr[idx+1];	
+			pixels.put(AbstractVideoFX.toByte(r));
+			pixels.put(AbstractVideoFX.toByte(g));
+			pixels.put(AbstractVideoFX.toByte(b));
+			if (pixelSize == 4)
+				pixels.get();
 			idx += 3;
 		}
 	}
 
 	public static float[] getYUVfromRGB(final ByteBuffer pixels, final float[] result, int pixelSize) {
 		int idx = 0;
-		for(int i = result.length / 3; --i >= 0;) {
+		for (int i = result.length / 3; --i >= 0;) {
 			final float r = AbstractVideoFX.toFloat(pixels.get());
 			final float g = AbstractVideoFX.toFloat(pixels.get());
 			final float b = AbstractVideoFX.toFloat(pixels.get());
-			result[idx+0] = 0.299f*r+0.587f*g+0.114f*b;
-			result[idx+1] = 0.492f*(b-result[idx]);
-			result[idx+2] = 0.877f*(r-result[idx]);
-			if(pixelSize == 4) pixels.get();
+			result[idx + 0] = 0.299f * r + 0.587f * g + 0.114f * b;
+			result[idx + 1] = 0.492f * (b - result[idx]);
+			result[idx + 2] = 0.877f * (r - result[idx]);
+			if (pixelSize == 4)
+				pixels.get();
 			idx += 3;
 		}
 		return result;
@@ -234,15 +273,16 @@ public final class ColorUtilities {
 
 	public static void putRGBfromYUV(final ByteBuffer pixels, final float[] yuv, int pixelSize) {
 		int idx = 0;
-		for(int i = yuv.length / 3; --i >= 0;) {		
-			final float r = yuv[idx] + 1.14f  * yuv[idx+2];
-			final float g = yuv[idx] - 0.395f * yuv[idx+1] - 0.581f * yuv[idx+2];
-			final float b = yuv[idx] + 2.033f * yuv[idx+1];
+		for (int i = yuv.length / 3; --i >= 0;) {
+			final float r = yuv[idx] + 1.14f  * yuv[idx + 2];
+			final float g = yuv[idx] - 0.395f * yuv[idx + 1] - 0.581f * yuv[idx + 2];
+			final float b = yuv[idx] + 2.033f * yuv[idx + 1];
 			pixels.put(AbstractVideoFX.toByte(r));
 			pixels.put(AbstractVideoFX.toByte(g));
 			pixels.put(AbstractVideoFX.toByte(b));
-			if(pixelSize == 4) pixels.get();
+			if (pixelSize == 4)
+				pixels.get();
 			idx += 3;
 		}
-	}	
+	}
 }

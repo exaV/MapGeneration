@@ -181,6 +181,17 @@ public final class Camera implements ICamera {
 		return update;
 	}
 
+	// we purposely leave equals and hashcode at default (identity)
+	@Override
+	public boolean equals(Object obj) {
+		return super.equals(obj);
+	}
+
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+
 	@Override
 	public String toString() {
 		return "camera '" + getName() + "' [" + position + target + up + "][" + getCameraXAxis() + getCameraYAxis()

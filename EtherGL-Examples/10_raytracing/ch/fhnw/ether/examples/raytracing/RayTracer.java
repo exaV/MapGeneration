@@ -36,7 +36,7 @@ import java.util.List;
 import ch.fhnw.ether.examples.raytracing.util.IntersectResult;
 import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.image.RGBA8Frame;
-import ch.fhnw.ether.media.AbstractFrame;
+import ch.fhnw.ether.media.IScheduler;
 import ch.fhnw.ether.media.RenderCommandException;
 import ch.fhnw.ether.scene.camera.Camera;
 import ch.fhnw.ether.scene.camera.ICamera;
@@ -146,15 +146,20 @@ public class RayTracer extends AbstractVideoSource {
 	}
 
 	@Override
-	public double getFrameRate() {
+	public float getFrameRate() {
 		return FRAMERATE_UNKNOWN;
 	}
 
 	@Override
-	public long getFrameCount() {
+	public long getLengthInFrames() {
 		return FRAMECOUNT_UNKNOWN;
 	}
 
+	@Override
+	public double getLengthInSeconds() {
+		return LENGTH_INFINITE;
+	}
+	
 	@Override
 	protected void run(final IVideoRenderTarget target) throws RenderCommandException {
 		if(lights.isEmpty()) return;
@@ -190,7 +195,7 @@ public class RayTracer extends AbstractVideoSource {
 			}
 		});
 
-		target.setFrame(new VideoFrame(AbstractFrame.ASAP, frame));
+		setFrame(target, new VideoFrame(IScheduler.ASAP, frame));
 	}
 
 	public void setLights(List<ILight> lights) {

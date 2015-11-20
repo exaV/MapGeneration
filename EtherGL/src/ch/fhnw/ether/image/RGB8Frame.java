@@ -185,7 +185,7 @@ public class RGB8Frame extends Frame {
 	public BufferedImage toBufferedImage() {
 		BufferedImage result = new BufferedImage(dimI, dimJ, BufferedImage.TYPE_INT_RGB);
 		final int[] line = new int[dimI];
-		final ByteBuffer src = pixels;
+		final ByteBuffer src = pixels.asReadOnlyBuffer();
 		src.clear();
 		for (int j = dimJ; --j >= 0;) {
 			for (int i = 0; i < line.length; i++) {

@@ -48,13 +48,17 @@ import javax.imageio.ImageIO;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL3;
 
-import ch.fhnw.ether.media.AbstractMediaTarget;
 import ch.fhnw.ether.media.RenderCommandException;
-import ch.fhnw.ether.video.IVideoRenderTarget;
+import ch.fhnw.ether.render.gl.GLObject;
+import ch.fhnw.ether.render.gl.GLObject.Type;
+import ch.fhnw.ether.scene.mesh.material.Texture;
+import ch.fhnw.ether.video.AbstractVideoTarget;
 import ch.fhnw.ether.video.VideoFrame;
+import ch.fhnw.ether.view.gl.GLContextManager;
+import ch.fhnw.ether.view.gl.GLContextManager.IGLContext;
 import ch.fhnw.util.BufferUtilities;
 
-public abstract class Frame extends AbstractMediaTarget<VideoFrame,IVideoRenderTarget> implements IVideoRenderTarget {
+public abstract class Frame extends AbstractVideoTarget {
 
 	public enum FileFormat {PNG,JPEG}
 
@@ -67,14 +71,15 @@ public abstract class Frame extends AbstractMediaTarget<VideoFrame,IVideoRenderT
 	public int        dimJ;
 	public int        pixelSize;
 	private int       modCount;
+	private Texture   texture;
 
 	protected Frame(int pixelSize) {
-		super(Thread.MIN_PRIORITY);
+		super(Thread.MIN_PRIORITY, false);
 		this.pixelSize = pixelSize;
 	}
 
 	protected Frame(int dimI, int dimJ, byte[] frameBuffer, int pixelSize) {
-		super(Thread.MIN_PRIORITY);
+		super(Thread.MIN_PRIORITY, false);
 		this.pixels = BufferUtilities.createDirectByteBuffer(frameBuffer.length);
 		this.pixels.put(frameBuffer);
 		this.pixelSize = pixelSize;
@@ -82,7 +87,7 @@ public abstract class Frame extends AbstractMediaTarget<VideoFrame,IVideoRenderT
 	}
 
 	protected Frame(int dimI, int dimJ, ByteBuffer frameBuffer, int pixelSize) {
-		super(Thread.MIN_PRIORITY);
+		super(Thread.MIN_PRIORITY, false);
 		if (frameBuffer.isDirect()) {
 			this.pixels = frameBuffer;
 		} else {
@@ -428,15 +433,6 @@ public abstract class Frame extends AbstractMediaTarget<VideoFrame,IVideoRenderT
 		ImageIO.write(toBufferedImage(), format.toString(), out);
 	}
 
-	public void load(GL3 gl, int target, int textureId) {
-		gl.glBindTexture(target, textureId);
-		gl.glPixelStorei(GL3.GL_UNPACK_ALIGNMENT, 1);
-		pixels.rewind();
-		loadInternal(gl, target, textureId);
-		gl.glGenerateMipmap(target);
-		gl.glBindTexture(target, 0);
-	}
-
 	protected abstract void loadInternal(GL3 gl, int target, int textureId);
 
 	static final ExecutorService POOL       = Executors.newCachedThreadPool();
@@ -485,10 +481,36 @@ public abstract class Frame extends AbstractMediaTarget<VideoFrame,IVideoRenderT
 
 	@Override
 	public void render() throws RenderCommandException {
-		VideoFrame vf = getFrame();
-		if(dimI != vf.frame.dimI || dimJ != vf.frame.dimJ) {
-			setPixels(0, 0, dimI, dimJ, ImageScaler.getScaledInstance(vf.frame.toBufferedImage(), dimI, dimJ, RenderingHints.VALUE_INTERPOLATION_BILINEAR, false));
+		VideoFrame vf    = getFrame();
+		Frame      frame = vf.getFrame(); 
+		if(dimI != frame.dimI || dimJ != frame.dimJ) {
+			setPixels(0, 0, dimI, dimJ, ImageScaler.getScaledInstance(frame.toBufferedImage(), dimI, dimJ, RenderingHints.VALUE_INTERPOLATION_BILINEAR, false));
 		} else
-			setSubframe(0, 0, vf.frame);
+			setSubframe(0, 0, frame);
 	}
+
+	public Texture getTexture() {
+		if(texture == null) {
+			try(IGLContext ctx = GLContextManager.acquireContext()) {
+				final GL3        gl        = ctx.getGL();
+				texture                    = new Texture(new GLObject(gl, Type.TEXTURE), dimI, dimJ);
+				final int        target    = GL.GL_TEXTURE_2D;
+				final int        textureId = texture.getGlObject().getId(); 
+				gl.glBindTexture(target, textureId);
+				gl.glTexParameteri(target, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
+				gl.glTexParameteri(target, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR_MIPMAP_LINEAR);
+				gl.glTexParameterf(target, GL.GL_TEXTURE_WRAP_S, GL.GL_REPEAT);
+				gl.glTexParameterf(target, GL.GL_TEXTURE_WRAP_T, GL.GL_REPEAT);
+				gl.glPixelStorei(GL3.GL_UNPACK_ALIGNMENT, 1);
+				pixels.rewind();
+				loadInternal(gl, target, textureId);
+				gl.glGenerateMipmap(target);
+				gl.glBindTexture(target, 0);
+				gl.glFinish();
+			} catch(Throwable t) {
+				log.warning(t);
+			}
+		}
+		return texture;
+	}	
 }

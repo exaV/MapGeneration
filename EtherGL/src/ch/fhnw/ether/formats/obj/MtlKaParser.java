@@ -29,15 +29,22 @@
 
 package ch.fhnw.ether.formats.obj;
 
-public class FreeFormParser extends LineParser {
-	public FreeFormParser() {
-	}
+import ch.fhnw.util.color.RGB;
+
+final class MtlKaParser extends LineParser {
+	private RGB ka = null;
 
 	@Override
 	public void parse(WavefrontObject object) {
+		try {
+			ka = new RGB(Float.parseFloat(words[1]), Float.parseFloat(words[2]), Float.parseFloat(words[3]));
+		} catch (Exception e) {
+			throw new RuntimeException("Ka Parser Error");
+		}
 	}
 
 	@Override
 	public void incoporateResults(WavefrontObject object) {
+		object.getCurrentMaterial().setKa(ka);
 	}
 }

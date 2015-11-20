@@ -33,8 +33,9 @@ import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.media.Parameter;
 import ch.fhnw.ether.video.IVideoRenderTarget;
 import ch.fhnw.ether.video.fx.AbstractVideoFX;
+import ch.fhnw.ether.video.fx.IVideoFrameFX;
 
-public class Posterize extends AbstractVideoFX {
+public class Posterize extends AbstractVideoFX implements IVideoFrameFX {
 	private static final Parameter MASK = new Parameter("mask", "Bit Mask", 0, 7, 0);
 
 	public Posterize() {
@@ -42,7 +43,7 @@ public class Posterize extends AbstractVideoFX {
 	}
 
 	@Override
-	protected void processFrame(final double playOutTime, final IVideoRenderTarget target, final Frame frame) {
+	public void processFrame(final double playOutTime, final IVideoRenderTarget target, final Frame frame) {
 		final int mask = 0xFF << (int)getVal(MASK);
 
 		if(frame.pixelSize == 4) {

@@ -33,11 +33,10 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.SourceDataLine;
 
-import ch.fhnw.ether.media.AbstractMediaTarget;
 import ch.fhnw.ether.media.RenderCommandException;
 import ch.fhnw.ether.media.RenderProgram;
 
-public final class JavaSoundTarget extends AbstractMediaTarget<AudioFrame,IAudioRenderTarget> implements IAudioRenderTarget {
+public final class JavaSoundTarget extends AbstractAudioTarget {
 	private static final float S2F = Short.MAX_VALUE;
 
 	private AudioFormat    fmt;
@@ -60,7 +59,7 @@ public final class JavaSoundTarget extends AbstractMediaTarget<AudioFrame,IAudio
 	 * @param bufferSize The output buffer size. Values below 2048 produce audio glitches on most platforms.
 	 */
 	public JavaSoundTarget(int bufferSize) {
-		super(Thread.MAX_PRIORITY);
+		super(Thread.MAX_PRIORITY, true);
 		this.bufferSize = bufferSize;
 	}
 
@@ -84,7 +83,6 @@ public final class JavaSoundTarget extends AbstractMediaTarget<AudioFrame,IAudio
 
 	@Override
 	public void render() {
-
 		if(!out.isRunning())
 			out.start();
 
