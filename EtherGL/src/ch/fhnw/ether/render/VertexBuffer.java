@@ -57,6 +57,8 @@ public final class VertexBuffer implements IVertexBuffer {
 
 	public VertexBuffer(IShader shader, IGeometryAttribute[] attributes) {
 		List<IShaderArray<?>> arrays = shader.getArrays();
+		if (arrays.isEmpty())
+			throw new IllegalArgumentException("shader " + shader + " does not define any vertex arrays");
 
 		sizes = new int[arrays.size()];
 		offsets = new int[arrays.size()];
@@ -85,14 +87,13 @@ public final class VertexBuffer implements IVertexBuffer {
 		this.stride = stride;
 	}
 
-	public void load(GL3 gl, IShader shader, float[][] data) {
-		List<IShaderArray<?>> arrays = shader.getArrays();
-		float[][] sources = new float[arrays.size()][];
+	public void update(GL3 gl, float[][] data) {
+		float[][] sources = new float[attributeIndices.length][];
 
 		int size = 0;
-		for (int bufferIndex = 0; bufferIndex < arrays.size(); ++bufferIndex) {
-			float[] source = data[attributeIndices[bufferIndex]];
-			sources[bufferIndex] = source;
+		for (int attributeIndex = 0; attributeIndex < attributeIndices.length; ++attributeIndex) {
+			float[] source = data[attributeIndices[attributeIndex]];
+			sources[attributeIndex] = source;
 			size += source.length;
 		}
 		FloatBuffer buffer = TARGET.get();

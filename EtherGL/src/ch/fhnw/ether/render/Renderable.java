@@ -60,7 +60,7 @@ public final class Renderable {
 		if (materialData != null)
 			shader.update(gl, materialData);
 		if (geometryData != null)
-			buffer.load(gl, shader, geometryData);
+			buffer.update(gl, geometryData);
 	}
 
 	public void render(GL3 gl) {
