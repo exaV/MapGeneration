@@ -107,7 +107,7 @@ public final class CustomShaderExample {
 		return new DefaultMesh(new ExampleCustomMaterial(new ExampleCustomShader(), 2f), g);
 	}
 
-	private volatile IMesh mesh;
+	private IMesh mesh;
 
 	// Setup the whole thing
 	public CustomShaderExample() {

@@ -39,16 +39,12 @@ import ch.fhnw.ether.render.IRenderer.IRenderUpdate;
 import ch.fhnw.ether.render.shader.IShader;
 import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.mesh.IMesh;
-import ch.fhnw.util.math.Mat3;
-import ch.fhnw.util.math.Mat4;
 
 public final class Renderable {
 	public static final class RenderUpdate implements IRenderUpdate {
 		public final Renderable renderable;
 		public final Object[] materialData;
 		public final float[][] geometryData;
-		public final Mat4 positionTransform;
-		public final Mat3 normalTransform;
 
 		public RenderUpdate(Renderable renderable, IMesh mesh) {
 			this(renderable, mesh, true, true);
@@ -61,15 +57,10 @@ public final class Renderable {
 			else
 				materialData = null;
 
-			if (geometryChanged) {
-				geometryData = mesh.getGeometry().getData();
-				positionTransform = Mat4.multiply(Mat4.translate(mesh.getPosition()), mesh.getTransform());
-				normalTransform = new Mat3(positionTransform).inverse().transpose();
-			} else {
+			if (geometryChanged)
+				geometryData = mesh.getTransformedGeometryData();
+			else
 				geometryData = null;
-				positionTransform = null;
-				normalTransform = null;
-			}
 		}	
 		
 		@Override
@@ -85,17 +76,7 @@ public final class Renderable {
 		@Override
 		public float[][] getGeometryData() {
 			return geometryData;
-		}
-		
-		@Override
-		public Mat4 getPositionTransform() {
-			return positionTransform;
-		}
-		
-		@Override
-		public Mat3 getNormalTransform() {
-			return normalTransform;
-		}
+		}		
 	}
 
 	private final IShader shader;
@@ -118,7 +99,7 @@ public final class Renderable {
 		if (update.getMaterialData() != null)
 			shader.update(gl, update.getMaterialData());
 		if (update.getGeometryData() != null)
-			buffer.load(gl, shader, update.getGeometryData(), update.getPositionTransform(), update.getNormalTransform());
+			buffer.load(gl, shader, update.getGeometryData());
 	}
 
 	public void render(GL3 gl) {

@@ -95,10 +95,7 @@ public final class DefaultGeometry extends AbstractGeometry {
 	
 	@Override
 	public float[][] getData() {
-		float[][] d = new float[data.length][];
-		for (int i = 0; i < data.length; ++i)
-			d[i] = Arrays.copyOf(data[i], data[i].length);
-		return d;
+		return data;
 	}
 
 	@Override
