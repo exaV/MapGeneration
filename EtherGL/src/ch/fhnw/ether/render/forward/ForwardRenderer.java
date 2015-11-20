@@ -122,7 +122,7 @@ public final class ForwardRenderer extends AbstractRenderer {
 		// get out of sync resulting in ugly fails.
 		if (!GL_NO_THREADS) {
 			try (IGLContext ctx = GLContextManager.acquireContext()) {
-				renderState.getRenderUpdates().forEach(update -> update.getRenderable().update(ctx.getGL(), update));
+				renderState.getRenderUpdates().forEach(update -> update.update(ctx.getGL()));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -138,7 +138,7 @@ public final class ForwardRenderer extends AbstractRenderer {
                 try {
                 	GL3 gl = drawable.getGL().getGL3();
                 	if (GL_NO_THREADS && !once.getAndSet(true)) {
-            			renderState.getRenderUpdates().forEach(update -> update.getRenderable().update(gl, update));                		
+            			renderState.getRenderUpdates().forEach(update -> update.update(gl));                		
                 	}
                     render(gl, targetState, view, vcs);
                 } catch (Exception e) {

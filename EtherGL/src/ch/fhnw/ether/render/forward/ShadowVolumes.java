@@ -72,6 +72,8 @@ public final class ShadowVolumes {
 		gl.glBlendFunc(GL.GL_ZERO, GL.GL_SRC_ALPHA);
 		gl.glDepthMask(false);
 		gl.glEnable(GL3.GL_DEPTH_CLAMP);
+		
+		overlay.update(gl, OVERLAY_MESH.getMaterial().getData(), OVERLAY_MESH.getTransformedGeometryData());
 
 		for (lightIndex = 0; lightIndex < numLights; ++lightIndex) {
 			gl.glClear(GL.GL_STENCIL_BUFFER_BIT);
@@ -103,7 +105,7 @@ public final class ShadowVolumes {
 			gl.glStencilFunc(GL.GL_NOTEQUAL, 0x0, 0xffffffff);
 			gl.glStencilOp(GL.GL_KEEP, GL.GL_KEEP, GL.GL_KEEP);
 
-			overlay.render(gl, OVERLAY_MESH);
+			overlay.render(gl);
 
 			gl.glDisable(GL.GL_STENCIL_TEST);
 		}

@@ -36,11 +36,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.jogamp.opengl.GL3;
+
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.render.IRenderer.IRenderState;
 import ch.fhnw.ether.render.IRenderer.IRenderTargetState;
 import ch.fhnw.ether.render.IRenderer.IRenderUpdate;
-import ch.fhnw.ether.render.Renderable.RenderUpdate;
 import ch.fhnw.ether.render.variable.builtin.LightUniformBlock;
 import ch.fhnw.ether.scene.camera.Camera;
 import ch.fhnw.ether.scene.camera.ICamera;
@@ -72,6 +73,32 @@ public class DefaultRenderManager implements IRenderManager {
 	private static final class SceneMeshState {
 		Renderable renderable;
 	}
+	
+	private static final class RenderUpdate implements IRenderUpdate {
+		public final Renderable renderable;
+		public final Object[] materialData;
+		public final float[][] geometryData;
+
+		public RenderUpdate(Renderable renderable, IMesh mesh, boolean materialChanged, boolean geometryChanged) {
+			this.renderable = renderable;
+			if (materialChanged)
+				materialData = mesh.getMaterial().getData();	
+			else
+				materialData = null;
+
+			if (geometryChanged)
+				geometryData = mesh.getTransformedGeometryData();
+			else
+				geometryData = null;
+		}
+		
+		@Override
+		public void update(GL3 gl) {
+			renderable.update(gl, materialData, geometryData);
+		}
+	}
+
+	
 
 	private final class SceneState {
 		final Map<IView, SceneViewState> views = new IdentityHashMap<>();
