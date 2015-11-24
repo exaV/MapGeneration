@@ -38,13 +38,15 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import javax.swing.SwingUtilities;
 
+import ch.fhnw.ether.video.fx.AbstractVideoFX;
+
 public class AWTFrameTarget extends AbstractVideoTarget implements Runnable {
 	private Canvas                         canvas;
 	private AtomicReference<BufferedImage> image  = new AtomicReference<>();
 	private boolean                        resize = true;
 
 	public AWTFrameTarget() {
-		super(Thread.MIN_PRIORITY, true);
+		super(Thread.MIN_PRIORITY, AbstractVideoFX.FRAMEFX, true);
 		SwingUtilities.invokeLater(this);
 	}
 

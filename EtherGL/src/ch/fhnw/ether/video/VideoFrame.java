@@ -36,6 +36,7 @@ import ch.fhnw.ether.scene.mesh.material.Texture;
 public class VideoFrame extends AbstractFrame {
 	private final FrameAccess framea;
 	private       Frame       frame;
+	private       Texture     texture;
 	private       boolean     frameRead;
 
 	public VideoFrame(double playOutTime, Frame frame) {
@@ -51,9 +52,13 @@ public class VideoFrame extends AbstractFrame {
 	}
 
 	public synchronized Frame getFrame() {
-		if(frame == null && !(frameRead)) {
-			frame     = framea.getNextFrame();
-			frameRead = true;
+		if(frame == null) {
+			if(texture != null) {
+				frame = Frame.create(texture);
+			} else {
+				frameRead = true;
+				frame = framea.getNextFrame();
+			}
 		}
 		return frame;
 	}
@@ -71,9 +76,18 @@ public class VideoFrame extends AbstractFrame {
 	}
 
 	public synchronized Texture getTexture() {
-		if(frame != null)
-			return frame.getTexture();
-		frameRead = true;
-		return framea.getNextTexture();
+		if(texture == null) {
+			if(frame != null) {
+				setTexture(frame.getTexture());
+			} else {
+				frameRead = true;
+				setTexture(framea.getNextTexture());
+			}
+		}
+		return texture;
+	}
+
+	public void setTexture(Texture texture) {
+		this.texture = texture;
 	}	
 }

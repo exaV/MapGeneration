@@ -38,6 +38,7 @@ import java.util.Map;
 
 import ch.fhnw.ether.render.gl.GLObject.Type;
 import ch.fhnw.ether.render.shader.IShader;
+import ch.fhnw.ether.render.shader.base.AbstractShader;
 
 import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.GL4;
@@ -83,12 +84,16 @@ public final class Program {
 			this.path = path;
 
 			StringBuilder code = new StringBuilder();
-			URL url = root.getResource(path);
-			if (url == null) {
-				out.println("file not found: " + this);
-				throw new FileNotFoundException("file not found: " + this);
+			if(path.startsWith(AbstractShader.INLINE))
+				code.append(path);
+			else {
+				URL url = root.getResource(path);
+				if (url == null) {
+					out.println("file not found: " + this);
+					throw new FileNotFoundException("file not found: " + this);
+				}
+				new GLSLReader(LIBRARY, url, code, out);
 			}
-			new GLSLReader(LIBRARY, url, code, out);
 
 			shaderObject = gl.glCreateShader(type.glType);
 
@@ -256,12 +261,15 @@ public final class Program {
 
 		if (status[0] != 1) {
 			gl3.glGetShaderiv(object, GL3.GL_INFO_LOG_LENGTH, status, 0);
-			byte[] infoLog = new byte[status[0]];
-			if (statusType == GL3.GL_COMPILE_STATUS)
-				gl3.glGetShaderInfoLog(object, status[0], status, 0, infoLog, 0);
-			else if (statusType == GL3.GL_LINK_STATUS)
-				gl3.glGetProgramInfoLog(object, status[0], status, 0, infoLog, 0);
-			out.println(new String(infoLog));
+			if(status[0] > 0) {
+				byte[] infoLog = new byte[status[0]];
+				if (statusType == GL3.GL_COMPILE_STATUS)
+					gl3.glGetShaderInfoLog(object, status[0], status, 0, infoLog, 0);
+				else if (statusType == GL3.GL_LINK_STATUS)
+					gl3.glGetProgramInfoLog(object, status[0], status, 0, infoLog, 0);
+				out.println(new String(infoLog));
+			} else
+				out.println("Unknonw (" + (statusType == GL3.GL_COMPILE_STATUS ? "GL_COMPILE_STATUS" : "GL_LINK_STATUS") + ")");
 			return false;
 		}
 		return true;

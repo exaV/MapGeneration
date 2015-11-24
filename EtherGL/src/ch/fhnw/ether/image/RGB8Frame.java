@@ -40,6 +40,7 @@ import java.nio.FloatBuffer;
 
 import ch.fhnw.util.BufferUtilities;
 
+import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL3;
 
 public class RGB8Frame extends Frame {
@@ -548,7 +549,7 @@ public class RGB8Frame extends Frame {
 	}
 
 	@Override
-	protected void loadInternal(GL3 gl, int target, int textureId) {
-		gl.glTexImage2D(target, 0, GL3.GL_RGB, dimI, dimJ, 0, GL3.GL_RGB, GL3.GL_UNSIGNED_BYTE, pixels);
+	protected void loadTexture(GL3 gl) {
+		gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL3.GL_RGB, dimI, dimJ, 0, GL3.GL_RGB, GL3.GL_UNSIGNED_BYTE, pixels);
 	}
 }

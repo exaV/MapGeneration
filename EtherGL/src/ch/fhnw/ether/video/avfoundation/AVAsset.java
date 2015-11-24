@@ -31,11 +31,18 @@ package ch.fhnw.ether.video.avfoundation;
 
 import java.lang.ref.ReferenceQueue;
 
+import com.jogamp.opengl.GL3;
+
 import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.image.RGBA8Frame;
+import ch.fhnw.ether.media.RenderCommandException;
+import ch.fhnw.ether.render.gl.GLObject;
+import ch.fhnw.ether.render.gl.GLObject.Type;
 import ch.fhnw.ether.scene.mesh.material.Texture;
 import ch.fhnw.ether.video.FrameAccess;
 import ch.fhnw.ether.video.URLVideoSource;
+import ch.fhnw.ether.view.gl.GLContextManager;
+import ch.fhnw.ether.view.gl.GLContextManager.IGLContext;
 import ch.fhnw.util.AutoDisposer;
 import ch.fhnw.util.AutoDisposer.Reference;
 import ch.fhnw.util.IDisposable;
@@ -156,32 +163,35 @@ public final class AVAsset extends FrameAccess {
 
 	static class Data implements IDisposable {
 		long[] data = new long[IDX_COUNT];
-		
+
 		public Data(long nativeHandle) {
 			data[IDX_HANDLE] = nativeHandle;
 		}
 
 		@Override
 		public void dispose() {
-			nativeUnlockTexture(data[IDX_HANDLE], data);
+			nativeDisposeTexture(data[IDX_HANDLE], data);
 		}
 	}
-	
+
 	@Override
 	public Texture getNextTexture() {
-		return getNextFrame().getTexture();
-		/*
 		try(IGLContext ctx = GLContextManager.acquireContext()) {
 			Data data = new Data(nativeHandle);
-			int result = nativeGetNextTextureAndLock(nativeHandle, data.data);
-			if(data.data[IDX_TARGET] != GL.GL_TEXTURE_2D)
-				throw new RenderCommandException("Wrong target. Expected " + GL.GL_TEXTURE_2D + ", got " + data.data[IDX_TARGET]);
-			return result == 0 ? new Texture(new GLObject(ctx.getGL(), Type.TEXTURE, data), (int)data.data[IDX_WIDTH], (int)data.data[IDX_HEIGHT]) : null;
+			int result = nativeGetNextTexture(nativeHandle, data.data);
+			if(result < 0) {
+				rewind();
+				if(numPlays <= 0)
+					return null;
+				result = nativeGetNextTexture(nativeHandle, data.data);
+			}
+			if(data.data[IDX_TARGET] != GL3.GL_TEXTURE_2D)
+				throw new RenderCommandException("Wrong target. Expected " + GL3.GL_TEXTURE_2D + ", got " + data.data[IDX_TARGET]);
+			return result == 0 ? new Texture(new GLObject(Type.TEXTURE, (int)data.data[IDX_NAME], data), (int)data.data[IDX_WIDTH], (int)data.data[IDX_HEIGHT]) : null;
 		} catch(Throwable t) {
 			log.warning(t);
 			return null;
 		}
-		*/
 	}
 
 	@Override
@@ -219,7 +229,7 @@ public final class AVAsset extends FrameAccess {
 
 	private static native byte[] nativeGetNextFrame(long nativeHandle);
 
-	private static native int nativeGetNextTextureAndLock(long nativeHandle, long[] data);
+	private static native int nativeGetNextTexture(long nativeHandle, long[] data);
 
-	private static native int nativeUnlockTexture(long nativeHandle, long[] data);
+	private static native int nativeDisposeTexture(long nativeHandle, long[] data);
 }

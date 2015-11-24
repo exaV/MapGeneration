@@ -67,15 +67,7 @@ public class URLVideoSource extends AbstractVideoSource {
 			throw new IOException(t);
 		}
 	}
-
-	@Override
-	protected void run(IVideoRenderTarget target) throws RenderCommandException {
-		VideoFrame frame = new VideoFrame(getTotalElapsedFrames() / getFrameRate(), asset);
-		if(asset.numPlays <= 0)
-			frame.setLast(true);
-		setFrame(target, frame);
-	}
-
+	
 	public static boolean isStillImage(URL url) {
 		return ImageIO.getImageReadersBySuffix(TextUtilities.getFileExtensionWithoutDot(url.getPath())).hasNext();
 	}
@@ -112,5 +104,13 @@ public class URLVideoSource extends AbstractVideoSource {
 
 	public URL getURL() {
 		return url;
+	}
+
+	@Override
+	protected void run(IVideoRenderTarget target) throws RenderCommandException {
+		VideoFrame frame = new VideoFrame(getTotalElapsedFrames() / getFrameRate(), asset);
+		if(asset.numPlays <= 0)
+			frame.setLast(true);
+		setFrame(target, frame);
 	}
 }

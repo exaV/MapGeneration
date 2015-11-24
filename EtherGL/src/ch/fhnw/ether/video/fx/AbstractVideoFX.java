@@ -29,46 +29,224 @@
 
 package ch.fhnw.ether.video.fx;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
+import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL3;
 
 import ch.fhnw.ether.image.Frame;
-import ch.fhnw.ether.image.RGBA8Frame;
 import ch.fhnw.ether.media.AbstractRenderCommand;
 import ch.fhnw.ether.media.Parameter;
 import ch.fhnw.ether.media.RenderCommandException;
+import ch.fhnw.ether.render.Renderable;
 import ch.fhnw.ether.render.gl.FrameBuffer;
 import ch.fhnw.ether.render.shader.IShader;
+import ch.fhnw.ether.render.shader.base.AbstractShader;
+import ch.fhnw.ether.render.variable.IShaderUniform;
+import ch.fhnw.ether.render.variable.base.BooleanUniform;
+import ch.fhnw.ether.render.variable.base.FloatUniform;
+import ch.fhnw.ether.render.variable.base.IntUniform;
+import ch.fhnw.ether.render.variable.base.Mat3FloatUniform;
+import ch.fhnw.ether.render.variable.base.Mat4FloatUniform;
+import ch.fhnw.ether.render.variable.base.Vec3FloatUniform;
+import ch.fhnw.ether.render.variable.base.Vec4FloatUniform;
+import ch.fhnw.ether.render.variable.builtin.ColorMapArray;
+import ch.fhnw.ether.render.variable.builtin.ColorMapUniform;
+import ch.fhnw.ether.render.variable.builtin.PositionArray;
+import ch.fhnw.ether.scene.attribute.AbstractAttribute;
 import ch.fhnw.ether.scene.attribute.IAttribute;
+import ch.fhnw.ether.scene.attribute.ITypedAttribute;
+import ch.fhnw.ether.scene.mesh.DefaultMesh;
+import ch.fhnw.ether.scene.mesh.IMesh;
+import ch.fhnw.ether.scene.mesh.MeshUtilities;
+import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.IGeometryAttribute;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
+import ch.fhnw.ether.scene.mesh.material.AbstractMaterial;
+import ch.fhnw.ether.scene.mesh.material.ICustomMaterial;
+import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.ether.scene.mesh.material.Texture;
+import ch.fhnw.ether.video.AbstractVideoTarget;
 import ch.fhnw.ether.video.IVideoRenderTarget;
 import ch.fhnw.ether.video.VideoFrame;
 import ch.fhnw.ether.view.gl.GLContextManager;
 import ch.fhnw.ether.view.gl.GLContextManager.IGLContext;
+import ch.fhnw.util.ClassUtilities;
 import ch.fhnw.util.TextUtilities;
 import ch.fhnw.util.UpdateRequest;
+import ch.fhnw.util.math.IVec3;
+import ch.fhnw.util.math.IVec4;
+import ch.fhnw.util.math.Mat3;
+import ch.fhnw.util.math.Mat4;
 
 public abstract class AbstractVideoFX extends AbstractRenderCommand<IVideoRenderTarget> {
-	protected final Frame EMPTY = new RGBA8Frame(1,1);
+	public static final Class<?> GLFX    = IVideoGLFX.class;
+	public static final Class<?> FRAMEFX = IVideoFrameFX.class;
 
-	private static final IGeometryAttribute[] GATTRS = {IGeometry.POSITION_ARRAY, IGeometry.COLOR_MAP_ARRAY};
-	
-	protected long                        frame;
-	protected Class<? extends Frame>[]    frameTypes;
-	protected Set<Class<? extends Frame>> preferredTypes;
-	protected Texture                     texture;
-	private   String                      name = getClass().getName();
-	private   IAttribute[]                attrs;
+	public static final class Uniform<T> extends AbstractAttribute<T> {
+		private T value;
+
+		public Uniform(String id, T value) {
+			super(id);
+			set(value);
+		}
+
+		public String glType() {
+			if(value instanceof Integer)
+				return "int";
+			else if(value instanceof Boolean)
+				return "bool";
+			return TextUtilities.getShortClassName(value).toLowerCase();
+		}
+
+		@SuppressWarnings("unchecked")
+		public IShaderUniform<?> toUniform() {
+			if(value instanceof Boolean)
+				return new BooleanUniform((ITypedAttribute<Boolean>)this, id());
+			else if(value instanceof Float)
+				return new FloatUniform((ITypedAttribute<Float>)this, id());
+			else if(value instanceof Integer)
+				return new IntUniform((ITypedAttribute<Integer>)this, id());
+			else if(value instanceof Mat3)
+				return new Mat3FloatUniform((ITypedAttribute<Mat3>)this, id());
+			else if(value instanceof Mat4)
+				return new Mat4FloatUniform((ITypedAttribute<Mat4>)this, id());
+			else if(value instanceof IVec3)
+				return new Vec3FloatUniform((ITypedAttribute<IVec3>)this, id());
+			else if(value instanceof IVec4)
+				return new Vec4FloatUniform((ITypedAttribute<IVec4>)this, id());
+			return null;
+		}
+
+		@SuppressWarnings("unchecked")
+		public void set(Object value) {
+			this.value = (T) value;
+		}
+
+		public T get() {
+			return value;
+		}
+	}
+
+	class FxShader extends AbstractShader {
+		public FxShader() {
+			super(FxShader.class, AbstractVideoFX.this.getClass().getName(), getVertexCode(), getFragmentCode(), "", Primitive.TRIANGLES);
+
+			addArray(new PositionArray());
+			addArray(new ColorMapArray());
+
+			Parameter[] params = getParameters();
+			for(int i = 0; i < params.length; i++)
+				addUniform(new FloatUniform(params[i].getName(), params[i].getName()));
+			for(Uniform<?> u : uniformsvert)
+				addUniform(u.toUniform());
+			addUniform(new ColorMapUniform());
+			for(Uniform<?> u : uniformsfrag)
+				addUniform(u.toUniform());
+		}
+	}
+
+	class FxMaterial extends AbstractMaterial implements ICustomMaterial {
+		private final IShader     shader;
+		private FrameBuffer       fbo;
+		private Texture           srcTexture;
+		private Texture           dstTexture;
+		private Texture           lastDstTexture;
+
+		protected FxMaterial(IAttribute[] attrs) {
+			super(attrs, new IGeometryAttribute[] {IGeometry.POSITION_ARRAY, IGeometry.COLOR_MAP_ARRAY});
+			shader = new FxShader();
+		}
+
+		public void prepare(GL3 gl, AbstractVideoTarget target) throws RenderCommandException {
+			this.srcTexture = target.getSrcTexture(gl, AbstractVideoFX.this);
+			this.dstTexture = target.getDstTexture(gl, AbstractVideoFX.this);
+			if(fbo == null)
+				fbo = new FrameBuffer(gl);
+			fbo.bind(gl);
+
+			if(dstTexture != lastDstTexture) {
+				fbo.attach(gl, GL.GL_COLOR_ATTACHMENT0, dstTexture);
+				lastDstTexture = dstTexture;
+				int status = fbo.checkStatus(gl);
+				if(status != GL3.GL_FRAMEBUFFER_COMPLETE)
+					throw new RenderCommandException("createFBO:" + FrameBuffer.toString(status));
+			}
+		}
+
+		@Override
+		public IShader getShader() {
+			return shader;
+		}
+
+		@Override
+		public Object[] getData() {
+			Parameter[] params = getParameters();
+			Object[] result = new Object[params.length + 1 + uniformsvert.length + uniformsfrag.length];
+			int idx = 0;
+			for(int i = 0; i < params.length; i++)
+				result[i] = Float.valueOf(getVal(params[idx++]));
+			for(Uniform<?> u : uniformsvert)
+				result[idx++] = u.get();
+			result[idx++] = srcTexture;
+			for(Uniform<?> u : uniformsfrag)
+				result[idx++] = u.get();
+			return result;
+		}
+	}
+
+	public static final Uniform<?>[] EMPTY_UniformA = new Uniform<?>[0];
+
+	protected long                          frame;
+	protected Class<? extends Frame>[]      frameTypes;
+	protected Set<Class<? extends Frame>>   preferredTypes;
+	private   String                        name = getClass().getName();
+	private   final FxMaterial              material;
+	private   final IMesh                   quad;
+	private   final Renderable              renderable;
+	private   final int[]                   viewport = new int[4];
+	private   final Uniform<?>[]            uniformsvert;
+	private   final String[]                outIn;
+	private   final Uniform<?>[]            uniformsfrag;
+	private   final Map<String, Uniform<?>> name2uniform = new HashMap<>();
 
 	protected AbstractVideoFX(Parameter ... parameters) {
+		this(EMPTY_UniformA, ClassUtilities.EMPTY_StringA, EMPTY_UniformA, parameters);
+	}
+
+	protected AbstractVideoFX(Uniform<?>[] uniformsvert, String[] outIn, Uniform<?>[] uniformsfrag, Parameter ... parameters) {
 		super(parameters);
-		attrs = new IAttribute[parameters.length];
-		for(int i = 0; i < attrs.length; i++)
-			attrs[i] = parameters[i];
+		if(this instanceof IVideoGLFX) {
+			this.uniformsvert = uniformsvert;
+			this.outIn        = outIn;
+			this.uniformsfrag = uniformsfrag;
+			for(Uniform<?> u : uniformsvert)
+				name2uniform.put(u.id(), u);
+			for(Uniform<?> u : uniformsfrag)
+				name2uniform.put(u.id(), u);
+			IAttribute[] attrs = new IAttribute[parameters.length + 1 + uniformsvert.length + uniformsfrag.length];
+			int idx = 0;
+			for(int i = 0; i < parameters.length; i++)
+				attrs[idx++] = parameters[i];
+			for(Uniform<?> u : uniformsvert)
+				attrs[idx++] = u;
+			attrs[idx++] = IMaterial.COLOR_MAP;
+			for(Uniform<?> u : uniformsfrag)
+				attrs[idx++] = u;
+			this.material   = new FxMaterial(attrs);
+			this.quad       = new DefaultMesh(material, DefaultGeometry.createVM(Primitive.TRIANGLES, MeshUtilities.DEFAULT_QUAD_TRIANGLES, MeshUtilities.DEFAULT_QUAD_TEX_COORDS));
+			this.renderable = new Renderable(quad, null);
+		} else {
+			this.uniformsvert = null;
+			this.outIn        = null;
+			this.uniformsfrag = null;
+			this.material     = null;
+			this.quad         = null;
+			this.renderable   = null;
+		}
 	}
 
 	public static float toFloat(final byte v) {
@@ -96,31 +274,50 @@ public abstract class AbstractVideoFX extends AbstractRenderCommand<IVideoRender
 		return val0 * w + (1f-w) * val1;
 	}
 
+	public void processFrame(GL3 gl, double playOutTime, IVideoRenderTarget target) {}
+
 	@Override
 	protected final void run(IVideoRenderTarget target) throws RenderCommandException {
-		if(this instanceof IVideoGLFX) {
+		if(target instanceof AbstractVideoTarget && ((AbstractVideoTarget)target).runAs() == GLFX) {
 			try(IGLContext ctx = GLContextManager.acquireContext()) {
 				final GL3 gl = ctx.getGL();
-				FrameBuffer fbo = target.getFBO();
-				fbo.bind(gl);
+				processFrame(gl, target.getFrame().playOutTime, target);
+				material.prepare(gl, (AbstractVideoTarget)target);
+				renderable.update(gl,new Renderable.RenderUpdate(renderable, quad));
+				material.fbo.bind(gl);
+				gl.glGetIntegeri_v(GL3.GL_VIEWPORT, 0, viewport, 0);
+				gl.glViewport(0, 0, material.dstTexture.getWidth(), material.dstTexture.getHeight());
+				renderable.render(gl);
+				FrameBuffer.unbind(gl);
+				gl.glBindTexture(GL.GL_TEXTURE_2D, material.dstTexture.getGlObject().getId());
+				gl.glGenerateMipmap(GL.GL_TEXTURE_2D);
+				target.getFrame().setTexture(material.dstTexture);
+				gl.glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
+				gl.glFinish();
+			} catch(RenderCommandException e) {
+				throw e;
 			} catch(Throwable t) {
-
+				throw new RenderCommandException(t);
 			}
-		} else if(this instanceof IVideoFrameFX) {
+		} else if(target instanceof AbstractVideoTarget && ((AbstractVideoTarget)target).runAs() == FRAMEFX) {
 			VideoFrame frame = target.getFrame();
 			((IVideoFrameFX)this).processFrame(frame.playOutTime, target, frame.getFrame());
 		}
+	}
+
+	public Texture getDstTexture() {
+		return material.dstTexture;
 	}
 
 	@Override
 	public String toString() {
 		return TextUtilities.getShortClassName(this);
 	}
-	
+
 	public IShader getShader() {
 		return null;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
@@ -129,25 +326,106 @@ public abstract class AbstractVideoFX extends AbstractRenderCommand<IVideoRender
 		this.name = name;
 	}
 
+	public Object[] getData() {
+		return material.getData();
+	}
+
 	public Primitive getType() {
 		return Primitive.TRIANGLES;
 	}
 
-	public IAttribute[] getProvidedAttributes() {
-		return attrs;
-	}
-
 	public IGeometryAttribute[] getGeometryAttributes() {
-		return GATTRS;
-	}
-
-	public Object[] getData() {
-		// TODO Auto-generated method stub
-		return null;
+		return material.getGeometryAttributes();
 	}
 
 	public UpdateRequest getUpdater() {
-		// TODO Auto-generated method stub
-		return null;
+		return material.getUpdater();
+	}
+
+	public IAttribute[] getProvidedAttributes() {
+		return material.getProvidedAttributes();
+	}
+
+	public String mainFrag() {
+		return ClassUtilities.EMPTY_String;
+	}
+
+	public String mainVert() {
+		return ClassUtilities.EMPTY_String;
+	}
+	
+	public String[] functions() {
+		return ClassUtilities.EMPTY_StringA;
+	}
+
+	protected void setUniform(String name, Object value) {
+		name2uniform.get(name).set(value);
+	}
+
+	protected static String lines(String ... lines) {
+		return TextUtilities.cat(lines, '\n');
+	}
+
+	private String getVertexCode() {
+		StringBuilder uniformsStr = new StringBuilder();
+		for(Uniform<?> u : uniformsvert)
+			uniformsStr.append("uniform ").append(u.glType()).append(' ').append(u.id()).append(";\n");
+
+		StringBuilder outInStr = new StringBuilder();
+		for(String out : outIn)
+			outInStr.append("out ").append(out).append(";\n");
+
+		String main = mainVert();
+		if(main.length() > 0 && !(main.endsWith(";")))
+			main += ";";
+
+		return lines("#version 330",
+				"in vec4 vertexPosition;",
+				"in vec2 vertexTexCoord;",
+				uniformsStr.toString(),
+				"out vec2 vsTexCoord;",
+				outInStr.toString(),
+				"void main() {",
+				main,
+				"  vsTexCoord = vertexTexCoord;",
+				"gl_Position = vertexPosition;",
+				"}");
+	}
+
+	private String getFragmentCode() {
+		Parameter[]   params   = getParameters();
+		StringBuilder paramStr = new StringBuilder();
+		for(int i = 0; i < params.length; i++)
+			paramStr.append("uniform float ").append(params[i].getName()).append(";\n");
+
+		StringBuilder outInStr = new StringBuilder();
+		for(String in : outIn)
+			outInStr.append("in ").append(in).append(";\n");
+		
+		StringBuilder functionStr = new StringBuilder();
+		for(String function : functions())
+			functionStr.append('\n').append(function).append('\n');
+
+		String main = mainFrag();
+		if(main.length() > 0 && !(main.endsWith(";")))
+			main += ";";
+
+		StringBuilder uniformsStr = new StringBuilder();
+		for(Uniform<?> u : uniformsfrag)
+			uniformsStr.append("uniform ").append(u.glType()).append(' ').append(u.id()).append(";\n");
+
+		return lines(
+				"#version 330",
+				"uniform sampler2D colorMap;",
+				"in vec2 vsTexCoord;",
+				outInStr.toString(),
+				paramStr.toString(),
+				uniformsStr.toString(),
+				"out vec4 result;",
+				functionStr.toString(),
+				"void main() {",
+				"result = texture(colorMap, vsTexCoord);",
+				main.toString(),
+				"}\n");
 	}
 }

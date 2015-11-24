@@ -27,11 +27,11 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.media;
+package ch.fhnw.ether.video.fx;
 
-public interface IRenderTarget<F extends AbstractFrame> {
-	void                    render() throws RenderCommandException;
-	AbstractFrameSource<?>  getFrameSource();
-	void                    setFrame(F frame);
-	F                       getFrame();
+import ch.fhnw.ether.image.Frame;
+import ch.fhnw.ether.video.IVideoRenderTarget;
+
+public interface IVideoFrameFX {
+	void processFrame(double playOutTime, IVideoRenderTarget target, Frame frame);
 }

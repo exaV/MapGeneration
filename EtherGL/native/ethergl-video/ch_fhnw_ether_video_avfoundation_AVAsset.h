@@ -105,18 +105,18 @@ JNIEXPORT jbyteArray JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativ
 
 /*
  * Class:     ch_fhnw_ether_video_avfoundation_AVAsset
- * Method:    nativeGetNextTextureAndLock
+ * Method:    nativeGetNextTexture
  * Signature: (J[J)I
  */
-JNIEXPORT jint JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGetNextTextureAndLock
+JNIEXPORT jint JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGetNextTexture
   (JNIEnv *, jclass, jlong, jlongArray);
 
 /*
  * Class:     ch_fhnw_ether_video_avfoundation_AVAsset
- * Method:    nativeUnlockTexture
+ * Method:    nativeDisposeTexture
  * Signature: (J[J)I
  */
-JNIEXPORT jint JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeUnlockTexture
+JNIEXPORT jint JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeDisposeTexture
   (JNIEnv *, jclass, jlong, jlongArray);
 
 #ifdef __cplusplus

@@ -62,7 +62,7 @@ public final class JavaSoundTarget extends AbstractAudioTarget {
 		super(Thread.MAX_PRIORITY, true);
 		this.bufferSize = bufferSize;
 	}
-
+	
 	@Override
 	public void useProgram(RenderProgram<IAudioRenderTarget> program) throws RenderCommandException {
 		try {

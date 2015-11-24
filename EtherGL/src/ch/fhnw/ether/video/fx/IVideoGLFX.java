@@ -27,11 +27,16 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.media;
+package ch.fhnw.ether.video.fx;
 
-public interface IRenderTarget<F extends AbstractFrame> {
-	void                    render() throws RenderCommandException;
-	AbstractFrameSource<?>  getFrameSource();
-	void                    setFrame(F frame);
-	F                       getFrame();
+import com.jogamp.opengl.GL3;
+
+import ch.fhnw.ether.scene.mesh.material.ICustomMaterial;
+import ch.fhnw.ether.video.IVideoRenderTarget;
+
+public interface IVideoGLFX extends ICustomMaterial {
+	String       mainVert();
+	String       mainFrag();
+	String[]     functions();
+	void processFrame(GL3 gl, double playOutTime, IVideoRenderTarget target);
 }

@@ -34,6 +34,7 @@ import java.io.File;
 import javax.imageio.ImageIO;
 
 import ch.fhnw.ether.media.RenderCommandException;
+import ch.fhnw.ether.video.fx.AbstractVideoFX;
 import ch.fhnw.util.TextUtilities;
 
 public class FileFrameTarget extends AbstractVideoTarget {
@@ -41,7 +42,7 @@ public class FileFrameTarget extends AbstractVideoTarget {
 	private final String ext;
 
 	public FileFrameTarget(File file) {
-		super(Thread.MIN_PRIORITY, false);
+		super(Thread.MIN_PRIORITY, AbstractVideoFX.FRAMEFX, false);
 		this.file = file;
 		this.ext  = TextUtilities.getFileExtensionWithoutDot(file.getName()).toUpperCase();
 	}

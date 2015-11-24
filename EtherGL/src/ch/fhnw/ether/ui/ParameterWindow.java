@@ -354,7 +354,7 @@ public class ParameterWindow {
 				JPopupMenu menu   = new JPopupMenu();
 				JPanel     result = new JPanel();
 				result.setComponentPopupMenu(menu);
-				result.setBorder(new TitledBorder(cmd.getClass().getName()));
+				result.setBorder(new TitledBorder(cmd.toString()));
 				Parameter[] params = cmd.getParameters();
 				result.setLayout(new GridBagLayout());
 				if(params.length > 0) {

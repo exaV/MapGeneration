@@ -42,7 +42,7 @@ import ch.fhnw.util.Log;
 
 public class GLObject {
 	private static final Log log = Log.create();
-	
+
 	public enum Type {
 		TEXTURE, BUFFER, RENDERBUFFER, FRAMEBUFFER, PROGRAM
 	}
@@ -51,7 +51,7 @@ public class GLObject {
 		private final Type        type;
 		private final int[]       id;
 		private final IDisposable userData;
-		
+
 		public GLObjectRef(GLObject referent, ReferenceQueue<? super GLObject> q) {
 			super(referent, q);
 			type     = referent.getType();
@@ -61,27 +61,28 @@ public class GLObject {
 
 		@Override
 		public void dispose() {
-			System.out.println("disposing " + type + " " + id[0]);
-			if(userData != null)
-				userData.dispose();
 			try (IGLContext context = GLContextManager.acquireContext()) {
-				GL3 gl = context.getGL();
-				switch (type) {
-				case TEXTURE:
-					gl.glDeleteTextures(1, id, 0);
-					break;
-				case BUFFER:
-					gl.glDeleteBuffers(1, id, 0);
-					break;
-				case RENDERBUFFER:
-					gl.glDeleteRenderbuffers(1, id, 0);
-					break;
-				case FRAMEBUFFER:
-					gl.glDeleteFramebuffers(1, id, 0);
-					break;
-				case PROGRAM:
-					gl.glDeleteProgram(id[0]);
-					break;
+				if(userData != null)
+					userData.dispose();
+				else {
+					GL3 gl = context.getGL();
+					switch (type) {
+					case TEXTURE:
+						gl.glDeleteTextures(1, id, 0);
+						break;
+					case BUFFER:
+						gl.glDeleteBuffers(1, id, 0);
+						break;
+					case RENDERBUFFER:
+						gl.glDeleteRenderbuffers(1, id, 0);
+						break;
+					case FRAMEBUFFER:
+						gl.glDeleteFramebuffers(1, id, 0);
+						break;
+					case PROGRAM:
+						gl.glDeleteProgram(id[0]);
+						break;
+					}
 				}
 			} catch(Throwable t) {
 				log.severe(t);
@@ -95,13 +96,16 @@ public class GLObject {
 	private final int[]       id = new int[1];
 	private final IDisposable userData;
 
-	public GLObject(GL3 gl, Type type) {
-		this(gl, type, null);
-	}
-	
-	public GLObject(GL3 gl, Type type, IDisposable userData) {
+	public GLObject(Type type, int glName, IDisposable userData) {
 		this.type     = type;
+		this.id[0]    = glName;
 		this.userData = userData;
+		autoDisposer.add(this);
+	}
+
+	public GLObject(GL3 gl, Type type) {
+		this.type     = type;
+		this.userData = null;
 		switch (type) {
 		case TEXTURE:
 			gl.glGenTextures(1, id, 0);
@@ -121,7 +125,7 @@ public class GLObject {
 		}
 		autoDisposer.add(this);
 	}
-	
+
 	public Type getType() {
 		return type;
 	}
@@ -129,7 +133,7 @@ public class GLObject {
 	public int getId() {
 		return id[0];
 	}
-	
+
 	public IDisposable getUserData() {
 		return userData;
 	}

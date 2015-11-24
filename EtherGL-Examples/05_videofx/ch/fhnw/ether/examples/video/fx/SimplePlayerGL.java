@@ -78,9 +78,10 @@ public class SimplePlayerGL {
 			scene.add3DObject(mesh);
 
 			try {
-				RenderProgram<IVideoRenderTarget> program = new RenderProgram<>(source, new RGBGain()); 
-				new ParameterWindow(program);
-				target.useProgram(program);
+				RenderProgram<IVideoRenderTarget> video = new RenderProgram<>(source, new RGBGain(), new Convolution()); 
+				//RenderProgram<IAudioRenderTarget> audio = new RenderProgram<>(source, new AudioGain()); 
+				new ParameterWindow(video);
+				target.useProgram(video);
 				target.start();
 			} catch(Throwable t) {
 				log.severe(t);
@@ -89,16 +90,16 @@ public class SimplePlayerGL {
 	}
 
 	public static void main(String[] args) throws IOException {
-		AbstractVideoSource source;
+		AbstractVideoSource video;
 		if(args.length == 0)
-			source =  CameraSource.create(CameraInfo.getInfos()[0]);
+			video =  CameraSource.create(CameraInfo.getInfos()[0]);
 		else {
 			try {
-				source = new URLVideoSource(new URL(args[0]));
+				video = new URLVideoSource(new URL(args[0]));
 			} catch(MalformedURLException e) {
-				source = new URLVideoSource(new File(args[0]).toURI().toURL());
+				video = new URLVideoSource(new File(args[0]).toURI().toURL());
 			}
 		}
-		new SimplePlayerGL(source);
+		new SimplePlayerGL(video);
 	}
 }

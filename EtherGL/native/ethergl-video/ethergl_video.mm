@@ -217,41 +217,79 @@ public:
         return array;
     }
     
-    int getNextTextureAndLock(uint64_t* data) {
+    int getNextTexture(uint64_t* data) {
+        // Actually, this was intended for the core video
+        // OpenGl texture cache. But because the Apple
+        // provides texture coordinates instead of flipping
+        // the data coorectly it's pretty useless for
+        // EtherGL and thus we emulate it.
+        
         if ([reader status] != AVAssetReaderStatusReading) {
-            MSG("load next frame: reached end of movie\n");
+            MSG("get next texture: reached end of movie\n");
             return -1;
         }
         
         AVAssetReaderOutput* output = [reader.outputs objectAtIndex:0];
         CMSampleBufferRef sampleBuffer = [output copyNextSampleBuffer];
         if (!sampleBuffer) {
-            MSG("load next frame: could not copy sample buffer\n");
+            MSG("get next texture: could not copy sample buffer\n");
             return -2;
         }
         
-        CVOpenGLTextureRef image = CVOpenGLTextureRef(sampleBuffer);
-        if(!image) {
-            MSG("load next frame: could not get image buffer\n");
-            return -3;
-        }
+        CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
         
         // lock the image buffer
-        CVOpenGLTextureRetain(image);
+        CVPixelBufferLockBaseAddress(imageBuffer, 0);
+        
+        // XXX: note if movie width cannot be divided by 4 it seems the movie is scaled up to the next width that can
+        // i.e. if you open a moive with 1278 pixels width, here, the imageBuffer will have a width of 1280. this of course
+        // screws up our interface further up a bit, which relies on movie.getWidth ... thus we for now just ignore the scaling.
+        //int width = (int)CVPixelBufferGetWidth(imageBuffer);
+        //int height = (int)CVPixelBufferGetHeight(imageBuffer);
+        int width = getWidth();
+        int height = getHeight();
+        int bytesPerRow = (int)CVPixelBufferGetBytesPerRow(imageBuffer);
+        
+        GLuint texture;
+        glGenTextures(1, &texture);
+        glBindTexture(GL_TEXTURE_2D, texture);
+        
+        uint8_t* src = (uint8_t*)CVPixelBufferGetBaseAddress(imageBuffer);
+        
+        uint8_t* tmp = new uint8_t[bytesPerRow];
+        
+        for(int i = height / 2, y0 = 0, y1 = height - 1; --i >= 0; y0++, y1--) {
+            memcpy(tmp, src + bytesPerRow * y0, bytesPerRow);
+            memcpy(src + bytesPerRow * y0, src + bytesPerRow * y1, bytesPerRow);
+            memcpy(src + bytesPerRow * y1, tmp, bytesPerRow);
+        }
+        
+        delete[] tmp;
+        
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, src);
+        glGenerateMipmap(GL_TEXTURE_2D);
+        
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glFinish();
+        
+        data[ch_fhnw_ether_video_avfoundation_AVAsset_IDX_TARGET]  = GL_TEXTURE_2D;
+        data[ch_fhnw_ether_video_avfoundation_AVAsset_IDX_NAME]    = texture;
+        data[ch_fhnw_ether_video_avfoundation_AVAsset_IDX_WIDTH]   = width;
+        data[ch_fhnw_ether_video_avfoundation_AVAsset_IDX_HEIGHT]  = height;
 
-        data[ch_fhnw_ether_video_avfoundation_AVAsset_IDX_TARGET]  = CVOpenGLTextureGetTarget(image);
-        data[ch_fhnw_ether_video_avfoundation_AVAsset_IDX_NAME]    = CVOpenGLTextureGetName(image);
-        data[ch_fhnw_ether_video_avfoundation_AVAsset_IDX_WIDTH]   = getWidth();
-        data[ch_fhnw_ether_video_avfoundation_AVAsset_IDX_HEIGHT]  = getHeight();
-        data[ch_fhnw_ether_video_avfoundation_AVAsset_IDX_SAMPLE]  = (uint64_t)sampleBuffer;
-        data[ch_fhnw_ether_video_avfoundation_AVAsset_IDX_TEXTURE] = (uint64_t)image;
-
+        // unlock the image buffer & cleanup
+        CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
+        CFRelease(sampleBuffer);
+        
         return 0;
     }
     
-    int unlockTexture(uint64_t* data) {
-        CVOpenGLTextureRelease((CVOpenGLTextureRef)data[ch_fhnw_ether_video_avfoundation_AVAsset_IDX_TEXTURE]);
-        CFRelease((CMSampleBufferRef)data[ch_fhnw_ether_video_avfoundation_AVAsset_IDX_SAMPLE]);
+    int disposeTexture(uint64_t* data) {
+        GLuint texture = (GLuint)data[ch_fhnw_ether_video_avfoundation_AVAsset_IDX_NAME];
+        glDeleteTextures(1, &texture);
         return 0;
     }
 };
@@ -414,13 +452,13 @@ JNIEXPORT jbyteArray JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativ
  * Method:    nativeGetNextTextureAndLock
  * Signature: (J[J)I
  */
-JNIEXPORT jint JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGetNextTextureAndLock
+JNIEXPORT jint JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGetNextTexture
 (JNIEnv* env, jclass, jlong nativeHandle, jlongArray data) {
     JNF_COCOA_ENTER(env);
     
     uint64_t* arrayElements = (uint64_t*)env->GetLongArrayElements(data, nullptr);
     
-    int result = ((AVAssetWrapper*)nativeHandle)->getNextTextureAndLock(arrayElements);
+    int result = ((AVAssetWrapper*)nativeHandle)->getNextTexture(arrayElements);
     
     env->SetLongArrayRegion(data, 0, env->GetArrayLength(data), (jlong*)arrayElements);
 
@@ -434,13 +472,13 @@ JNIEXPORT jint JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGetNe
  * Method:    nativeUnlockTexture
  * Signature: (J[J)I
  */
-JNIEXPORT jint JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeUnlockTexture
+JNIEXPORT jint JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeDisposeTexture
 (JNIEnv* env, jclass, jlong nativeHandle, jlongArray data) {
     JNF_COCOA_ENTER(env);
     
     uint64_t* arrayElements = (uint64_t*)env->GetLongArrayElements(data, nullptr);
     
-    return ((AVAssetWrapper*)nativeHandle)->unlockTexture(arrayElements);
+    return ((AVAssetWrapper*)nativeHandle)->disposeTexture(arrayElements);
     
     JNF_COCOA_EXIT(env);
 }

@@ -392,7 +392,7 @@ public class RGBA8Frame extends RGB8Frame {
 	}
 
 	@Override
-	protected void loadInternal(GL3 gl, int target, int textureId) {
-		gl.glTexImage2D(target, 0, GL3.GL_RGBA, dimI, dimJ, 0, GL3.GL_RGBA, GL3.GL_UNSIGNED_BYTE, pixels);
+	protected void loadTexture(GL3 gl) {
+		gl.glTexImage2D(GL3.GL_TEXTURE_2D, 0, GL3.GL_RGBA, dimI, dimJ, 0, GL3.GL_RGBA, GL3.GL_UNSIGNED_BYTE, pixels);
 	}	
 }

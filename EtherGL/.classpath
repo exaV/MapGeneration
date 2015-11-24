@@ -18,7 +18,6 @@
 	<classpathentry kind="lib" path="lib/jogl/gluegen-rt-natives-linux-i586.jar"/>
 	<classpathentry kind="lib" path="lib/jogl/jogl-all-natives-linux-amd64.jar"/>
 	<classpathentry kind="lib" path="lib/jogl/jogl-all-natives-linux-i586.jar"/>
-	<classpathentry kind="lib" path="lib/webcam/webcam-capture-0.3.10-RC4.jar"/>
 	<classpathentry kind="lib" path="lib/webcam/slf4j-api-1.7.2.jar"/>
 	<classpathentry kind="lib" path="lib/webcam/bridj-0.7-20130703.103049-42.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jtransforms/JTransforms-3.0.jar"/>
@@ -27,5 +26,6 @@
 	<classpathentry kind="lib" path="lib/tritonus/tritonus_share-0.3.6.jar"/>
 	<classpathentry kind="lib" path="lib/jaad/jaad-0.8.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jcodec/jcodec-0.2.jar" sourcepath="/jcodec/src/main/java"/>
+	<classpathentry kind="lib" path="lib/webcam/webcam-capture-0.3.10.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

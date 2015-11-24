@@ -38,31 +38,42 @@ import ch.fhnw.ether.render.shader.IShader;
 import ch.fhnw.ether.render.variable.IShaderArray;
 import ch.fhnw.ether.render.variable.IShaderUniform;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
+import ch.fhnw.util.Log;
 
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL3;
 
 public abstract class AbstractShader implements IShader {
+	private static final Log log = Log.create();
 	
+	public static final String INLINE = "/*__inline__*/\n"; 
+
 	// important: keep this in sync with PrimitiveType enum
 	public static final int[] MODE = { GL.GL_POINTS, GL.GL_LINES, GL.GL_TRIANGLES };
 
-	private final Class<?> root;
-	private final String name;
-	private final String source;
+	private final Class<?>  root;
+	private final String    name;
+	private final String[]  source;
 	private final Primitive type;
-	private Program program;
+	private       Program   program;
 
 	private List<IShaderUniform<?>> uniforms = new ArrayList<>();
 	private List<IShaderArray<?>> arrays = new ArrayList<>();
 
 	protected AbstractShader(Class<?> root, String name, String source, Primitive type) {
-		this.root = root;
-		this.name = name;
-		this.source = source;
-		this.type = type;
+		this.root   = root;
+		this.name   = name;
+		this.source = new String[] {source};
+		this.type   = type;
 	}
-	
+
+	protected AbstractShader(Class<?> root, String name, String vert, String frag, String geom, Primitive type) {
+		this.root   = root;
+		this.name   = name;
+		this.source = new String[] {vert, frag, geom};
+		this.type   = type;
+	}
+
 	@Override
 	public final String id() {
 		return name;
@@ -71,13 +82,22 @@ public abstract class AbstractShader implements IShader {
 	@Override
 	public final void update(GL3 gl, Object[] uniformData) {
 		if (program == null) {
-			String vertShader = "glsl/" + source + "_vert.glsl";
-			String fragShader = "glsl/" + source + "_frag.glsl";
-			String geomShader = "glsl/" + source + "_geom.glsl";
+			String vertShader;
+			String fragShader;
+			String geomShader;
+			if(source.length == 1) {
+				vertShader = "glsl/" + source[0] + "_vert.glsl";
+				fragShader = "glsl/" + source[0] + "_frag.glsl";
+				geomShader = "glsl/" + source[0] + "_geom.glsl";
+			} else {
+				vertShader = INLINE + source[0];
+				fragShader = INLINE + source[1];
+				geomShader = INLINE + source[2];
+			}
 			try {
 				program = Program.create(gl, root, vertShader, fragShader, geomShader, System.err);
-			} catch (Exception e) {
-				System.err.println("cannot create glsl program. exiting.\n\n");
+			} catch (Throwable t) {
+				log.severe("cannot create glsl program. exiting.", t);
 				System.exit(1);
 			}
 		}
@@ -95,10 +115,10 @@ public abstract class AbstractShader implements IShader {
 	public final void render(GL3 gl, IVertexBuffer buffer) {
 		buffer.bind(gl);
 		arrays.forEach(attr -> attr.enable(gl, program, buffer));
-		
+
 		int mode = MODE[type.ordinal()];
 		gl.glDrawArrays(mode, 0, buffer.getNumVertices());
-		
+
 		arrays.forEach(attr -> attr.disable(gl, program, buffer));
 		buffer.unbind(gl);
 	}

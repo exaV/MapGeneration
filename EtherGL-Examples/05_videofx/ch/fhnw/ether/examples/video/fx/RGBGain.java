@@ -46,6 +46,11 @@ public class RGBGain extends AbstractVideoFX implements IVideoFrameFX, IVideoGLF
 	}
 
 	@Override
+	public String mainFrag() {
+		return "result = vec4(result.r * red, result.g * green, result.b * blue, 1)";
+	}
+	
+	@Override
 	public void processFrame(final double playOutTime, final IVideoRenderTarget target, final Frame frame) {
 		final float rs = getVal(RED);
 		final float gs = getVal(GREEN);

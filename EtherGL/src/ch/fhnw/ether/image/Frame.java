@@ -54,6 +54,7 @@ import ch.fhnw.ether.render.gl.GLObject.Type;
 import ch.fhnw.ether.scene.mesh.material.Texture;
 import ch.fhnw.ether.video.AbstractVideoTarget;
 import ch.fhnw.ether.video.VideoFrame;
+import ch.fhnw.ether.video.fx.AbstractVideoFX;
 import ch.fhnw.ether.view.gl.GLContextManager;
 import ch.fhnw.ether.view.gl.GLContextManager.IGLContext;
 import ch.fhnw.util.BufferUtilities;
@@ -74,12 +75,12 @@ public abstract class Frame extends AbstractVideoTarget {
 	private Texture   texture;
 
 	protected Frame(int pixelSize) {
-		super(Thread.MIN_PRIORITY, false);
+		super(Thread.MIN_PRIORITY, AbstractVideoFX.FRAMEFX, false);
 		this.pixelSize = pixelSize;
 	}
 
 	protected Frame(int dimI, int dimJ, byte[] frameBuffer, int pixelSize) {
-		super(Thread.MIN_PRIORITY, false);
+		super(Thread.MIN_PRIORITY, AbstractVideoFX.FRAMEFX, false);
 		this.pixels = BufferUtilities.createDirectByteBuffer(frameBuffer.length);
 		this.pixels.put(frameBuffer);
 		this.pixelSize = pixelSize;
@@ -87,7 +88,7 @@ public abstract class Frame extends AbstractVideoTarget {
 	}
 
 	protected Frame(int dimI, int dimJ, ByteBuffer frameBuffer, int pixelSize) {
-		super(Thread.MIN_PRIORITY, false);
+		super(Thread.MIN_PRIORITY, AbstractVideoFX.FRAMEFX, false);
 		if (frameBuffer.isDirect()) {
 			this.pixels = frameBuffer;
 		} else {
@@ -201,30 +202,39 @@ public abstract class Frame extends AbstractVideoTarget {
 
 	public abstract Frame create(int width, int height);
 
-	public static Frame create(GL3 gl, int target, int textureId) {
-		Frame result = null;
-		int[] tmpi   = new int[1];
-		int width;
-		int height;
-		int internalFormat;
-		gl.glBindTexture(target, textureId);
-		gl.glGetTexLevelParameteriv(target, 0, GL3.GL_TEXTURE_INTERNAL_FORMAT, tmpi, 0);	internalFormat = tmpi[0];
-		gl.glGetTexLevelParameteriv(target, 0, GL3.GL_TEXTURE_WIDTH,      tmpi, 0);			width          = tmpi[0];
-		gl.glGetTexLevelParameteriv(target, 0, GL3.GL_TEXTURE_HEIGHT,     tmpi, 0);			height         = tmpi[0];
-		switch(internalFormat) {
-		case GL.GL_RGB:
-			result = new RGB8Frame(width, height);
-			break;
-		case GL.GL_RGBA:
-			result = new RGBA8Frame(width, height);
-			break;
-		default:
-			throw new IllegalArgumentException("Unsupported format:" + internalFormat);
+	public static Frame create(Texture texture) {
+		try(IGLContext ctx = GLContextManager.acquireContext()) {
+			Frame result = null;
+			final int[] tmpi   = new int[1];
+			final GL3   gl     = ctx.getGL();
+			int internalFormat;
+			final int target = GL3.GL_TEXTURE_2D;
+			gl.glBindTexture(target, texture.getGlObject().getId());
+			gl.glGetTexLevelParameteriv(target, 0, GL3.GL_TEXTURE_INTERNAL_FORMAT, tmpi, 0);	internalFormat = tmpi[0];
+			switch(internalFormat) {
+			case GL.GL_RGB8:
+				internalFormat = GL.GL_RGB;
+				/* fall-thru */
+			case GL.GL_RGB:
+				result = new RGB8Frame(texture.getWidth(), texture.getHeight());
+				break;
+			case GL.GL_RGBA8:
+				internalFormat = GL.GL_RGBA;
+				/* fall-thru */
+			case GL.GL_RGBA:
+				result = new RGBA8Frame(texture.getWidth(), texture.getHeight());
+				break;
+			default:
+				throw new IllegalArgumentException("Unsupported format:" + internalFormat);
+			}
+			result.pixels.clear();
+			gl.glGetTexImage(target, 0, internalFormat, GL.GL_UNSIGNED_BYTE, result.pixels);
+			gl.glBindTexture(target, 0);
+			return result;
+		} catch(Throwable t) {
+			log.severe(t);
+			return null;
 		}
-		result.pixels.clear();
-		gl.glReadnPixels(0, 0, width, height, internalFormat, GL.GL_UNSIGNED_BYTE, result.pixels.capacity(), result.pixels);
-		gl.glBindTexture(target, 0);
-		return result;
 	}
 
 	public final void setPixels(int i, int j, int width, int height, BufferedImage img) {
@@ -433,7 +443,7 @@ public abstract class Frame extends AbstractVideoTarget {
 		ImageIO.write(toBufferedImage(), format.toString(), out);
 	}
 
-	protected abstract void loadInternal(GL3 gl, int target, int textureId);
+	protected abstract void loadTexture(GL3 gl);
 
 	static final ExecutorService POOL       = Executors.newCachedThreadPool();
 	static final int             NUM_CHUNKS = Runtime.getRuntime().availableProcessors(); 
@@ -495,22 +505,19 @@ public abstract class Frame extends AbstractVideoTarget {
 				final GL3        gl        = ctx.getGL();
 				texture                    = new Texture(new GLObject(gl, Type.TEXTURE), dimI, dimJ);
 				final int        target    = GL.GL_TEXTURE_2D;
-				final int        textureId = texture.getGlObject().getId(); 
-				gl.glBindTexture(target, textureId);
+				gl.glBindTexture(target, texture.getGlObject().getId());
+				pixels.rewind();
+				loadTexture(gl);
+				gl.glGenerateMipmap(target);
 				gl.glTexParameteri(target, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
-				gl.glTexParameteri(target, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR_MIPMAP_LINEAR);
+				gl.glTexParameteri(target, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR);
 				gl.glTexParameterf(target, GL.GL_TEXTURE_WRAP_S, GL.GL_REPEAT);
 				gl.glTexParameterf(target, GL.GL_TEXTURE_WRAP_T, GL.GL_REPEAT);
-				gl.glPixelStorei(GL3.GL_UNPACK_ALIGNMENT, 1);
-				pixels.rewind();
-				loadInternal(gl, target, textureId);
-				gl.glGenerateMipmap(target);
-				gl.glBindTexture(target, 0);
 				gl.glFinish();
 			} catch(Throwable t) {
 				log.warning(t);
 			}
 		}
 		return texture;
-	}	
+	}
 }

@@ -33,15 +33,19 @@ import java.awt.Dimension;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.github.sarxos.webcam.Webcam;
 
 import ch.fhnw.ether.image.RGB8Frame;
 import ch.fhnw.ether.media.IScheduler;
 import ch.fhnw.ether.media.RenderCommandException;
+import ch.fhnw.util.ClassUtilities;
 
 public class CameraSource extends AbstractVideoSource {
-	private static final Method getFPS = getMethod("getFPS");
+	private static final AtomicInteger numCams = new AtomicInteger();
+
+	private static final Method getFPS = ClassUtilities.getMethod(Webcam.class, "getFPS");
 
 	private final Webcam                cam;
 	private AtomicBoolean               disposed = new AtomicBoolean(false);
@@ -52,6 +56,7 @@ public class CameraSource extends AbstractVideoSource {
 		this.cam      = info.getNativeCamera();
 		this.cam.open(true);
 		Runtime.getRuntime().addShutdownHook(new Thread(()->{dispose();}));
+		numCams.incrementAndGet();
 		Dimension max = cam.getViewSize();
 		for(Dimension dim : this.cam.getViewSizes())
 			if(dim.width > max.width && dim.height > max.height)
@@ -62,6 +67,17 @@ public class CameraSource extends AbstractVideoSource {
 	public void dispose() {
 		if(!(disposed.getAndSet(true))) {
 			cam.close();
+			if(numCams.decrementAndGet() == 0) {
+				new Thread() {
+					@Override
+					public void run() {
+						try {
+							Thread.sleep(2000);
+							Runtime.getRuntime().halt(0);
+						} catch (InterruptedException e) {}
+					};
+				}.start();
+			}
 		}
 	}
 
@@ -98,38 +114,28 @@ public class CameraSource extends AbstractVideoSource {
 			return FRAMERATE_UNKNOWN;
 		}
 	}
-	
+
 	@Override
 	public long getLengthInFrames() {
 		return FRAMECOUNT_UNKNOWN;
 	}
-	
+
 	@Override
 	public double getLengthInSeconds() {
 		return LENGTH_INFINITE;
 	}
-	
+
 	@Override
 	public int getWidth() {
 		return cam.getViewSize().width;
 	}
-	
+
 	@Override
 	public int getHeight() {
 		return cam.getViewSize().height;
 	}
-	
-	//--- utilities
 
-	private static Method getMethod(String name) {
-		try {
-			Method result = Webcam.class.getDeclaredMethod(name);
-			result.setAccessible(true);
-			return result;
-		} catch(Throwable t) {
-			return null;
-		}
-	}
+	//--- utilities
 
 	@Override
 	public String toString() {
