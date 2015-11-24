@@ -31,11 +31,12 @@ package ch.fhnw.ether.audio;
 
 import java.util.Arrays;
 
+import ch.fhnw.ether.media.AbstractFrameSource;
 import ch.fhnw.ether.media.RenderCommandException;
 import ch.fhnw.util.FloatList;
 
 
-public class ArrayAudioSource extends AbstractAudioSource {
+public class ArrayAudioSource extends AbstractFrameSource<IAudioRenderTarget> implements IAudioSource {
 	private       int     numPlays;
 	private final long    frameCount;
 	private final int     nChannels;

@@ -47,7 +47,7 @@ import ch.fhnw.ether.media.AbstractFrameSource;
 import ch.fhnw.ether.media.AbstractMediaTarget;
 import ch.fhnw.ether.media.RenderCommandException;
 
-public class URLMidiSource extends AbstractFrameSource<IMidiRenderTarget> {
+public class URLMidiSource extends AbstractFrameSource<IMidiRenderTarget> implements IMidiSource {
 	private final Sequence          seq;
 	private final URL               url;
 	private final long              frameCount;

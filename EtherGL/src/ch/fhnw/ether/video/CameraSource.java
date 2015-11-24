@@ -38,11 +38,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.github.sarxos.webcam.Webcam;
 
 import ch.fhnw.ether.image.RGB8Frame;
+import ch.fhnw.ether.media.AbstractFrameSource;
 import ch.fhnw.ether.media.IScheduler;
 import ch.fhnw.ether.media.RenderCommandException;
 import ch.fhnw.util.ClassUtilities;
 
-public class CameraSource extends AbstractVideoSource {
+public class CameraSource extends AbstractFrameSource<IVideoRenderTarget> implements IVideoSource {
 	private static final AtomicInteger numCams = new AtomicInteger();
 
 	private static final Method getFPS = ClassUtilities.getMethod(Webcam.class, "getFPS");

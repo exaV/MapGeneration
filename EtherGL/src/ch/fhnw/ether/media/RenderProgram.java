@@ -33,6 +33,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
+import ch.fhnw.ether.audio.IAudioSource;
+import ch.fhnw.ether.midi.IMidiSource;
+import ch.fhnw.ether.video.IVideoSource;
 import ch.fhnw.util.ArrayUtilities;
 import ch.fhnw.util.CollectionUtilities;
 import ch.fhnw.util.IDisposable;
@@ -85,9 +88,28 @@ public class RenderProgram<T extends IRenderTarget<?>> extends AbstractRenderCom
 
 	private final AtomicReference<AbstractRenderCommand<T>[]> program   = new AtomicReference<>();
 
+	@SuppressWarnings("unchecked")
 	@SafeVarargs
-	public RenderProgram(AbstractFrameSource<T> source, AbstractRenderCommand<T> ... commands) {
-		program.set(ArrayUtilities.prepend(source, commands));
+	public RenderProgram(IAudioSource source, AbstractRenderCommand<T> ... commands) {
+		program.set(ArrayUtilities.prepend((AbstractRenderCommand<T>)source, commands));
+	}
+
+	@SuppressWarnings("unchecked")
+	@SafeVarargs
+	public RenderProgram(IVideoSource source, AbstractRenderCommand<T> ... commands) {
+		program.set(ArrayUtilities.prepend((AbstractRenderCommand<T>)source, commands));
+	}
+
+	@SuppressWarnings("unchecked")
+	@SafeVarargs
+	public RenderProgram(IAVSource source, AbstractRenderCommand<T> ... commands) {
+		program.set(ArrayUtilities.prepend((AbstractRenderCommand<T>)source, commands));
+	}
+	
+	@SuppressWarnings("unchecked")
+	@SafeVarargs
+	public RenderProgram(IMidiSource source, AbstractRenderCommand<T> ... commands) {
+		program.set(ArrayUtilities.prepend((AbstractRenderCommand<T>)source, commands));
 	}
 
 	public Update createAddFirst(AbstractRenderCommand<T> cmd) {
@@ -196,7 +218,7 @@ public class RenderProgram<T extends IRenderTarget<?>> extends AbstractRenderCom
 		for(AbstractRenderCommand<T> command : commands)
 			command.init(target);
 	}
-	
+
 	@Override
 	protected void run(T target) throws RenderCommandException {
 		run();
@@ -206,7 +228,7 @@ public class RenderProgram<T extends IRenderTarget<?>> extends AbstractRenderCom
 	protected void init(T target) throws RenderCommandException {
 		setTarget(target);
 	}
-	
+
 	public T getTarget() {
 		return target.get();
 	}

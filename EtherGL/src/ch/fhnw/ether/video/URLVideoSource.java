@@ -34,12 +34,14 @@ import java.net.URL;
 
 import javax.imageio.ImageIO;
 
+import ch.fhnw.ether.media.AbstractAVSource;
+import ch.fhnw.ether.media.IAVRenderTarget;
 import ch.fhnw.ether.media.RenderCommandException;
 import ch.fhnw.ether.video.avfoundation.AVAsset;
 import ch.fhnw.ether.video.jcodec.SequentialVideoTrack;
 import ch.fhnw.util.TextUtilities;
 
-public class URLVideoSource extends AbstractVideoSource {
+public class URLVideoSource extends AbstractAVSource {
 	private static final boolean USE_AV_FOUNDATION = true;
 
 	private final int    width;
@@ -107,7 +109,17 @@ public class URLVideoSource extends AbstractVideoSource {
 	}
 
 	@Override
-	protected void run(IVideoRenderTarget target) throws RenderCommandException {
+	public float getSampleRate() {
+		return 48000;
+	}
+
+	@Override
+	public int getNumChannels() {
+		return 2;
+	}
+
+	@Override
+	protected void run(IAVRenderTarget target) throws RenderCommandException {
 		VideoFrame frame = new VideoFrame(getTotalElapsedFrames() / getFrameRate(), asset);
 		if(asset.numPlays <= 0)
 			frame.setLast(true);

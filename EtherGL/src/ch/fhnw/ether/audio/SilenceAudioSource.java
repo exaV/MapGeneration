@@ -29,9 +29,10 @@
 
 package ch.fhnw.ether.audio;
 
+import ch.fhnw.ether.media.AbstractFrameSource;
 import ch.fhnw.ether.media.RenderCommandException;
 
-public class SilenceAudioSource extends AbstractAudioSource {
+public class SilenceAudioSource extends AbstractFrameSource<IAudioRenderTarget> implements IAudioSource {
 	private final float sampleRate;
 	private final int   nChannels;
 	private final int   frameSize;

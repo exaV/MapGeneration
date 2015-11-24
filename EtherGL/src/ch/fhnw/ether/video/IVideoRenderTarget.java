@@ -33,6 +33,5 @@ import ch.fhnw.ether.media.IRenderTarget;
 import ch.fhnw.ether.media.IScheduler;
 
 public interface IVideoRenderTarget extends IRenderTarget<VideoFrame>, IScheduler {
-	@Override
-	AbstractVideoSource getFrameSource();
+	IVideoSource getVideoSource();
 }

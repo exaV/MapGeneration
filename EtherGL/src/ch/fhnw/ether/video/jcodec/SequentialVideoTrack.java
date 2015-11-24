@@ -39,8 +39,8 @@ import org.jcodec.common.SeekableByteChannel;
 
 import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.image.RGB8Frame;
+import ch.fhnw.ether.media.AbstractFrameSource;
 import ch.fhnw.ether.scene.mesh.material.Texture;
-import ch.fhnw.ether.video.AbstractVideoSource;
 import ch.fhnw.ether.video.FrameAccess;
 import ch.fhnw.ether.video.URLVideoSource;
 import ch.fhnw.util.Log;
@@ -76,7 +76,7 @@ public final class SequentialVideoTrack extends FrameAccess {
 			return grab.sdt().getMeta().getTotalDuration();
 		} catch (JCodecException e) {
 			log.warning(e);
-			return AbstractVideoSource.LENGTH_UNKNOWN;
+			return AbstractFrameSource.LENGTH_UNKNOWN;
 		}
 	}
 
@@ -92,7 +92,7 @@ public final class SequentialVideoTrack extends FrameAccess {
 			return grab.sdt().getMeta().getTotalFrames();
 		} catch (JCodecException e) {
 			log.warning(e);
-			return AbstractVideoSource.FRAMECOUNT_UNKNOWN;
+			return AbstractFrameSource.FRAMECOUNT_UNKNOWN;
 		}
 	}
 

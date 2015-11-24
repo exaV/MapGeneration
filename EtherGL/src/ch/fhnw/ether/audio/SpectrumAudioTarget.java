@@ -7,7 +7,6 @@ import org.jtransforms.fft.FloatFFT_1D;
 
 import ch.fhnw.ether.audio.AudioUtilities.Window;
 import ch.fhnw.ether.media.AbstractFrame;
-import ch.fhnw.ether.media.AbstractFrameSource;
 import ch.fhnw.ether.media.RenderCommandException;
 import ch.fhnw.ether.media.RenderProgram;
 import ch.fhnw.util.Log;
@@ -112,8 +111,8 @@ public class SpectrumAudioTarget implements IAudioRenderTarget {
 	public void stop() throws RenderCommandException {}
 
 	@Override
-	public AbstractFrameSource<?> getFrameSource() {
-		return program.getFrameSource();
+	public IAudioSource getAudioSource() {
+		return (IAudioSource)program.getFrameSource();
 	}
 
 	@Override

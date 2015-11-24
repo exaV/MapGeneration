@@ -39,10 +39,10 @@ import java.net.MalformedURLException;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
-import ch.fhnw.ether.audio.AbstractAudioSource;
 import ch.fhnw.ether.audio.AudioUtilities.Window;
 import ch.fhnw.ether.audio.FFT;
 import ch.fhnw.ether.audio.IAudioRenderTarget;
+import ch.fhnw.ether.audio.IAudioSource;
 import ch.fhnw.ether.audio.InvFFT;
 import ch.fhnw.ether.audio.JavaSoundTarget;
 import ch.fhnw.ether.audio.URLAudioSource;
@@ -60,7 +60,7 @@ public class AudioVisualizer {
 	private static final int N_CUBES = 60;
 
 	public static void main(String[] args) throws RenderCommandException, MalformedURLException, IOException {
-		AbstractAudioSource               src = new URLAudioSource(new File(args[0]).toURI().toURL());
+		IAudioSource                      src = new URLAudioSource(new File(args[0]).toURI().toURL());
 		//AbstractAudioSource<?>            src   = new SilenceAudioSource(1, 44100, 16);
 		SinGen                            sin   = new SinGen(0);
 		DCRemove                          dcrmv = new DCRemove();

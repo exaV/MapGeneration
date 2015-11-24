@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage;
 
 import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.image.ImageScaler;
+import ch.fhnw.ether.media.AbstractFrameSource;
 import ch.fhnw.ether.media.RenderCommandException;
 import ch.fhnw.ether.video.fx.AbstractVideoFX;
 
@@ -25,7 +26,7 @@ public class PreviewTarget extends AbstractVideoTarget {
 	private       int           x;
 
 	public PreviewTarget(int width, int height) {
-		this(width, height, AbstractVideoSource.LENGTH_UNKNOWN);
+		this(width, height, AbstractFrameSource.LENGTH_UNKNOWN);
 	}
 
 	public PreviewTarget(int width, int height, double lengthInSeconds) {
@@ -40,8 +41,8 @@ public class PreviewTarget extends AbstractVideoTarget {
 	@Override
 	public void render() throws RenderCommandException {
 		Frame frame = null;
-		if(length == AbstractVideoSource.LENGTH_UNKNOWN) 
-			length = getFrameSource().getLengthInSeconds();
+		if(length == AbstractFrameSource.LENGTH_UNKNOWN) 
+			length = getVideoSource().getLengthInSeconds();
 		if(start  == -1) {                                 
 			start     = getTime();
 			frame     = getFrame().getFrame();

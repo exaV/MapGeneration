@@ -58,6 +58,7 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.sound.sampled.spi.AudioFileReader;
 
+import ch.fhnw.ether.media.AbstractFrameSource;
 import ch.fhnw.ether.media.RenderCommandException;
 import ch.fhnw.util.ClassUtilities;
 import ch.fhnw.util.IDisposable;
@@ -65,7 +66,7 @@ import ch.fhnw.util.Log;
 import ch.fhnw.util.TextUtilities;
 
 
-public class URLAudioSource extends AbstractAudioSource implements Runnable, IDisposable {
+public class URLAudioSource extends AbstractFrameSource<IAudioRenderTarget> implements Runnable, IDisposable, IAudioSource {
 	private static final Log log = Log.create();
 
 	private static final float         S2F    = Short.MAX_VALUE;

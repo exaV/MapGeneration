@@ -123,8 +123,8 @@ public class Convolution extends AbstractVideoFX implements IVideoFrameFX, IVide
 
 	@Override
 	public void processFrame(GL3 gl, double playOutTime, IVideoRenderTarget target) {
-		setUniform("texelWidth",  1f / target.getFrameSource().getWidth());
-		setUniform("texelHeight", 1f / target.getFrameSource().getHeight());
+		setUniform("texelWidth",  1f / target.getVideoSource().getWidth());
+		setUniform("texelHeight", 1f / target.getVideoSource().getHeight());
 		setUniform("kernel",      KERNELS[(int) getVal(KERNEL)]);
 		setUniform("greyscale",   Boolean.valueOf(GREYSCALE[(int) getVal(KERNEL)])); 
 	}

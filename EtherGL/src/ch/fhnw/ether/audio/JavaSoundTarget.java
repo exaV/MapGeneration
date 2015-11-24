@@ -69,7 +69,7 @@ public final class JavaSoundTarget extends AbstractAudioTarget {
 			if(out != null && out.isOpen())
 				stop();
 			
-			AbstractAudioSource src = (AbstractAudioSource)program.getFrameSource();
+			IAudioSource src = (IAudioSource)program.getFrameSource();
 			out            = AudioSystem.getSourceDataLine(new AudioFormat(src.getSampleRate(), 16, src.getNumChannels(), true, true));
 			fmt            = out.getFormat();
 			outChannels    = fmt.getChannels();

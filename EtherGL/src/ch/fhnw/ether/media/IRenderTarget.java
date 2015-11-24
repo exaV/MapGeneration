@@ -30,8 +30,7 @@
 package ch.fhnw.ether.media;
 
 public interface IRenderTarget<F extends AbstractFrame> {
-	void                    render() throws RenderCommandException;
-	AbstractFrameSource<?>  getFrameSource();
-	void                    setFrame(F frame);
-	F                       getFrame();
+	void render() throws RenderCommandException;
+	void setFrame(F frame);
+	F    getFrame();
 }

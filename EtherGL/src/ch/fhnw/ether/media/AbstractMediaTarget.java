@@ -191,11 +191,6 @@ public abstract class AbstractMediaTarget<F extends AbstractFrame, T extends IRe
 		this.frame.set(frame);
 	}
 
-	@Override
-	public AbstractFrameSource<T> getFrameSource() {
-		return program.getFrameSource();
-	}
-
 	static final class BlockingTimeEvent {
 		public  final double         time;
 		private final CountDownLatch latch = new CountDownLatch(1);

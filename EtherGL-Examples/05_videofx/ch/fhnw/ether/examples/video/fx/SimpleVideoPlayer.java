@@ -37,6 +37,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.JComboBox;
 
+import ch.fhnw.ether.audio.IAudioRenderTarget;
+import ch.fhnw.ether.audio.JavaSoundTarget;
+import ch.fhnw.ether.audio.fx.AudioGain;
 import ch.fhnw.ether.image.RGBA8Frame;
 import ch.fhnw.ether.media.IScheduler;
 import ch.fhnw.ether.media.RenderCommandException;
@@ -73,20 +76,26 @@ public class SimpleVideoPlayer {
 			maskOut.start();
 		}
 
-		final RenderProgram<IVideoRenderTarget> program = new RenderProgram<>(track, fxs.get(current.get()));
+		final RenderProgram<IVideoRenderTarget> video = new RenderProgram<>(track, fxs.get(current.get()));
+		final RenderProgram<IAudioRenderTarget> audio = new RenderProgram<>(track, new AudioGain());
 
 		final JComboBox<AbstractVideoFX> fxsUI = new JComboBox<>();
 		for(AbstractVideoFX fx : fxs)
 			fxsUI.addItem(fx);
 		fxsUI.addActionListener(e->{
 			int newIdx = fxsUI.getSelectedIndex();
-			program.replace(fxs.get(current.get()), fxs.get(newIdx));
+			video.replace(fxs.get(current.get()), fxs.get(newIdx));
 			current.set(newIdx);
 		});
-		new ParameterWindow(fxsUI, program);
+		new ParameterWindow(fxsUI, video);
 
-		videoOut.useProgram(program);
+		videoOut.useProgram(video);
 		videoOut.start();
+		
+		JavaSoundTarget audioOut = new JavaSoundTarget();
+		audioOut.useProgram(audio);
+		audioOut.start();
+
 		videoOut.sleepUntil(IScheduler.NOT_RENDERING);
 	}
 

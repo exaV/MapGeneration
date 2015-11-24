@@ -44,8 +44,8 @@ public abstract class AbstractVideoTarget extends AbstractMediaTarget<VideoFrame
 	}
 
 	@Override
-	public AbstractVideoSource getFrameSource() {
-		return (AbstractVideoSource) super.getFrameSource();
+	public IVideoSource getVideoSource() {
+		return (IVideoSource)program.getFrameSource();
 	}
 
 	public Texture getSrcTexture(GL3 gl, AbstractVideoFX fx) {
@@ -62,13 +62,13 @@ public abstract class AbstractVideoTarget extends AbstractMediaTarget<VideoFrame
 
 	public Texture getDstTexture(GL3 gl, AbstractVideoFX fx) {
 		AbstractRenderCommand<?>[] cmds = program.getProgram();
-		AbstractVideoSource        src  = (AbstractVideoSource) cmds[0];
+		IVideoSource               src  = (IVideoSource) cmds[0];
 		if(cmds[cmds.length - 1] == fx || fx.getDstTexture() == null)
 			return createTexture(gl, src);
 		return fx.getDstTexture();
 	}
 
-	private Texture createTexture(GL3 gl, AbstractVideoSource src) {
+	private Texture createTexture(GL3 gl, IVideoSource src) {
 		Texture result;
 		result = new Texture(new GLObject(gl, Type.TEXTURE), src.getWidth(), src.getHeight());
 		gl.glBindTexture(GL3.GL_TEXTURE_2D, result.getGlObject().getId());

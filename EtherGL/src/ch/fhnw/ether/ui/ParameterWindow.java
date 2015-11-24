@@ -61,7 +61,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import ch.fhnw.ether.audio.AbstractAudioSource;
+import ch.fhnw.ether.audio.IAudioSource;
 import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.image.ImageScaler;
 import ch.fhnw.ether.media.AbstractFrame;
@@ -71,7 +71,7 @@ import ch.fhnw.ether.media.IRenderTarget;
 import ch.fhnw.ether.media.IScheduler;
 import ch.fhnw.ether.media.Parameter;
 import ch.fhnw.ether.media.RenderProgram;
-import ch.fhnw.ether.video.AbstractVideoSource;
+import ch.fhnw.ether.video.IVideoSource;
 import ch.fhnw.ether.video.VideoFrame;
 import ch.fhnw.util.TextUtilities;
 
@@ -127,11 +127,11 @@ public class ParameterWindow {
 			totalFramesUI    = add("Total Frames");
 			lenFramesUI      = add("Length [frames]");
 			lenSecsUI        = add("Length [secs]");
-			if(src instanceof AbstractAudioSource) {
+			if(src instanceof IAudioSource) {
 				channelsUI = add("Channels");
 				sRateUI    = add("Sampling Rate");
 			}
-			if(src instanceof AbstractVideoSource) {
+			if(src instanceof IVideoSource) {
 				widthUI   = add("Width");
 				heightUI  = add("Height");
 				previewUI = new JComponent() {
@@ -170,13 +170,13 @@ public class ParameterWindow {
 				frameRateUI.setText(FMT.format(src.getFrameRate()));
 				lenFramesUI.setText(Long.toString(src.getLengthInFrames()));
 				lenSecsUI.setText(FMT.format(src.getLengthInSeconds()));
-				if(src instanceof AbstractAudioSource) {
-					channelsUI.setText(Integer.toString(((AbstractAudioSource)src).getNumChannels()));
-					sRateUI.setText(FMT.format(((AbstractAudioSource)src).getSampleRate()));
+				if(src instanceof IAudioSource) {
+					channelsUI.setText(Integer.toString(((IAudioSource)src).getNumChannels()));
+					sRateUI.setText(FMT.format(((IAudioSource)src).getSampleRate()));
 				}
-				if(src instanceof AbstractVideoSource) {
-					widthUI.setText(Integer.toString(((AbstractVideoSource)src).getWidth()));
-					heightUI.setText(Integer.toString(((AbstractVideoSource)src).getHeight()));
+				if(src instanceof IVideoSource) {
+					widthUI.setText(Integer.toString(((IVideoSource)src).getWidth()));
+					heightUI.setText(Integer.toString(((IVideoSource)src).getHeight()));
 				}
 			}
 			if(src.getTotalElapsedFrames() == 0 || programChange) {

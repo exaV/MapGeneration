@@ -41,11 +41,12 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.Mixer;
 import javax.sound.sampled.TargetDataLine;
 
+import ch.fhnw.ether.media.AbstractFrameSource;
 import ch.fhnw.ether.media.Parameter;
 import ch.fhnw.ether.media.RenderCommandException;
 import ch.fhnw.util.Pair;
 
-public class JavaSoundSource extends AbstractAudioSource implements Runnable {
+public class JavaSoundSource extends AbstractFrameSource<IAudioRenderTarget> implements Runnable, IAudioSource {
 	private static final float       S2F    = Short.MAX_VALUE;
 
 	private final float sampleRate;

@@ -36,14 +36,15 @@ import java.util.List;
 import ch.fhnw.ether.examples.raytracing.util.IntersectResult;
 import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.image.RGBA8Frame;
+import ch.fhnw.ether.media.AbstractFrameSource;
 import ch.fhnw.ether.media.IScheduler;
 import ch.fhnw.ether.media.RenderCommandException;
 import ch.fhnw.ether.scene.camera.Camera;
 import ch.fhnw.ether.scene.camera.ICamera;
 import ch.fhnw.ether.scene.light.ILight;
 import ch.fhnw.ether.scene.mesh.IMesh;
-import ch.fhnw.ether.video.AbstractVideoSource;
 import ch.fhnw.ether.video.IVideoRenderTarget;
+import ch.fhnw.ether.video.IVideoSource;
 import ch.fhnw.ether.video.VideoFrame;
 import ch.fhnw.util.Log;
 import ch.fhnw.util.color.RGB;
@@ -51,7 +52,7 @@ import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.Line;
 
-public class RayTracer extends AbstractVideoSource {
+public class RayTracer extends AbstractFrameSource<IVideoRenderTarget> implements IVideoSource {
 	private static final Log log = Log.create();
 	
 	private static final RGBA BACKGROUND_COLOR   = RGBA.WHITE;
