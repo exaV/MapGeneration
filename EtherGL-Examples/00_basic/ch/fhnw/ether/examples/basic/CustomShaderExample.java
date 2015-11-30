@@ -85,8 +85,7 @@ public final class CustomShaderExample {
 
 	public static class ExampleCustomShader extends AbstractShader {
 		public ExampleCustomShader() {
-			super(CustomShaderExample.class, "custom_shader_example.custom_shader", "custom_shader",
-					Primitive.TRIANGLES);
+			super(CustomShaderExample.class, "custom_shader_example.custom_shader", "custom_shader", Primitive.TRIANGLES);
 			addArray(new PositionArray());
 			addArray(new ColorArray());
 
@@ -115,10 +114,7 @@ public final class CustomShaderExample {
 		IController controller = new DefaultController();
 		controller.run(time -> {
 			// Create view
-			// new DefaultView(controller, 100, 100, 500, 500,
-			// IView.INTERACTIVE_VIEW, "Test");
-			new DefaultView(controller, 100, 100, 500, 500,
-					new IView.Config(ViewType.INTERACTIVE_VIEW, 0, new IView.ViewFlag[0]), "Test");
+			new DefaultView(controller, 100, 100, 500, 500, new IView.Config(ViewType.INTERACTIVE_VIEW, 0, new IView.ViewFlag[0]), "Test");
 
 			// Create scene and add triangle
 			IScene scene = new DefaultScene(controller);

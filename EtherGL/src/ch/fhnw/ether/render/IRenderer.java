@@ -32,6 +32,8 @@ package ch.fhnw.ether.render;
 import java.util.List;
 import java.util.function.Supplier;
 
+import com.jogamp.opengl.GL3;
+
 import ch.fhnw.ether.scene.attribute.AbstractAttribute;
 import ch.fhnw.ether.scene.camera.IViewCameraState;
 import ch.fhnw.ether.scene.light.ILight;
@@ -49,16 +51,10 @@ public interface IRenderer {
 	}
 
 	interface IRenderUpdate {
-		
-		Renderable getRenderable();
-
-		Object[] getMaterialData();
-
-		float[][] getGeometryData();
+		void update(GL3 gl);
 	}
 
 	interface IRenderTargetState {
-		
 		IView getView();
 
 		IViewCameraState getViewCameraState();
@@ -66,11 +62,9 @@ public interface IRenderer {
 		List<ILight> getLights();
 
 		List<Renderable> getRenderables();
-
 	}
 
 	interface IRenderState {
-		
 		List<IRenderUpdate> getRenderUpdates();
 		
 		List<IRenderTargetState> getRenderStates();

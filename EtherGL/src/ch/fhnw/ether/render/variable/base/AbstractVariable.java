@@ -59,8 +59,11 @@ public abstract class AbstractVariable<T> implements IShaderVariable<T> {
 	}
 
 	protected final int getShaderIndex(GL3 gl, Program program) {
-		if (shaderIndex == -1)
+		if (shaderIndex == -1) {
 			shaderIndex = resolveShaderIndex(gl, program, shaderName);
+			if (shaderIndex == -1)
+				throw new IllegalStateException("shader variable " + id + ": cannot resolve glsl name " + shaderName);
+		}
 		return shaderIndex;
 	}
 
