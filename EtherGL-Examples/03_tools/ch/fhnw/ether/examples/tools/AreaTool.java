@@ -27,7 +27,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ch.fhnw.ether.examples.metrobuzz.tool;
+package ch.fhnw.ether.examples.tools;
 
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.controller.event.IKeyEvent;
@@ -65,7 +65,7 @@ public final class AreaTool extends AbstractTool {
 		super(controller);
 		IGeometry geometry = DefaultGeometry.createV(Primitive.TRIANGLES, MeshUtilities.UNIT_CUBE_TRIANGLES);
 		mesh = new DefaultMesh(new ColorMaterial(TOOL_COLOR), geometry);
-		mesh.setTransform(Mat4.scale(0.1f, 0.1f, 0.001f));
+		mesh.setTransform(Mat4.scale(1f, 1f, 0.001f));
 	}
 
 	@Override
