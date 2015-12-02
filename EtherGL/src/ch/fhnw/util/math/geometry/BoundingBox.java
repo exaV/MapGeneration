@@ -145,6 +145,11 @@ public final class BoundingBox {
 		assert valid;
 		return maxZ - minZ;
 	}
+	
+	public float getRadius() {
+		assert valid;
+		return getMax().distance(getCenter());
+	}
 
 	public void add(float x, float y, float z) {
 		// skip illegal values

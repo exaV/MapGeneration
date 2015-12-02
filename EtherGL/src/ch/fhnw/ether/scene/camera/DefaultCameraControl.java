@@ -72,10 +72,10 @@ public class DefaultCameraControl {
 		// TODO: implement
 		throw new UnsupportedOperationException();
 	}
-	
+
 	public void dolly(float deltaZ) {
 		// TODO: implement
-		throw new UnsupportedOperationException();		
+		throw new UnsupportedOperationException();
 	}
 
 	public void roll(float deltaZ) {
@@ -86,32 +86,40 @@ public class DefaultCameraControl {
 	// orbiting mode with respect to X-Y plane (keeps target in position)
 
 	/**
-	 * Orbit around target with world-z axis. Positive value orbits counter-clock-wise around z axis.
-	 * @param delta relative angle in degrees
+	 * Orbit around target with world-z axis. Positive value orbits
+	 * counter-clock-wise around z axis.
+	 * 
+	 * @param delta
+	 *            relative angle in degrees
 	 */
 	public void addToAzimuth(float delta) {
-		Mat4 m = Mat4.multiply(Mat4.translate(camera.getTarget()), Mat4.rotate(delta, Vec3.Z), Mat4.translate(camera.getTarget().negate()));
-		
+		Mat4 m = Mat4.multiply(Mat4.translate(camera.getTarget()), Mat4.rotate(delta, Vec3.Z),
+				Mat4.translate(camera.getTarget().negate()));
+
 		Vec3 p = m.transform(camera.getPosition());
 		Vec3 u = m.transform(camera.getPosition().add(camera.getUp())).subtract(p);
-		
+
 		camera.setPosition(p);
 		camera.setUp(u);
 	}
 
 	/**
-	 * Orbit around target on camera-x axis. Positive value orbits clock-wise around camera-x axis, i.e. moves camera "up"
-	 * @param delta relative angle in degrees
+	 * Orbit around target on camera-x axis. Positive value orbits clock-wise
+	 * around camera-x axis, i.e. moves camera "up"
+	 * 
+	 * @param delta
+	 *            relative angle in degrees
 	 */
 	public void addToElevation(float delta) {
-		Mat4 m = Mat4.multiply(Mat4.translate(camera.getTarget()), Mat4.rotate(-delta, camera.getCameraXAxis()), Mat4.translate(camera.getTarget().negate()));
-		
+		Mat4 m = Mat4.multiply(Mat4.translate(camera.getTarget()), Mat4.rotate(-delta, camera.getCameraXAxis()),
+				Mat4.translate(camera.getTarget().negate()));
+
 		Vec3 p = m.transform(camera.getPosition());
 		Vec3 u = m.transform(camera.getPosition().add(camera.getUp())).subtract(p);
-		
+
 		if (KEEP_ROT_X_POSITIVE && Vec3.Z.dot(u) < 0)
 			return;
-		
+
 		camera.setPosition(p);
 		camera.setUp(u);
 	}
@@ -121,7 +129,7 @@ public class DefaultCameraControl {
 		Vec3 t = camera.getTarget();
 		return p.distance(t);
 	}
-	
+
 	public void setDistance(float distance) {
 		Vec3 t = camera.getTarget();
 		Vec3 z = camera.getCameraZAxis().scale(distance);
@@ -134,7 +142,7 @@ public class DefaultCameraControl {
 		Vec3 z = camera.getCameraZAxis().scale(delta);
 		p = p.add(z);
 		if (delta < 0 && (p.distance(t) < MIN_DISTANCE || p.subtract(t).dot(z) > 0))
-			setDistance(MIN_DISTANCE);	
+			setDistance(MIN_DISTANCE);
 		else
 			camera.setPosition(p);
 	}
