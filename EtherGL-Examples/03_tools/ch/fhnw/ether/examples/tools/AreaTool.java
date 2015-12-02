@@ -103,7 +103,7 @@ public final class AreaTool extends AbstractTool {
 		int x = e.getX();
 		int y = e.getY();
 		IViewCameraState vcs = getController().getRenderManager().getViewCameraState(e.getView());
-		float d = PickUtilities.pickBoundingBox(PickMode.POINT, x, y, 0, 0, vcs, mesh.getBounds());
+		float d = PickUtilities.pickObject(PickMode.POINT, x, y, 0, 0, vcs, mesh);
 		if (d < Float.POSITIVE_INFINITY)
 			moving = true;
 	}

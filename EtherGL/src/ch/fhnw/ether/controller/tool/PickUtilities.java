@@ -59,39 +59,43 @@ public final class PickUtilities {
 		IViewCameraState vcs = view.getController().getRenderManager().getViewCameraState(view);
 		final Map<Float, I3DObject> pickables = new TreeMap<>();
 		for (I3DObject object : view.getController().getScene().get3DObjects()) {
-			BoundingBox b = object.getBounds();
-			
-			if (b == null)
-				continue;
-			float d = pickBoundingBox(mode, x, y, w, h, vcs, b);
-			if (d == Float.POSITIVE_INFINITY)
-				continue;
-
-			if (!(object instanceof IMesh)) {
+			float d = pickObject(mode, x, y, w, h, vcs, object);
+			if (d < Float.POSITIVE_INFINITY)
 				pickables.put(d, object);
-				continue;
-			}
-			
-			IMesh mesh = (IMesh)object;
-			IGeometry geometry = mesh.getGeometry();
-			float[] data = mesh.getTransformedPositionData();
-			
-			float dd = Float.POSITIVE_INFINITY;
-			switch (geometry.getType()) {
-			case LINES:
-				dd = pickEdges(mode, x, y, w, h, vcs, data);
-				break;
-			case POINTS:
-				dd = pickPoints(mode, x, y, w, h, vcs, data);
-				break;
-			case TRIANGLES:
-				dd = pickTriangles(mode, x, y, w, h, vcs, data);
-				break;
-			}
-			if (dd < Float.POSITIVE_INFINITY)
-				pickables.put(dd, object);
 		}
 		return pickables;
+	}
+	
+	public static float pickObject(PickMode mode, int x, int y, int w, int h, IViewCameraState vcs, I3DObject object) {
+		BoundingBox b = object.getBounds();
+		
+		if (b == null)
+			return Float.POSITIVE_INFINITY;
+		
+		float d = pickBoundingBox(mode, x, y, w, h, vcs, b);
+		if (d == Float.POSITIVE_INFINITY)
+			return Float.POSITIVE_INFINITY;
+
+		if (!(object instanceof IMesh))
+			return d;
+		
+		IMesh mesh = (IMesh)object;
+		IGeometry geometry = mesh.getGeometry();
+		float[] data = mesh.getTransformedPositionData();
+		
+		d = Float.POSITIVE_INFINITY;
+		switch (geometry.getType()) {
+		case LINES:
+			d = pickEdges(mode, x, y, w, h, vcs, data);
+			break;
+		case POINTS:
+			d = pickPoints(mode, x, y, w, h, vcs, data);
+			break;
+		case TRIANGLES:
+			d = pickTriangles(mode, x, y, w, h, vcs, data);
+			break;
+		}
+		return d;
 	}
 
 	public static float pickBoundingBox(PickMode mode, int x, int y, int w, int h, IViewCameraState vcs, BoundingBox bounds) {
