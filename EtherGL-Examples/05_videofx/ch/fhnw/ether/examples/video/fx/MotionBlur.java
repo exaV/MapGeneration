@@ -46,15 +46,15 @@ public class MotionBlur extends AbstractVideoFX implements IVideoFrameFX {
 
 	@Override
 	public void processFrame(final double playOutTime, final IVideoRenderTarget target, final Frame frame) {
-		if(buffer[0].length != frame.dimI *3 || buffer.length != frame.dimJ)
-			buffer  = new float[frame.dimJ][frame.dimI * 3];
+		if(buffer[0].length != frame.width *3 || buffer.length != frame.height)
+			buffer  = new float[frame.height][frame.width * 3];
 
 		float decay = getVal(DECAY);
 
 		frame.processLines((pixels, j) -> {
 			int           idx     = 0;
 			final float[] bufferJ = buffer[j];
-			for(int i = frame.dimI; --i >= 0;) {
+			for(int i = frame.width; --i >= 0;) {
 				frame.position(pixels, i, j);
 
 				float r = toFloat(pixels.get());

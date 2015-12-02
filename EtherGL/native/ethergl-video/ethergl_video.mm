@@ -174,6 +174,13 @@ public:
             return nullptr;
         }
         
+        /*
+        AudioBufferList  audioBufferList;
+        CMBlockBufferRef blockBuffer;
+        NSMutableData *data=[[NSMutableData alloc] init];
+        CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer(sampleBuffer, NULL, &audioBufferList, sizeof(audioBufferList), NULL, NULL, 0, &blockBuffer);
+        */
+        
         CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
         
         // lock the image buffer
@@ -210,9 +217,24 @@ public:
         }
         env->ReleaseByteArrayElements(array, (jbyte*)arrayElements, 0);
         
+        /*
+        // process audio samples
+        for( int y=0; y<audioBufferList.mNumberBuffers; y++ ) {
+            AudioBuffer audioBuffer = audioBufferList.mBuffers[y];
+            Float32 *frame = (Float32*)audioBuffer.mData;
+            [data appendBytes:frame length:audioBuffer.mDataByteSize];
+        }
+        */
+        
         // unlock the image buffer & cleanup
         CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
         CFRelease(sampleBuffer);
+        
+        /*
+        // release audio buffer
+        CFRelease(blockBuffer);
+        [data release];
+        */
         
         return array;
     }
@@ -291,6 +313,14 @@ public:
         GLuint texture = (GLuint)data[ch_fhnw_ether_video_avfoundation_AVAsset_IDX_NAME];
         glDeleteTextures(1, &texture);
         return 0;
+    }
+    
+    int getNumChannels() {
+        return 2;
+    }
+    
+    float getSampleRate() {
+        return 48000;
     }
 };
 
@@ -479,6 +509,34 @@ JNIEXPORT jint JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeDispo
     uint64_t* arrayElements = (uint64_t*)env->GetLongArrayElements(data, nullptr);
     
     return ((AVAssetWrapper*)nativeHandle)->disposeTexture(arrayElements);
+    
+    JNF_COCOA_EXIT(env);
+}
+
+/*
+ * Class:     ch_fhnw_ether_video_avfoundation_AVAsset
+ * Method:    nativeGetNumChannels
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGetNumChannels
+(JNIEnv * env, jclass, jlong nativeHandle) {
+    JNF_COCOA_ENTER(env);
+    
+    return ((AVAssetWrapper*)nativeHandle)->getNumChannels();
+    
+    JNF_COCOA_EXIT(env);
+}
+
+/*
+ * Class:     ch_fhnw_ether_video_avfoundation_AVAsset
+ * Method:    nativeGetSampleRate
+ * Signature: (J)F
+ */
+JNIEXPORT jfloat JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGetSampleRate
+(JNIEnv * env, jclass, jlong nativeHandle) {
+    JNF_COCOA_ENTER(env);
+    
+    return ((AVAssetWrapper*)nativeHandle)->getSampleRate();
     
     JNF_COCOA_EXIT(env);
 }

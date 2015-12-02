@@ -45,9 +45,11 @@ import javax.sound.midi.Track;
 
 import ch.fhnw.ether.media.AbstractFrameSource;
 import ch.fhnw.ether.media.AbstractMediaTarget;
+import ch.fhnw.ether.media.IRenderTarget;
+import ch.fhnw.ether.media.IScheduler;
 import ch.fhnw.ether.media.RenderCommandException;
 
-public class URLMidiSource extends AbstractFrameSource<IMidiRenderTarget> implements IMidiSource {
+public class URLMidiSource extends AbstractFrameSource implements IMidiSource {
 	private final Sequence          seq;
 	private final URL               url;
 	private final long              frameCount;
@@ -134,11 +136,11 @@ public class URLMidiSource extends AbstractFrameSource<IMidiRenderTarget> implem
 	}
 
 	@Override
-	protected void run(IMidiRenderTarget target) throws RenderCommandException {
+	protected void run(IRenderTarget<?> target) throws RenderCommandException {
 		if(numPlays <= 0) return;
 
 		if(startTime < 0)
-			startTime = target.getTime();
+			startTime = ((IScheduler)target).getTime();
 
 		for(;;) {
 			MidiEvent selevent = null;
@@ -183,7 +185,7 @@ public class URLMidiSource extends AbstractFrameSource<IMidiRenderTarget> implem
 			if(setFrame && !msgs.isEmpty())
 				break;
 		}
-		setFrame(target, new MidiFrame(startTime + (curtime / AbstractMediaTarget.SEC2US), msgs.toArray(new MidiMessage[msgs.size()])));
+		((IMidiRenderTarget)target).setFrame(this, new MidiFrame(startTime + (curtime / AbstractMediaTarget.SEC2US), msgs.toArray(new MidiMessage[msgs.size()])));
 		msgs.clear();
 	}
 

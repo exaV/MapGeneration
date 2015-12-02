@@ -33,31 +33,48 @@ import java.awt.Dimension;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import com.github.sarxos.webcam.Webcam;
 
 import ch.fhnw.ether.image.RGB8Frame;
 import ch.fhnw.ether.media.AbstractFrameSource;
-import ch.fhnw.ether.media.IScheduler;
+import ch.fhnw.ether.media.IRenderTarget;
 import ch.fhnw.ether.media.RenderCommandException;
 import ch.fhnw.util.ClassUtilities;
+import ch.fhnw.util.IDisposable;
 
-public class CameraSource extends AbstractFrameSource<IVideoRenderTarget> implements IVideoSource {
-	private static final AtomicInteger numCams = new AtomicInteger();
+public class CameraSource extends AbstractFrameSource implements IVideoSource, IDisposable {
+	private static final AtomicBoolean kill = new AtomicBoolean();
 
 	private static final Method getFPS = ClassUtilities.getMethod(Webcam.class, "getFPS");
 
-	private final Webcam                cam;
-	private AtomicBoolean               disposed = new AtomicBoolean(false);
-	private final CameraInfo            info;
+	private final Webcam     cam;
+	private AtomicBoolean    disposed = new AtomicBoolean(false);
+	private final CameraInfo info;
+
+	static {
+		Runtime.getRuntime().addShutdownHook(new Thread(()->{
+			try {
+				Thread.sleep(1000);
+				kill.set(true);
+			} catch (InterruptedException e) {}
+		}));
+		new Thread("Camera watchdog") {
+			@Override
+			public void run() {
+				try {
+					while(!(kill.get()))
+						Thread.sleep(1000);
+					Runtime.getRuntime().halt(0);
+				} catch (InterruptedException e) {}
+			};
+		}.start();
+	}
 
 	private CameraSource(CameraInfo info) {
 		this.info     = info;
 		this.cam      = info.getNativeCamera();
 		this.cam.open(true);
-		Runtime.getRuntime().addShutdownHook(new Thread(()->{dispose();}));
-		numCams.incrementAndGet();
 		Dimension max = cam.getViewSize();
 		for(Dimension dim : this.cam.getViewSizes())
 			if(dim.width > max.width && dim.height > max.height)
@@ -65,40 +82,33 @@ public class CameraSource extends AbstractFrameSource<IVideoRenderTarget> implem
 		setSize(max.width, max.height);
 	}
 
+	@Override
 	public void dispose() {
-		if(!(disposed.getAndSet(true))) {
+		if(!(disposed.getAndSet(true)))
 			cam.close();
-			if(numCams.decrementAndGet() == 0) {
-				new Thread() {
-					@Override
-					public void run() {
-						try {
-							Thread.sleep(2000);
-							Runtime.getRuntime().halt(0);
-						} catch (InterruptedException e) {}
-					};
-				}.start();
-			}
-		}
 	}
 
 	@Override
-	protected void run(IVideoRenderTarget target) throws RenderCommandException {
+	protected void run(IRenderTarget<?> target) throws RenderCommandException {
 		if(!(cam.isOpen())) return;
 		Dimension size  = cam.getViewSize();
 		RGB8Frame frame = new RGB8Frame(size.width, size.height);
 		final ByteBuffer src = cam.getImageBytes();
 		src.clear();
 		final ByteBuffer dst = frame.pixels;
-		for(int j = frame.dimJ; --j >= 0;) {
-			dst.position(j * frame.dimI * 3);
-			for(int i = frame.dimI; --i >= 0;) {
+		for(int j = frame.height; --j >= 0;) {
+			dst.position(j * frame.width * 3);
+			for(int i = frame.width; --i >= 0;) {
 				dst.put(src.get());
 				dst.put(src.get());
 				dst.put(src.get());
 			}
 		}
-		setFrame(target, new VideoFrame(IScheduler.ASAP, frame));
+		try {
+			((IVideoRenderTarget)target).setFrame(this, new VideoFrame(frame));
+		} catch(Throwable t) {
+			throw new RenderCommandException(t);
+		}
 	}
 
 	public void setSize(int width, int height) {

@@ -83,8 +83,9 @@ public class AWTFrameTarget extends AbstractVideoTarget implements Runnable {
 
 	@Override
 	public void render() {
-		image.set(getFrame().getFrame().toBufferedImage());
-		sleepUntil(getFrame().playOutTime);
+		VideoFrame frame = getFrame();
+		image.set(frame.getFrame().toBufferedImage());
+		sleepUntil(frame.playOutTime);		
 		if(canvas == null) return;
 		canvas.repaint();
 	}	

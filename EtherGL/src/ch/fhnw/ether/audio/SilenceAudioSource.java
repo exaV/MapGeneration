@@ -30,9 +30,10 @@
 package ch.fhnw.ether.audio;
 
 import ch.fhnw.ether.media.AbstractFrameSource;
+import ch.fhnw.ether.media.IRenderTarget;
 import ch.fhnw.ether.media.RenderCommandException;
 
-public class SilenceAudioSource extends AbstractFrameSource<IAudioRenderTarget> implements IAudioSource {
+public class SilenceAudioSource extends AbstractFrameSource implements IAudioSource {
 	private final float sampleRate;
 	private final int   nChannels;
 	private final int   frameSize;
@@ -47,8 +48,8 @@ public class SilenceAudioSource extends AbstractFrameSource<IAudioRenderTarget> 
 	}
 
 	@Override
-	protected void run(final IAudioRenderTarget target) throws RenderCommandException {
-		setFrame(target, createAudioFrame(samples, frameSize));
+	protected void run(IRenderTarget<?> target) throws RenderCommandException {
+		((IAudioRenderTarget)target).setFrame(this, createAudioFrame(samples, frameSize));
 		samples += frameSize;
 	}	
 

@@ -42,6 +42,7 @@ import ch.fhnw.ether.controller.event.IPointerEvent;
 import ch.fhnw.ether.controller.tool.ITool;
 import ch.fhnw.ether.controller.tool.NavigationTool;
 import ch.fhnw.ether.controller.tool.PickTool;
+import ch.fhnw.ether.media.IScheduler;
 import ch.fhnw.ether.render.DefaultRenderManager;
 import ch.fhnw.ether.render.IRenderManager;
 import ch.fhnw.ether.render.IRenderer;
@@ -391,5 +392,10 @@ public class DefaultController implements IController {
 			if (currentView != null)
 				getCurrentTool().refresh(currentView);
 		}
+	}
+
+	@Override
+	public IScheduler getScheduler() {
+		return scheduler;
 	}
 }

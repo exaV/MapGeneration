@@ -43,8 +43,6 @@ import java.awt.image.SampleModel;
 import java.awt.image.WritableRaster;
 import java.util.Arrays;
 
-import javax.swing.Icon;
-
 public final class ImageScaler {
 	public static final int NORMALIZE = 1;
 	public static final int DETECT_NO_DATA = 2;
@@ -55,25 +53,6 @@ public final class ImageScaler {
 			return (infoflags & (ALLBITS | ERROR | ABORT)) == 0;
 		}
 	};
-
-	public static BufferedImage toBufferedImage(Icon icon) {
-		BufferedImage img = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
-		Graphics g = img.getGraphics();
-		icon.paintIcon(null, g, 0, 0);
-		g.dispose();
-		return img;
-	}
-
-	public static BufferedImage toBufferedImage(java.awt.Image image, int targetType) {
-		BufferedImage result = new BufferedImage(image.getWidth(AWT_OBSERVER), image.getHeight(AWT_OBSERVER), targetType);
-		if (image instanceof BufferedImage)
-			return copy((BufferedImage) image, result);
-
-		Graphics g = result.getGraphics();
-		g.drawImage(image, 0, 0, AWT_OBSERVER);
-		g.dispose();
-		return result;
-	}
 
 	public static BufferedImage toType(BufferedImage src, int type) {
 		if (src.getType() == type)
@@ -106,10 +85,61 @@ public final class ImageScaler {
 	 *            {@code BILINEAR} hint is specified)
 	 * @return a scaled version of the original {@code BufferedImage}
 	 */
+	public static Frame getScaledInstance(Frame img, int targetWidth, int targetHeight, Object hint, boolean higherQuality) {
+		return Frame.create(getScaledInstance(img.toBufferedImage(), targetWidth, targetHeight, hint, higherQuality, 0x00808080));
+	}
+
+	/**
+	 * Convenience method that returns a scaled instance of the provided {@code BufferedImage}.
+	 *
+	 * @param img
+	 *            the original image to be scaled
+	 * @param targetWidth
+	 *            the desired width of the scaled instance, in pixels
+	 * @param targetHeight
+	 *            the desired height of the scaled instance, in pixels
+	 * @param hint
+	 *            one of the rendering hints that corresponds to {@code RenderingHints.KEY_INTERPOLATION} (e.g.
+	 *            {@code RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR},
+	 *            {@code RenderingHints.VALUE_INTERPOLATION_BILINEAR},
+	 *            {@code RenderingHints.VALUE_INTERPOLATION_BICUBIC})
+	 * @param higherQuality
+	 *            if true, this method will use a multi-step scaling technique that provides higher quality than the
+	 *            usual one-step technique (only useful in downscaling cases, where {@code targetWidth} or
+	 *            {@code targetHeight} is smaller than the original dimensions, and generally only when the
+	 *            {@code BILINEAR} hint is specified)
+	 * @return a scaled version of the original {@code BufferedImage}
+	 */
 	public static BufferedImage getScaledInstance(BufferedImage img, int targetWidth, int targetHeight, Object hint, boolean higherQuality) {
 		return getScaledInstance(img, targetWidth, targetHeight, hint, higherQuality, 0x00808080);
 	}
 
+	/**
+	 * Convenience method that returns a scaled instance of the provided {@code BufferedImage}.
+	 *
+	 * @param img
+	 *            the original image to be scaled
+	 * @param targetWidth
+	 *            the desired width of the scaled instance, in pixels
+	 * @param targetHeight
+	 *            the desired height of the scaled instance, in pixels
+	 * @param hint
+	 *            one of the rendering hints that corresponds to {@code RenderingHints.KEY_INTERPOLATION} (e.g.
+	 *            {@code RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR},
+	 *            {@code RenderingHints.VALUE_INTERPOLATION_BILINEAR},
+	 *            {@code RenderingHints.VALUE_INTERPOLATION_BICUBIC})
+	 * @param higherQuality
+	 *            if true, this method will use a multi-step scaling technique that provides higher quality than the
+	 *            usual one-step technique (only useful in downscaling cases, where {@code targetWidth} or
+	 *            {@code targetHeight} is smaller than the original dimensions, and generally only when the
+	 *            {@code BILINEAR} hint is specified)
+	 * @return blendARGB the color to blend non-fully transparent pixels with.
+	 * @return a scaled version of the original {@code BufferedImage}
+	 */
+	public static Frame getScaledInstance(Frame img, int targetWidth, int targetHeight, Object hint, boolean higherQuality, int blendARGB) {
+		return Frame.create(getScaledInstance(img.toBufferedImage(), targetWidth, targetHeight, hint, higherQuality, blendARGB));
+	}
+	
 	/**
 	 * Convenience method that returns a scaled instance of the provided {@code BufferedImage}.
 	 *
@@ -191,6 +221,10 @@ public final class ImageScaler {
 		return ret;
 	}
 
+	public static Frame getScaledLimitedInstance(Frame src, float scaleW, float scaleH, int maxDim, Object hint, boolean higherQuality) {
+		return Frame.create(getScaledLimitedInstance(src.toBufferedImage(), scaleW, scaleH, maxDim, hint, higherQuality));
+	}
+	
 	public static BufferedImage getScaledLimitedInstance(BufferedImage src, float scaleW, float scaleH, int maxDim, Object hint, boolean higherQuality) {
 		int targetWidth = (int) (src.getWidth() * scaleW);
 		int targetHeight = (int) (src.getHeight() * scaleH);

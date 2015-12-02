@@ -55,7 +55,7 @@ public class FadeToColor extends AbstractVideoFX implements IVideoFrameFX {
 		if(frame.pixelSize == 4) {
 			frame.processLines((pixels, j)->{
 				int idx = pixels.position();
-				for(int i = 0; i < frame.dimI; i++) {
+				for(int i = 0; i < frame.width; i++) {
 					pixels.put(toByte(mix(toFloat(pixels.get(idx++)), rs, w)));
 					pixels.put(toByte(mix(toFloat(pixels.get(idx++)), gs, w)));
 					pixels.put(toByte(mix(toFloat(pixels.get(idx++)), bs, w)));
@@ -66,7 +66,7 @@ public class FadeToColor extends AbstractVideoFX implements IVideoFrameFX {
 		} else {
 			frame.processLines((pixels, j)->{
 				int idx = pixels.position();
-				for(int i = 0; i < frame.dimI; i++) {
+				for(int i = 0; i < frame.width; i++) {
 					pixels.put(toByte(mix(toFloat(pixels.get(idx++)), rs, w)));
 					pixels.put(toByte(mix(toFloat(pixels.get(idx++)), gs, w)));
 					pixels.put(toByte(mix(toFloat(pixels.get(idx++)), bs, w)));

@@ -18,11 +18,12 @@ public class ColorMapMaterialTarget extends AbstractVideoTarget {
 
 	@Override
 	public void render() throws RenderCommandException {
-		Texture texture = getFrame().getTexture();
+		VideoFrame frame = getFrame();
+		Texture texture = frame.getTexture();
+		sleepUntil(frame.playOutTime);
 		controller.run(time->{
 			material.setColorMap(texture);
 		});
-		sleepUntil(getFrame().playOutTime);
 	}
 
 	public ColorMapMaterial getMaterial() {

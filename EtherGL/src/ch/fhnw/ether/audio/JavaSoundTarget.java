@@ -33,6 +33,7 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.SourceDataLine;
 
+import ch.fhnw.ether.media.ITimebase;
 import ch.fhnw.ether.media.RenderCommandException;
 import ch.fhnw.ether.media.RenderProgram;
 
@@ -43,8 +44,8 @@ public final class JavaSoundTarget extends AbstractAudioTarget {
 	private SourceDataLine out;
 	private int            outChannels;
 	private int            bytesPerSample;
-	private double         sTime;
 	private final int      bufferSize;
+	private ITimebase      timebase;
 	
 	/**
 	 * Create a new audio target using Java sound output.
@@ -61,6 +62,18 @@ public final class JavaSoundTarget extends AbstractAudioTarget {
 	public JavaSoundTarget(int bufferSize) {
 		super(Thread.MAX_PRIORITY, true);
 		this.bufferSize = bufferSize;
+	}
+	
+
+	/**
+	 * Create a new audio target using Java sound output.
+	 *
+	 * @param source The audio source.
+	 * @param bufferSize The output buffer size in seconds.
+	 */
+	public JavaSoundTarget(IAudioSource source, double bufferSize) {
+		super(Thread.MAX_PRIORITY, true);
+		this.bufferSize = (int) (source.getSampleRate() * bufferSize * source.getNumChannels() * 2);
 	}
 	
 	@Override
@@ -106,8 +119,6 @@ public final class JavaSoundTarget extends AbstractAudioTarget {
 				}
 			}
 		}
-
-		sTime += outBuffer.length / 2;
 		out.write(outBuffer, 0, outBuffer.length);
 	}
 
@@ -121,7 +132,8 @@ public final class JavaSoundTarget extends AbstractAudioTarget {
 
 	@Override
 	public double getTime() {
-		return sTime / (getSampleRate() * getNumChannels());
+		if(timebase != null) return timebase.getTime();
+		return out.getLongFramePosition() / (double)getSampleRate();
 	}
 
 	@Override

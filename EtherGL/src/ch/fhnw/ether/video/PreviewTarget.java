@@ -47,7 +47,7 @@ public class PreviewTarget extends AbstractVideoTarget {
 			start     = getTime();
 			frame     = getFrame().getFrame();
 			prvHeight = preview.getHeight();
-			prvWidth  = (prvHeight * frame.dimI) / frame.dimJ; 
+			prvWidth  = (prvHeight * frame.width) / frame.height; 
 			prvN      = Math.max(preview.getWidth() / (prvWidth + BORDER), 1); 
 			next      = start + (length / prvN);
 		} else if(getTime() >= next) {

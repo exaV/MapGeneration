@@ -32,11 +32,12 @@ package ch.fhnw.ether.audio;
 import java.util.Arrays;
 
 import ch.fhnw.ether.media.AbstractFrameSource;
+import ch.fhnw.ether.media.IRenderTarget;
 import ch.fhnw.ether.media.RenderCommandException;
 import ch.fhnw.util.FloatList;
 
 
-public class ArrayAudioSource extends AbstractFrameSource<IAudioRenderTarget> implements IAudioSource {
+public class ArrayAudioSource extends AbstractFrameSource implements IAudioSource {
 	private       int     numPlays;
 	private final long    frameCount;
 	private final int     nChannels;
@@ -60,7 +61,7 @@ public class ArrayAudioSource extends AbstractFrameSource<IAudioRenderTarget> im
 	}
 
 	@Override
-	protected void run(IAudioRenderTarget target) throws RenderCommandException {
+	protected void run(IRenderTarget<?> target) throws RenderCommandException {
 		try {
 			int to = rdPtr + frameSz;
 			if(to >= data.length) {
@@ -70,7 +71,7 @@ public class ArrayAudioSource extends AbstractFrameSource<IAudioRenderTarget> im
 			final float[] outData = Arrays.copyOfRange(data, rdPtr, to);
 			AudioFrame frame = createAudioFrame(samples, outData);
 			frame.setLast(numPlays <= 0);
-			setFrame(target, frame);
+			((IAudioRenderTarget)target).setFrame(this, frame);
 			samples += outData.length;
 			rdPtr = to % data.length;
 		} catch(Throwable t) {

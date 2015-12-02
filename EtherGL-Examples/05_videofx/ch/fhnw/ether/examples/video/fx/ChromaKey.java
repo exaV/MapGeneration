@@ -62,13 +62,13 @@ public class ChromaKey extends AbstractVideoFX implements IVideoFrameFX {
 		final float hl = wrap(h - r);
 
 		frame.processLines((pixels, j)->{
-			final float[] hsb = new float[frame.dimI * 3];
+			final float[] hsb = new float[frame.width * 3];
 			final int     pos = pixels.position();
 			ByteBuffer mask = this.mask.pixels.asReadOnlyBuffer();
 			mask.position(pos);
 			ColorUtilities.getHSBfromRGB(mask, hsb, this.mask.pixelSize);
 			pixels.position(pos);
-			for(int i = 0; i < frame.dimI; i++) {
+			for(int i = 0; i < frame.width; i++) {
 				int idx = i * 3;
 				if(hsb[idx+1] > s && hsb[idx+2] > b && hsb[idx+0] > hl && hsb[idx+0] < hh) {
 					pixels.get();

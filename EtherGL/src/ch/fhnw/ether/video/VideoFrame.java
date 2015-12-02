@@ -29,26 +29,27 @@
 
 package ch.fhnw.ether.video;
 
+import java.util.concurrent.BlockingQueue;
+
 import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.media.AbstractFrame;
 import ch.fhnw.ether.scene.mesh.material.Texture;
 
 public class VideoFrame extends AbstractFrame {
-	private final FrameAccess framea;
-	private       Frame       frame;
-	private       Texture     texture;
-	private       boolean     frameRead;
+	private final FrameAccess            framea;
+	private       Frame                  frame;
+	private       Texture                texture;
+	private       boolean                frameRead;
+	private final BlockingQueue<float[]> audioData;
 
-	public VideoFrame(double playOutTime, Frame frame) {
-		super(playOutTime);
-		this.framea = null;
-		this.frame  = frame;
-		frameRead   = true;
+	public VideoFrame(Frame frame) {
+		this(new FrameAccess(frame), null);
 	}
-
-	public VideoFrame(double playOutTime, FrameAccess framea) {
-		super(playOutTime);
-		this.framea = framea;
+		
+	public VideoFrame(FrameAccess framea, BlockingQueue<float[]> audioData) {
+		super(framea.getPlayOutTimeInSec());
+		this.framea    = framea;
+		this.audioData = audioData;
 	}
 
 	public synchronized Frame getFrame() {
@@ -57,7 +58,7 @@ public class VideoFrame extends AbstractFrame {
 				frame = Frame.create(texture);
 			} else {
 				frameRead = true;
-				frame = framea.getNextFrame();
+				frame = framea.getFrame(audioData);
 			}
 		}
 		return frame;
@@ -81,7 +82,7 @@ public class VideoFrame extends AbstractFrame {
 				setTexture(frame.getTexture());
 			} else {
 				frameRead = true;
-				setTexture(framea.getNextTexture());
+				setTexture(framea.getTexture(audioData));
 			}
 		}
 		return texture;
@@ -89,5 +90,9 @@ public class VideoFrame extends AbstractFrame {
 
 	public void setTexture(Texture texture) {
 		this.texture = texture;
-	}	
+	}
+
+	public boolean isKeyframe() {
+		return framea.isKeyframe();
+	}
 }

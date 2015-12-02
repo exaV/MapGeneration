@@ -30,6 +30,7 @@
 package ch.fhnw.ether.video.avfoundation;
 
 import java.lang.ref.ReferenceQueue;
+import java.util.concurrent.BlockingQueue;
 
 import com.jogamp.opengl.GL3;
 
@@ -80,14 +81,16 @@ public final class AVAsset extends FrameAccess {
 		return READY;
 	}
 
-	private long    nativeHandle;
-	private double  duration;
-	private float   frameRate;
-	private long    frameCount;
-	private int     width;
-	private int     height;
-	private long    frameNo;
-	private boolean skippedFrames;
+	private final long    nativeHandle;
+	private final double  duration;
+	private final float   frameRate;
+	private final float   sampleRate;
+	private final int     numChannels;
+	private final long    frameCount;
+	private final int     width;
+	private final int     height;
+	private long          frameNo;
+	private boolean       skippedFrames;
 
 	public AVAsset(URLVideoSource src, int numPlays) {
 		super(src, numPlays);		
@@ -96,11 +99,13 @@ public final class AVAsset extends FrameAccess {
 			throw new IllegalArgumentException("cannot create avasset from " + src.getURL());
 
 		autoDispose.add(this);
-		duration   = nativeGetDuration(nativeHandle);
-		frameRate  = (float)nativeGetFrameRate(nativeHandle);
-		frameCount = nativeGetFrameCount(nativeHandle);
-		width      = nativeGetWidth(nativeHandle);
-		height     = nativeGetHeight(nativeHandle);
+		duration    = nativeGetDuration(nativeHandle);
+		frameRate   = (float)nativeGetFrameRate(nativeHandle);
+		frameCount  = nativeGetFrameCount(nativeHandle);
+		sampleRate  = nativeGetSampleRate(nativeHandle);
+		numChannels = nativeGetNumChannels(nativeHandle);
+		width       = nativeGetWidth(nativeHandle);
+		height      = nativeGetHeight(nativeHandle);
 	}
 
 	@Override
@@ -118,6 +123,16 @@ public final class AVAsset extends FrameAccess {
 		return frameCount;
 	}
 
+	@Override
+	protected int getNumChannels() {
+		return numChannels;
+	}
+	
+	@Override
+	protected float getSampleRate() {
+		return sampleRate;
+	}
+	
 	@Override
 	public int getWidth() {
 		return width;
@@ -144,7 +159,7 @@ public final class AVAsset extends FrameAccess {
 	}
 
 	@Override
-	protected Frame getNextFrame() {
+	protected Frame getFrame(BlockingQueue<float[]> audioData) {
 		byte[] pixels;
 		if(skippedFrames) {
 			pixels        = nativeGetFrame(nativeHandle, frameNo / frameRate);
@@ -175,7 +190,7 @@ public final class AVAsset extends FrameAccess {
 	}
 
 	@Override
-	public Texture getNextTexture() {
+	public Texture getTexture(BlockingQueue<float[]> audioData) {
 		try(IGLContext ctx = GLContextManager.acquireContext()) {
 			Data data = new Data(nativeHandle);
 			int result = nativeGetNextTexture(nativeHandle, data.data);
@@ -218,6 +233,10 @@ public final class AVAsset extends FrameAccess {
 	private static native double nativeGetFrameRate(long nativeHandle);
 
 	private static native long nativeGetFrameCount(long nativeHandle);
+
+	private static native int  nativeGetNumChannels(long nativeHandle);
+
+	private static native float nativeGetSampleRate(long nativeHandle);
 
 	private static native int nativeGetWidth(long nativeHandle);
 

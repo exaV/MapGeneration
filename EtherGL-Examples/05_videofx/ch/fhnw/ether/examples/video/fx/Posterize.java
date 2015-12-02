@@ -49,7 +49,7 @@ public class Posterize extends AbstractVideoFX implements IVideoFrameFX {
 		if(frame.pixelSize == 4) {
 			frame.processLines((pixels, j)->{
 				int idx = pixels.position();
-				for(int i = 0; i < frame.dimI; i++) {
+				for(int i = 0; i < frame.width; i++) {
 					pixels.put((byte)(pixels.get(idx++) & mask));
 					pixels.put((byte)(pixels.get(idx++) & mask));
 					pixels.put((byte)(pixels.get(idx++) & mask));
@@ -60,7 +60,7 @@ public class Posterize extends AbstractVideoFX implements IVideoFrameFX {
 		} else {
 			frame.processLines((pixels, j)->{
 				int idx = pixels.position();
-				for(int i = 0; i < frame.dimI; i++) {
+				for(int i = 0; i < frame.width; i++) {
 					pixels.put((byte)(pixels.get(idx++) & mask));
 					pixels.put((byte)(pixels.get(idx++) & mask));
 					pixels.put((byte)(pixels.get(idx++) & mask));

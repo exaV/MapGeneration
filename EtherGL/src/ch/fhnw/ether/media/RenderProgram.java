@@ -99,12 +99,6 @@ public class RenderProgram<T extends IRenderTarget<?>> extends AbstractRenderCom
 	public RenderProgram(IVideoSource source, AbstractRenderCommand<T> ... commands) {
 		program.set(ArrayUtilities.prepend((AbstractRenderCommand<T>)source, commands));
 	}
-
-	@SuppressWarnings("unchecked")
-	@SafeVarargs
-	public RenderProgram(IAVSource source, AbstractRenderCommand<T> ... commands) {
-		program.set(ArrayUtilities.prepend((AbstractRenderCommand<T>)source, commands));
-	}
 	
 	@SuppressWarnings("unchecked")
 	@SafeVarargs
@@ -140,8 +134,9 @@ public class RenderProgram<T extends IRenderTarget<?>> extends AbstractRenderCom
 		update(createRemove(cmd));
 	}
 
-	public void replace(AbstractFrameSource<T> source) {
-		update(createReplace(program.get()[0], source)) ; 
+	@SuppressWarnings("unchecked")
+	public void replace(AbstractFrameSource source) {
+		update(createReplace(program.get()[0], (AbstractRenderCommand<T>)source)) ; 
 	}
 
 	public void replace(AbstractRenderCommand<T> oldCmd, AbstractRenderCommand<T> newCmd) {
@@ -202,11 +197,11 @@ public class RenderProgram<T extends IRenderTarget<?>> extends AbstractRenderCom
 		return program.get();
 	}
 
-	public AbstractFrameSource<T> getFrameSource() {
+	public AbstractFrameSource getFrameSource() {
 		AbstractRenderCommand<T>[] commands = program.get(); 
 		for(AbstractRenderCommand<T> command : commands)
 			if(command instanceof AbstractFrameSource)
-				return (AbstractFrameSource<T>) command;
+				return (AbstractFrameSource)command;
 		return null;
 	}
 

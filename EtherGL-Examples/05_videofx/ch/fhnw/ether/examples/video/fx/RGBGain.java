@@ -59,7 +59,7 @@ public class RGBGain extends AbstractVideoFX implements IVideoFrameFX, IVideoGLF
 		if(frame.pixelSize == 4) {
 			frame.processLines((pixels, j)->{
 				int idx = pixels.position();
-				for(int i = 0; i < frame.dimI; i++) {
+				for(int i = 0; i < frame.width; i++) {
 					pixels.put(toByte(toFloat(pixels.get(idx++)) * rs));
 					pixels.put(toByte(toFloat(pixels.get(idx++)) * gs));
 					pixels.put(toByte(toFloat(pixels.get(idx++)) * bs));
@@ -70,7 +70,7 @@ public class RGBGain extends AbstractVideoFX implements IVideoFrameFX, IVideoGLF
 		} else {
 			frame.processLines((pixels, j)->{
 				int idx = pixels.position();
-				for(int i = 0; i < frame.dimI; i++) {
+				for(int i = 0; i < frame.width; i++) {
 					pixels.put(toByte(toFloat(pixels.get(idx++)) * rs));
 					pixels.put(toByte(toFloat(pixels.get(idx++)) * gs));
 					pixels.put(toByte(toFloat(pixels.get(idx++)) * bs));

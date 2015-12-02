@@ -29,15 +29,12 @@
 
 package ch.fhnw.ether.media;
 
-public abstract class AbstractFrameSource<T extends IRenderTarget<?>> extends AbstractRenderCommand<T> {
+public abstract class AbstractFrameSource extends AbstractRenderCommand<IRenderTarget<?>> {
 	public static final float  FRAMERATE_UNKNOWN  = -1;
 	public static final double LENGTH_UNKNOWN     = -2;
 	public static final double LENGTH_INFINITE    = -1;
 	public static final long   FRAMECOUNT_UNKNOWN = -1;
 
-	private long totalFrames;
-	private long relFrames;
-	
 	protected AbstractFrameSource(Parameter ... parameters) {
 		super(parameters);
 	}
@@ -46,28 +43,5 @@ public abstract class AbstractFrameSource<T extends IRenderTarget<?>> extends Ab
 	
 	public abstract double getLengthInSeconds();
 	
-	public abstract float getFrameRate();
-		
-	public final long getTotalElapsedFrames() {
-		return totalFrames;
-	}
-	
-	public final long getRealtiveElapsedFrames() {
-		return relFrames;
-	}
-		
-	protected final void incFrameCountInternal() {
-		long length = getLengthInFrames();
-		if(length > 0 && getRealtiveElapsedFrames() >= length)
-			relFrames = 0;
-		totalFrames++;
-		relFrames++;
-	}
-	
-	@SuppressWarnings("unchecked")
-	protected final void setFrame(T target, AbstractFrame frame) {
-		((IRenderTarget<AbstractFrame>)target).setFrame(frame);
-		incFrameCountInternal();
-	}
-
+	public abstract float getFrameRate();			
 }

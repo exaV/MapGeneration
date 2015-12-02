@@ -1,8 +1,11 @@
 package ch.fhnw.ether.video.jcodec;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.concurrent.BlockingQueue;
+
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioFormat.Encoding;
 
 import org.jcodec.api.JCodecException;
 import org.jcodec.api.MediaInfo;
@@ -12,11 +15,10 @@ import org.jcodec.api.specific.ContainerAdaptor;
 import org.jcodec.codecs.h264.H264Decoder;
 import org.jcodec.codecs.mpeg12.MPEGDecoder;
 import org.jcodec.codecs.prores.ProresDecoder;
-import org.jcodec.common.DemuxerTrack;
-import org.jcodec.common.FileChannelWrapper;
+import org.jcodec.codecs.s302.S302MDecoder;
+import org.jcodec.common.AudioDecoder;
 import org.jcodec.common.JCodecUtil;
 import org.jcodec.common.JCodecUtil.Format;
-import org.jcodec.common.NIOUtils;
 import org.jcodec.common.SeekableByteChannel;
 import org.jcodec.common.SeekableDemuxerTrack;
 import org.jcodec.common.VideoDecoder;
@@ -24,6 +26,7 @@ import org.jcodec.common.model.ColorSpace;
 import org.jcodec.common.model.Packet;
 import org.jcodec.common.model.Picture8Bit;
 import org.jcodec.containers.mp4.MP4Packet;
+import org.jcodec.containers.mp4.boxes.AudioSampleEntry;
 import org.jcodec.containers.mp4.boxes.SampleEntry;
 import org.jcodec.containers.mp4.demuxer.AbstractMP4DemuxerTrack;
 import org.jcodec.containers.mp4.demuxer.MP4Demuxer;
@@ -31,7 +34,7 @@ import org.jcodec.scale.ColorUtil;
 import org.jcodec.scale.Transform8Bit;
 
 import ch.fhnw.ether.image.Frame;
-import ch.fhnw.ether.image.RGB8Frame;
+import ch.fhnw.util.Log;
 
 /**
  * This class is part of JCodec ( www.jcodec.org ) This software is distributed
@@ -52,10 +55,16 @@ import ch.fhnw.ether.image.RGB8Frame;
  * 
  */
 public class FrameGrab {
-	private final DemuxerTrack          videoTrack;
-	private       ContainerAdaptor      decoder;
-	private final ThreadLocal<byte[][]> buffers = new ThreadLocal<>();
-	private long                        seekPos = -1;
+	private static final Log log = Log.create();
+
+	private final AbstractMP4DemuxerTrack videoTrack;
+	private final AbstractMP4DemuxerTrack audioTrack;
+	private       ContainerAdaptor        decoder;
+	private final ThreadLocal<byte[][]>   buffers = new ThreadLocal<>();
+	private long                          seekPos = -1;
+	private final AudioFormat             audioInfo;
+	private final AudioDecoder            audioDecoder;
+	private final ByteBuffer              audioBuffer;
 
 	public FrameGrab(SeekableByteChannel in) throws IOException, JCodecException {
 		ByteBuffer header = ByteBuffer.allocate(65536);
@@ -67,6 +76,25 @@ public class FrameGrab {
 		case MOV:
 			MP4Demuxer d1 = new MP4Demuxer(in);
 			videoTrack = d1.getVideoTrack();
+			if(!(d1.getAudioTracks().isEmpty())) {
+				audioTrack = d1.getAudioTracks().get(0);
+				AudioSampleEntry as = (AudioSampleEntry) audioTrack.getSampleEntries()[0]; 
+				audioInfo = new AudioFormat(
+						as.getFormat().isSigned() ? Encoding.PCM_SIGNED : Encoding.PCM_UNSIGNED, 
+								as.getFormat().getSampleRate(),
+								as.getFormat().getSampleSizeInBits(), 
+								as.getFormat().getChannels(),
+								as.getFormat().getFrameSize(),
+								as.getFormat().getFrameRate(), 
+								as.getFormat().isBigEndian());
+				audioDecoder = audioDecoder(as.getFourcc());
+				audioBuffer  = ByteBuffer.allocate(96000 * audioInfo.getFrameSize() * 10);
+			} else {
+				audioTrack   = null;
+				audioInfo    = null;
+				audioDecoder = null;
+				audioBuffer  = null;
+			}
 			break;
 		case MPEG_PS:
 			throw new UnsupportedFormatException("MPEG PS is temporarily unsupported.");
@@ -78,16 +106,8 @@ public class FrameGrab {
 		decodeLeadingFrames();
 	}
 
-	public FrameGrab(SeekableDemuxerTrack videoTrack, ContainerAdaptor decoder) {
-		this.videoTrack = videoTrack;
-		this.decoder = decoder;
-	}
-
-	SeekableDemuxerTrack sdt() throws JCodecException {
-		if (!(videoTrack instanceof SeekableDemuxerTrack))
-			throw new JCodecException("Not a seekable track");
-
-		return (SeekableDemuxerTrack) videoTrack;
+	SeekableDemuxerTrack sdt() {
+		return videoTrack;
 	}
 
 	/**
@@ -170,7 +190,7 @@ public class FrameGrab {
 		return this;
 	}
 
-	private void goToPrevKeyframe() throws IOException, JCodecException {
+	private void goToPrevKeyframe() throws IOException {
 		sdt().gotoFrame(detectKeyFrame((int) sdt().getCurFrame()));
 	}
 
@@ -216,23 +236,32 @@ public class FrameGrab {
 	private ContainerAdaptor detectDecoder(SeekableDemuxerTrack videoTrack, Packet frame) throws JCodecException {
 		if (videoTrack instanceof AbstractMP4DemuxerTrack) {
 			SampleEntry se = ((AbstractMP4DemuxerTrack) videoTrack).getSampleEntries()[((MP4Packet) frame).getEntryNo()];
-			VideoDecoder byFourcc = byFourcc(se.getHeader().getFourcc());
+			VideoDecoder byFourcc = videoDecoder(se.getHeader().getFourcc());
 			if (byFourcc instanceof H264Decoder)
 				return new AVCMP4Adaptor(((AbstractMP4DemuxerTrack) videoTrack).getSampleEntries());
 		}
-
 		throw new UnsupportedFormatException("Codec is not supported");
 	}
 
-	private VideoDecoder byFourcc(String fourcc) {
-		if (fourcc.equals("avc1")) {
+	private VideoDecoder videoDecoder(String fourcc) {
+		if (fourcc.equals("avc1"))
 			return new H264Decoder();
-		} else if (fourcc.equals("m1v1") || fourcc.equals("m2v1")) {
+		else if (fourcc.equals("m1v1") || fourcc.equals("m2v1"))
 			return new MPEGDecoder();
-		} else if (fourcc.equals("apco") || fourcc.equals("apcs") || fourcc.equals("apcn") || fourcc.equals("apch")
-				|| fourcc.equals("ap4h")) {
+		else if (fourcc.equals("apco") || fourcc.equals("apcs") || fourcc.equals("apcn") || fourcc.equals("apch") || fourcc.equals("ap4h"))
 			return new ProresDecoder();
-		}
+		log.info("No video decoder for '" + fourcc + "'");
+		return null;
+	}
+
+	private AudioDecoder audioDecoder(String fourcc) {
+		if ("sowt".equals(fourcc) || "in24".equals(fourcc) || "twos".equals(fourcc) || "in32".equals(fourcc))
+			return new PCMDecoder(audioInfo);
+		else if ("s302".equals(fourcc))
+			return new S302MDecoder(); /*
+		else if(AACDecoder.canDecode(profile))
+			return new AACDecoder(decoderSpecificInfo, audioInfo); */
+		log.info("No audio decoder for '" + fourcc + "'");
 		return null;
 	}
 
@@ -246,138 +275,7 @@ public class FrameGrab {
 		Packet frame = videoTrack.nextFrame();
 		if (frame == null)
 			return null;
-
 		return decoder.decodeFrame8Bit(frame, getBuffer());
-	}
-
-	/**
-	 * Get frame at a specified second as JCodec image
-	 * 
-	 * @param file
-	 * @param second
-	 * @return
-	 * @throws IOException
-	 * @throws JCodecException
-	 */
-	@SuppressWarnings("resource")
-	public static Picture8Bit getNativeFrame(File file, double second) throws IOException, JCodecException {
-		FileChannelWrapper ch = null;
-		try {
-			ch = NIOUtils.readableFileChannel(file);
-			return new FrameGrab(ch).seekToSecondPrecise(second).getNativeFrame();
-		} finally {
-			NIOUtils.closeQuietly(ch);
-		}
-	}
-
-	/**
-	 * Get frame at a specified second as JCodec image
-	 * 
-	 * @param file
-	 * @param second
-	 * @return
-	 * @throws IOException
-	 * @throws JCodecException
-	 */
-	public static Picture8Bit getNativeFrame(SeekableByteChannel file, double second) throws JCodecException,
-	IOException {
-		return new FrameGrab(file).seekToSecondPrecise(second).getNativeFrame();
-	}
-
-	/**
-	 * Get frame at a specified frame number as JCodec image
-	 * 
-	 * @param file
-	 * @param second
-	 * @return
-	 * @throws IOException
-	 * @throws JCodecException
-	 */
-	@SuppressWarnings("resource")
-	public static Picture8Bit getNativeFrame(File file, int frameNumber) throws IOException, JCodecException {
-		FileChannelWrapper ch = null;
-		try {
-			ch = NIOUtils.readableFileChannel(file);
-			return new FrameGrab(ch).seekToFramePrecise(frameNumber).getNativeFrame();
-		} finally {
-			NIOUtils.closeQuietly(ch);
-		}
-	}
-
-	/**
-	 * Get frame at a specified frame number as JCodec image
-	 * 
-	 * @param file
-	 * @param second
-	 * @return
-	 * @throws IOException
-	 * @throws JCodecException
-	 */
-	public static Picture8Bit getNativeFrame(SeekableByteChannel file, int frameNumber) throws JCodecException,
-	IOException {
-		return new FrameGrab(file).seekToFramePrecise(frameNumber).getNativeFrame();
-	}
-
-	/**
-	 * Get a specified frame by number from an already open demuxer track
-	 * 
-	 * @param vt
-	 * @param decoder
-	 * @param frameNumber
-	 * @return
-	 * @throws IOException
-	 * @throws JCodecException
-	 */
-	public static Picture8Bit getNativeFrame(SeekableDemuxerTrack vt, ContainerAdaptor decoder, int frameNumber)
-			throws IOException, JCodecException {
-		return new FrameGrab(vt, decoder).seekToFramePrecise(frameNumber).getNativeFrame();
-	}
-
-	/**
-	 * Get a specified frame by second from an already open demuxer track
-	 * 
-	 * @param vt
-	 * @param decoder
-	 * @param frameNumber
-	 * @return
-	 * @throws IOException
-	 * @throws JCodecException
-	 */
-	public static Picture8Bit getNativeFrame(SeekableDemuxerTrack vt, ContainerAdaptor decoder, double second)
-			throws IOException, JCodecException {
-		return new FrameGrab(vt, decoder).seekToSecondPrecise(second).getNativeFrame();
-	}
-
-	/**
-	 * Get a specified frame by number from an already open demuxer track (
-	 * sloppy mode, i.e. nearest keyframe )
-	 * 
-	 * @param vt
-	 * @param decoder
-	 * @param frameNumber
-	 * @return
-	 * @throws IOException
-	 * @throws JCodecException
-	 */
-	public static Picture8Bit getNativeFrameSloppy(SeekableDemuxerTrack vt, ContainerAdaptor decoder, int frameNumber)
-			throws IOException, JCodecException {
-		return new FrameGrab(vt, decoder).seekToFrameSloppy(frameNumber).getNativeFrame();
-	}
-
-	/**
-	 * Get a specified frame by second from an already open demuxer track (
-	 * sloppy mode, i.e. nearest keyframe )
-	 * 
-	 * @param vt
-	 * @param decoder
-	 * @param frameNumber
-	 * @return
-	 * @throws IOException
-	 * @throws JCodecException
-	 */
-	public static Picture8Bit getNativeFrameSloppy(SeekableDemuxerTrack vt, ContainerAdaptor decoder, double second)
-			throws IOException, JCodecException {
-		return new FrameGrab(vt, decoder).seekToSecondSloppy(second).getNativeFrame();
 	}
 
 	/**
@@ -389,14 +287,14 @@ public class FrameGrab {
 		return decoder.getMediaInfo();
 	}
 
-	public boolean skipFrame() throws JCodecException {
+	public boolean skipFrame() {
 		if(seekPos < 0)
 			seekPos = sdt().getCurFrame();
 		seekPos++;
 		return seekPos < sdt().getMeta().getTotalFrames();
 	}
 
-	public void grabAndSet(Frame frame) throws IOException {
+	public Picture8Bit decode(double[] playOutTime) {
 		try {
 			Packet pkt;
 			SeekableDemuxerTrack sdt = sdt();
@@ -417,45 +315,71 @@ public class FrameGrab {
 				seekPos = -1;
 			} else
 				pkt = sdt.nextFrame();
-			Picture8Bit src = decoder.decodeFrame8Bit(pkt, getBuffer());
-			if (src.getColor() != ColorSpace.RGB) {
-				Picture8Bit   rgb       = Picture8Bit.create(src.getWidth(), src.getHeight(), ColorSpace.RGB, src.getCrop());
-				Transform8Bit transform = ColorUtil.getTransform8Bit(src.getColor(), rgb.getColor());
-				transform.transform(src, rgb);
-				src = rgb;
-			}
-			if(!(frame instanceof RGB8Frame))
-				throw new IOException("Unsupported frame type:" + frame.getClass().getName());
 
-			final ByteBuffer pixels  = frame.pixels;
-			final byte[]     srcData = src.getPlaneData(0);
-			final int        line    = frame.dimI * frame.pixelSize;
-
-			pixels.clear();
-			if(frame.pixelSize == 4) {
-				for(int j = frame.dimJ; --j >= 0;) {
-					int idx = j * line;
-					for (int i = frame.dimI; --i >= 0;) {
-						pixels.put((byte) (srcData[idx+2] + 128));
-						pixels.put((byte) (srcData[idx+1] + 128));
-						pixels.put((byte) (srcData[idx+0] + 128));
-						pixels.put((byte) 0xFF);
-						idx += 3;
-					}
-				}
-			} else {
-				for(int j = frame.dimJ; --j >= 0;) {
-					int idx = j * line;
-					for (int i = frame.dimI; --i >= 0;) {
-						pixels.put((byte) (srcData[idx+2] + 128));
-						pixels.put((byte) (srcData[idx+1] + 128));
-						pixels.put((byte) (srcData[idx+0] + 128));
-						idx += 3;
-					}
-				}
-			}
+			playOutTime[JCodecAccess.ATTR_PLAYOUT_TIME] = pkt.getPtsD();
+			playOutTime[JCodecAccess.ATTR_IS_KEYFRAME]  = pkt.isKeyFrame() ? 1 : 0;
+			
+			return decoder.decodeFrame8Bit(pkt, getBuffer());
 		} catch(Throwable t) {
-			throw new IOException("Could not create frame", t);
+			return null;
 		}
+	}
+
+	public void grabAndSet(Picture8Bit src, Frame frame, BlockingQueue<float[]> audioData) {
+		if (src.getColor() != ColorSpace.RGB) {
+			Picture8Bit   rgb       = Picture8Bit.create(src.getWidth(), src.getHeight(), ColorSpace.RGB, src.getCrop());
+			Transform8Bit transform = ColorUtil.getTransform8Bit(src.getColor(), rgb.getColor());
+			transform.transform(src, rgb);
+			src = rgb;
+		}
+
+		final ByteBuffer pixels  = frame.pixels;
+		final byte[]     srcData = src.getPlaneData(0);
+		final int        line    = frame.width * frame.pixelSize;
+
+		pixels.clear();
+		if(frame.pixelSize == 4) {
+			for(int j = frame.height; --j >= 0;) {
+				int idx = j * line;
+				for (int i = frame.width; --i >= 0;) {
+					pixels.put((byte) (srcData[idx+2] + 128));
+					pixels.put((byte) (srcData[idx+1] + 128));
+					pixels.put((byte) (srcData[idx+0] + 128));
+					pixels.put((byte) 0xFF);
+					idx += 3;
+				}
+			}
+		} else {
+			for(int j = frame.height; --j >= 0;) {
+				int idx = j * line;
+				for (int i = frame.width; --i >= 0;) {
+					pixels.put((byte) (srcData[idx+2] + 128));
+					pixels.put((byte) (srcData[idx+1] + 128));
+					pixels.put((byte) (srcData[idx+0] + 128));
+					idx += 3;
+				}
+			}
+		}
+
+		/*
+			// --- audio
+			long audioFrameNo = (audioTrack.getFrameCount() * pkt.getFrameNo()) / videoTrack.getFrameCount();
+			if(audioDecoder != null) {
+				while(audioTrack.getCurFrame() < audioFrameNo) {
+					audioBuffer.clear();
+					pkt = audioTrack.nextFrame();
+					audioDecoder.decodeFrame(pkt.getData(), audioBuffer);
+					audioData.add(AudioUtilities.pcmBytes2float(audioInfo, audioBuffer.array(), audioBuffer.position()));
+				}
+			}
+		 */
+	}
+
+	public int getNumChannels() {
+		return audioInfo == null ? 2 : audioInfo.getChannels();
+	}
+
+	public float getSampleRate() {
+		return audioInfo == null ? 48000 : audioInfo.getSampleRate();
 	}
 }

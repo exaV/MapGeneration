@@ -68,9 +68,9 @@ public class SimplePlayerGL {
 	private static final float  SCALE  = 2.2f;
 	private static final Log    log    = Log.create();
 
-	public SimplePlayerGL(AbstractFrameSource<?> source) {
-		final IController            controller = new DefaultController();
-		final ColorMapMaterialTarget videoOut    = new ColorMapMaterialTarget(new ColorMapMaterial(), controller, true); 
+	public SimplePlayerGL(AbstractFrameSource source) {
+		final IController            controller = new DefaultController(source.getFrameRate());
+		final ColorMapMaterialTarget videoOut   = new ColorMapMaterialTarget(new ColorMapMaterial(), controller, true); 
 		controller.run(time -> {
 			new DefaultView(controller, 0, 10, 1024, 512, new Config(ViewType.INTERACTIVE_VIEW, 2), "SimplePlayerGL");
 
@@ -86,15 +86,17 @@ public class SimplePlayerGL {
 				RenderProgram<IVideoRenderTarget> video = new RenderProgram<>((IVideoSource)source, new RGBGain(), new Convolution()); 
 				new ParameterWindow(video);
 				videoOut.useProgram(video);
-				videoOut.start();
 
 				if(source instanceof IAudioSource) {
 					RenderProgram<IAudioRenderTarget> audio = new RenderProgram<>((IAudioSource)source, new AudioGain()); 
-					JavaSoundTarget audioOut = new JavaSoundTarget();
+					JavaSoundTarget audioOut = new JavaSoundTarget(((IAudioSource)source), 2 / source.getFrameRate());
 					audioOut.useProgram(audio);
+					videoOut.setTimebase(audioOut);
+					controller.getScheduler().setTimebase(audioOut);
 					audioOut.start();
 				}
-
+				
+				videoOut.start();
 			} catch(Throwable t) {
 				log.severe(t);
 			}
@@ -102,7 +104,7 @@ public class SimplePlayerGL {
 	}
 
 	public static void main(String[] args) throws IOException {
-		AbstractFrameSource<?> source;
+		AbstractFrameSource source;
 		if(args.length == 0)
 			source =  CameraSource.create(CameraInfo.getInfos()[0]);
 		else {

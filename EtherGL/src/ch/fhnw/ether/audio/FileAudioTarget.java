@@ -19,7 +19,7 @@ public class FileAudioTarget extends AbstractAudioTarget {
 	private double           sTime;
 	private final File       file;
 	private final FloatList  buffer = new FloatList();
-
+	
 	public FileAudioTarget(File file, int numChannels, float sampleRate) {
 		super(Thread.NORM_PRIORITY, false);
 		this.numChannels = numChannels;
@@ -35,9 +35,10 @@ public class FileAudioTarget extends AbstractAudioTarget {
 
 	@Override
 	public double getTime() {
+		if(timebase != null) return timebase.getTime();
 		return sTime / (getSampleRate() * getNumChannels());
 	}
-
+	
 	@Override
 	public int getNumChannels() {
 		return numChannels;

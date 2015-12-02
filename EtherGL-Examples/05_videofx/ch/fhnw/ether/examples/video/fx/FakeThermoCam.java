@@ -74,9 +74,9 @@ public class FakeThermoCam extends AbstractVideoFX implements IVideoFrameFX, IVi
 	@Override
 	public void processFrame(final double playOutTime, final IVideoRenderTarget target, final Frame frame) {
 		frame.processLines((pixels, j)->{
-			float[] hsb = new float[frame.dimI * 3];
+			float[] hsb = new float[frame.width * 3];
 			int pos = pixels.position();
-			for(int i = 0; i < frame.dimI; i++) {
+			for(int i = 0; i < frame.width; i++) {
 				float v = toFloat(pixels.get()) + toFloat(pixels.get()) + toFloat(pixels.get());
 				hsb[i*3+0] = v / 3f;
 				hsb[i*3+1] = 1f;

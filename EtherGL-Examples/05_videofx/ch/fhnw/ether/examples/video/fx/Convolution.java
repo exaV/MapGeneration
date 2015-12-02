@@ -186,23 +186,23 @@ public class Convolution extends AbstractVideoFX implements IVideoFrameFX, IVide
 
 	@Override
 	public void processFrame(final double playOutTime, final IVideoRenderTarget target, final Frame frame) {
-		if(frame.dimJ != outFrame.length || frame.dimI != outFrame[0].length * 3)
-			outFrame = new float[frame.dimJ][frame.dimI * 3];
+		if(frame.height != outFrame.length || frame.width != outFrame[0].length * 3)
+			outFrame = new float[frame.height][frame.width * 3];
 
 		Mat3    kernel    = KERNELS[(int) getVal(KERNEL)];
 		boolean greyscale = GREYSCALE[(int) getVal(KERNEL)]; 
 
-		for(int j = frame.dimJ - 1; --j >= 1;) {
+		for(int j = frame.height - 1; --j >= 1;) {
 			int idx = 0;
 			if(greyscale) {
-				for(int i = 1; i< frame.dimI - 1; i++) {
+				for(int i = 1; i< frame.width - 1; i++) {
 					float val = convolute(frame, i, j, kernel, 0) + convolute(frame, i, j, kernel, 1) + convolute(frame, i, j, kernel, 2); 
 					outFrame[j][idx++] = val; 
 					outFrame[j][idx++] = val; 
 					outFrame[j][idx++] = val; 
 				}
 			} else {
-				for(int i = 1; i< frame.dimI - 1; i++) {
+				for(int i = 1; i< frame.width - 1; i++) {
 					outFrame[j][idx++] = convolute(frame, i, j, kernel, 0); 
 					outFrame[j][idx++] = convolute(frame, i, j, kernel, 1); 
 					outFrame[j][idx++] = convolute(frame, i, j, kernel, 2); 
@@ -213,7 +213,7 @@ public class Convolution extends AbstractVideoFX implements IVideoFrameFX, IVide
 		if(frame.pixelSize == 4) {
 			frame.processLines((pixels, j) -> {
 				int idx = 0;
-				for(int i = frame.dimI; --i >= 0;) {
+				for(int i = frame.width; --i >= 0;) {
 					pixels.put(toByte(outFrame[j][idx++]));
 					pixels.put(toByte(outFrame[j][idx++]));
 					pixels.put(toByte(outFrame[j][idx++]));
@@ -223,7 +223,7 @@ public class Convolution extends AbstractVideoFX implements IVideoFrameFX, IVide
 		} else {
 			frame.processLines((ByteBuffer pixels, int j) -> {
 				int idx = 0;
-				for(int i = frame.dimI; --i >= 0;) {
+				for(int i = frame.width; --i >= 0;) {
 					pixels.put(toByte(outFrame[j][idx++]));
 					pixels.put(toByte(outFrame[j][idx++]));
 					pixels.put(toByte(outFrame[j][idx++]));
@@ -232,18 +232,18 @@ public class Convolution extends AbstractVideoFX implements IVideoFrameFX, IVide
 		}
 	}
 
-	private float convolute(Frame frame, int i, int j, Mat3 kernel, int c) {
+	private float convolute(Frame frame, int x, int y, Mat3 kernel, int c) {
 		return
-				frame.getFloatComponent(i-1, j-1, c) * kernel.m00 +
-				frame.getFloatComponent(i-1, j,   c) * kernel.m10 +
-				frame.getFloatComponent(i-1, j+1, c) * kernel.m20 +
+				frame.getFloatComponent(x-1, y-1, c) * kernel.m00 +
+				frame.getFloatComponent(x-1, y,   c) * kernel.m10 +
+				frame.getFloatComponent(x-1, y+1, c) * kernel.m20 +
 
-				frame.getFloatComponent(i,   j-1, c) * kernel.m01 +
-				frame.getFloatComponent(i,   j,   c) * kernel.m11 +
-				frame.getFloatComponent(i,   j+1, c) * kernel.m21 +
+				frame.getFloatComponent(x,   y-1, c) * kernel.m01 +
+				frame.getFloatComponent(x,   y,   c) * kernel.m11 +
+				frame.getFloatComponent(x,   y+1, c) * kernel.m21 +
 
-				frame.getFloatComponent(i+1, j-1, c) * kernel.m02 +
-				frame.getFloatComponent(i+1, j,   c) * kernel.m12 +
-				frame.getFloatComponent(i+1, j+1, c) * kernel.m22;
+				frame.getFloatComponent(x+1, y-1, c) * kernel.m02 +
+				frame.getFloatComponent(x+1, y,   c) * kernel.m12 +
+				frame.getFloatComponent(x+1, y+1, c) * kernel.m22;
 	}
 }

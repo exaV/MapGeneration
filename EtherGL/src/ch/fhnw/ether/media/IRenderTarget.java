@@ -29,8 +29,10 @@
 
 package ch.fhnw.ether.media;
 
-public interface IRenderTarget<F extends AbstractFrame> {
+public interface IRenderTarget<F extends AbstractFrame> extends ITimebase {
 	void render() throws RenderCommandException;
-	void setFrame(F frame);
+	void setFrame(AbstractFrameSource src, F frame);
 	F    getFrame();
+	long getTotalElapsedFrames();
+	long getRealtiveElapsedFrames();
 }

@@ -83,4 +83,10 @@ public abstract class AbstractVideoTarget extends AbstractMediaTarget<VideoFrame
 	public Class<?> runAs() {
 		return preferredType;
 	}
+	
+	
+	@Override
+	public double getTime() {
+		return timebase == null ? super.getTime() : timebase.getTime();
+	}
 }

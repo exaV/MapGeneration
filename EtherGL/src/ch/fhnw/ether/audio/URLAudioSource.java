@@ -59,6 +59,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.sound.sampled.spi.AudioFileReader;
 
 import ch.fhnw.ether.media.AbstractFrameSource;
+import ch.fhnw.ether.media.IRenderTarget;
 import ch.fhnw.ether.media.RenderCommandException;
 import ch.fhnw.util.ClassUtilities;
 import ch.fhnw.util.IDisposable;
@@ -66,10 +67,9 @@ import ch.fhnw.util.Log;
 import ch.fhnw.util.TextUtilities;
 
 
-public class URLAudioSource extends AbstractFrameSource<IAudioRenderTarget> implements Runnable, IDisposable, IAudioSource {
+public class URLAudioSource extends AbstractFrameSource implements Runnable, IDisposable, IAudioSource {
 	private static final Log log = Log.create();
 
-	private static final float         S2F    = Short.MAX_VALUE;
 	private static final double        SEC2US = 1000000;
 	private static final MidiEvent[]   EMPTY_MidiEventA = new MidiEvent[0];
 
@@ -198,25 +198,10 @@ public class URLAudioSource extends AbstractFrameSource<IAudioRenderTarget> impl
 
 			do {
 				try (AudioInputStream in = getStream(url)) {
-					int   bytesPerSample = fmt.getSampleSizeInBits() / 8;
-
 					for(;;) {
 						int read = in.read(buffer);
 						if(read < 0) break;								
-						float[] fbuffer = new float[read / bytesPerSample];
-						int     idx     = 0;
-						if(fmt.isBigEndian()) {
-							for(int i = 0; i < read; i += 2) {
-								int s = buffer[i] << 8 | (buffer[i+1] & 0xFF);
-								fbuffer[idx++] = s / S2F;
-							}
-						} else {
-							for(int i = 0; i < read; i += 2) {
-								int s = buffer[i+1] << 8 | (buffer[i] & 0xFF);
-								fbuffer[idx++] = s / S2F;
-							}
-						}
-						data.add(fbuffer);
+						data.add(AudioUtilities.pcmBytes2float(fmt, buffer, read));
 						bufSemaphore.acquire();
 					}
 				}
@@ -225,15 +210,15 @@ public class URLAudioSource extends AbstractFrameSource<IAudioRenderTarget> impl
 			t.printStackTrace();
 		}
 	}
-
+	
 	@Override
-	protected void run(final IAudioRenderTarget target) throws RenderCommandException {
+	protected void run(IRenderTarget<?> target) throws RenderCommandException {
 		try {
 			final float[] outData = data.take();
 			bufSemaphore.release();
 			AudioFrame frame = createAudioFrame(samples, outData);
 			frame.setLast(data.isEmpty() && numPlays.get() <= 0);
-			setFrame(target, frame);
+			((IAudioRenderTarget)target).setFrame(this, frame);
 			samples += outData.length;
 		} catch(Throwable t) {
 			throw new RenderCommandException(t);

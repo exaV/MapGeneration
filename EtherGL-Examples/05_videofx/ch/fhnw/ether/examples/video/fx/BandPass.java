@@ -57,9 +57,9 @@ public class BandPass extends AbstractVideoFX implements IVideoFrameFX {
 
 	@Override
 	public void processFrame(final double playOutTime, final IVideoRenderTarget target, final Frame frame) {
-		if(rows != frame.dimJ || cols != frame.dimI) {
-			rows = frame.dimJ;
-			cols = frame.dimI;
+		if(rows != frame.height || cols != frame.width) {
+			rows = frame.height;
+			cols = frame.width;
 			r    = new float[rows][cols*2]; 
 			g    = new float[rows][cols*2]; 
 			b    = new float[rows][cols*2]; 
@@ -70,7 +70,7 @@ public class BandPass extends AbstractVideoFX implements IVideoFrameFX {
 			final float[] rj = r[j];
 			final float[] gj = g[j];
 			final float[] bj = b[j];
-			for(int i = frame.dimI; --i >= 0;) {
+			for(int i = frame.width; --i >= 0;) {
 				rj[i*2+0] = toFloat(pixels.get()); 
 				rj[i*2+1] = 0f;
 				gj[i*2+0] = toFloat(pixels.get()); 
@@ -105,7 +105,7 @@ public class BandPass extends AbstractVideoFX implements IVideoFrameFX {
 			final float[] rj = r[j];
 			final float[] gj = g[j];
 			final float[] bj = b[j];
-			for(int i = frame.dimI; --i >= 0;) {
+			for(int i = frame.width; --i >= 0;) {
 				float re = rj[i*2+0];
 				float im = rj[i*2+1];
 				pixels.put(toByte(Math.sqrt(re * re + im * im)));

@@ -42,20 +42,20 @@ import com.jogamp.opengl.GL3;
 
 public class RGBA8Frame extends RGB8Frame {
 
-	public RGBA8Frame(int dimI, int dimJ) {
-		super(dimI, dimJ, 4);
+	public RGBA8Frame(int width, int height) {
+		super(width, height, 4);
 	}
 
-	public RGBA8Frame(int dimI, int dimJ, ByteBuffer frameBuffer) {
-		super(dimI, dimJ, frameBuffer, 4);
+	public RGBA8Frame(int width, int height, ByteBuffer frameBuffer) {
+		super(width, height, frameBuffer, 4);
 	}
 
-	public RGBA8Frame(int dimI, int dimJ, byte[] frameBuffer) {
-		super(dimI, dimJ, frameBuffer, 4);
+	public RGBA8Frame(int width, int height, byte[] frameBuffer) {
+		super(width, height, frameBuffer, 4);
 	}
 
 	public RGBA8Frame(Frame frame) {
-		super(frame.dimI, frame.dimJ, 4);
+		super(frame.width, frame.height, 4);
 		if (pixelSize == frame.pixelSize && !(frame instanceof FloatFrame))
 			BufferUtilities.arraycopy(frame.pixels, 0, pixels, 0, pixels.capacity());
 		else {
@@ -66,8 +66,8 @@ public class RGBA8Frame extends RGB8Frame {
 				int spos = 0;
 				spos++; // assume little endian
 				dst.position(0);
-				for (int j = 0; j < dimJ; j++) {
-					for (int i = 0; i < dimI; i++) {
+				for (int j = 0; j < height; j++) {
+					for (int i = 0; i < width; i++) {
 						byte val = src.get(spos);
 						dst.put(val);
 						dst.put(val);
@@ -83,8 +83,8 @@ public class RGBA8Frame extends RGB8Frame {
 
 				int spos = 0;
 				dst.position(0);
-				for (int j = 0; j < dimJ; j++) {
-					for (int i = 0; i < dimI; i++) {
+				for (int j = 0; j < height; j++) {
+					for (int i = 0; i < width; i++) {
 						float fVal = src.get(spos);
 						if (Float.isNaN(fVal)) {
 							dst.put(B0);
@@ -106,8 +106,8 @@ public class RGBA8Frame extends RGB8Frame {
 				int sps = frame.pixelSize;
 				int spos = 0;
 				dst.position(0);
-				for (int j = 0; j < dimJ; j++) {
-					for (int i = 0; i < dimI; i++) {
+				for (int j = 0; j < height; j++) {
+					for (int i = 0; i < width; i++) {
 						dst.put(src.get(spos));
 						dst.put(src.get(spos + 1));
 						dst.put(src.get(spos + 2));
@@ -120,29 +120,29 @@ public class RGBA8Frame extends RGB8Frame {
 	}
 
 	@Override
-	public RGBA8Frame create(int dimI, int dimJ) {
-		return new RGBA8Frame(dimI, dimJ);
+	public RGBA8Frame create(int width, int height) {
+		return new RGBA8Frame(width, height);
 	}
 
-	public byte getAlpha(int i, int j, int k) {
-		return pixels.get(((k * dimI * dimJ) + (j * dimI) + i) * pixelSize + 3);
+	public byte getAlpha(int x, int y) {
+		return pixels.get(((y * width) + x) * pixelSize + 3);
 	}
 
-	public void setAlpha(int i, int j, int k, int alpha) {
-		pixels.put(((k * dimI * dimJ) + (j * dimI) + i) * pixelSize + 3, (byte) alpha);
+	public void setAlpha(int x, int y, int alpha) {
+		pixels.put(((y * width) + x) * pixelSize + 3, (byte) alpha);
 	}
 
 	@Override
-	public void setARGB(int i, int j, int argb) {
-		pixels.position((j * dimI + i) * pixelSize);
+	public void setARGB(int x, int y, int argb) {
+		pixels.position((y * width + x) * pixelSize);
 		pixels.put((byte) (argb >> 16));
 		pixels.put((byte) (argb >> 8));
 		pixels.put((byte) (argb));
 		pixels.put((byte) (argb >> 24));
 	}
 
-	public void setRGBA(int i, int j, int rgba) {
-		pixels.position((j * dimI + i) * pixelSize);
+	public void setRGBA(int x, int y, int rgba) {
+		pixels.position((y * width + x) * pixelSize);
 		pixels.put((byte) (rgba >> 24));
 		pixels.put((byte) (rgba >> 16));
 		pixels.put((byte) (rgba >> 8));
@@ -150,8 +150,8 @@ public class RGBA8Frame extends RGB8Frame {
 	}
 
 	@Override
-	public final int getARGB(int i, int j) {
-		int idx = (j * dimI + i) * pixelSize;
+	public final int getARGB(int x, int y) {
+		int idx = (y * width + x) * pixelSize;
 		int result = pixels.get(idx + 3) & 0xFF;
 		result <<= 8;
 		result |= pixels.get(idx + 0) & 0xFF;
@@ -163,8 +163,8 @@ public class RGBA8Frame extends RGB8Frame {
 	}
 
 	@Override
-	public void setRGB(int i, int j, byte[] rgb) {
-		pixels.position((j * dimI + i) * pixelSize);
+	public void setRGB(int x, int y, byte[] rgb) {
+		pixels.position((y * width + x) * pixelSize);
 		pixels.put(rgb[0]);
 		pixels.put(rgb[1]);
 		pixels.put(rgb[2]);
@@ -173,19 +173,19 @@ public class RGBA8Frame extends RGB8Frame {
 	}
 
 	@Override
-	public RGBA8Frame getSubframe(int i, int j, int dimI, int dimJ) {
-		RGBA8Frame result = new RGBA8Frame(dimI, dimJ);
-		getSubframeImpl(i, j, result);
+	public RGBA8Frame getSubframe(int x, int y, int width, int height) {
+		RGBA8Frame result = new RGBA8Frame(width, height);
+		getSubframeImpl(x, y, result);
 		return result;
 	}
 
 	@Override
 	public BufferedImage toBufferedImage() {
-		BufferedImage result = new BufferedImage(dimI, dimJ, BufferedImage.TYPE_INT_ARGB);
-		int[] data = new int[dimI];
+		BufferedImage result = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		int[] data = new int[width];
 		final ByteBuffer src = pixels.asReadOnlyBuffer();
 		src.clear();
-		for (int j = dimJ; --j >= 0;) {
+		for (int j = height; --j >= 0;) {
 			for (int i = 0; i < data.length; i++) {
 				int tmp = (src.get() & 0xFF) << 16;
 				tmp |= (src.get() & 0xFF) << 8;
@@ -193,7 +193,7 @@ public class RGBA8Frame extends RGB8Frame {
 				tmp |= (src.get() & 0xFF) << 24;
 				data[i] = tmp;
 			}
-			result.setRGB(0, j, dimI, 1, data, 0, dimI);
+			result.setRGB(0, j, width, 1, data, 0, width);
 		}
 		return result;
 	}
@@ -206,7 +206,7 @@ public class RGBA8Frame extends RGB8Frame {
 
 	@Override
 	public Frame alloc() {
-		return new RGBA8Frame(dimI, dimJ);
+		return new RGBA8Frame(width, height);
 	}
 
 	@Override
@@ -215,8 +215,8 @@ public class RGBA8Frame extends RGB8Frame {
 			img = ImageScaler.copy(img, new BufferedImage(img.getWidth(), img.getHeight(), BufferedImage.TYPE_INT_ARGB));
 
 		final ByteBuffer dst = pixels;
-		final int dstll = dimI * pixelSize;
-		int dstyoff = dstll * ((dimJ - 1) - y);
+		final int dstll = width * pixelSize;
+		int dstyoff = dstll * ((height - 1) - y);
 		switch (img.getType()) {
 		case BufferedImage.TYPE_4BYTE_ABGR:
 		case BufferedImage.TYPE_4BYTE_ABGR_PRE: {
@@ -346,8 +346,8 @@ public class RGBA8Frame extends RGB8Frame {
 	}
 
 	@Override
-	public float getFloatComponent(int i, int j, int component) {
-		return (pixels.get(((j * dimI) + i) * pixelSize + component) & 0xFF) / 255f;
+	public float getFloatComponent(int x, int y, int component) {
+		return (pixels.get(((y * width) + x) * pixelSize + component) & 0xFF) / 255f;
 	}
 
 	@Override
@@ -364,10 +364,10 @@ public class RGBA8Frame extends RGB8Frame {
 		if (src instanceof RGBA8Frame) {
 			final ByteBuffer srcfb = src.pixels;
 			final ByteBuffer dstfb = pixels;
-			for (int j = Math.min(src.dimJ, dimJ); --j >= 0;) {
-				srcfb.position(src.dimI * j * src.pixelSize);
-				dstfb.position(dimI * j * pixelSize);
-				for (int i = Math.min(src.dimI, dimI); --i >= 0;) {
+			for (int j = Math.min(src.height, height); --j >= 0;) {
+				srcfb.position(src.width * j * src.pixelSize);
+				dstfb.position(width * j * pixelSize);
+				for (int i = Math.min(src.width, width); --i >= 0;) {
 					int srcr = srcfb.get() & 0xFF;
 					int srcg = srcfb.get() & 0xFF;
 					int srcb = srcfb.get() & 0xFF;
@@ -385,14 +385,14 @@ public class RGBA8Frame extends RGB8Frame {
 	}
 
 	@Override
-	public void setSubframe(int i, int j, Frame src) {
+	public void setSubframe(int x, int y, Frame src) {
 		if (src.getClass() != getClass())
 			src = new RGBA8Frame(src);
-		setSubframeImpl(i, j, src);
+		setSubframeImpl(x, y, src);
 	}
 
 	@Override
 	protected void loadTexture(GL3 gl) {
-		gl.glTexImage2D(GL3.GL_TEXTURE_2D, 0, GL3.GL_RGBA, dimI, dimJ, 0, GL3.GL_RGBA, GL3.GL_UNSIGNED_BYTE, pixels);
+		gl.glTexImage2D(GL3.GL_TEXTURE_2D, 0, GL3.GL_RGBA, width, height, 0, GL3.GL_RGBA, GL3.GL_UNSIGNED_BYTE, pixels);
 	}	
 }

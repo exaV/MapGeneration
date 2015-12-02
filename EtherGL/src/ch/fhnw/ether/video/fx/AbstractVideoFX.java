@@ -283,7 +283,7 @@ public abstract class AbstractVideoFX extends AbstractRenderCommand<IVideoRender
 				final GL3 gl = ctx.getGL();
 				processFrame(gl, target.getFrame().playOutTime, target);
 				material.prepare(gl, (AbstractVideoTarget)target);
-				renderable.update(gl,new Renderable.RenderUpdate(renderable, quad));
+				renderable.update(gl, material.getData(), quad.getTransformedGeometryData());
 				material.fbo.bind(gl);
 				gl.glGetIntegeri_v(GL3.GL_VIEWPORT, 0, viewport, 0);
 				gl.glViewport(0, 0, material.dstTexture.getWidth(), material.dstTexture.getHeight());

@@ -18,6 +18,7 @@ public class NullAudioTarget extends AbstractAudioTarget {
 
 	@Override
 	public double getTime() {
+		if(timebase != null) return timebase.getTime();
 		return sTime / (getSampleRate() * getNumChannels());
 	}
 
@@ -29,5 +30,5 @@ public class NullAudioTarget extends AbstractAudioTarget {
 	@Override
 	public float getSampleRate() {
 		return sRate;
-	}
+	}	
 }

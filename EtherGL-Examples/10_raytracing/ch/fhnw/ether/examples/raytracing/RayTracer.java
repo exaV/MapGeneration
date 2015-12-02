@@ -37,7 +37,7 @@ import ch.fhnw.ether.examples.raytracing.util.IntersectResult;
 import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.image.RGBA8Frame;
 import ch.fhnw.ether.media.AbstractFrameSource;
-import ch.fhnw.ether.media.IScheduler;
+import ch.fhnw.ether.media.IRenderTarget;
 import ch.fhnw.ether.media.RenderCommandException;
 import ch.fhnw.ether.scene.camera.Camera;
 import ch.fhnw.ether.scene.camera.ICamera;
@@ -52,9 +52,9 @@ import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.Line;
 
-public class RayTracer extends AbstractFrameSource<IVideoRenderTarget> implements IVideoSource {
+public class RayTracer extends AbstractFrameSource implements IVideoSource {
 	private static final Log log = Log.create();
-	
+
 	private static final RGBA BACKGROUND_COLOR   = RGBA.WHITE;
 	private static final int  BACKGROUND_COLOR_I = RGBA.WHITE.toRGBA();
 
@@ -160,15 +160,15 @@ public class RayTracer extends AbstractFrameSource<IVideoRenderTarget> implement
 	public double getLengthInSeconds() {
 		return LENGTH_INFINITE;
 	}
-	
+
 	@Override
-	protected void run(final IVideoRenderTarget target) throws RenderCommandException {
+	protected void run(IRenderTarget<?> target) throws RenderCommandException {
 		if(lights.isEmpty()) return;
 
 		RGBA8Frame frame = new RGBA8Frame(w, h);
 
-		final int   w     = frame.dimI;
-		final int   h     = frame.dimJ;
+		final int   w     = frame.width;
+		final int   h     = frame.height;
 
 		final ILight light      = lights.get(0);
 		final Vec3   camPos     = camera.getPosition();
@@ -195,8 +195,11 @@ public class RayTracer extends AbstractFrameSource<IVideoRenderTarget> implement
 				intersection((i + w / 2), (j + h / 2), ray, light, pixels);
 			}
 		});
-
-		setFrame(target, new VideoFrame(IScheduler.ASAP, frame));
+		try {
+			((IVideoRenderTarget)target).setFrame(this, new VideoFrame(frame));
+		} catch(Throwable t) {
+			throw new RenderCommandException(t);
+		}
 	}
 
 	public void setLights(List<ILight> lights) {

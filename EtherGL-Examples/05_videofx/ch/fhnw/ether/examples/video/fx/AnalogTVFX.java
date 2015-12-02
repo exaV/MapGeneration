@@ -70,8 +70,8 @@ public class AnalogTVFX extends AbstractVideoFX implements IVideoFrameFX {
 		if(vOff < 0) vOff = 0;
 		vOff             += (int)getVal(V);
 
-		if(yuvFrame.length != frame.dimJ + VBLANK || yuvFrame[0].length != frame.dimI * 3)
-			yuvFrame = new float[frame.dimJ + VBLANK][frame.dimI * 3];
+		if(yuvFrame.length != frame.height + VBLANK || yuvFrame[0].length != frame.width * 3)
+			yuvFrame = new float[frame.height + VBLANK][frame.width * 3];
 
 		frame.processLines((pixels, j)->{
 			final float[] yuv  = yuvFrame[j];

@@ -36,6 +36,7 @@ import ch.fhnw.ether.controller.event.IKeyEvent;
 import ch.fhnw.ether.controller.event.IPointerEvent;
 import ch.fhnw.ether.controller.tool.ITool;
 import ch.fhnw.ether.controller.tool.NavigationTool;
+import ch.fhnw.ether.media.IScheduler;
 import ch.fhnw.ether.render.IRenderManager;
 import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.scene.camera.ICamera;
@@ -177,6 +178,12 @@ public interface IController {
 	 */
 	void run(double delay, IAction action);
 
+	/**
+	 * Get the scheduler associated with this controller.
+	 * @return The scheduler.
+	 */
+	IScheduler getScheduler();
+	
 	/**
 	 * Request repaint of all views. This is a shorthand for
 	 * getScheduler().repaint(). Thread-safe.

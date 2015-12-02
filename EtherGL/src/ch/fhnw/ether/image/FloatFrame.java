@@ -58,25 +58,25 @@ public final class FloatFrame extends Frame {
 		this(frame, frame.originalMinMax);
 	}
 
-	public FloatFrame(int dimI, int dimJ) {
+	public FloatFrame(int width, int height) {
 		super(4);
 		buffer = pixels.asFloatBuffer();
-		init(dimI, dimJ);
+		init(width, height);
 	}
 
-	public FloatFrame(int dimI, int dimJ, ByteBuffer frameBuffer) {
-		super(dimI, dimJ, frameBuffer, 4);
+	public FloatFrame(int width, int height, ByteBuffer frameBuffer) {
+		super(width, height, frameBuffer, 4);
 		pixels.rewind();
 		buffer = pixels.asFloatBuffer();
 	}
 
 	@Override
-	public FloatFrame create(int dimI, int dimJ) {
-		return new FloatFrame(dimI, dimJ);
+	public FloatFrame create(int width, int height) {
+		return new FloatFrame(width, height);
 	}
 	
 	public FloatFrame(Frame frame, float[] minMax) {
-		this(frame.dimI, frame.dimJ);
+		this(frame.width, frame.height);
 		if (pixelSize == frame.pixelSize && frame instanceof FloatFrame)
 			BufferUtilities.arraycopy(frame.pixels, 0, pixels, 0, pixels.capacity());
 		else {
@@ -86,8 +86,8 @@ public final class FloatFrame extends Frame {
 			if (frame instanceof Grey16Frame) {
 				int spos = 0;
 				int dpos = 0;
-				for (int j = 0; j < dimJ; j++) {
-					for (int i = 0; i < dimI; i++) {
+				for (int j = 0; j < height; j++) {
+					for (int i = 0; i < width; i++) {
 						buffer.put(dpos++, encoder.decode(src.get(spos + 1), src.get(spos)));
 						spos += sps;
 					}
@@ -95,8 +95,8 @@ public final class FloatFrame extends Frame {
 			} else {
 				int spos = 0;
 				int dpos = 0;
-				for (int j = 0; j < dimJ; j++) {
-					for (int i = 0; i < dimI; i++) {
+				for (int j = 0; j < height; j++) {
+					for (int i = 0; i < width; i++) {
 						int val = src.get(spos) & 0xFF;
 						val += src.get(spos) & 0xFF;
 						val += src.get(spos) & 0xFF;
@@ -111,15 +111,15 @@ public final class FloatFrame extends Frame {
 	}
 
 	@Override
-	protected void init(int dimI, int dimJ) {
-		super.init(dimI, dimJ);
+	protected void init(int width, int height) {
+		super.init(width, height);
 		buffer = pixels.asFloatBuffer();
 	}
 
 	@Override
 	public void setPixels(int x, int y, int w, int h, BufferedImage img, int flags) {
-		final int dstll = dimI;
-		int dstyoff = dstll * ((dimJ - 1) - y);
+		final int dstll = width;
+		int dstyoff = dstll * ((height - 1) - y);
 
 		if (img.getType() != BufferedImage.TYPE_USHORT_GRAY) {
 			BufferedImage tmp = new BufferedImage(img.getWidth(), img.getHeight(), BufferedImage.TYPE_USHORT_GRAY);
@@ -145,17 +145,17 @@ public final class FloatFrame extends Frame {
 
 	@Override
 	public BufferedImage toBufferedImage() {
-		BufferedImage result = new BufferedImage(dimI, dimJ, BufferedImage.TYPE_USHORT_GRAY);
-		short[] line = new short[dimI];
+		BufferedImage result = new BufferedImage(width, height, BufferedImage.TYPE_USHORT_GRAY);
+		short[] line = new short[width];
 
 		Grey16Codec encoder = new Grey16Codec(getMinMax());
 
 		int y = 0;
-		for (int j = dimJ; --j >= 0; y++) {
+		for (int j = height; --j >= 0; y++) {
 			for (int i = 0; i < line.length; i++)
-				line[i] = encoder.encode(buffer.get(j * dimI + i));
+				line[i] = encoder.encode(buffer.get(j * width + i));
 
-			result.getRaster().setDataElements(0, y, dimI, 1, line);
+			result.getRaster().setDataElements(0, y, width, 1, line);
 		}
 		return result;
 	}
@@ -168,7 +168,7 @@ public final class FloatFrame extends Frame {
 
 	@Override
 	public Frame alloc() {
-		return new FloatFrame(dimI, dimJ);
+		return new FloatFrame(width, height);
 	}
 
 	@Override
@@ -177,8 +177,8 @@ public final class FloatFrame extends Frame {
 	}
 
 	@Override
-	public float getFloatComponent(int i, int j, int component) {
-		float out = buffer.get(j * dimI + i);
+	public float getFloatComponent(int x, int y, int component) {
+		float out = buffer.get(y * width + x);
 
 		if (component == 3)
 			return Float.isNaN(out) ? 0 : 1;
@@ -231,22 +231,22 @@ public final class FloatFrame extends Frame {
 	}
 
 	@Override
-	public float getBrightness(int i, int j) {
-		return buffer.get(j * dimI + i);
+	public float getBrightness(int x, int y) {
+		return buffer.get(y * width + x);
 	}
 
 	@Override
-	public void setARGB(int i, int j, int argb) {
-		buffer.put((j * dimI) + i, ((((argb >> 16) & 0xFF) + ((argb >> 8) & 0xFF) + (argb & 0xFF)) / 765f));
+	public void setARGB(int x, int y, int argb) {
+		buffer.put((y * width) + x, ((((argb >> 16) & 0xFF) + ((argb >> 8) & 0xFF) + (argb & 0xFF)) / 765f));
 	}
 
-	public void setBrightness(int i, int j, float value) {
-		buffer.put(j * dimI + i, value);
+	public void setBrightness(int x, int y, float value) {
+		buffer.put(y * width + x, value);
 	}
 
 	@Override
-	public int getARGB(int i, int j) {
-		int rgb = (int) (buffer.get(j * dimI + i) * 255f) & 0xFF;
+	public int getARGB(int x, int y) {
+		int rgb = (int) (buffer.get(y * width + x) * 255f) & 0xFF;
 		return rgb << 16 | rgb << 8 | rgb | 0xFF000000;
 	}
 
@@ -256,21 +256,31 @@ public final class FloatFrame extends Frame {
 	}
 
 	@Override
-	public FloatFrame getSubframe(int i, int j, int dimI, int dimJ) {
-		FloatFrame result = new FloatFrame(dimI, dimJ);
-		getSubframeImpl(i, j, result);
+	public FloatFrame getSubframe(int x, int y, int width, int height) {
+		FloatFrame result = new FloatFrame(width, height);
+		getSubframeImpl(x, y, result);
 		return result;
 	}
 
 	@Override
-	public void setSubframe(int i, int j, Frame src) {
+	public void setSubframe(int x, int y, Frame src) {
 		if (src.getClass() != getClass())
 			src = new FloatFrame(src);
-		setSubframeImpl(i, j, src);
+		setSubframeImpl(x, y, src);
 	}
 
 	@Override
 	protected void loadTexture(GL3 gl) {
-		gl.glTexImage2D(GL3.GL_TEXTURE_2D, 0, GL3.GL_RED, dimI, dimJ, 0, GL3.GL_RED, GL.GL_FLOAT, pixels);
+		gl.glTexImage2D(GL3.GL_TEXTURE_2D, 0, GL3.GL_RED, width, height, 0, GL3.GL_RED, GL.GL_FLOAT, pixels);
+	}
+
+	public void normalize() {
+		float max = 0;
+		buffer.clear();
+		for(int i = buffer.capacity(); --i >= 0;)
+			max = Math.max(max, buffer.get());
+		buffer.clear();
+		for(int i = buffer.capacity(); --i >= 0;)
+			buffer.put(i, buffer.get(i) / max);		
 	}	
 }

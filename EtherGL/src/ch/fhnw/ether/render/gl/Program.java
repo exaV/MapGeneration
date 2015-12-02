@@ -165,44 +165,48 @@ public final class Program {
 	}
 
 	public void setUniform(GL3 gl, int index, boolean value) {
-		gl.glUniform1i(index, value ? 1 : 0);
+		if(index >= 0)
+			gl.glUniform1i(index, value ? 1 : 0);
 	}
 
 	public void setUniform(GL3 gl, int index, int value) {
-		gl.glUniform1i(index, value);
+		if(index >= 0)
+			gl.glUniform1i(index, value);
 	}
 
 	public void setUniform(GL3 gl, int index, float value) {
-		gl.glUniform1f(index, value);
+		if(index >= 0)
+			gl.glUniform1f(index, value);
 	}
 
 	public void setUniformVec2(GL3 gl, int index, float[] value) {
-		if (value != null)
+		if(value != null && index >= 0)
 			gl.glUniform2fv(index, 1, value, 0);
 	}
 
 	public void setUniformVec3(GL3 gl, int index, float[] value) {
-		if (value != null)
+		if (value != null && index >= 0)
 			gl.glUniform3fv(index, 1, value, 0);
 	}
 
 	public void setUniformVec4(GL3 gl, int index, float[] value) {
-		if (value != null)
+		if (value != null && index >= 0)
 			gl.glUniform4fv(index, 1, value, 0);
 	}
 
 	public void setUniformMat3(GL3 gl, int index, float[] value) {
-		if (value != null)
+		if (value != null && index >= 0)
 			gl.glUniformMatrix3fv(index, 1, false, value, 0);
 	}
 
 	public void setUniformMat4(GL3 gl, int index, float[] value) {
-		if (value != null)
+		if (value != null && index >= 0)
 			gl.glUniformMatrix4fv(index, 1, false, value, 0);
 	}
 
 	public void setUniformSampler(GL3 gl, int index, int unit) {
-		setUniform(gl, index, unit);
+		if(index >= 0)
+			setUniform(gl, index, unit);
 	}
 
 	public int getAttributeLocation(GL3 gl, String name) {

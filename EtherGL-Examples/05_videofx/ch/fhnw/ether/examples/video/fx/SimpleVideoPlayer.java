@@ -38,6 +38,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.JComboBox;
 
 import ch.fhnw.ether.audio.IAudioRenderTarget;
+import ch.fhnw.ether.audio.IAudioSource;
 import ch.fhnw.ether.audio.JavaSoundTarget;
 import ch.fhnw.ether.audio.fx.AudioGain;
 import ch.fhnw.ether.image.RGBA8Frame;
@@ -47,6 +48,7 @@ import ch.fhnw.ether.media.RenderProgram;
 import ch.fhnw.ether.ui.ParameterWindow;
 import ch.fhnw.ether.video.AWTFrameTarget;
 import ch.fhnw.ether.video.IVideoRenderTarget;
+import ch.fhnw.ether.video.IVideoSource;
 import ch.fhnw.ether.video.URLVideoSource;
 import ch.fhnw.ether.video.fx.AbstractVideoFX;
 import ch.fhnw.util.CollectionUtilities;
@@ -54,7 +56,7 @@ import ch.fhnw.util.CollectionUtilities;
 public class SimpleVideoPlayer {
 	public static void main(String[] args) throws MalformedURLException, IOException, RenderCommandException {
 		URLVideoSource track    = new URLVideoSource(new File(args[0]).toURI().toURL());
-		URLVideoSource mask     = args.length > 1 ? new URLVideoSource(new File(args[1]).toURI().toURL()) : null;
+		IVideoSource   mask     = args.length > 1 ? new URLVideoSource(new File(args[1]).toURI().toURL()) : null;
 		AWTFrameTarget videoOut = new AWTFrameTarget();
 
 		List<AbstractVideoFX> fxs = CollectionUtilities.asList(
@@ -76,8 +78,8 @@ public class SimpleVideoPlayer {
 			maskOut.start();
 		}
 
-		final RenderProgram<IVideoRenderTarget> video = new RenderProgram<>(track, fxs.get(current.get()));
-		final RenderProgram<IAudioRenderTarget> audio = new RenderProgram<>(track, new AudioGain());
+		final RenderProgram<IVideoRenderTarget> video = new RenderProgram<>((IVideoSource)track, fxs.get(current.get()));
+		final RenderProgram<IAudioRenderTarget> audio = new RenderProgram<>((IAudioSource)track, new AudioGain());
 
 		final JComboBox<AbstractVideoFX> fxsUI = new JComboBox<>();
 		for(AbstractVideoFX fx : fxs)
@@ -90,11 +92,12 @@ public class SimpleVideoPlayer {
 		new ParameterWindow(fxsUI, video);
 
 		videoOut.useProgram(video);
-		videoOut.start();
 		
-		JavaSoundTarget audioOut = new JavaSoundTarget();
+		JavaSoundTarget audioOut = new JavaSoundTarget(track, 2 /track.getFrameRate());
 		audioOut.useProgram(audio);
+		videoOut.setTimebase(audioOut);
 		audioOut.start();
+		videoOut.start();
 
 		videoOut.sleepUntil(IScheduler.NOT_RENDERING);
 	}

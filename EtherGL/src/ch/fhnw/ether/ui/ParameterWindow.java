@@ -78,9 +78,10 @@ import ch.fhnw.util.TextUtilities;
 public class ParameterWindow {
 	public enum Flag {EXIT_ON_CLOSE}
 
-	static final float S          = 1000f;
-	static final int   NUM_TICKS  = 5;
-	static final int   POLL_DELAY = 40;
+	static final float   S            = 1000f;
+	static final int     NUM_TICKS    = 5;
+	static final int     POLL_DELAY   = 40;
+	static final boolean SHOW_PREVIEW = false;
 
 	private static NumberFormat FMT = TextUtilities.decimalFormat(2);
 
@@ -112,7 +113,7 @@ public class ParameterWindow {
 
 		public SourceInfoUI(RenderProgram<?> program) {
 			this.program = program;
-			AbstractFrameSource<?> src = program.getFrameSource();
+			AbstractFrameSource src = program.getFrameSource();
 
 			setLayout(new GridBagLayout());
 			titleUI = new TitledBorder(new EtchedBorder());
@@ -134,37 +135,39 @@ public class ParameterWindow {
 			if(src instanceof IVideoSource) {
 				widthUI   = add("Width");
 				heightUI  = add("Height");
-				previewUI = new JComponent() {
-					private static final long serialVersionUID = -5603882807144516938L;
+				if(SHOW_PREVIEW) {
+					previewUI = new JComponent() {
+						private static final long serialVersionUID = -5603882807144516938L;
 
-					@Override
-					protected void paintComponent(Graphics g) {
-						if(preview != null) {
-							int w = SwingUtilities.getRoot(this).getWidth();
-							int h = (w * preview.dimJ) / preview.dimI;
-							if(getPreferredSize().width != w) {
-								setPreferredSize(new Dimension(w, h));
-								pack(SourceInfoUI.this);
+						@Override
+						protected void paintComponent(Graphics g) {
+							if(preview != null) {
+								int w = SwingUtilities.getRoot(this).getWidth();
+								int h = (w * preview.height) / preview.width;
+								if(getPreferredSize().width != w) {
+									setPreferredSize(new Dimension(w, h));
+									pack(SourceInfoUI.this);
+								}
+								g.drawImage(preview.toBufferedImage(), 0, 0, w, h, ImageScaler.AWT_OBSERVER);
 							}
-							g.drawImage(preview.toBufferedImage(), 0, 0, w, h, ImageScaler.AWT_OBSERVER);
 						}
-					}
-				};
-				previewUI.setMinimumSize(new Dimension(16, 16));
-				GridBagConstraints gbc = new GridBagConstraints();
-				gbc.gridy     = getComponentCount() / 2;
-				gbc.gridwidth = 2;
-				gbc.fill      = GridBagConstraints.BOTH;
-				gbc.weightx   = 1;
-				add(previewUI, gbc);
+					};
+					previewUI.setMinimumSize(new Dimension(16, 16));
+					GridBagConstraints gbc = new GridBagConstraints();
+					gbc.gridy     = getComponentCount() / 2;
+					gbc.gridwidth = 2;
+					gbc.fill      = GridBagConstraints.BOTH;
+					gbc.weightx   = 1;
+					add(previewUI, gbc);
+				}
 			}
 
 			update(true);
 		}
 
+		@SuppressWarnings("unused")
 		void update(boolean programChange) {
-			AbstractFrameSource<?> src    = program.getFrameSource();
-			IRenderTarget<?>       target = program.getTarget(); 
+			AbstractFrameSource src    = program.getFrameSource();
 			if(programChange) {
 				titleUI.setTitle(src.toString());
 				frameRateUI.setText(FMT.format(src.getFrameRate()));
@@ -179,32 +182,35 @@ public class ParameterWindow {
 					heightUI.setText(Integer.toString(((IVideoSource)src).getHeight()));
 				}
 			}
-			if(src.getTotalElapsedFrames() == 0 || programChange) {
-				startFrames = src.getTotalElapsedFrames();
-				startTime   = System.nanoTime();
-			} else {
-				long frames  = src.getTotalElapsedFrames() - startFrames;
-				long elapsed = System.nanoTime() - startTime;
-				realTimeUI.setText(FMT.format(elapsed / IScheduler.SEC2NS));
-				actualRateUI.setText(FMT.format((IScheduler.SEC2NS * frames) / elapsed));
-			}
-			if(target instanceof IScheduler)
-				targetTimeUI.setText(FMT.format(((IScheduler)target).getTime()));
-			if(target != null) {
-				AbstractFrame frame = target.getFrame();
-				if(frame != null) {
-					frameTimeUI.setText(FMT.format(frame.playOutTime));
-					if(frame instanceof VideoFrame) {
-						Frame f = ((VideoFrame)frame).getFrame();
-						if(f != null) {
-							preview = f;
-							previewUI.repaint();
+			if(program.getTarget() != null) {
+				IRenderTarget<?> target = program.getTarget(); 
+				if(target.getTotalElapsedFrames() == 0 || programChange) {
+					startFrames = target.getTotalElapsedFrames();
+					startTime   = System.nanoTime();
+				} else {
+					long frames  = target.getTotalElapsedFrames() - startFrames;
+					long elapsed = System.nanoTime() - startTime;
+					realTimeUI.setText(FMT.format(elapsed / IScheduler.SEC2NS));
+					actualRateUI.setText(FMT.format((IScheduler.SEC2NS * frames) / elapsed));
+				}
+				if(target instanceof IScheduler)
+					targetTimeUI.setText(FMT.format(((IScheduler)target).getTime()));
+				if(target != null) {
+					AbstractFrame frame = target.getFrame();
+					if(frame != null) {
+						frameTimeUI.setText(FMT.format(frame.playOutTime));
+						if(SHOW_PREVIEW && frame instanceof VideoFrame) {
+							Frame f = ((VideoFrame)frame).getFrame();
+							if(f != null) {
+								preview = f;
+								previewUI.repaint();
+							}
 						}
 					}
 				}
+				relativeFramesUI.setText(Long.toString(target.getRealtiveElapsedFrames()));
+				totalFramesUI.setText(Long.toString(target.getTotalElapsedFrames()));
 			}
-			relativeFramesUI.setText(Long.toString(src.getRealtiveElapsedFrames()));
-			totalFramesUI.setText(Long.toString(src.getTotalElapsedFrames()));
 		}
 
 		private JLabel add(String label) {
@@ -436,7 +442,7 @@ public class ParameterWindow {
 					int y = 0;
 					for(AbstractRenderCommand<?> cmd : program.getProgram())
 						result.add(createUIRecr(cmd), new GridBagConstraints(1, y++, 1, 1, 1.0, 1.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, insets, 0, 0));
-				} else if(rcmd instanceof AbstractFrameSource<?>) {
+				} else if(rcmd instanceof AbstractFrameSource) {
 					result.add(srcInfo, new GridBagConstraints(0, 0, w, 1, 1.0, 1.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, insets, 0, 0));
 				} else {
 					result.add(cmp, new GridBagConstraints(0, 0, w, 1, 1.0, 1.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, insets, 0, 0));

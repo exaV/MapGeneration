@@ -44,13 +44,16 @@ public abstract class AbstractMediaTarget<F extends AbstractFrame, T extends IRe
 	private   final int                     priority;
 	private   final boolean                 realTime;
 	protected RenderProgram<T>              program;
+	protected ITimebase                     timebase;
 	protected final AtomicBoolean           isRendering  = new AtomicBoolean();
 	private   final AtomicReference<F>      frame        = new AtomicReference<>();
 	private         CountDownLatch          startLatch;
 	private   final List<BlockingTimeEvent> timeEvents   = new LinkedList<>();
 	private   long                          startTime;
 	private   Thread                        framePump;
-
+	private   long                          totalFrames;
+	private   long                          relFrames;
+	
 	protected AbstractMediaTarget(int threadPriority, boolean realTime) {
 		this.priority = threadPriority;
 		this.realTime = realTime;
@@ -58,6 +61,7 @@ public abstract class AbstractMediaTarget<F extends AbstractFrame, T extends IRe
 
 	@Override
 	public final void start() {
+		if(program == null) throw new NullPointerException("No program set for this target");
 		if(program.getFrameSource().getLengthInFrames() == 1) {
 			try {
 				setRendering(true);
@@ -153,7 +157,7 @@ public abstract class AbstractMediaTarget<F extends AbstractFrame, T extends IRe
 		sleepUntil(time, null);
 	}
 
-	private void nap() {
+	protected void nap() {
 		try {
 			Thread.sleep(1);
 		} catch (Throwable t) {
@@ -169,6 +173,15 @@ public abstract class AbstractMediaTarget<F extends AbstractFrame, T extends IRe
 				while(isRendering())
 					nap();
 			} else {
+				if(realTime) {
+					try {
+						int sleep = (int)((time - getTime()) * 1000);
+						if(sleep > 0)
+							Thread.sleep(sleep);
+					} catch (Throwable t) {
+						log.warning(t);
+					}
+				}
 				while(getTime() <= time)
 					nap();
 			}
@@ -187,8 +200,13 @@ public abstract class AbstractMediaTarget<F extends AbstractFrame, T extends IRe
 	}
 
 	@Override
-	public final void setFrame(F frame) {
+	public final void setFrame(AbstractFrameSource src, F frame) {
 		this.frame.set(frame);
+		long length = src.getLengthInFrames();
+		if(length > 0 && getRealtiveElapsedFrames() >= length)
+			relFrames = 0;
+		totalFrames++;
+		relFrames++;
 	}
 
 	static final class BlockingTimeEvent {
@@ -218,11 +236,27 @@ public abstract class AbstractMediaTarget<F extends AbstractFrame, T extends IRe
 
 	@Override
 	public double getTime() {
+		if(timebase != null) return timebase.getTime();
 		if(realTime)
 			return (System.nanoTime() - startTime) / SEC2NS;
 
-		AbstractFrameSource<?> src = program.getFrameSource();
-		long                   len = src.getLengthInFrames();
-		return src.getTotalElapsedFrames() / (len <= 0 ?  src.getFrameRate() : (len / src.getLengthInSeconds()));
+		AbstractFrameSource src = program.getFrameSource();
+		long                len = src.getLengthInFrames();
+		return getTotalElapsedFrames() / (len <= 0 ?  src.getFrameRate() : (len / src.getLengthInSeconds()));
+	}
+
+	@Override
+	public final void setTimebase(ITimebase timebase) {
+		this.timebase = timebase;
+	}
+	
+	@Override
+	public final long getTotalElapsedFrames() {
+		return totalFrames;
+	}
+
+	@Override
+	public final long getRealtiveElapsedFrames() {
+		return relFrames;
 	}
 }

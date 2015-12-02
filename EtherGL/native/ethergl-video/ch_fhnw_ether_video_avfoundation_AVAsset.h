@@ -65,6 +65,22 @@ JNIEXPORT jlong JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGetF
 
 /*
  * Class:     ch_fhnw_ether_video_avfoundation_AVAsset
+ * Method:    nativeGetNumChannels
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGetNumChannels
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     ch_fhnw_ether_video_avfoundation_AVAsset
+ * Method:    nativeGetSampleRate
+ * Signature: (J)F
+ */
+JNIEXPORT jfloat JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGetSampleRate
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     ch_fhnw_ether_video_avfoundation_AVAsset
  * Method:    nativeGetWidth
  * Signature: (J)I
  */

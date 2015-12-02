@@ -42,11 +42,12 @@ import javax.sound.sampled.Mixer;
 import javax.sound.sampled.TargetDataLine;
 
 import ch.fhnw.ether.media.AbstractFrameSource;
+import ch.fhnw.ether.media.IRenderTarget;
 import ch.fhnw.ether.media.Parameter;
 import ch.fhnw.ether.media.RenderCommandException;
 import ch.fhnw.util.Pair;
 
-public class JavaSoundSource extends AbstractFrameSource<IAudioRenderTarget> implements Runnable, IAudioSource {
+public class JavaSoundSource extends AbstractFrameSource implements Runnable, IAudioSource {
 	private static final float       S2F    = Short.MAX_VALUE;
 
 	private final float sampleRate;
@@ -92,9 +93,9 @@ public class JavaSoundSource extends AbstractFrameSource<IAudioRenderTarget> imp
 			}
 		}
 	}
-
+	
 	@Override
-	protected void run(final IAudioRenderTarget target) throws RenderCommandException {
+	protected void run(IRenderTarget<?> target) throws RenderCommandException {
 		if(lastErr != null) throw new RenderCommandException(lastErr);
 		int pSrc = (int) getVal(SOURCE);
 		if(source != pSrc) {
@@ -116,7 +117,7 @@ public class JavaSoundSource extends AbstractFrameSource<IAudioRenderTarget> imp
 		}
 		try {
 			while(data.size() > 4) data.take();
-			setFrame(target, createAudioFrame(samples, data.take()));
+			((IAudioRenderTarget)target).setFrame(this, createAudioFrame(samples, data.take()));
 		} catch(InterruptedException e) {
 			throw new RenderCommandException(e);
 		}
