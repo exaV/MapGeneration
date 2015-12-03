@@ -44,14 +44,14 @@ import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.IMesh.Flag;
-import ch.fhnw.ether.scene.mesh.MeshLibrary;
+import ch.fhnw.ether.scene.mesh.MeshUtilities;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.EmptyMaterial;
 import ch.fhnw.util.color.RGBA;
 
 public final class ShadowVolumes {
-	private static final IMesh OVERLAY_MESH = new DefaultMesh(new EmptyMaterial(), DefaultGeometry.createV(Primitive.TRIANGLES, MeshLibrary.DEFAULT_QUAD_TRIANGLES));
+	private static final IMesh OVERLAY_MESH = new DefaultMesh(new EmptyMaterial(), DefaultGeometry.createV(Primitive.TRIANGLES, MeshUtilities.DEFAULT_QUAD_TRIANGLES));
 
 	private ShadowVolumeShader volumeShader;
 	private Renderable overlay;
@@ -72,6 +72,8 @@ public final class ShadowVolumes {
 		gl.glBlendFunc(GL.GL_ZERO, GL.GL_SRC_ALPHA);
 		gl.glDepthMask(false);
 		gl.glEnable(GL3.GL_DEPTH_CLAMP);
+		
+		overlay.update(gl, OVERLAY_MESH.getMaterial().getData(), OVERLAY_MESH.getTransformedGeometryData());
 
 		for (lightIndex = 0; lightIndex < numLights; ++lightIndex) {
 			gl.glClear(GL.GL_STENCIL_BUFFER_BIT);
@@ -103,7 +105,7 @@ public final class ShadowVolumes {
 			gl.glStencilFunc(GL.GL_NOTEQUAL, 0x0, 0xffffffff);
 			gl.glStencilOp(GL.GL_KEEP, GL.GL_KEEP, GL.GL_KEEP);
 
-			overlay.render(gl, OVERLAY_MESH);
+			overlay.render(gl);
 
 			gl.glDisable(GL.GL_STENCIL_TEST);
 		}

@@ -33,10 +33,9 @@
  import ch.fhnw.ether.audio.IAudioRenderTarget;
  import ch.fhnw.ether.audio.Smooth;
  import ch.fhnw.ether.media.AbstractRenderCommand;
- import ch.fhnw.ether.media.PerTargetState;
  import ch.fhnw.ether.media.RenderCommandException;
 
- public class BandsButterworth extends AbstractRenderCommand<IAudioRenderTarget,BandsButterworth.State> {
+ public class BandsButterworth extends AbstractRenderCommand<IAudioRenderTarget> {
 	 private final int     size;
 	 private final double  lowers[];
 	 private final double  uppers[];
@@ -44,46 +43,9 @@
 	 private final boolean center[];
 	 private final int     strength;
 
-	 public class State extends PerTargetState<IAudioRenderTarget> {
-		 private final Smooth            smooth = new Smooth(centers.length, 0.05f);
-		 private final ButterworthFilter filters[][];
-		 private float[]                 power = new float[centers.length];
-
-		 public State(IAudioRenderTarget target) {
-			 super(target);
-
-			 filters = new ButterworthFilter[size][strength];
-
-			 for(int i = 0; i < size; i++)
-				 for(int j = 0; j < strength; j++)
-					 if(center[i])
-						 filters[i][j] = ButterworthFilter.getBandpassFilter0(target.getSampleRate(), centers[i], uppers[i] - lowers[i]);
-					 else
-						 filters[i][j] = ButterworthFilter.getBandpassFilter(target.getSampleRate(), lowers[i], uppers[i]);
-		 }
-
-		 public void process(AudioFrame frame) {
-			 for(int band = 0; band < centers.length; band++) {
-				 float[] samples = frame.getMonoSamples().clone();
-				 for(int i = 0; i < filters[band].length; i++)
-					 filters[band][i].processBand(samples);
-				 power[band] = AudioUtilities.energy(samples) * centers.length * 10;
-			 }
-			 smooth.update(target.getTime(), power);
-		 }
-
-		 public float power(int i) {
-			 return smooth.get(i);
-		 }
-
-		 public float[] power(float[] values) {
-			 return smooth.get(values);
-		 }
-
-		 public int numBands() {
-			 return centers.length;
-		 }
-	 }
+	 private ButterworthFilter filters[][];
+	 private Smooth            smooth;
+	 private float[]           power;
 
 	 public BandsButterworth(int strength, double bandWidth, boolean centered, float ... freqs) {
 		 this.strength = strength;
@@ -149,13 +111,42 @@
 		 }
 	 }
 
-	 @Override
-	 protected void run(State state) throws RenderCommandException {
-		 state.process(state.getTarget().getFrame());
-	 }	
 
 	 @Override
-	 public State createState(IAudioRenderTarget target) throws RenderCommandException {
-		 return new State(target);
+	 public void init(IAudioRenderTarget target) {
+		 smooth = new Smooth(centers.length, 0.05f);
+		 power  = new float[centers.length];
+		 filters = new ButterworthFilter[size][strength];
+
+		 for(int i = 0; i < size; i++)
+			 for(int j = 0; j < strength; j++)
+				 if(center[i])
+					 filters[i][j] = ButterworthFilter.getBandpassFilter0(target.getSampleRate(), centers[i], uppers[i] - lowers[i]);
+				 else
+					 filters[i][j] = ButterworthFilter.getBandpassFilter(target.getSampleRate(), lowers[i], uppers[i]);
 	 }
+
+	 public float power(int i) {
+		 return smooth.get(i);
+	 }
+
+	 public float[] power(float[] values) {
+		 return smooth.get(values);
+	 }
+
+	 public int numBands() {
+		 return centers.length;
+	 }
+
+	 @Override
+	 protected void run(final IAudioRenderTarget target) throws RenderCommandException {
+		 final AudioFrame frame = target.getFrame();
+		 for(int band = 0; band < centers.length; band++) {
+			 float[] samples = frame.getMonoSamples().clone();
+			 for(int i = 0; i < filters[band].length; i++)
+				 filters[band][i].processBand(samples);
+			 power[band] = AudioUtilities.energy(samples) * centers.length * 10;
+		 }
+		 smooth.update(target.getTime(), power);
+	 }	
  }

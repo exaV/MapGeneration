@@ -33,7 +33,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Group {
+final class Group {
 	private final String name;
 	private final List<Face> faces = new ArrayList<>();
 

@@ -31,107 +31,52 @@ package ch.fhnw.ether.video;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import javax.imageio.ImageIO;
 
-import ch.fhnw.ether.image.Frame;
-import ch.fhnw.ether.media.PerTargetState;
+import ch.fhnw.ether.audio.IAudioRenderTarget;
+import ch.fhnw.ether.audio.IAudioSource;
+import ch.fhnw.ether.media.AbstractFrameSource;
+import ch.fhnw.ether.media.IRenderTarget;
 import ch.fhnw.ether.media.RenderCommandException;
-import ch.fhnw.ether.video.avfoundation.AVAsset;
-import ch.fhnw.ether.video.jcodec.SequentialVideoTrack;
-import ch.fhnw.util.Log;
+import ch.fhnw.ether.video.jcodec.JCodecAccess;
 import ch.fhnw.util.TextUtilities;
 
-public class URLVideoSource extends AbstractVideoSource<URLVideoSource.State> {
-	private static final Log log = Log.create();
-	
-	private static final boolean USE_AV_FOUNDATION = true;
+public class URLVideoSource extends AbstractFrameSource implements IAudioSource, IVideoSource {
+	private static final boolean USE_JCODEC = false;
 
-	private final URL    url;
-	private final int    numPlays;
-	private int          width;
-	private int          height;
-	private double       frameRate  = FRAMERATE_UNKNOWN;
-	private long         frameCount = FRAMECOUNT_UNKNOWN;
+	private final int                    width;
+	private final int                    height;
+	private final float                  frameRate;
+	private final long                   frameCount;
+	private final float                  sampleRate;
+	private final int                    numChannels;
+	private final double                 length;
+	protected final URL                  url;
+	private final FrameAccess            frameAccess;
+	private final BlockingQueue<float[]> audioData = new LinkedBlockingQueue<>();
 
-	public URLVideoSource(URL url) {
+	long samples;
+
+	public URLVideoSource(URL url) throws IOException {
 		this(url, Integer.MAX_VALUE);
 	}
 
-	public URLVideoSource(URL url, int numPlays) {
+	public URLVideoSource(URL url, int numPlays) throws IOException {
 		this.url      = url;
-		this.numPlays = numPlays;
 		try {
-			createState(null);
+			frameAccess       = isStillImage(url) ? new FrameAccess(this) : USE_JCODEC ? new JCodecAccess(this, numPlays) : new XuggleAccess(this, numPlays);
+			width       = frameAccess.getWidth();
+			height      = frameAccess.getHeight();
+			frameRate   = frameAccess.getFrameRate();
+			frameCount  = frameAccess.getFrameCount();
+			sampleRate  = frameAccess.getSampleRate();
+			numChannels = frameAccess.getNumChannels();
+			length      = frameAccess.getDuration();
 		} catch(Throwable t) {
-			log.warning(t);
-		}
-	}
-
-	@Override
-	protected void run(State state) throws RenderCommandException {
-		state.runInternal();
-	}
-
-	public static class State extends PerTargetState<IVideoRenderTarget> {
-		protected final URL url;
-		protected double    playOutTime;
-		protected int       numPlays;
-		protected double    startTime = -1;
-		private final Frame frame;
-
-		State(IVideoRenderTarget target, URL url) throws IOException {
-			super(target);
-			this.frame    = Frame.create(url);
-			this.url      = url;
-			this.numPlays = 0;
-		}
-
-		protected State(IVideoRenderTarget target, URL url, int numPlays) {
-			super(target);
-			this.frame    = null;
-			this.url      = url;
-			this.numPlays = numPlays;
-		}
-
-		public double getPlayOutTime() {
-			return playOutTime;
-		}
-
-		public void runInternal() {
-			if(startTime <= 0)
-				startTime = getTarget().getTime();
-			getTarget().setFrame(new VideoFrame(startTime + getPlayOutTime(), getNextFrame()));
-		}
-
-		protected Frame getNextFrame() {
-			return frame;
-		}
-		protected int getWidth() {
-			return frame.dimI;
-		}
-		protected int getHeight() {
-			return frame.dimJ;
-		}
-		protected double getFrameRate() {
-			return FRAMERATE_UNKNOWN;
-		}
-		protected long getFrameCount() {
-			return 1;
-		}
-	}
-
-	@Override
-	protected State createState(IVideoRenderTarget target) throws RenderCommandException {
-		try {
-			State result = isStillImage(url) ? new State(target, url) : USE_AV_FOUNDATION ? new AVAsset(target, url, numPlays) : new SequentialVideoTrack(target, url, numPlays);
-			width      = result.getWidth();
-			height     = result.getHeight();
-			frameRate  = result.getFrameRate();
-			frameCount = result.getFrameCount();
-			return result;
-		} catch(Throwable t) {
-			throw new RenderCommandException(t);
+			throw new IOException(t);
 		}
 	}
 
@@ -155,12 +100,57 @@ public class URLVideoSource extends AbstractVideoSource<URLVideoSource.State> {
 	}
 
 	@Override
-	public double getFrameRate() {
+	public float getFrameRate() {
 		return frameRate;
 	}
 
 	@Override
-	public long getFrameCount() {
+	public long getLengthInFrames() {
 		return frameCount;
+	}
+
+	@Override
+	public double getLengthInSeconds() {
+		return length;
+	}	
+
+	public URL getURL() {
+		return url;
+	}
+
+	@Override
+	public float getSampleRate() {
+		return sampleRate;
+	}
+
+	@Override
+	public int getNumChannels() {
+		return numChannels;
+	}
+
+	@Override
+	protected void run(IRenderTarget<?> target) throws RenderCommandException {
+		if(target instanceof IVideoRenderTarget) {
+			do {
+				frameAccess.decodeFrame();
+			} while(frameAccess.getPlayOutTimeInSec() < target.getTime());
+			VideoFrame frame = new VideoFrame(frameAccess, audioData);
+			if(frameAccess.numPlays <= 0)
+				frame.setLast(true);
+			((IVideoRenderTarget)target).setFrame(this, frame);
+		} else if(target instanceof IAudioRenderTarget) {
+			try {
+				float[] frameData = audioData.poll();
+				if(frameData == null) {
+					((IAudioRenderTarget)target).setFrame(this, createAudioFrame(samples, 64));
+					samples += 64;
+				} else {
+					((IAudioRenderTarget)target).setFrame(this, createAudioFrame(samples, frameData));
+					samples += frameData.length;
+				}
+			} catch(Throwable t) {
+				throw new RenderCommandException(t);
+			}
+		}
 	}
 }

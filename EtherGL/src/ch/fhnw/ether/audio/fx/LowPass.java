@@ -28,13 +28,12 @@
  */package ch.fhnw.ether.audio.fx;
 
  import ch.fhnw.ether.audio.ButterworthFilter;
- import ch.fhnw.ether.audio.IAudioRenderTarget;
- import ch.fhnw.ether.media.AbstractRenderCommand;
- import ch.fhnw.ether.media.Parameter;
- import ch.fhnw.ether.media.RenderCommandException;
- import ch.fhnw.ether.media.Stateless;
+import ch.fhnw.ether.audio.IAudioRenderTarget;
+import ch.fhnw.ether.media.AbstractRenderCommand;
+import ch.fhnw.ether.media.Parameter;
+import ch.fhnw.ether.media.RenderCommandException;
 
- public class LowPass extends AbstractRenderCommand<IAudioRenderTarget,Stateless<IAudioRenderTarget>> {
+ public class LowPass extends AbstractRenderCommand<IAudioRenderTarget> {
 	 private static final Parameter FREQ = new Parameter("f",  "Frequency",  0, 20000, 30);
 
 	 private ButterworthFilter[][] lowPass;
@@ -48,9 +47,8 @@
 	 }
 
 	 @Override
-	 protected void run(Stateless<IAudioRenderTarget> state) throws RenderCommandException {
+	 protected void run(final IAudioRenderTarget target) throws RenderCommandException {
 		 final float              freq      = getVal(FREQ);
-		 final IAudioRenderTarget target    = state.getTarget();
 		 final int                nChannels = target.getNumChannels();
 		 final float[]            samples   = target.getFrame().samples;
 

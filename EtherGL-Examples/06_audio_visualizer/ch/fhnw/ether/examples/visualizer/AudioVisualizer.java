@@ -39,10 +39,10 @@ import java.net.MalformedURLException;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
-import ch.fhnw.ether.audio.AbstractAudioSource;
 import ch.fhnw.ether.audio.AudioUtilities.Window;
 import ch.fhnw.ether.audio.FFT;
 import ch.fhnw.ether.audio.IAudioRenderTarget;
+import ch.fhnw.ether.audio.IAudioSource;
 import ch.fhnw.ether.audio.InvFFT;
 import ch.fhnw.ether.audio.JavaSoundTarget;
 import ch.fhnw.ether.audio.URLAudioSource;
@@ -60,16 +60,15 @@ public class AudioVisualizer {
 	private static final int N_CUBES = 60;
 
 	public static void main(String[] args) throws RenderCommandException, MalformedURLException, IOException {
-		AbstractAudioSource<?>            src = new URLAudioSource(new File(args[0]).toURI().toURL());
+		IAudioSource                      src = new URLAudioSource(new File(args[0]).toURI().toURL());
 		//AbstractAudioSource<?>            src   = new SilenceAudioSource(1, 44100, 16);
 		SinGen                            sin   = new SinGen(0);
 		DCRemove                          dcrmv = new DCRemove();
 		AutoGain                          gain  = new AutoGain();
 		FFT                               fft   = new FFT(20, Window.HANN);
 		BandsButterworth                  bands = new BandsButterworth(40, 8000, 40, N_CUBES, 1);
-		PitchDetect                       pitch = new PitchDetect(fft.state(), 2);
-		InvFFT                            ifft  = new InvFFT(fft.state());
-		Robotizer                         robo  = new Robotizer(fft.state());
+		PitchDetect                       pitch = new PitchDetect(fft, 2);
+		InvFFT                            ifft  = new InvFFT(fft);
 
 		final JavaSoundTarget audioOut = new JavaSoundTarget();
 
@@ -82,10 +81,10 @@ public class AudioVisualizer {
 				try{
 					int w = getWidth() / N_CUBES;
 					for(int i = 0; i < N_CUBES; i++) {
-						int h = (int) (bands.state().get(audioOut).power(i) * getHeight());
+						int h = (int) (bands.power(i) * getHeight());
 						g.fillRect(i * w, getHeight() - h, w, h);
 					}
-					g.drawString(TextUtilities.toString(pitch.state().get(audioOut).pitch()), 0, 20);
+					g.drawString(TextUtilities.toString(pitch.pitch()), 0, 20);
 					/*
 					g.setColor(Color.RED);
 					int count = 0;

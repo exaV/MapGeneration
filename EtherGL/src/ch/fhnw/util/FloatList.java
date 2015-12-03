@@ -36,7 +36,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 
-public final class FloatList extends SimpleArrayList<float[], Float> implements IFloatArrayCopyProvider {
+public final class FloatList extends SimpleArrayList<float[], Float> {
 	public FloatList() {}
 
 	public FloatList(int initialCapacity) {

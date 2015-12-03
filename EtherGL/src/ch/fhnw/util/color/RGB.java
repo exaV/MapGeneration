@@ -29,6 +29,7 @@
 
 package ch.fhnw.util.color;
 
+import ch.fhnw.util.HashUtilities;
 import ch.fhnw.util.math.IVec3;
 import ch.fhnw.util.math.Vec3;
 
@@ -119,6 +120,24 @@ public final class RGB implements IColor, IVec3 {
 	@Override
 	public float[] toArray() {
 		return new float[] { r, g, b };
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+
+		if (obj instanceof RGB) {
+			final RGB v = (RGB) obj;
+			return r == v.r && g == v.g && b == v.b;
+		}
+		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		return HashUtilities.hash(r, g, b);
 	}
 
 	@Override

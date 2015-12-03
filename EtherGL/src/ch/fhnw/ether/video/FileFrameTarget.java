@@ -33,16 +33,16 @@ import java.io.File;
 
 import javax.imageio.ImageIO;
 
-import ch.fhnw.ether.media.AbstractMediaTarget;
 import ch.fhnw.ether.media.RenderCommandException;
+import ch.fhnw.ether.video.fx.AbstractVideoFX;
 import ch.fhnw.util.TextUtilities;
 
-public class FileFrameTarget extends AbstractMediaTarget<VideoFrame,IVideoRenderTarget> implements IVideoRenderTarget {
+public class FileFrameTarget extends AbstractVideoTarget {
 	private final File   file;
 	private final String ext;
 
 	public FileFrameTarget(File file) {
-		super(Thread.MIN_PRIORITY);
+		super(Thread.MIN_PRIORITY, AbstractVideoFX.FRAMEFX, false);
 		this.file = file;
 		this.ext  = TextUtilities.getFileExtensionWithoutDot(file.getName()).toUpperCase();
 	}
@@ -50,7 +50,7 @@ public class FileFrameTarget extends AbstractMediaTarget<VideoFrame,IVideoRender
 	@Override
 	public void render() throws RenderCommandException {
 		try {
-			ImageIO.write(getFrame().frame.toBufferedImage(), ext, file);
+			ImageIO.write(getFrame().getFrame().toBufferedImage(), ext, file);
 		} catch (Throwable e) {
 			throw new RenderCommandException(e);
 		}

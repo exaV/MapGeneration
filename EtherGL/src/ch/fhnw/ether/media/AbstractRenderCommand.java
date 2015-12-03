@@ -32,15 +32,13 @@ package ch.fhnw.ether.media;
 import ch.fhnw.util.ClassUtilities;
 import ch.fhnw.util.IObjectID;
 
-public abstract class AbstractRenderCommand<T extends IRenderTarget, S extends PerTargetState<T>> implements IObjectID {
+public abstract class AbstractRenderCommand<T extends IRenderTarget<?>> implements IObjectID {
 	private final long id = ClassUtilities.createObjectID();
 
 	protected final Parameter[]    parameters;
 	private         boolean        enabled = true; 
-	private   final StateHandle<S> stateHandle;
 
 	protected AbstractRenderCommand(Parameter ... parameters) {
-		this.stateHandle = new StateHandle<>(this);
 		this.parameters  = new Parameter[parameters.length];
 		for(int i = 0; i < parameters.length; i++) {
 			parameters[i].setIdx(i);
@@ -99,13 +97,11 @@ public abstract class AbstractRenderCommand<T extends IRenderTarget, S extends P
 		parameters[getParameter(p).getIdx()].setVal(val);
 	}
 
-	protected abstract void run(S state) throws RenderCommandException;
+	protected abstract void run(T target) throws RenderCommandException;
 
-	@SuppressWarnings({"unused","unchecked" })
-	protected S createState(T target) throws RenderCommandException {
-		return (S)new Stateless<>(target);
-	}
-
+	@SuppressWarnings("unused")
+	protected void init(T target) throws RenderCommandException {}
+	
 	@Override
 	public final long getObjectID() {
 		return id;
@@ -118,32 +114,17 @@ public abstract class AbstractRenderCommand<T extends IRenderTarget, S extends P
 
 	@Override
 	public final boolean equals(Object obj) {
-		return obj instanceof AbstractRenderCommand && ((AbstractRenderCommand<?,?>)obj).id == id;
+		return obj instanceof AbstractRenderCommand && ((AbstractRenderCommand<?>)obj).id == id;
 	}
 
-	@SuppressWarnings("unchecked")
-	public final void runInternal(IRenderTarget target) throws RenderCommandException {
-		S state = (S)target.getState(this); 
+	public final void runInternal(T target) throws RenderCommandException {
 		if(isEnabled())
-			run(state);
-	}
-
-	@SuppressWarnings("unchecked")
-	public final <TS extends PerTargetState<?>> TS createStateInternal(IRenderTarget target) throws RenderCommandException {
-		return (TS)createState((T) target);
+			run(target);
 	}
 
 	@Override
 	public String toString() {
 		return getClass().getName();
-	}
-
-	public StateHandle<S> state() {
-		return stateHandle; 
-	}
-
-	public S state(IRenderTarget target) throws RenderCommandException {
-		return stateHandle.get(target); 
 	}
 
 	public void setEnable(boolean state) {

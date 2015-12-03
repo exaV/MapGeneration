@@ -49,7 +49,7 @@ import ch.fhnw.ether.scene.camera.ICamera;
 import ch.fhnw.ether.scene.camera.IViewCameraState;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh.Queue;
-import ch.fhnw.ether.scene.mesh.MeshLibrary;
+import ch.fhnw.ether.scene.mesh.MeshUtilities;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.LineMaterial;
@@ -315,12 +315,12 @@ public final class CalibrationTool extends AbstractTool {
 			if (aa == null)
 				continue;
 			a = context.projectedVertices.get(i);
-			MeshLibrary.addLine(v, a.x, a.y, a.z, aa.x, aa.y, aa.z);
+			MeshUtilities.addLine(v, a.x, a.y, a.z, aa.x, aa.y, aa.z);
 
 			if (i == context.currentSelection) {
 				Viewport viewport = view.getViewport();
-				MeshLibrary.addLine(v, a.x - CROSSHAIR_SIZE / viewport.w, a.y, a.z, a.x + CROSSHAIR_SIZE / viewport.w, a.y, a.z);
-				MeshLibrary.addLine(v, a.x, a.y - CROSSHAIR_SIZE / viewport.h, a.z, a.x, a.y + CROSSHAIR_SIZE / viewport.h, a.z);
+				MeshUtilities.addLine(v, a.x - CROSSHAIR_SIZE / viewport.w, a.y, a.z, a.x + CROSSHAIR_SIZE / viewport.w, a.y, a.z);
+				MeshUtilities.addLine(v, a.x, a.y - CROSSHAIR_SIZE / viewport.h, a.z, a.x, a.y + CROSSHAIR_SIZE / viewport.h, a.z);
 			}
 		}
 

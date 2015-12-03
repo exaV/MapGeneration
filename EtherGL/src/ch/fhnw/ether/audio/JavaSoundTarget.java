@@ -33,19 +33,19 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.SourceDataLine;
 
-import ch.fhnw.ether.media.AbstractMediaTarget;
+import ch.fhnw.ether.media.ITimebase;
 import ch.fhnw.ether.media.RenderCommandException;
 import ch.fhnw.ether.media.RenderProgram;
 
-public final class JavaSoundTarget extends AbstractMediaTarget<AudioFrame,IAudioRenderTarget> implements IAudioRenderTarget {
+public final class JavaSoundTarget extends AbstractAudioTarget {
 	private static final float S2F = Short.MAX_VALUE;
 
 	private AudioFormat    fmt;
 	private SourceDataLine out;
 	private int            outChannels;
 	private int            bytesPerSample;
-	private double         sTime;
 	private final int      bufferSize;
+	private ITimebase      timebase;
 	
 	/**
 	 * Create a new audio target using Java sound output.
@@ -60,17 +60,29 @@ public final class JavaSoundTarget extends AbstractMediaTarget<AudioFrame,IAudio
 	 * @param bufferSize The output buffer size. Values below 2048 produce audio glitches on most platforms.
 	 */
 	public JavaSoundTarget(int bufferSize) {
-		super(Thread.MAX_PRIORITY);
+		super(Thread.MAX_PRIORITY, true);
 		this.bufferSize = bufferSize;
 	}
+	
 
+	/**
+	 * Create a new audio target using Java sound output.
+	 *
+	 * @param source The audio source.
+	 * @param bufferSize The output buffer size in seconds.
+	 */
+	public JavaSoundTarget(IAudioSource source, double bufferSize) {
+		super(Thread.MAX_PRIORITY, true);
+		this.bufferSize = (int) (source.getSampleRate() * bufferSize * source.getNumChannels() * 2);
+	}
+	
 	@Override
 	public void useProgram(RenderProgram<IAudioRenderTarget> program) throws RenderCommandException {
 		try {
 			if(out != null && out.isOpen())
 				stop();
 			
-			AbstractAudioSource<?> src = (AbstractAudioSource<?>)program.getFrameSource();
+			IAudioSource src = (IAudioSource)program.getFrameSource();
 			out            = AudioSystem.getSourceDataLine(new AudioFormat(src.getSampleRate(), 16, src.getNumChannels(), true, true));
 			fmt            = out.getFormat();
 			outChannels    = fmt.getChannels();
@@ -84,7 +96,6 @@ public final class JavaSoundTarget extends AbstractMediaTarget<AudioFrame,IAudio
 
 	@Override
 	public void render() {
-
 		if(!out.isRunning())
 			out.start();
 
@@ -108,8 +119,6 @@ public final class JavaSoundTarget extends AbstractMediaTarget<AudioFrame,IAudio
 				}
 			}
 		}
-
-		sTime += outBuffer.length / 2;
 		out.write(outBuffer, 0, outBuffer.length);
 	}
 
@@ -123,7 +132,8 @@ public final class JavaSoundTarget extends AbstractMediaTarget<AudioFrame,IAudio
 
 	@Override
 	public double getTime() {
-		return sTime / (getSampleRate() * getNumChannels());
+		if(timebase != null) return timebase.getTime();
+		return out.getLongFramePosition() / (double)getSampleRate();
 	}
 
 	@Override

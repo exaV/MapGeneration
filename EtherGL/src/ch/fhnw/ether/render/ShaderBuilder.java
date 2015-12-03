@@ -32,7 +32,6 @@ package ch.fhnw.ether.render;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Supplier;
@@ -44,8 +43,9 @@ import ch.fhnw.ether.render.shader.builtin.ShadedTriangleShader;
 import ch.fhnw.ether.render.shader.builtin.UnshadedTriangleShader;
 import ch.fhnw.ether.render.variable.IShaderUniform;
 import ch.fhnw.ether.scene.attribute.IAttribute;
+import ch.fhnw.ether.scene.mesh.material.ColorMapMaterial;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
-import ch.fhnw.ether.scene.mesh.material.CustomMaterial;
+import ch.fhnw.ether.scene.mesh.material.ICustomMaterial;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.ether.scene.mesh.material.ShadedMaterial;
 import ch.fhnw.util.Pair;
@@ -64,7 +64,7 @@ public final class ShaderBuilder {
 				if (entry.getKey().id().equals(uniform.id()))
 					return entry.getValue();
 			}
-			throw new IllegalArgumentException("shader " + shader + " requires attribute " + uniform.id());
+			throw new IllegalArgumentException("shader " + shader + " requires uniform attribute " + uniform.id());
 		}
 
 		@Override
@@ -81,27 +81,23 @@ public final class ShaderBuilder {
 
 		// add material & geometry attributes
 		if (material != null) {
-			List<IAttribute> provided = material.getProvidedAttributes();
-			for (int i = 0; i < provided.size(); ++i) {
-				final int index = i;
-				attributes.provide(provided.get(i), new Pair<>(index, null));
-			}
-			for (IAttribute required : material.getRequiredAttributes()) {
+			IAttribute[] provided = material.getProvidedAttributes();
+			for (int i = 0; i < provided.length; ++i)
+				attributes.provide(provided[i], new Pair<>(i, null));
+
+			for (IAttribute required : material.getGeometryAttributes())
 				attributes.provide(required, null);
-			}
 		}
 
 		// add global attributes
-		if (globals != null) {
-			globals.forEach((attribute, supplier) -> attributes.provide(attribute,
-					new Pair<>(-1, supplier)));
-		}
+		if (globals != null)
+			globals.forEach((attribute, supplier) -> attributes.provide(attribute, new Pair<>(-1, supplier)));
 
 		// create shader and attach all attributes this shader requires
 		if (shader == null)
 			shader = (S) createShader(material, Collections.unmodifiableSet(attributes.attributes.keySet()));
 
-		// attach attribute suppliers to uniforms
+		// attach material attributes to uniforms
 		for (IShaderUniform<?> uniform : shader.getUniforms()) {
 			if (!uniform.isLinked()) {
 				Pair<Integer, Supplier<?>> link = attributes.getSupplier(shader, uniform);
@@ -118,8 +114,8 @@ public final class ShaderBuilder {
 	// as soon as we have more builtin shaders we should move to a more flexible
 	// scheme, e.g. derive shader from provided attributes
 	private static IShader createShader(IMaterial material, Collection<IAttribute> attributes) {
-		if (material instanceof CustomMaterial) {
-			return ((CustomMaterial) material).getShader();
+		if (material instanceof ICustomMaterial) {
+			return ((ICustomMaterial) material).getShader();
 		}
 
 		switch (material.getType()) {
@@ -128,7 +124,7 @@ public final class ShaderBuilder {
 		case LINES:
 			return new LineShader(attributes);
 		case TRIANGLES:
-			if (material instanceof ColorMaterial) {
+			if (material instanceof ColorMaterial || material instanceof ColorMapMaterial) {
 				return new UnshadedTriangleShader(attributes);
 			} else if (material instanceof ShadedMaterial) {
 				return new ShadedTriangleShader(attributes);

@@ -31,14 +31,17 @@ package ch.fhnw.ether.controller.event;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import ch.fhnw.ether.controller.IController;
+import ch.fhnw.ether.media.ITimebase;
+import ch.fhnw.ether.media.RenderCommandException;
 import ch.fhnw.ether.ui.UI;
 import ch.fhnw.util.Pair;
 
-public final class DefaultEventScheduler implements IEventScheduler {
-	
+public final class DefaultEventScheduler implements IEventScheduler, ITimebase {
+
 	private static final long START_TIME = System.nanoTime();
 
 	private final IController controller;
@@ -53,12 +56,15 @@ public final class DefaultEventScheduler implements IEventScheduler {
 
 	private final AtomicBoolean repaint = new AtomicBoolean();
 
+	private ITimebase     timebase;
+	private AtomicBoolean running = new AtomicBoolean(true);
+
 	public DefaultEventScheduler(IController controller, Runnable runnable, float fps) {
 		this.controller = controller;
 		this.runnable = runnable;
 		this.interval = 1 / fps;
 		this.sceneThread = new Thread(this::runSceneThread, "scenethread");
-
+		this.sceneThread.setPriority(Thread.MAX_PRIORITY);
 		sceneThread.start();
 	}
 
@@ -101,7 +107,7 @@ public final class DefaultEventScheduler implements IEventScheduler {
 	}
 
 	private void runSceneThread() {
-		while (true) {
+		while (running.get()) {
 			double time = getTime();
 
 			// run actions first
@@ -164,17 +170,75 @@ public final class DefaultEventScheduler implements IEventScheduler {
 				} catch (Exception e) {
 				}
 			} else {
-				System.err.println("scheduler: scene thread overload (max=" + s2ms(interval) + "ms used=" + s2ms(time) + "ms)");
+				System.err.println("scheduler: scene thread overload (max=" + s2ms(interval) + "ms used=" + s2ms(elapsed) + "ms)");
 			}
 		}
 	}
 
-	private double getTime() {
+	@Override
+	public double getTime() {
+		if(timebase != null) return timebase.getTime();
 		long elapsed = System.nanoTime() - START_TIME;
-		return elapsed / 1000000000.0;
+		return elapsed / ITimebase.SEC2NS;
 	}
-	
+
 	private int s2ms(double time) {
 		return (int)(time * 1000);
+	}
+
+	@Override
+	public void setTimebase(ITimebase timebase) {
+		this.timebase = timebase;
+	}
+
+	@Override
+	public boolean isRendering() {
+		return running.get();
+	}
+
+	@Override
+	public void start() throws RenderCommandException {
+		// do nothing
+	}
+
+	@Override
+	public void stop() throws RenderCommandException {
+		running.set(false);
+	}
+
+	@Override
+	public void sleepUntil(double timeInSec) {
+		try {
+			if(timeInSec == ASAP) return;
+			else if(timeInSec == NOT_RENDERING) {
+				while(isRendering())
+					Thread.sleep(1);
+			} else {
+				while(timeInSec < getTime())
+					Thread.sleep(1);
+			}
+		} catch (Throwable t) {
+			log.warning(t);
+		}
+	}
+
+	@Override
+	public void sleepUntil(double timeInSec, Runnable runnable) {
+		if(timeInSec == ASAP) runnable.run();
+		else if(timeInSec == NOT_RENDERING) {
+			sleepUntil(timeInSec);
+			runnable.run();
+		} else {
+			CountDownLatch latch = new CountDownLatch(1);
+			run(timeInSec - getTime(), time->{
+				runnable.run();
+				latch.countDown();
+			});
+			try {
+				latch.await();
+			} catch (Throwable t) {
+				log.warning(t);
+			}
+		}
 	}
 }

@@ -31,11 +31,11 @@ package ch.fhnw.ether.examples.video.fx;
 
 import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.media.Parameter;
-import ch.fhnw.ether.media.Stateless;
 import ch.fhnw.ether.video.IVideoRenderTarget;
 import ch.fhnw.ether.video.fx.AbstractVideoFX;
+import ch.fhnw.ether.video.fx.IVideoFrameFX;
 
-public class Posterize extends AbstractVideoFX<Stateless<IVideoRenderTarget>> {
+public class Posterize extends AbstractVideoFX implements IVideoFrameFX {
 	private static final Parameter MASK = new Parameter("mask", "Bit Mask", 0, 7, 0);
 
 	public Posterize() {
@@ -43,13 +43,13 @@ public class Posterize extends AbstractVideoFX<Stateless<IVideoRenderTarget>> {
 	}
 
 	@Override
-	protected void processFrame(double playOutTime, Stateless<IVideoRenderTarget> state, Frame frame) {
+	public void processFrame(final double playOutTime, final IVideoRenderTarget target, final Frame frame) {
 		final int mask = 0xFF << (int)getVal(MASK);
 
 		if(frame.pixelSize == 4) {
 			frame.processLines((pixels, j)->{
 				int idx = pixels.position();
-				for(int i = 0; i < frame.dimI; i++) {
+				for(int i = 0; i < frame.width; i++) {
 					pixels.put((byte)(pixels.get(idx++) & mask));
 					pixels.put((byte)(pixels.get(idx++) & mask));
 					pixels.put((byte)(pixels.get(idx++) & mask));
@@ -60,7 +60,7 @@ public class Posterize extends AbstractVideoFX<Stateless<IVideoRenderTarget>> {
 		} else {
 			frame.processLines((pixels, j)->{
 				int idx = pixels.position();
-				for(int i = 0; i < frame.dimI; i++) {
+				for(int i = 0; i < frame.width; i++) {
 					pixels.put((byte)(pixels.get(idx++) & mask));
 					pixels.put((byte)(pixels.get(idx++) & mask));
 					pixels.put((byte)(pixels.get(idx++) & mask));

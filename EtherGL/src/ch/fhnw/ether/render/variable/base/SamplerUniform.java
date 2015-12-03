@@ -31,23 +31,18 @@ package ch.fhnw.ether.render.variable.base;
 
 import java.util.function.Supplier;
 
-import ch.fhnw.ether.render.gl.GLObject;
-import ch.fhnw.ether.render.gl.GLObject.Type;
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL3;
+
 import ch.fhnw.ether.render.gl.Program;
 import ch.fhnw.ether.scene.attribute.ITypedAttribute;
 import ch.fhnw.ether.scene.mesh.material.Texture;
 
-import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GL3;
-
 public class SamplerUniform extends AbstractUniform<Texture> {
 	private final int unit;
 	private final int target;
-
-	private Texture texture;
+	private Texture   texture;
 	
-	private GLObject tex;
-
 	public SamplerUniform(ITypedAttribute<Texture> attribute, String shaderName, int unit, int target) {
 		this(attribute.id(), shaderName, unit, target, null);
 	}
@@ -75,40 +70,20 @@ public class SamplerUniform extends AbstractUniform<Texture> {
 	public final void enable(GL3 gl, Program program) {
 		if (texture == null)
 			return;
-		load(gl);
-		if (tex == null)
-			return;
-
+		
 		gl.glActiveTexture(GL.GL_TEXTURE0 + unit);
-		gl.glBindTexture(target, tex.id());
+		gl.glBindTexture(target, texture.getGlObject().getId());
 		program.setUniformSampler(gl, getShaderIndex(gl, program), unit);
 		gl.glActiveTexture(GL.GL_TEXTURE0);
 	}
 
 	@Override
 	public final void disable(GL3 gl, Program program) {
-		if (texture == null || tex == null)
+		if (texture == null)
 			return;
 
 		gl.glActiveTexture(GL.GL_TEXTURE0 + unit);
 		gl.glBindTexture(target, 0);
 		gl.glActiveTexture(GL.GL_TEXTURE0);
-	}
-
-	private void load(GL3 gl) {
-		if (texture == null)
-			return;
-
-		if (texture.needsUpdate()) {
-			if (tex == null) {
-				tex = new GLObject(gl, Type.TEXTURE);
-				gl.glBindTexture(target, tex.id());
-				gl.glTexParameteri(target, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
-				gl.glTexParameteri(target, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR_MIPMAP_LINEAR);
-				gl.glTexParameterf(target, GL.GL_TEXTURE_WRAP_S, GL.GL_REPEAT);
-				gl.glTexParameterf(target, GL.GL_TEXTURE_WRAP_T, GL.GL_REPEAT);
-			}
-			texture.load(gl, target, tex.id());
-		}
 	}
 }

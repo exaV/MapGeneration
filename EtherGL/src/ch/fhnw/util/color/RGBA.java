@@ -29,6 +29,7 @@
 
 package ch.fhnw.util.color;
 
+import ch.fhnw.util.HashUtilities;
 import ch.fhnw.util.math.IVec4;
 import ch.fhnw.util.math.Vec4;
 
@@ -140,6 +141,24 @@ public final class RGBA implements IColor, IVec4 {
 	@Override
 	public float[] toArray() {
 		return new float[] { r, g, b, a };
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+
+		if (obj instanceof RGBA) {
+			final RGBA v = (RGBA) obj;
+			return r == v.r && g == v.g && b == v.b && a == v.a;
+		}
+		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		return HashUtilities.hash(r, g, b, a);
 	}
 
 	@Override

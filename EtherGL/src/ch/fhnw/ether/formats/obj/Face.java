@@ -31,7 +31,7 @@ package ch.fhnw.ether.formats.obj;
 
 import java.io.PrintWriter;
 
-public class Face {
+final class Face {
 	final int[] vIndices;
 	final int[] tIndices;
 	final int[] nIndices;

@@ -30,10 +30,8 @@
 package ch.fhnw.ether.scene.mesh;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Set;
 
 import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
@@ -41,17 +39,18 @@ import ch.fhnw.ether.scene.mesh.geometry.IGeometry.IGeometryAttribute;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.util.UpdateRequest;
+import ch.fhnw.util.math.Mat3;
 import ch.fhnw.util.math.Mat4;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.BoundingBox;
 
 public final class DefaultMesh implements IMesh {
 	private final Queue queue;
-	private final Set<Flag> flags;
+	private final EnumSet<Flag> flags;
 	private final IMaterial material;
 	private final IGeometry geometry;
-	private volatile Vec3 position = Vec3.ZERO;
-	private volatile Mat4 transform = Mat4.ID;
+	private Vec3 position = Vec3.ZERO;
+	private Mat4 transform = Mat4.ID;
 	private BoundingBox bb;
 
 	private String name = "unnamed_mesh";
@@ -90,7 +89,7 @@ public final class DefaultMesh implements IMesh {
 		this.material = material;
 		this.geometry = geometry;
 		this.queue = queue;
-		this.flags = Collections.unmodifiableSet(flags);
+		this.flags = flags;
 		checkAttributeConsistency(material, geometry);
 	}
 
@@ -100,27 +99,7 @@ public final class DefaultMesh implements IMesh {
 	public BoundingBox getBounds() {
 		if (bb == null) {
 			bb = new BoundingBox();
-			float[] in = new float[3];
-			float[] out = new float[3];
-			getGeometry().inspect(0, (attribute, data) -> {
-				if (transform != Mat4.ID) {
-					for (int i = 0; i < data.length; i += 3) {
-						in[0] = data[i + 0];
-						in[1] = data[i + 1];
-						in[2] = data[i + 2];
-						transform.transform(in, out);
-						out[0] += position.x;
-						out[1] += position.y;
-						out[2] += position.z;
-						bb.add(out);
-					}
-
-				} else {
-					for (int i = 0; i < data.length; i += 3) {
-						bb.add(data[i + 0] + position.x, data[i + 1] + position.y, data[i + 2] + position.z);
-					}
-				}
-			});
+			bb.add(getTransformedPositionData());
 		}
 		return bb;
 	}
@@ -155,10 +134,10 @@ public final class DefaultMesh implements IMesh {
 	}
 
 	@Override
-	public Set<Flag> getFlags() {
+	public EnumSet<Flag> getFlags() {
 		return flags;
 	}
-	
+
 	@Override
 	public boolean hasFlag(Flag flag) {
 		return flags.contains(flag);
@@ -187,12 +166,31 @@ public final class DefaultMesh implements IMesh {
 			updateRequest();
 		}
 	}
-
+	
 	@Override
-	public String toString() {
-		return name;
+	public float[] getTransformedPositionData() {
+		Mat4 tp = Mat4.multiply(Mat4.translate(position), transform);
+		return tp.transform(geometry.getData()[0]);
 	}
 	
+	@Override
+	public float[][] getTransformedGeometryData() {
+		float[][] src = geometry.getData();
+		float[][] dst = new float[src.length][];
+		IGeometryAttribute[] attrs = geometry.getAttributes();
+		Mat4 tp = Mat4.multiply(Mat4.translate(position), transform);
+		dst[0] = tp.transform(src[0]);
+		for (int i = 1; i < src.length; ++i) {
+			if (attrs[i].equals(IGeometry.NORMAL_ARRAY)) {
+				Mat3 tn = new Mat3(tp).inverse().transpose();
+				dst[i] = tn.transform(src[i]);
+			} else {
+				dst[i] = Arrays.copyOf(src[i], src[i].length);
+			}
+		}
+		return dst;
+	}
+
 	@Override
 	public UpdateRequest getUpdater() {
 		return update;
@@ -200,6 +198,22 @@ public final class DefaultMesh implements IMesh {
 
 	private void updateRequest() {
 		update.request();
+	}
+
+	// we purposely leave equals and hashcode at default (identity)
+	@Override
+	public boolean equals(Object obj) {
+		return super.equals(obj);
+	}
+
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+
+	@Override
+	public String toString() {
+		return name;
 	}
 
 	private static void checkAttributeConsistency(IMaterial material, IGeometry geometry) {
@@ -210,9 +224,10 @@ public final class DefaultMesh implements IMesh {
 			throw new IllegalArgumentException("primitive types of material and geometry do not match: " + m + " " + g);
 
 		// geometry must provide all materials required by material
-		List<IGeometryAttribute> ga = Arrays.asList(geometry.getAttributes());
-		List<IAttribute> ma = material.getRequiredAttributes();
-		if (!ga.containsAll(ma))
-			throw new IllegalArgumentException("primitive types of material and geometry do not match: " + m + " " + g);
+		List<IGeometryAttribute> geometryAttributes = Arrays.asList(geometry.getAttributes());
+		for (IAttribute attr : material.getGeometryAttributes()) {
+			if (!geometryAttributes.contains(attr))
+				throw new IllegalArgumentException("geometry does not provide required attribute: " + attr);				
+		}
 	}
 }

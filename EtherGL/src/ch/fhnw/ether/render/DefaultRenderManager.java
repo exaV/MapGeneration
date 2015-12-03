@@ -36,11 +36,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.jogamp.opengl.GL3;
+
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.render.IRenderer.IRenderState;
 import ch.fhnw.ether.render.IRenderer.IRenderTargetState;
 import ch.fhnw.ether.render.IRenderer.IRenderUpdate;
-import ch.fhnw.ether.render.Renderable.RenderUpdate;
 import ch.fhnw.ether.render.variable.builtin.LightUniformBlock;
 import ch.fhnw.ether.scene.camera.Camera;
 import ch.fhnw.ether.scene.camera.ICamera;
@@ -72,6 +73,32 @@ public class DefaultRenderManager implements IRenderManager {
 	private static final class SceneMeshState {
 		Renderable renderable;
 	}
+	
+	private static final class RenderUpdate implements IRenderUpdate {
+		public final Renderable renderable;
+		public final Object[] materialData;
+		public final float[][] geometryData;
+
+		public RenderUpdate(Renderable renderable, IMesh mesh, boolean materialChanged, boolean geometryChanged) {
+			this.renderable = renderable;
+			if (materialChanged)
+				materialData = mesh.getMaterial().getData();	
+			else
+				materialData = null;
+
+			if (geometryChanged)
+				geometryData = mesh.getTransformedGeometryData();
+			else
+				geometryData = null;
+		}
+		
+		@Override
+		public void update(GL3 gl) {
+			renderable.update(gl, materialData, geometryData);
+		}
+	}
+
+	
 
 	private final class SceneState {
 		final Map<IView, SceneViewState> views = new IdentityHashMap<>();
@@ -79,6 +106,8 @@ public class DefaultRenderManager implements IRenderManager {
 		final Set<IMaterial> materials = Collections.newSetFromMap(new IdentityHashMap<>());
 		final Set<IGeometry> geometries = Collections.newSetFromMap(new IdentityHashMap<>());
 		final Map<IMesh, SceneMeshState> meshes = new IdentityHashMap<>();
+		
+		List<Renderable> renderables = new ArrayList<>();
 
 		boolean rebuildMeshes = false;
 
@@ -159,16 +188,15 @@ public class DefaultRenderManager implements IRenderManager {
 		IRenderState create(IRenderer renderer) {
 
 			// 1. add meshes and mesh updates to render state
-			final List<Renderable> renderables = new ArrayList<>();
 			final List<IRenderUpdate> updates = new ArrayList<>();
 			if (rebuildMeshes) {
+				renderables = new ArrayList<>();
 				materials.clear();
 				geometries.clear();
 				meshes.forEach((mesh, state) -> {
 					materials.add(mesh.getMaterial());
 					geometries.add(mesh.getGeometry());
 				});
-				rebuildMeshes = false;
 			}
 			meshes.forEach((mesh, state) -> {
 				IMaterial material = mesh.getMaterial();
@@ -190,7 +218,8 @@ public class DefaultRenderManager implements IRenderManager {
 				if (materialChanged || geometryChanged) {
 					updates.add(new RenderUpdate(state.renderable, mesh, materialChanged, geometryChanged));
 				}
-				renderables.add(state.renderable);
+				if (rebuildMeshes)
+					renderables.add(state.renderable);
 			});
 			// second loop required to clear view flags
 			materials.forEach(material -> material.getUpdater().clear());
@@ -205,6 +234,7 @@ public class DefaultRenderManager implements IRenderManager {
 			// currently updates are not checked, we simply update everything
 			final List<ILight> renderLights = Collections.unmodifiableList(new ArrayList<>(lights));
 
+			
 			// 3. set view matrices for each updated camera, add to render state
 			final List<IRenderTargetState> targets = new ArrayList<>();
 			views.forEach((view, svs) -> {
@@ -241,6 +271,7 @@ public class DefaultRenderManager implements IRenderManager {
 
 
 			// 4. hey, we're done!
+			rebuildMeshes = false;
 			return new IRenderState() {
 				@Override
 				public List<IRenderUpdate> getRenderUpdates() {

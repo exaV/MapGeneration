@@ -34,14 +34,13 @@ import ch.fhnw.ether.audio.IAudioRenderTarget;
 import ch.fhnw.ether.media.AbstractRenderCommand;
 import ch.fhnw.ether.media.Parameter;
 import ch.fhnw.ether.media.RenderCommandException;
-import ch.fhnw.ether.media.Stateless;
 
 /**
  * This is an empty template for an audio command without state. 
  * @author sschubiger
  *
  */
-public class TemplateStateless extends AbstractRenderCommand<IAudioRenderTarget,Stateless<IAudioRenderTarget>> {
+public class TemplateStateless extends AbstractRenderCommand<IAudioRenderTarget> {
 	/* Expose a runtime parameter */
 	private static final Parameter PARAM = new Parameter("p", "Some Param", 0, 1, 0);
 
@@ -52,9 +51,9 @@ public class TemplateStateless extends AbstractRenderCommand<IAudioRenderTarget,
 	
 	@SuppressWarnings("unused")
 	@Override
-	protected void run(Stateless<IAudioRenderTarget> state) throws RenderCommandException {
+	protected void run(final IAudioRenderTarget target) throws RenderCommandException {
 		final float      param     = getVal(PARAM);                // Get the param value
-		final AudioFrame frame     = state.getTarget().getFrame(); // Get audio frame to process
+		final AudioFrame frame     = target.getFrame(); // Get audio frame to process
 		final float[]    samples   = frame.samples;                // Get the samples in the frame
 		final int        nChannels = frame.nChannels;              // Get the number of channels (1=Mono, 2=Stereo, ...)
 		for(int i = 0; i < samples.length; i += nChannels)

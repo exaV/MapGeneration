@@ -87,7 +87,7 @@ public final class FloatUniformBuffer {
 			consumer.accept(i, buffer);
 		}
 		buffer.rewind();
-		gl.glBindBuffer(GL3.GL_UNIFORM_BUFFER, ubo.id());
+		gl.glBindBuffer(GL3.GL_UNIFORM_BUFFER, ubo.getId());
 		gl.glBufferData(GL3.GL_UNIFORM_BUFFER, size(stride) * 4, buffer, GL3.GL_STREAM_DRAW);
 		gl.glBindBuffer(GL3.GL_UNIFORM_BUFFER, 0);
 	}
@@ -106,17 +106,17 @@ public final class FloatUniformBuffer {
 		buffer.rewind();
 		consumer.accept(buffer);
 		buffer.rewind();
-		gl.glBindBuffer(GL3.GL_UNIFORM_BUFFER, ubo.id());
+		gl.glBindBuffer(GL3.GL_UNIFORM_BUFFER, ubo.getId());
 		gl.glBufferSubData(GL3.GL_UNIFORM_BUFFER, blockIndex * stride * 4, blockSize * 4, buffer);
 		gl.glBindBuffer(GL3.GL_UNIFORM_BUFFER, 0);
 	}
 
 	public void bind(GL3 gl) {
-		gl.glBindBufferBase(GL3.GL_UNIFORM_BUFFER, bindingPoint, ubo.id());
+		gl.glBindBufferBase(GL3.GL_UNIFORM_BUFFER, bindingPoint, ubo.getId());
 	}
 
 	public void bind(GL3 gl, int blockIndex) {
-		gl.glBindBufferRange(GL3.GL_UNIFORM_BUFFER, bindingPoint, ubo.id(), blockIndex * stride(gl) * 4, blockSize * 4);
+		gl.glBindBufferRange(GL3.GL_UNIFORM_BUFFER, bindingPoint, ubo.getId(), blockIndex * stride(gl) * 4, blockSize * 4);
 	}
 
 	public int getBindingPoint() {

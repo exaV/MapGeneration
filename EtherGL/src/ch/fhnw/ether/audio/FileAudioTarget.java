@@ -10,19 +10,18 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 
-import ch.fhnw.ether.media.AbstractMediaTarget;
 import ch.fhnw.ether.media.RenderCommandException;
 import ch.fhnw.util.FloatList;
 
-public class FileAudioTarget extends AbstractMediaTarget<AudioFrame,IAudioRenderTarget> implements IAudioRenderTarget {
+public class FileAudioTarget extends AbstractAudioTarget {
 	private final int        numChannels;
 	private final float      sRate;
 	private double           sTime;
 	private final File       file;
 	private final FloatList  buffer = new FloatList();
-
+	
 	public FileAudioTarget(File file, int numChannels, float sampleRate) {
-		super(Thread.NORM_PRIORITY);
+		super(Thread.NORM_PRIORITY, false);
 		this.numChannels = numChannels;
 		this.sRate       = sampleRate;
 		this.file        = file;
@@ -36,9 +35,10 @@ public class FileAudioTarget extends AbstractMediaTarget<AudioFrame,IAudioRender
 
 	@Override
 	public double getTime() {
+		if(timebase != null) return timebase.getTime();
 		return sTime / (getSampleRate() * getNumChannels());
 	}
-
+	
 	@Override
 	public int getNumChannels() {
 		return numChannels;

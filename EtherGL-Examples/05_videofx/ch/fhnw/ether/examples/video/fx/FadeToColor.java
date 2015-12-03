@@ -31,11 +31,11 @@ package ch.fhnw.ether.examples.video.fx;
 
 import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.media.Parameter;
-import ch.fhnw.ether.media.Stateless;
 import ch.fhnw.ether.video.IVideoRenderTarget;
 import ch.fhnw.ether.video.fx.AbstractVideoFX;
+import ch.fhnw.ether.video.fx.IVideoFrameFX;
 
-public class FadeToColor extends AbstractVideoFX<Stateless<IVideoRenderTarget>> {
+public class FadeToColor extends AbstractVideoFX implements IVideoFrameFX {
 	private static final Parameter FADE  = new Parameter("fade",  "Fade",  0, 1, 1);
 	private static final Parameter RED   = new Parameter("red",   "Red",   0, 1, 0);
 	private static final Parameter GREEN = new Parameter("green", "Green", 0, 1, 0);
@@ -46,7 +46,7 @@ public class FadeToColor extends AbstractVideoFX<Stateless<IVideoRenderTarget>> 
 	}
 
 	@Override
-	protected void processFrame(double playOutTime, Stateless<IVideoRenderTarget> state, Frame frame) {
+	public void processFrame(final double playOutTime, final IVideoRenderTarget target, final Frame frame) {
 		final float w  = getVal(FADE);
 		final float rs = getVal(RED);
 		final float gs = getVal(GREEN);
@@ -55,7 +55,7 @@ public class FadeToColor extends AbstractVideoFX<Stateless<IVideoRenderTarget>> 
 		if(frame.pixelSize == 4) {
 			frame.processLines((pixels, j)->{
 				int idx = pixels.position();
-				for(int i = 0; i < frame.dimI; i++) {
+				for(int i = 0; i < frame.width; i++) {
 					pixels.put(toByte(mix(toFloat(pixels.get(idx++)), rs, w)));
 					pixels.put(toByte(mix(toFloat(pixels.get(idx++)), gs, w)));
 					pixels.put(toByte(mix(toFloat(pixels.get(idx++)), bs, w)));
@@ -66,7 +66,7 @@ public class FadeToColor extends AbstractVideoFX<Stateless<IVideoRenderTarget>> 
 		} else {
 			frame.processLines((pixels, j)->{
 				int idx = pixels.position();
-				for(int i = 0; i < frame.dimI; i++) {
+				for(int i = 0; i < frame.width; i++) {
 					pixels.put(toByte(mix(toFloat(pixels.get(idx++)), rs, w)));
 					pixels.put(toByte(mix(toFloat(pixels.get(idx++)), gs, w)));
 					pixels.put(toByte(mix(toFloat(pixels.get(idx++)), bs, w)));

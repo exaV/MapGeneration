@@ -34,65 +34,77 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import javax.swing.SwingUtilities;
-
+import ch.fhnw.ether.audio.IAudioRenderTarget;
+import ch.fhnw.ether.audio.IAudioSource;
+import ch.fhnw.ether.audio.JavaSoundTarget;
+import ch.fhnw.ether.audio.fx.AudioGain;
 import ch.fhnw.ether.controller.DefaultController;
 import ch.fhnw.ether.controller.IController;
-import ch.fhnw.ether.image.RGB8Frame;
+import ch.fhnw.ether.media.AbstractFrameSource;
 import ch.fhnw.ether.media.RenderProgram;
 import ch.fhnw.ether.scene.DefaultScene;
 import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.IMesh.Queue;
-import ch.fhnw.ether.scene.mesh.MeshLibrary;
+import ch.fhnw.ether.scene.mesh.MeshUtilities;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.ColorMapMaterial;
-import ch.fhnw.ether.scene.mesh.material.Texture;
-import ch.fhnw.ether.video.AbstractVideoSource;
+import ch.fhnw.ether.ui.ParameterWindow;
 import ch.fhnw.ether.video.CameraInfo;
 import ch.fhnw.ether.video.CameraSource;
+import ch.fhnw.ether.video.ColorMapMaterialTarget;
+import ch.fhnw.ether.video.IVideoRenderTarget;
+import ch.fhnw.ether.video.IVideoSource;
 import ch.fhnw.ether.video.URLVideoSource;
 import ch.fhnw.ether.view.IView.Config;
 import ch.fhnw.ether.view.IView.ViewType;
 import ch.fhnw.ether.view.gl.DefaultView;
-import ch.fhnw.util.math.Transform;
+import ch.fhnw.util.Log;
+import ch.fhnw.util.math.Mat4;
 
-public class SimplePlayerGL implements Runnable {
-	private static final float  SCALE  = 3.5f;
+public class SimplePlayerGL {
+	private static final float  SCALE  = 2.2f;
+	private static final Log    log    = Log.create();
 
-	private final AbstractVideoSource<?> source;
-	private final Texture                texture = new Texture(new RGB8Frame(16, 16));
-
-	public SimplePlayerGL(AbstractVideoSource<?> source) {
-		this.source = source;
-	}
-
-	@Override
-	public void run() {
-		try {
-			IController controller = new DefaultController();
-
+	public SimplePlayerGL(AbstractFrameSource source) {
+		final IController            controller = new DefaultController(source.getFrameRate());
+		final ColorMapMaterialTarget videoOut   = new ColorMapMaterialTarget(new ColorMapMaterial(), controller, true); 
+		controller.run(time -> {
 			new DefaultView(controller, 0, 10, 1024, 512, new Config(ViewType.INTERACTIVE_VIEW, 2), "SimplePlayerGL");
 
 			IScene scene = new DefaultScene(controller);
 			controller.setScene(scene);
 
-			DefaultGeometry g = DefaultGeometry.createVM(Primitive.TRIANGLES, MeshLibrary.DEFAULT_QUAD_TRIANGLES, MeshLibrary.DEFAULT_QUAD_TEX_COORDS); 
-			IMesh mesh = new DefaultMesh(new ColorMapMaterial(texture), g, Queue.TRANSPARENCY);
-			mesh.setTransform(Transform.trs(0, 0, 0, 90, 0, 0, SCALE * source.getWidth() / source.getHeight(), SCALE, SCALE));			
+			DefaultGeometry g = DefaultGeometry.createVM(Primitive.TRIANGLES, MeshUtilities.DEFAULT_QUAD_TRIANGLES, MeshUtilities.DEFAULT_QUAD_TEX_COORDS); 
+			IMesh mesh = new DefaultMesh(videoOut.getMaterial(), g, Queue.TRANSPARENCY);
+			mesh.setTransform(Mat4.trs(0, 0, 0, 90, 0, 0, SCALE * ((IVideoSource)source).getWidth() / ((IVideoSource)source).getHeight(), SCALE, SCALE));			
 			scene.add3DObject(mesh);
 
-			texture.useProgram(new RenderProgram<>(source));
-			texture.start();
-		} catch(Throwable t) {
-			t.printStackTrace();
-		}
+			try {
+				RenderProgram<IVideoRenderTarget> video = new RenderProgram<>((IVideoSource)source, new RGBGain(), new Convolution()); 
+				new ParameterWindow(video);
+				videoOut.useProgram(video);
+
+				if(source instanceof IAudioSource) {
+					RenderProgram<IAudioRenderTarget> audio = new RenderProgram<>((IAudioSource)source, new AudioGain()); 
+					JavaSoundTarget audioOut = new JavaSoundTarget(((IAudioSource)source), 2 / source.getFrameRate());
+					audioOut.useProgram(audio);
+					videoOut.setTimebase(audioOut);
+					controller.getScheduler().setTimebase(audioOut);
+					audioOut.start();
+				}
+				
+				videoOut.start();
+			} catch(Throwable t) {
+				log.severe(t);
+			}
+		});
 	}
 
 	public static void main(String[] args) throws IOException {
-		AbstractVideoSource<?> source;
+		AbstractFrameSource source;
 		if(args.length == 0)
 			source =  CameraSource.create(CameraInfo.getInfos()[0]);
 		else {
@@ -102,6 +114,6 @@ public class SimplePlayerGL implements Runnable {
 				source = new URLVideoSource(new File(args[0]).toURI().toURL());
 			}
 		}
-		SwingUtilities.invokeLater(new SimplePlayerGL(source));
+		new SimplePlayerGL(source);
 	}
 }

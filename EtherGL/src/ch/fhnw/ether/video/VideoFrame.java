@@ -29,15 +29,70 @@
 
 package ch.fhnw.ether.video;
 
+import java.util.concurrent.BlockingQueue;
+
 import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.media.AbstractFrame;
+import ch.fhnw.ether.scene.mesh.material.Texture;
 
 public class VideoFrame extends AbstractFrame {
-	public final Frame frame;
-	
-	public VideoFrame(double playOutTime, Frame frame) {
-		super(playOutTime);
-		this.frame = frame;
+	private final FrameAccess            framea;
+	private       Frame                  frame;
+	private       Texture                texture;
+	private       boolean                frameRead;
+	private final BlockingQueue<float[]> audioData;
+
+	public VideoFrame(Frame frame) {
+		this(new FrameAccess(frame), null);
+	}
+		
+	public VideoFrame(FrameAccess framea, BlockingQueue<float[]> audioData) {
+		super(framea.getPlayOutTimeInSec());
+		this.framea    = framea;
+		this.audioData = audioData;
 	}
 
+	public synchronized Frame getFrame() {
+		if(frame == null) {
+			if(texture != null) {
+				frame = Frame.create(texture);
+			} else {
+				frameRead = true;
+				frame = framea.getFrame(audioData);
+			}
+		}
+		return frame;
+	}
+
+	public synchronized void skip() {
+		if(!(frameRead)) {
+			framea.skipFrame();
+			frameRead = true;
+		}
+	}
+
+	@Override
+	public synchronized void dispose() {
+		skip();
+	}
+
+	public synchronized Texture getTexture() {
+		if(texture == null) {
+			if(frame != null) {
+				setTexture(frame.getTexture());
+			} else {
+				frameRead = true;
+				setTexture(framea.getTexture(audioData));
+			}
+		}
+		return texture;
+	}
+
+	public void setTexture(Texture texture) {
+		this.texture = texture;
+	}
+
+	public boolean isKeyframe() {
+		return framea.isKeyframe();
+	}
 }

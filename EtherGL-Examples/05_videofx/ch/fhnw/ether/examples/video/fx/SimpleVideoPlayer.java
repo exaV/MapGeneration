@@ -37,32 +37,38 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.JComboBox;
 
+import ch.fhnw.ether.audio.IAudioRenderTarget;
+import ch.fhnw.ether.audio.IAudioSource;
+import ch.fhnw.ether.audio.JavaSoundTarget;
+import ch.fhnw.ether.audio.fx.AudioGain;
 import ch.fhnw.ether.image.RGBA8Frame;
+import ch.fhnw.ether.media.IScheduler;
 import ch.fhnw.ether.media.RenderCommandException;
 import ch.fhnw.ether.media.RenderProgram;
 import ch.fhnw.ether.ui.ParameterWindow;
 import ch.fhnw.ether.video.AWTFrameTarget;
 import ch.fhnw.ether.video.IVideoRenderTarget;
+import ch.fhnw.ether.video.IVideoSource;
 import ch.fhnw.ether.video.URLVideoSource;
 import ch.fhnw.ether.video.fx.AbstractVideoFX;
 import ch.fhnw.util.CollectionUtilities;
 
 public class SimpleVideoPlayer {
-	public static void main(String[] args) throws MalformedURLException, IOException, InterruptedException, RenderCommandException {
+	public static void main(String[] args) throws MalformedURLException, IOException, RenderCommandException {
 		URLVideoSource track    = new URLVideoSource(new File(args[0]).toURI().toURL());
-		URLVideoSource mask     = args.length > 1 ? new URLVideoSource(new File(args[1]).toURI().toURL()) : null;
+		IVideoSource   mask     = args.length > 1 ? new URLVideoSource(new File(args[1]).toURI().toURL()) : null;
 		AWTFrameTarget videoOut = new AWTFrameTarget();
-	
-		List<AbstractVideoFX<?>> fxs = CollectionUtilities.asList(
+
+		List<AbstractVideoFX> fxs = CollectionUtilities.asList(
+				new RGBGain(),
 				new AnalogTVFX(),
 				new BandPass(),
 				new Convolution(),
 				new FadeToColor(),
 				new FakeThermoCam(),
 				new MotionBlur(),
-				new Posterize(),
-				new RGBGain());
-		
+				new Posterize());
+
 		AtomicInteger current = new AtomicInteger(0);
 
 		if(mask != null) {
@@ -71,23 +77,29 @@ public class SimpleVideoPlayer {
 			fxs.add(new ChromaKey(maskOut));
 			maskOut.start();
 		}
-		
-		final RenderProgram<IVideoRenderTarget> program = new RenderProgram<>(track, fxs.get(current.get()));
 
-		final JComboBox<AbstractVideoFX<?>> fxsUI = new JComboBox<>();
-		for(AbstractVideoFX<?> fx : fxs)
+		final RenderProgram<IVideoRenderTarget> video = new RenderProgram<>((IVideoSource)track, fxs.get(current.get()));
+		final RenderProgram<IAudioRenderTarget> audio = new RenderProgram<>((IAudioSource)track, new AudioGain());
+
+		final JComboBox<AbstractVideoFX> fxsUI = new JComboBox<>();
+		for(AbstractVideoFX fx : fxs)
 			fxsUI.addItem(fx);
 		fxsUI.addActionListener(e->{
 			int newIdx = fxsUI.getSelectedIndex();
-			program.replace(fxs.get(current.get()), fxs.get(newIdx));
+			video.replace(fxs.get(current.get()), fxs.get(newIdx));
 			current.set(newIdx);
 		});
-		new ParameterWindow(fxsUI, program);
+		new ParameterWindow(fxsUI, video);
 
-		videoOut.useProgram(program);
+		videoOut.useProgram(video);
+		
+		JavaSoundTarget audioOut = new JavaSoundTarget(track, 2 /track.getFrameRate());
+		audioOut.useProgram(audio);
+		videoOut.setTimebase(audioOut);
+		audioOut.start();
 		videoOut.start();
-		Thread.sleep(5 * 60 * 1000);
-		videoOut.stop();
+
+		videoOut.sleepUntil(IScheduler.NOT_RENDERING);
 	}
 
 }

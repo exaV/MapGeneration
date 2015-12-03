@@ -39,10 +39,10 @@ import java.util.RandomAccess;
 
 public abstract class SimpleArrayList<AT, WT> implements RandomAccess, Cloneable, Iterable<WT> {
 	/**
-	 * The array buffer into which the elements of the ArrayList are stored.
-	 * The capacity of the ArrayList is the length of this array buffer.
+	 * The array buffer into which the elements of the ArrayList are stored. The
+	 * capacity of the ArrayList is the length of this array buffer.
 	 */
-	protected  AT elementData;
+	protected AT elementData;
 
 	/**
 	 * The size of the ArrayList (the number of elements it contains).
@@ -53,9 +53,10 @@ public abstract class SimpleArrayList<AT, WT> implements RandomAccess, Cloneable
 	/**
 	 * Constructs an empty list with the specified initial capacity.
 	 *
-	 * @param   initialCapacity   the initial capacity of the list
-	 * @exception IllegalArgumentException if the specified initial capacity
-	 *            is negative
+	 * @param initialCapacity
+	 *            the initial capacity of the list
+	 * @throws IllegalArgumentException
+	 *             if the specified initial capacity is negative
 	 */
 	public SimpleArrayList(int initialCapacity) {
 		if (initialCapacity < 0)
@@ -75,34 +76,37 @@ public abstract class SimpleArrayList<AT, WT> implements RandomAccess, Cloneable
 	/**
 	 * Constructs a non-initialized version for sub-class initialization.
 	 */
-	public SimpleArrayList(boolean unused) {}
+	public SimpleArrayList(boolean unused) {
+	}
 
 	/**
-	 * Constructs a list containing the elements of the specified
-	 * collection, in the order they are returned by the collection's
-	 * iterator.
+	 * Constructs a list containing the elements of the specified collection, in
+	 * the order they are returned by the collection's iterator.
 	 *
-	 * @param c the collection whose elements are to be placed into this list
-	 * @throws NullPointerException if the specified collection is null
+	 * @param c
+	 *            the collection whose elements are to be placed into this list
+	 * @throws NullPointerException
+	 *             if the specified collection is null
 	 */
 	@SuppressWarnings("unchecked")
 	public SimpleArrayList(Collection<? extends WT> c) {
 		elementData = copyOf((WT[]) c.toArray(), c.size());
-		size        = c.size();
+		size = c.size();
 	}
 
 	public SimpleArrayList(SimpleArrayList<AT, WT> al) {
 		elementData = copyOf(al.elementData, al.size);
-		size        = al.size();
+		size = al.size();
 	}
 
-	protected abstract AT   copyOf(WT[] original, int newLength);
-	protected abstract AT   copyOf(AT   original, int newLength);
+	protected abstract AT copyOf(WT[] original, int newLength);
+
+	protected abstract AT copyOf(AT original, int newLength);
 
 	/**
-	 * Trims the capacity of this <tt>ArrayList</tt> instance to be the
-	 * list's current size.  An application can use this operation to minimize
-	 * the storage of an <tt>ArrayList</tt> instance.
+	 * Trims the capacity of this <tt>ArrayList</tt> instance to be the list's
+	 * current size. An application can use this operation to minimize the
+	 * storage of an <tt>ArrayList</tt> instance.
 	 */
 	public final void trimToSize() {
 		modCount++;
@@ -112,17 +116,18 @@ public abstract class SimpleArrayList<AT, WT> implements RandomAccess, Cloneable
 	}
 
 	/**
-	 * Increases the capacity of this <tt>ArrayList</tt> instance, if
-	 * necessary, to ensure that it can hold at least the number of elements
-	 * specified by the minimum capacity argument.
+	 * Increases the capacity of this <tt>ArrayList</tt> instance, if necessary,
+	 * to ensure that it can hold at least the number of elements specified by
+	 * the minimum capacity argument.
 	 *
-	 * @param   minCapacity   the desired minimum capacity
+	 * @param minCapacity
+	 *            the desired minimum capacity
 	 */
 	public void ensureCapacity(int minCapacity) {
 		modCount++;
 		int oldCapacity = Array.getLength(elementData);
 		if (minCapacity > oldCapacity) {
-			int newCapacity = (oldCapacity * 3)/2 + 1;
+			int newCapacity = (oldCapacity * 3) / 2 + 1;
 			if (newCapacity < minCapacity)
 				newCapacity = minCapacity;
 			grow(newCapacity);
@@ -133,8 +138,10 @@ public abstract class SimpleArrayList<AT, WT> implements RandomAccess, Cloneable
 		elementData = copyOf(elementData, newSize);
 	}
 
-	protected abstract int  getComponentSize();
-	protected abstract void load (DataInputStream in) throws IOException;
+	protected abstract int getComponentSize();
+
+	protected abstract void load(DataInputStream in) throws IOException;
+
 	protected abstract void store(DataOutputStream out) throws IOException;
 
 	public void ensureSize(int minCapacity) {
@@ -161,8 +168,8 @@ public abstract class SimpleArrayList<AT, WT> implements RandomAccess, Cloneable
 	}
 
 	/**
-	 * Returns a shallow copy of this <tt>ArrayList</tt> instance.  (The
-	 * elements themselves are not copied.)
+	 * Returns a shallow copy of this <tt>ArrayList</tt> instance. (The elements
+	 * themselves are not copied.)
 	 *
 	 * @return a clone of this <tt>ArrayList</tt> instance
 	 */
@@ -181,12 +188,14 @@ public abstract class SimpleArrayList<AT, WT> implements RandomAccess, Cloneable
 	}
 
 	/**
-	 * Public method to remove an element. 
-	 * @param i Index of element to remove.
+	 * Public method to remove an element.
+	 * 
+	 * @param i
+	 *            Index of element to remove.
 	 */
 	public final void remove(int i) {
-		if ( i < 0 || i >= size )
-			throw new Error("Invalid range ("+i+"/"+size+"); cannot remove");
+		if (i < 0 || i >= size)
+			throw new Error("Invalid range (" + i + "/" + size + "); cannot remove");
 		fastRemove(i);
 		--size;
 	}
@@ -198,19 +207,19 @@ public abstract class SimpleArrayList<AT, WT> implements RandomAccess, Cloneable
 	}
 
 	/*
-	 * Private remove method that skips bounds checking and does not
-	 * return the value removed.
+	 * Private remove method that skips bounds checking and does not return the
+	 * value removed.
 	 */
 	protected final void fastRemove(int index) {
 		modCount++;
 		int numMoved = size - index - 1;
 		if (numMoved > 0)
-			System.arraycopy(elementData, index+1, elementData, index, numMoved);
+			System.arraycopy(elementData, index + 1, elementData, index, numMoved);
 	}
 
 	/**
-	 * Removes all of the elements from this list.  The list will
-	 * be empty after this call returns.
+	 * Removes all of the elements from this list. The list will be empty after
+	 * this call returns.
 	 */
 	public void clear() {
 		elementData = alloc(Array.getLength(elementData));
@@ -220,21 +229,22 @@ public abstract class SimpleArrayList<AT, WT> implements RandomAccess, Cloneable
 
 	/**
 	 * Appends all of the elements in the specified collection to the end of
-	 * this list, in the order that they are returned by the
-	 * specified collection's Iterator.  The behavior of this operation is
-	 * undefined if the specified collection is modified while the operation
-	 * is in progress.  (This implies that the behavior of this call is
-	 * undefined if the specified collection is this list, and this
-	 * list is nonempty.)
+	 * this list, in the order that they are returned by the specified
+	 * collection's Iterator. The behavior of this operation is undefined if the
+	 * specified collection is modified while the operation is in progress.
+	 * (This implies that the behavior of this call is undefined if the
+	 * specified collection is this list, and this list is nonempty.)
 	 *
-	 * @param c collection containing elements to be added to this list
+	 * @param c
+	 *            collection containing elements to be added to this list
 	 * @return <tt>true</tt> if this list changed as a result of the call
-	 * @throws NullPointerException if the specified collection is null
+	 * @throws NullPointerException
+	 *             if the specified collection is null
 	 */
 	public final boolean addAll(Collection<? extends WT> c) {
 		Object[] a = c.toArray();
 		int numNew = a.length;
-		ensureCapacity(size + numNew);  // Increments modCount
+		ensureCapacity(size + numNew); // Increments modCount
 		System.arraycopy(a, 0, elementData, size, numNew);
 		size += numNew;
 		return numNew != 0;
@@ -245,7 +255,7 @@ public abstract class SimpleArrayList<AT, WT> implements RandomAccess, Cloneable
 		int numNew = src.size();
 		System.arraycopy(src.elementData, 0, elementData, size, numNew);
 		size += numNew;
-		return numNew != 0;		
+		return numNew != 0;
 	}
 
 	public boolean addAll(AT src) {
@@ -253,38 +263,39 @@ public abstract class SimpleArrayList<AT, WT> implements RandomAccess, Cloneable
 		ensureCapacity(size + numNew);
 		System.arraycopy(src, 0, elementData, size, numNew);
 		size += numNew;
-		return numNew != 0;		
+		return numNew != 0;
 	}
 
 	/**
-	 * Inserts all of the elements in the specified collection into this
-	 * list, starting at the specified position.  Shifts the element
-	 * currently at that position (if any) and any subsequent elements to
-	 * the right (increases their indices).  The new elements will appear
-	 * in the list in the order that they are returned by the
-	 * specified collection's iterator.
+	 * Inserts all of the elements in the specified collection into this list,
+	 * starting at the specified position. Shifts the element currently at that
+	 * position (if any) and any subsequent elements to the right (increases
+	 * their indices). The new elements will appear in the list in the order
+	 * that they are returned by the specified collection's iterator.
 	 *
-	 * @param index index at which to insert the first element from the
-	 *              specified collection
-	 * @param c collection containing elements to be added to this list
+	 * @param index
+	 *            index at which to insert the first element from the specified
+	 *            collection
+	 * @param c
+	 *            collection containing elements to be added to this list
 	 * @return <tt>true</tt> if this list changed as a result of the call
-	 * @throws IndexOutOfBoundsException {@inheritDoc}
-	 * @throws NullPointerException if the specified collection is null
+	 * @throws IndexOutOfBoundsException
+	 *             {@inheritDoc}
+	 * @throws NullPointerException
+	 *             if the specified collection is null
 	 */
 	@SuppressWarnings("unchecked")
 	public final boolean addAll(int index, Collection<? extends WT> c) {
 		if (index > size || index < 0)
-			throw new IndexOutOfBoundsException(
-					"Index: " + index + ", Size: " + size);
+			throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
 
 		AT a = copyOf((WT[]) c.toArray(), c.size());
 		int numNew = c.size();
-		ensureCapacity(size + numNew);  // Increments modCount
+		ensureCapacity(size + numNew); // Increments modCount
 
 		int numMoved = size - index;
 		if (numMoved > 0)
-			System.arraycopy(elementData, index, elementData, index + numNew,
-					numMoved);
+			System.arraycopy(elementData, index, elementData, index + numNew, numMoved);
 
 		System.arraycopy(a, 0, elementData, index, numNew);
 		size += numNew;
@@ -295,17 +306,19 @@ public abstract class SimpleArrayList<AT, WT> implements RandomAccess, Cloneable
 		return copyOf(elementData, size);
 	}
 
-
 	/**
-	 * Get direct access to the underlying array. Good for fast access but somewhat hacky...
-	 * @returns the reference to the underlying array. 
+	 * Get direct access to the underlying array. Good for fast access but
+	 * somewhat hacky...
+	 * 
+	 * @returns the reference to the underlying array.
 	 */
 	public final AT _getArray() {
 		return elementData;
 	}
 
 	/**
-	 * Get direct access to the underlying size. Good for fast access but somewhat hacky...
+	 * Get direct access to the underlying size. Good for fast access but
+	 * somewhat hacky...
 	 */
 	public final void _setSize(int size) {
 		this.size = size;
@@ -313,21 +326,24 @@ public abstract class SimpleArrayList<AT, WT> implements RandomAccess, Cloneable
 
 	/**
 	 * Removes from this list all of the elements whose index is between
-	 * <tt>fromIndex</tt>, inclusive, and <tt>toIndex</tt>, exclusive.
-	 * Shifts any succeeding elements to the left (reduces their index).
-	 * This call shortens the list by <tt>(toIndex - fromIndex)</tt> elements.
-	 * (If <tt>toIndex==fromIndex</tt>, this operation has no effect.)
+	 * <tt>fromIndex</tt>, inclusive, and <tt>toIndex</tt>, exclusive. Shifts
+	 * any succeeding elements to the left (reduces their index). This call
+	 * shortens the list by <tt>(toIndex - fromIndex)</tt> elements. (If
+	 * <tt>toIndex==fromIndex</tt>, this operation has no effect.)
 	 *
-	 * @param fromIndex index of first element to be removed
-	 * @param toIndex index after last element to be removed
-	 * @throws IndexOutOfBoundsException if fromIndex or toIndex out of
-	 *              range (fromIndex &lt; 0 || fromIndex &gt;= size() || toIndex
-	 *              &gt; size() || toIndex &lt; fromIndex)
+	 * @param fromIndex
+	 *            index of first element to be removed
+	 * @param toIndex
+	 *            index after last element to be removed
+	 * @throws IndexOutOfBoundsException
+	 *             if fromIndex or toIndex out of range (fromIndex &lt; 0 ||
+	 *             fromIndex &gt;= size() || toIndex &gt; size() || toIndex &lt;
+	 *             fromIndex)
 	 */
 	protected final void removeRange(int fromIndex, int toIndex) {
 		modCount++;
 		int numMoved = size - toIndex;
-		System.arraycopy(elementData, toIndex, elementData, fromIndex, numMoved);		
+		System.arraycopy(elementData, toIndex, elementData, fromIndex, numMoved);
 	}
 
 	@Override
@@ -364,5 +380,5 @@ public abstract class SimpleArrayList<AT, WT> implements RandomAccess, Cloneable
 
 	public int getSize() {
 		return size;
-	}	
+	}
 }

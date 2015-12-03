@@ -55,7 +55,7 @@ public final class FloatArrayBuffer implements IArrayBuffer {
 			vbo = new GLObject(gl, Type.BUFFER);
 		}
 
-		gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vbo.id());
+		gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vbo.getId());
 		if (data != null && data.limit() != 0) {
 			size = data.limit();
 			data.rewind();
@@ -78,7 +78,7 @@ public final class FloatArrayBuffer implements IArrayBuffer {
 	@Override
 	public void bind(GL3 gl) {
 		if (size > 0) {
-			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vbo.id());
+			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vbo.getId());
 		}
 	}
 

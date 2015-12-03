@@ -41,12 +41,13 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.Mixer;
 import javax.sound.sampled.TargetDataLine;
 
+import ch.fhnw.ether.media.AbstractFrameSource;
+import ch.fhnw.ether.media.IRenderTarget;
 import ch.fhnw.ether.media.Parameter;
 import ch.fhnw.ether.media.RenderCommandException;
-import ch.fhnw.ether.media.Stateless;
 import ch.fhnw.util.Pair;
 
-public class JavaSoundSource extends AbstractAudioSource<Stateless<IAudioRenderTarget>> implements Runnable {
+public class JavaSoundSource extends AbstractFrameSource implements Runnable, IAudioSource {
 	private static final float       S2F    = Short.MAX_VALUE;
 
 	private final float sampleRate;
@@ -92,9 +93,9 @@ public class JavaSoundSource extends AbstractAudioSource<Stateless<IAudioRenderT
 			}
 		}
 	}
-
+	
 	@Override
-	protected void run(Stateless<IAudioRenderTarget> state) throws RenderCommandException {
+	protected void run(IRenderTarget<?> target) throws RenderCommandException {
 		if(lastErr != null) throw new RenderCommandException(lastErr);
 		int pSrc = (int) getVal(SOURCE);
 		if(source != pSrc) {
@@ -116,22 +117,33 @@ public class JavaSoundSource extends AbstractAudioSource<Stateless<IAudioRenderT
 		}
 		try {
 			while(data.size() > 4) data.take();
-			state.getTarget().setFrame(createAudioFrame(samples, data.take()));
+			((IAudioRenderTarget)target).setFrame(this, createAudioFrame(samples, data.take()));
 		} catch(InterruptedException e) {
 			throw new RenderCommandException(e);
 		}
 	}	
 
 	@Override
-	public long getFrameCount() {
+	public long getLengthInFrames() {
 		return FRAMECOUNT_UNKNOWN;
 	}
 
+	@Override
+	public double getLengthInSeconds() {
+		return LENGTH_INFINITE;
+	}
+	
 	@Override
 	public float getSampleRate() {
 		return sampleRate;
 	}
 
+	@Override
+	public float getFrameRate() {
+		double result = (frameSize / getNumChannels()) * sampleRate;
+		return (float)result;
+	}
+	
 	@Override
 	public int getNumChannels() {
 		return nChannels;

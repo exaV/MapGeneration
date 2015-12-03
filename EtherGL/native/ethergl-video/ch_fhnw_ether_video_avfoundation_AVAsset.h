@@ -7,6 +7,22 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+#undef ch_fhnw_ether_video_avfoundation_AVAsset_IDX_HANDLE
+#define ch_fhnw_ether_video_avfoundation_AVAsset_IDX_HANDLE 0L
+#undef ch_fhnw_ether_video_avfoundation_AVAsset_IDX_TARGET
+#define ch_fhnw_ether_video_avfoundation_AVAsset_IDX_TARGET 1L
+#undef ch_fhnw_ether_video_avfoundation_AVAsset_IDX_NAME
+#define ch_fhnw_ether_video_avfoundation_AVAsset_IDX_NAME 2L
+#undef ch_fhnw_ether_video_avfoundation_AVAsset_IDX_WIDTH
+#define ch_fhnw_ether_video_avfoundation_AVAsset_IDX_WIDTH 3L
+#undef ch_fhnw_ether_video_avfoundation_AVAsset_IDX_HEIGHT
+#define ch_fhnw_ether_video_avfoundation_AVAsset_IDX_HEIGHT 4L
+#undef ch_fhnw_ether_video_avfoundation_AVAsset_IDX_SAMPLE
+#define ch_fhnw_ether_video_avfoundation_AVAsset_IDX_SAMPLE 5L
+#undef ch_fhnw_ether_video_avfoundation_AVAsset_IDX_TEXTURE
+#define ch_fhnw_ether_video_avfoundation_AVAsset_IDX_TEXTURE 6L
+#undef ch_fhnw_ether_video_avfoundation_AVAsset_IDX_COUNT
+#define ch_fhnw_ether_video_avfoundation_AVAsset_IDX_COUNT 7L
 /*
  * Class:     ch_fhnw_ether_video_avfoundation_AVAsset
  * Method:    nativeCreate
@@ -45,6 +61,22 @@ JNIEXPORT jdouble JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGe
  * Signature: (J)J
  */
 JNIEXPORT jlong JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGetFrameCount
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     ch_fhnw_ether_video_avfoundation_AVAsset
+ * Method:    nativeGetNumChannels
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGetNumChannels
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     ch_fhnw_ether_video_avfoundation_AVAsset
+ * Method:    nativeGetSampleRate
+ * Signature: (J)F
+ */
+JNIEXPORT jfloat JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGetSampleRate
   (JNIEnv *, jclass, jlong);
 
 /*
@@ -89,19 +121,19 @@ JNIEXPORT jbyteArray JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativ
 
 /*
  * Class:     ch_fhnw_ether_video_avfoundation_AVAsset
- * Method:    nativeLoadFrame
- * Signature: (JDI)I
+ * Method:    nativeGetNextTexture
+ * Signature: (J[J)I
  */
-JNIEXPORT jint JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeLoadFrame
-  (JNIEnv *, jclass, jlong, jdouble, jint);
+JNIEXPORT jint JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeGetNextTexture
+  (JNIEnv *, jclass, jlong, jlongArray);
 
 /*
  * Class:     ch_fhnw_ether_video_avfoundation_AVAsset
- * Method:    nativeLoadFrames
- * Signature: (JII)I
+ * Method:    nativeDisposeTexture
+ * Signature: (J[J)I
  */
-JNIEXPORT jint JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeLoadFrames
-  (JNIEnv *, jclass, jlong, jint, jint);
+JNIEXPORT jint JNICALL Java_ch_fhnw_ether_video_avfoundation_AVAsset_nativeDisposeTexture
+  (JNIEnv *, jclass, jlong, jlongArray);
 
 #ifdef __cplusplus
 }

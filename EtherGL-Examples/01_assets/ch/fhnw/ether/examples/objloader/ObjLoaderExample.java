@@ -29,12 +29,16 @@ package ch.fhnw.ether.examples.objloader;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import ch.fhnw.ether.controller.IController;
-import ch.fhnw.ether.formats.obj.OBJReader;
+import ch.fhnw.ether.formats.obj.ObjReader;
 import ch.fhnw.ether.scene.DefaultScene;
 import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.scene.light.DirectionalLight;
+import ch.fhnw.ether.scene.mesh.IMesh;
+import ch.fhnw.ether.scene.mesh.MeshUtilities;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.gl.DefaultView;
 import ch.fhnw.util.color.RGB;
@@ -47,7 +51,6 @@ public class ObjLoaderExample {
 	}
 
 	public ObjLoaderExample() {
-
 		IController controller = new ObjLoaderController();
 		controller.run(time -> {
 			new DefaultView(controller, 0, 10, 512, 512, IView.INTERACTIVE_VIEW, "Obj View");
@@ -61,7 +64,13 @@ public class ObjLoaderExample {
 			try {
 				final URL obj = ObjLoaderExample.class.getResource("fhnw.obj");
 				//final URL obj = new URL("file:///Users/radar/Desktop/aventador/aventador_red.obj");
-				new OBJReader(obj).getMeshes().forEach(mesh -> scene.add3DObject(mesh));
+				//final URL obj = new URL("file:///Users/radar/Desktop/demopolis/berlin_mitte_o2_o3/o2_small.obj");
+				final List<IMesh> meshes = new ArrayList<>();
+				new ObjReader(obj).getMeshes().forEach(mesh -> meshes.add(mesh));
+				System.out.println("number of meshes before merging: " + meshes.size());
+				final List<IMesh> merged = MeshUtilities.mergeMeshes(meshes);
+				System.out.println("number of meshes after merging: " + merged.size());
+				scene.add3DObjects(merged);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

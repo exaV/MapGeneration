@@ -31,8 +31,12 @@ package ch.fhnw.ether.audio;
 
 import java.util.BitSet;
 
+import javax.sound.sampled.AudioFormat;
+
 
 public final class AudioUtilities {
+	private static final float S2F = Short.MAX_VALUE;
+
 	public enum Window {RECTANGLE, HANN, HAMMING}
 
 	public final static double MIN_GAIN = -100.0;
@@ -237,5 +241,22 @@ public final class AudioUtilities {
 				powerSpectrumInOut[i] *= powerSpectrumInOut[i * hop];
 		}			
 		return powerSpectrumInOut;
+	}
+	
+	public static final float[] pcmBytes2float(AudioFormat fmt, byte[] src, int length) {
+		float[] fbuffer = new float[length / (fmt.getSampleSizeInBits() / 8)];
+		int     idx     = 0;
+		if(fmt.isBigEndian()) {
+			for(int i = 0; i < length; i += 2) {
+				int s = src[i] << 8 | (src[i+1] & 0xFF);
+				fbuffer[idx++] = s / S2F;
+			}
+		} else {
+			for(int i = 0; i < length; i += 2) {
+				int s = src[i+1] << 8 | (src[i] & 0xFF);
+				fbuffer[idx++] = s / S2F;
+			}
+		}
+		return fbuffer;
 	}
 }

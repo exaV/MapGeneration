@@ -38,6 +38,7 @@ import java.util.Map;
 
 import ch.fhnw.ether.render.gl.GLObject.Type;
 import ch.fhnw.ether.render.shader.IShader;
+import ch.fhnw.ether.render.shader.base.AbstractShader;
 
 import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.GL4;
@@ -83,12 +84,16 @@ public final class Program {
 			this.path = path;
 
 			StringBuilder code = new StringBuilder();
-			URL url = root.getResource(path);
-			if (url == null) {
-				out.println("file not found: " + this);
-				throw new FileNotFoundException("file not found: " + this);
+			if(path.startsWith(AbstractShader.INLINE))
+				code.append(path);
+			else {
+				URL url = root.getResource(path);
+				if (url == null) {
+					out.println("file not found: " + this);
+					throw new FileNotFoundException("file not found: " + this);
+				}
+				new GLSLReader(LIBRARY, url, code, out);
 			}
-			new GLSLReader(LIBRARY, url, code, out);
 
 			shaderObject = gl.glCreateShader(type.glType);
 
@@ -132,27 +137,27 @@ public final class Program {
 		String id = "";
 		for (Shader shader : shaders) {
 			if (shader != null) {
-				gl.glAttachShader(programObject.id(), shader.shaderObject);
+				gl.glAttachShader(programObject.getId(), shader.shaderObject);
 				id += shader.path + " ";
 			}
 		}
 		this.id = id;
 
-		gl.glLinkProgram(programObject.id());
-		if (!checkStatus(gl, programObject.id(), GL3.GL_LINK_STATUS, out)) {
+		gl.glLinkProgram(programObject.getId());
+		if (!checkStatus(gl, programObject.getId(), GL3.GL_LINK_STATUS, out)) {
 			out.println("failed to link program: " + this);
 			throw new IllegalArgumentException("failed to link program: " + this);
 		}
 
-		gl.glValidateProgram(programObject.id());
-		if (!checkStatus(gl, programObject.id(), GL3.GL_VALIDATE_STATUS, out)) {
+		gl.glValidateProgram(programObject.getId());
+		if (!checkStatus(gl, programObject.getId(), GL3.GL_VALIDATE_STATUS, out)) {
 			out.println("failed to validate program: " + this);
 			throw new IllegalArgumentException("failed to validate program: " + this);
 		}
 	}
 
 	public void enable(GL3 gl) {
-		gl.glUseProgram(programObject.id());
+		gl.glUseProgram(programObject.getId());
 	}
 
 	public void disable(GL3 gl) {
@@ -160,60 +165,64 @@ public final class Program {
 	}
 
 	public void setUniform(GL3 gl, int index, boolean value) {
-		gl.glUniform1i(index, value ? 1 : 0);
+		if(index >= 0)
+			gl.glUniform1i(index, value ? 1 : 0);
 	}
 
 	public void setUniform(GL3 gl, int index, int value) {
-		gl.glUniform1i(index, value);
+		if(index >= 0)
+			gl.glUniform1i(index, value);
 	}
 
 	public void setUniform(GL3 gl, int index, float value) {
-		gl.glUniform1f(index, value);
+		if(index >= 0)
+			gl.glUniform1f(index, value);
 	}
 
 	public void setUniformVec2(GL3 gl, int index, float[] value) {
-		if (value != null)
+		if(value != null && index >= 0)
 			gl.glUniform2fv(index, 1, value, 0);
 	}
 
 	public void setUniformVec3(GL3 gl, int index, float[] value) {
-		if (value != null)
+		if (value != null && index >= 0)
 			gl.glUniform3fv(index, 1, value, 0);
 	}
 
 	public void setUniformVec4(GL3 gl, int index, float[] value) {
-		if (value != null)
+		if (value != null && index >= 0)
 			gl.glUniform4fv(index, 1, value, 0);
 	}
 
 	public void setUniformMat3(GL3 gl, int index, float[] value) {
-		if (value != null)
+		if (value != null && index >= 0)
 			gl.glUniformMatrix3fv(index, 1, false, value, 0);
 	}
 
 	public void setUniformMat4(GL3 gl, int index, float[] value) {
-		if (value != null)
+		if (value != null && index >= 0)
 			gl.glUniformMatrix4fv(index, 1, false, value, 0);
 	}
 
 	public void setUniformSampler(GL3 gl, int index, int unit) {
-		setUniform(gl, index, unit);
+		if(index >= 0)
+			setUniform(gl, index, unit);
 	}
 
 	public int getAttributeLocation(GL3 gl, String name) {
-		return gl.glGetAttribLocation(programObject.id(), name);
+		return gl.glGetAttribLocation(programObject.getId(), name);
 	}
 
 	public int getUniformLocation(GL3 gl, String name) {
-		return gl.glGetUniformLocation(programObject.id(), name);
+		return gl.glGetUniformLocation(programObject.getId(), name);
 	}
 
 	public int getUniformBlockIndex(GL3 gl, String name) {
-		return gl.glGetUniformBlockIndex(programObject.id(), name);
+		return gl.glGetUniformBlockIndex(programObject.getId(), name);
 	}
 
 	public void bindUniformBlock(GL3 gl, int index, int bindingPoint) {
-		gl.glUniformBlockBinding(programObject.id(), index, bindingPoint);
+		gl.glUniformBlockBinding(programObject.getId(), index, bindingPoint);
 	}
 
 	@Override
@@ -256,12 +265,15 @@ public final class Program {
 
 		if (status[0] != 1) {
 			gl3.glGetShaderiv(object, GL3.GL_INFO_LOG_LENGTH, status, 0);
-			byte[] infoLog = new byte[status[0]];
-			if (statusType == GL3.GL_COMPILE_STATUS)
-				gl3.glGetShaderInfoLog(object, status[0], status, 0, infoLog, 0);
-			else if (statusType == GL3.GL_LINK_STATUS)
-				gl3.glGetProgramInfoLog(object, status[0], status, 0, infoLog, 0);
-			out.println(new String(infoLog));
+			if(status[0] > 0) {
+				byte[] infoLog = new byte[status[0]];
+				if (statusType == GL3.GL_COMPILE_STATUS)
+					gl3.glGetShaderInfoLog(object, status[0], status, 0, infoLog, 0);
+				else if (statusType == GL3.GL_LINK_STATUS)
+					gl3.glGetProgramInfoLog(object, status[0], status, 0, infoLog, 0);
+				out.println(new String(infoLog));
+			} else
+				out.println("Unknonw (" + (statusType == GL3.GL_COMPILE_STATUS ? "GL_COMPILE_STATUS" : "GL_LINK_STATUS") + ")");
 			return false;
 		}
 		return true;

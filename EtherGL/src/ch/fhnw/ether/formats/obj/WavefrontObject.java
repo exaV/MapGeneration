@@ -42,7 +42,7 @@ import ch.fhnw.util.math.Vec2;
 import ch.fhnw.util.math.Vec3;
 import ch.fhnw.util.math.geometry.BoundingBox;
 
-public class WavefrontObject {
+final class WavefrontObject {
 	private final String fileName;
 	private final String contextFolder;
 

@@ -29,6 +29,8 @@
 
 package ch.fhnw.ether.controller.event;
 
+import ch.fhnw.ether.media.IScheduler;
+
 /**
  * Scheduler interface for execution of actions on model thread and animation.
  * 
@@ -36,7 +38,7 @@ package ch.fhnw.ether.controller.event;
  * 
  * @author radar
  */
-public interface IEventScheduler {
+public interface IEventScheduler extends IScheduler {
 	interface IAction {
 		/**
 		 * Action to be run, implemented by client.

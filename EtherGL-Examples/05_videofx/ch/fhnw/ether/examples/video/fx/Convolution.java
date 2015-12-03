@@ -31,16 +31,18 @@ package ch.fhnw.ether.examples.video.fx;
 
 import java.nio.ByteBuffer;
 
+import com.jogamp.opengl.GL3;
+
 import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.media.Parameter;
-import ch.fhnw.ether.media.PerTargetState;
-import ch.fhnw.ether.media.RenderCommandException;
 import ch.fhnw.ether.video.IVideoRenderTarget;
 import ch.fhnw.ether.video.fx.AbstractVideoFX;
+import ch.fhnw.ether.video.fx.IVideoFrameFX;
+import ch.fhnw.ether.video.fx.IVideoGLFX;
 import ch.fhnw.util.math.Mat3;
 
-public class Convolution extends AbstractVideoFX<Convolution.State> {
-	private static final Parameter KERNEL = new Parameter("kernel", "Effect", 0, 
+public class Convolution extends AbstractVideoFX implements IVideoFrameFX, IVideoGLFX {
+	private static final Parameter KERNEL = new Parameter("kernel_sel", "Effect", 0, 
 			"Identity", 
 			"Edge Detection1", 
 			"Edge Detection2", 
@@ -50,27 +52,103 @@ public class Convolution extends AbstractVideoFX<Convolution.State> {
 			"Gaussian Blur");
 
 	private static final Mat3[] KERNELS = {
-		new Mat3( 0, 0, 0,   0, 1, 0,   0, 0, 0),
-		new Mat3( 1, 0,-1,   0, 0, 0,  -1, 0, 1),
-		new Mat3( 0, 1, 0,   1,-4, 1,   0, 1, 0),
-		new Mat3( 4, 0, 0,   0, 0, 0,   0, 0,-4),
-		new Mat3( 0,-1, 0,  -1, 5,-1,   0,-1, 0),
-		normalize(new Mat3( 1, 1, 1,   1, 1, 1,   1, 1, 1)),
-		normalize(new Mat3( 1, 2, 1,   2, 4, 2,   1, 2, 1)),
+			new Mat3( 0, 0, 0,   0, 1, 0,   0, 0, 0),
+			new Mat3( 1, 0,-1,   0, 0, 0,  -1, 0, 1),
+			new Mat3( 0, 1, 0,   1,-4, 1,   0, 1, 0),
+			new Mat3( 4, 0, 0,   0, 0, 0,   0, 0,-4),
+			new Mat3( 0,-1, 0,  -1, 5,-1,   0,-1, 0),
+			normalize(new Mat3( 1, 1, 1,   1, 1, 1,   1, 1, 1)),
+			normalize(new Mat3( 1, 2, 1,   2, 4, 2,   1, 2, 1)),
 	};
 
 	private static final boolean[] GREYSCALE = {
-		false,
-		true,
-		true,
-		false,
-		false,
-		false,
-		false,
+			false,
+			true,
+			true,
+			false,
+			false,
+			false,
+			false,
 	};
 
+	@Override
+	public String mainVert() {
+		return lines(
+				"vec2 widthStep               = vec2(texelWidth, 0.0);",
+				"vec2 heightStep              = vec2(0.0, texelHeight);",
+				"vec2 widthHeightStep         = vec2(texelWidth, texelHeight);",
+				"vec2 widthNegativeHeightStep = vec2(texelWidth, -texelHeight);",
+				
+				"c00 = vertexTexCoord.xy - widthHeightStep;",
+				"c01 = vertexTexCoord.xy - heightStep;",
+				"c02 = vertexTexCoord.xy + widthNegativeHeightStep;",
+				
+				"c10 = vertexTexCoord.xy - widthStep;",
+				"c12 = vertexTexCoord.xy + widthStep;",
+				
+				"c20 = vertexTexCoord.xy - widthNegativeHeightStep;",
+				"c21 = vertexTexCoord.xy + heightStep;",
+				"c22 = vertexTexCoord.xy + widthHeightStep;"
+				);
+	}
+
+	@Override
+	public String mainFrag() {
+		return lines(
+				"vec4 col00 = texture(colorMap, c00);",
+				"vec4 col01 = texture(colorMap, c01);",
+				"vec4 col02 = texture(colorMap, c02);",
+				
+				"vec4 col10 = texture(colorMap, c01);",
+				"vec4 col11 = result;",
+				"vec4 col12 = texture(colorMap, c12);",
+				
+				"vec4 col20 = texture(colorMap, c20);",
+				"vec4 col21 = texture(colorMap, c21);",
+				"vec4 col22 = texture(colorMap, c22);",
+				
+				"result  = col00 * kernel[0][0] + col01 * kernel[0][1] + col02 * kernel[0][2];",
+				"result += col10 * kernel[1][0] + col11 * kernel[1][1] + col12 * kernel[1][2];",
+				"result += col20 * kernel[2][0] + col21 * kernel[2][1] + col22 * kernel[2][2];",
+				
+				"result.a = 1.;",
+				"if(greyscale) {",
+				"	float val = result.r + result.b + result.g;",
+				"	result.r = val;",
+				"	result.g = val;",
+				"	result.b = val;",
+				"}"
+				);
+	}
+
+	@Override
+	public void processFrame(GL3 gl, double playOutTime, IVideoRenderTarget target) {
+		setUniform("texelWidth",  1f / target.getVideoSource().getWidth());
+		setUniform("texelHeight", 1f / target.getVideoSource().getHeight());
+		setUniform("kernel",      KERNELS[(int) getVal(KERNEL)]);
+		setUniform("greyscale",   Boolean.valueOf(GREYSCALE[(int) getVal(KERNEL)])); 
+	}
+
 	public Convolution() {
-		super(KERNEL);
+		super(new Uniform<?>[] {
+			new Uniform<>("texelWidth",  Float.valueOf(0)),
+			new Uniform<>("texelHeight", Float.valueOf(0)),
+		},
+				new String[] {
+						"vec2 c00",
+						"vec2 c01",
+						"vec2 c02",
+						"vec2 c10",
+						"vec2 c12",
+						"vec2 c20",
+						"vec2 c21",
+						"vec2 c22",
+		},
+				new Uniform<?>[] {
+			new Uniform<>("kernel",    new Mat3()),
+			new Uniform<>("greyscale", Boolean.FALSE)
+		},
+				KERNEL);
 	}
 
 	private static Mat3 normalize(Mat3 mat3) {
@@ -104,83 +182,68 @@ public class Convolution extends AbstractVideoFX<Convolution.State> {
 				);
 	}
 
-	class State extends PerTargetState<IVideoRenderTarget> {
-		private float[][] outFrame = new float[1][1];
+	private float[][] outFrame = new float[1][1];
 
-		public State(IVideoRenderTarget target) {
-			super(target);
-		}
-		
-		protected void processFrame(double playOutTime, Frame frame) {
-			if(frame.dimJ != outFrame.length || frame.dimI != outFrame[0].length * 3)
-				outFrame = new float[frame.dimJ][frame.dimI * 3];
+	@Override
+	public void processFrame(final double playOutTime, final IVideoRenderTarget target, final Frame frame) {
+		if(frame.height != outFrame.length || frame.width != outFrame[0].length * 3)
+			outFrame = new float[frame.height][frame.width * 3];
 
-			Mat3    kernel    = KERNELS[(int) getVal(KERNEL)];
-			boolean greyscale = GREYSCALE[(int) getVal(KERNEL)]; 
+		Mat3    kernel    = KERNELS[(int) getVal(KERNEL)];
+		boolean greyscale = GREYSCALE[(int) getVal(KERNEL)]; 
 
-			for(int j = frame.dimJ - 1; --j >= 1;) {
-				int idx = 0;
-				if(greyscale) {
-					for(int i = 1; i< frame.dimI - 1; i++) {
-						float val = convolute(frame, i, j, kernel, 0) + convolute(frame, i, j, kernel, 1) + convolute(frame, i, j, kernel, 2); 
-						outFrame[j][idx++] = val; 
-						outFrame[j][idx++] = val; 
-						outFrame[j][idx++] = val; 
-					}
-				} else {
-					for(int i = 1; i< frame.dimI - 1; i++) {
-						outFrame[j][idx++] = convolute(frame, i, j, kernel, 0); 
-						outFrame[j][idx++] = convolute(frame, i, j, kernel, 1); 
-						outFrame[j][idx++] = convolute(frame, i, j, kernel, 2); 
-					}
+		for(int j = frame.height - 1; --j >= 1;) {
+			int idx = 0;
+			if(greyscale) {
+				for(int i = 1; i< frame.width - 1; i++) {
+					float val = convolute(frame, i, j, kernel, 0) + convolute(frame, i, j, kernel, 1) + convolute(frame, i, j, kernel, 2); 
+					outFrame[j][idx++] = val; 
+					outFrame[j][idx++] = val; 
+					outFrame[j][idx++] = val; 
+				}
+			} else {
+				for(int i = 1; i< frame.width - 1; i++) {
+					outFrame[j][idx++] = convolute(frame, i, j, kernel, 0); 
+					outFrame[j][idx++] = convolute(frame, i, j, kernel, 1); 
+					outFrame[j][idx++] = convolute(frame, i, j, kernel, 2); 
 				}
 			}
-
-			if(frame.pixelSize == 4) {
-				frame.processLines((pixels, j) -> {
-					int idx = 0;
-					for(int i = frame.dimI; --i >= 0;) {
-						pixels.put(toByte(outFrame[j][idx++]));
-						pixels.put(toByte(outFrame[j][idx++]));
-						pixels.put(toByte(outFrame[j][idx++]));
-						pixels.put(Frame.B255);
-					}
-				});
-			} else {
-				frame.processLines((ByteBuffer pixels, int j) -> {
-					int idx = 0;
-					for(int i = frame.dimI; --i >= 0;) {
-						pixels.put(toByte(outFrame[j][idx++]));
-						pixels.put(toByte(outFrame[j][idx++]));
-						pixels.put(toByte(outFrame[j][idx++]));
-					}
-				});
-			}
 		}
 
-		private float convolute(Frame frame, int i, int j, Mat3 kernel, int c) {
-			return
-					frame.getFloatComponent(i-1, j-1, c) * kernel.m00 +
-					frame.getFloatComponent(i-1, j,   c) * kernel.m10 +
-					frame.getFloatComponent(i-1, j+1, c) * kernel.m20 +
-
-					frame.getFloatComponent(i,   j-1, c) * kernel.m01 +
-					frame.getFloatComponent(i,   j,   c) * kernel.m11 +
-					frame.getFloatComponent(i,   j+1, c) * kernel.m21 +
-
-					frame.getFloatComponent(i+1, j-1, c) * kernel.m02 +
-					frame.getFloatComponent(i+1, j,   c) * kernel.m12 +
-					frame.getFloatComponent(i+1, j+1, c) * kernel.m22;
+		if(frame.pixelSize == 4) {
+			frame.processLines((pixels, j) -> {
+				int idx = 0;
+				for(int i = frame.width; --i >= 0;) {
+					pixels.put(toByte(outFrame[j][idx++]));
+					pixels.put(toByte(outFrame[j][idx++]));
+					pixels.put(toByte(outFrame[j][idx++]));
+					pixels.put(Frame.B255);
+				}
+			});
+		} else {
+			frame.processLines((ByteBuffer pixels, int j) -> {
+				int idx = 0;
+				for(int i = frame.width; --i >= 0;) {
+					pixels.put(toByte(outFrame[j][idx++]));
+					pixels.put(toByte(outFrame[j][idx++]));
+					pixels.put(toByte(outFrame[j][idx++]));
+				}
+			});
 		}
 	}
-	
-	@Override
-	protected State createState(IVideoRenderTarget target) throws RenderCommandException {
-		return new State(target);
-	}
-	
-	@Override
-	protected void processFrame(double playOutTime, State state, Frame frame) {
-		state.processFrame(playOutTime, frame);
+
+	private float convolute(Frame frame, int x, int y, Mat3 kernel, int c) {
+		return
+				frame.getFloatComponent(x-1, y-1, c) * kernel.m00 +
+				frame.getFloatComponent(x-1, y,   c) * kernel.m10 +
+				frame.getFloatComponent(x-1, y+1, c) * kernel.m20 +
+
+				frame.getFloatComponent(x,   y-1, c) * kernel.m01 +
+				frame.getFloatComponent(x,   y,   c) * kernel.m11 +
+				frame.getFloatComponent(x,   y+1, c) * kernel.m21 +
+
+				frame.getFloatComponent(x+1, y-1, c) * kernel.m02 +
+				frame.getFloatComponent(x+1, y,   c) * kernel.m12 +
+				frame.getFloatComponent(x+1, y+1, c) * kernel.m22;
 	}
 }

@@ -27,6 +27,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */package ch.fhnw.ether.scene;
 
+import java.util.Collection;
 import java.util.List;
 
 import ch.fhnw.ether.scene.camera.ICamera;
@@ -38,10 +39,14 @@ public interface IScene {
 	void add3DObject(I3DObject object);
 
 	void add3DObjects(I3DObject... objects);
+	
+	void add3DObjects(Collection<? extends I3DObject> objects);
 
 	void remove3DObject(I3DObject object);
 
 	void remove3DObjects(I3DObject... objects);
+	
+	void remove3DObjects(Collection<? extends I3DObject> objects);
 
 	List<I3DObject> get3DObjects();
 

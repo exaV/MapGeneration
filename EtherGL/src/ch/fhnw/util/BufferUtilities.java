@@ -72,7 +72,7 @@ public class BufferUtilities {
 
 	public static void fill(ByteBuffer buffer, int off, int len, byte val) {
 		buffer.position(off);
-		while (len-- >= 0)
+		while(--len >= 0)
 			buffer.put(val);
 	}
 

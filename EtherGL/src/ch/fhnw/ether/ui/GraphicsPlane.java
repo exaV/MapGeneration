@@ -39,12 +39,11 @@ import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.scene.mesh.IMesh.Queue;
-import ch.fhnw.ether.scene.mesh.MeshLibrary;
+import ch.fhnw.ether.scene.mesh.MeshUtilities;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.ColorMapMaterial;
-import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.ether.scene.mesh.material.Texture;
 import ch.fhnw.util.UpdateRequest;
 
@@ -57,9 +56,9 @@ public class GraphicsPlane {
 
 	private final DefaultMesh mesh;
 
-	private final BufferedImage image;
-	private final Graphics2D graphics;
-	private final Texture texture = new Texture();
+	private final BufferedImage     image;
+	private final Graphics2D        graphics;
+	private final ColorMapMaterial  material;
 
 	private int x;
 	private int y;
@@ -76,14 +75,14 @@ public class GraphicsPlane {
 		this.h = h;
 
 		float[] vertices = { x, y, 0, x + w, y, 0, x + w, y + h, 0, x, y, 0, x + w, y + h, 0, x, y + h, 0 };
-		IGeometry geometry = DefaultGeometry.createVM(Primitive.TRIANGLES, vertices, MeshLibrary.DEFAULT_QUAD_TEX_COORDS);
-		IMaterial material = new ColorMapMaterial(texture);
+		IGeometry geometry = DefaultGeometry.createVM(Primitive.TRIANGLES, vertices, MeshUtilities.DEFAULT_QUAD_TEX_COORDS);
+		material = new ColorMapMaterial(Texture.TRANSPARENT_1x1);
 
 		mesh = new DefaultMesh(material, geometry, Queue.SCREEN_SPACE_OVERLAY);
 	}
 
 	public final Texture getTexture() {
-		return texture;
+		return material.getTexture();
 	}
 
 	public final int getX() {
@@ -152,7 +151,7 @@ public class GraphicsPlane {
 	
 	public void update() {
 		if (updater.testAndClear())
-			texture.setData(Frame.create(image));
+			material.setColorMap(Frame.create(image).getTexture());
 	}
 
 	private void updateRequest() {

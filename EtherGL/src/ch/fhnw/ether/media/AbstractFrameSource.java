@@ -29,13 +29,19 @@
 
 package ch.fhnw.ether.media;
 
-public abstract class AbstractFrameSource<T extends IRenderTarget, S extends PerTargetState<T>> extends AbstractRenderCommand<T, S> {
-	public static final double FRAMERATE_UNKNOWN  = -1;
+public abstract class AbstractFrameSource extends AbstractRenderCommand<IRenderTarget<?>> {
+	public static final float  FRAMERATE_UNKNOWN  = -1;
+	public static final double LENGTH_UNKNOWN     = -2;
+	public static final double LENGTH_INFINITE    = -1;
 	public static final long   FRAMECOUNT_UNKNOWN = -1;
 
 	protected AbstractFrameSource(Parameter ... parameters) {
 		super(parameters);
 	}
 	
-	public abstract long getFrameCount();	
+	public abstract long getLengthInFrames();
+	
+	public abstract double getLengthInSeconds();
+	
+	public abstract float getFrameRate();			
 }

@@ -28,13 +28,12 @@
  */package ch.fhnw.ether.audio.fx;
 
  import ch.fhnw.ether.audio.ButterworthFilter;
- import ch.fhnw.ether.audio.IAudioRenderTarget;
- import ch.fhnw.ether.media.AbstractRenderCommand;
- import ch.fhnw.ether.media.Parameter;
- import ch.fhnw.ether.media.RenderCommandException;
- import ch.fhnw.ether.media.Stateless;
+import ch.fhnw.ether.audio.IAudioRenderTarget;
+import ch.fhnw.ether.media.AbstractRenderCommand;
+import ch.fhnw.ether.media.Parameter;
+import ch.fhnw.ether.media.RenderCommandException;
 
- public class BandPass extends AbstractRenderCommand<IAudioRenderTarget,Stateless<IAudioRenderTarget>> {
+ public class BandPass extends AbstractRenderCommand<IAudioRenderTarget> {
 	 private static final Parameter LOW  = new Parameter("low",  "Low",  0, 20000, 30);
 	 private static final Parameter HIGH = new Parameter("high", "High", 0, 20000, 20000);
 
@@ -50,10 +49,9 @@
 	 }
 
 	 @Override
-	 protected void run(Stateless<IAudioRenderTarget> state) throws RenderCommandException {
+	 protected void run(final IAudioRenderTarget target) throws RenderCommandException {
 		 final float              low       = getVal(LOW);
 		 final float              high      = getVal(HIGH);
-		 final IAudioRenderTarget target    = state.getTarget();
 		 final int                nChannels = target.getNumChannels();
 		 final float[]            samples   = target.getFrame().samples;
 

@@ -29,26 +29,25 @@
 
 package ch.fhnw.ether.scene.mesh.material;
 
-import java.util.List;
-
-import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.util.color.RGBA;
 
 // width currently unsupported
-public class LineMaterial extends AbstractMaterial {
+public final class LineMaterial extends AbstractMaterial {
+	
 	private RGBA color;
 	private float width = 1;
-	private final boolean perVertexColor;
 
 	public LineMaterial(RGBA color) {
 		this(color, false);
 	}
 
 	public LineMaterial(RGBA color, boolean perVertexColor) {
+		super(material(IMaterial.COLOR, IMaterial.LINE_WIDTH),
+		      geometry(IGeometry.POSITION_ARRAY, perVertexColor ? IGeometry.COLOR_ARRAY : null));		
+				  
 		this.color = color;
-		this.perVertexColor = perVertexColor;
 	}
 
 	public final RGBA getColor() {
@@ -75,26 +74,12 @@ public class LineMaterial extends AbstractMaterial {
 	}
 
 	@Override
-	public List<IAttribute> getProvidedAttributes() {
-		List<IAttribute> attributes = super.getProvidedAttributes();
-		attributes.add(IMaterial.COLOR);
-		attributes.add(IMaterial.LINE_WIDTH);
-		return attributes;
+	public Object[] getData() {
+		return data(color, width);
 	}
 
 	@Override
-	public List<IAttribute> getRequiredAttributes() {
-		List<IAttribute> attributes = super.getRequiredAttributes();
-		if (perVertexColor)
-			attributes.add(IGeometry.COLOR_ARRAY);
-		return attributes;
-	}
-
-	@Override
-	public List<Object> getData() {
-		List<Object> data = super.getData();
-		data.add(color);
-		data.add(width);
-		return data;
+	public String toString() {
+		return super.toString() + "[" + color + ", " + width + "]";
 	}
 }

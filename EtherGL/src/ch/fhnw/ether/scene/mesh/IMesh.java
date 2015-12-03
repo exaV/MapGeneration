@@ -30,7 +30,6 @@
 package ch.fhnw.ether.scene.mesh;
 
 import java.util.EnumSet;
-import java.util.Set;
 
 import ch.fhnw.ether.scene.I3DObject;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
@@ -39,7 +38,7 @@ import ch.fhnw.util.math.Mat4;
 
 /**
  * Basic mesh abstraction. A mesh is a light weight structure that combines
- * render pass, scene/view/render flags, material, geometry, and a transform.
+ * render queue (= pass), flags, material, geometry, and a transform.
  * 
  * @author radar
  */
@@ -49,7 +48,8 @@ public interface IMesh extends I3DObject {
 		DEPTH, TRANSPARENCY, OVERLAY, DEVICE_SPACE_OVERLAY, SCREEN_SPACE_OVERLAY
 	}
 
-	// FIXME: DONT_CAST_SHADOW should go to material, including CULL_FACE / DONT_CULL_FACE
+	// FIXME: DONT_CAST_SHADOW should go to material, including CULL_FACE /
+	// DONT_CULL_FACE
 	enum Flag {
 		DONT_CAST_SHADOW
 	}
@@ -58,7 +58,7 @@ public interface IMesh extends I3DObject {
 
 	Queue getQueue();
 
-	Set<Flag> getFlags();
+	EnumSet<Flag> getFlags();
 
 	boolean hasFlag(Flag flag);
 
@@ -69,4 +69,17 @@ public interface IMesh extends I3DObject {
 	Mat4 getTransform();
 
 	void setTransform(Mat4 transform);
+
+	/**
+	 * Get a copy of the transformed position data (position * transform).
+	 */
+	float[] getTransformedPositionData();
+
+	/**
+	 * Get a copy of the transformed geometry data (positions and normals
+	 * transformed, all other attributes copied).
+	 * 
+	 * @return
+	 */
+	float[][] getTransformedGeometryData();
 }

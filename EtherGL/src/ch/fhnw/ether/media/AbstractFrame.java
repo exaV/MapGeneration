@@ -29,9 +29,9 @@
 
 package ch.fhnw.ether.media;
 
-public abstract class AbstractFrame {
-	public static final double ASAP = -1;
-	
+import ch.fhnw.util.IDisposable;
+
+public abstract class AbstractFrame implements IDisposable {
 	public final double playOutTime;
 	private boolean     last;
 	
@@ -51,4 +51,7 @@ public abstract class AbstractFrame {
 	public final boolean isLast() {
 		return last;
 	}
+	
+	@Override
+	public void dispose() {}
 }

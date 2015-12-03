@@ -29,8 +29,21 @@
 
 package ch.fhnw.ether.scene.mesh.material;
 
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 
-public class EmptyMaterial extends AbstractMaterial {
+public final class EmptyMaterial extends AbstractMaterial {
+	
 	public EmptyMaterial() {
+		super(material(), geometry(IGeometry.POSITION_ARRAY));
+	}
+	
+	@Override
+	public Object[] getData() {
+		return data();
+	}
+
+	@Override
+	public String toString() {
+		return super.toString() + "[empty]";
 	}
 }

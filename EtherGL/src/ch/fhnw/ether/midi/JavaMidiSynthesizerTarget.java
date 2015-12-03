@@ -44,7 +44,7 @@ public class JavaMidiSynthesizerTarget extends AbstractMediaTarget<MidiFrame,IMi
 	private final MidiChannel ch;
 
 	public JavaMidiSynthesizerTarget() throws MidiUnavailableException {
-		super(Thread.MAX_PRIORITY);
+		super(Thread.MAX_PRIORITY, true);
 		synth = MidiSystem.getSynthesizer();
 		ch    = synth.getChannels()[0];
 		synth.open();

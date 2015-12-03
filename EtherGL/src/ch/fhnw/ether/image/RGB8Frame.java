@@ -40,37 +40,38 @@ import java.nio.FloatBuffer;
 
 import ch.fhnw.util.BufferUtilities;
 
+import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL3;
 
 public class RGB8Frame extends Frame {
 
-	public RGB8Frame(int dimI, int dimJ) {
-		this(dimI, dimJ, 3);
+	public RGB8Frame(int width, int height) {
+		this(width, height, 3);
 	}
 
-	protected RGB8Frame(int dimI, int dimJ, int pixelSize) {
+	protected RGB8Frame(int width, int height, int pixelSize) {
 		super(pixelSize);
-		init(dimI, dimJ);
+		init(width, height);
 	}
 
-	public RGB8Frame(int dimI, int dimJ, ByteBuffer targetBuffer) {
-		this(dimI, dimJ, targetBuffer, 3);
+	public RGB8Frame(int width, int height, ByteBuffer targetBuffer) {
+		this(width, height, targetBuffer, 3);
 	}
 
-	public RGB8Frame(int dimI, int dimJ, byte[] targetBuffer) {
-		super(dimI, dimJ, targetBuffer, 3);
+	public RGB8Frame(int width, int height, byte[] targetBuffer) {
+		super(width, height, targetBuffer, 3);
 	}
 
-	protected RGB8Frame(int dimI, int dimJ, ByteBuffer targetBuffer, int pixelSize) {
-		super(dimI, dimJ, targetBuffer, pixelSize);
+	protected RGB8Frame(int width, int height, ByteBuffer targetBuffer, int pixelSize) {
+		super(width, height, targetBuffer, pixelSize);
 	}
 
-	protected RGB8Frame(int dimI, int dimJ, byte[] targetBuffer, int pixelSize) {
-		super(dimI, dimJ, targetBuffer, pixelSize);
+	protected RGB8Frame(int width, int height, byte[] targetBuffer, int pixelSize) {
+		super(width, height, targetBuffer, pixelSize);
 	}
 
 	public RGB8Frame(Frame frame) {
-		this(frame.dimI, frame.dimJ, 3);
+		this(frame.width, frame.height, 3);
 		if (pixelSize == frame.pixelSize)
 			BufferUtilities.arraycopy(frame.pixels, 0, pixels, 0, pixels.capacity());
 		else {
@@ -81,8 +82,8 @@ public class RGB8Frame extends Frame {
 				int spos = 0;
 				spos++; // assume little endian
 				dst.position(0);
-				for (int j = 0; j < dimJ; j++) {
-					for (int i = 0; i < dimI; i++) {
+				for (int j = 0; j < height; j++) {
+					for (int i = 0; i < width; i++) {
 						byte val = src.get(spos);
 						dst.put(val);
 						dst.put(val);
@@ -98,8 +99,8 @@ public class RGB8Frame extends Frame {
 				final ByteBuffer dst = pixels;
 				int spos = 0;
 				dst.position(0);
-				for (int j = 0; j < dimJ; j++) {
-					for (int i = 0; i < dimI; i++) {
+				for (int j = 0; j < height; j++) {
+					for (int i = 0; i < width; i++) {
 						byte val = (byte) ((255f * (src.get(spos) - min)) / rng);
 						dst.put(val);
 						dst.put(val);
@@ -113,8 +114,8 @@ public class RGB8Frame extends Frame {
 				int sps = frame.pixelSize;
 				int spos = 0;
 				dst.position(0);
-				for (int j = 0; j < dimJ; j++) {
-					for (int i = 0; i < dimI; i++) {
+				for (int j = 0; j < height; j++) {
+					for (int i = 0; i < width; i++) {
 						dst.put(src.get(spos));
 						dst.put(src.get(spos + 1));
 						dst.put(src.get(spos + 2));
@@ -126,11 +127,11 @@ public class RGB8Frame extends Frame {
 	}
 
 	@Override
-	public RGB8Frame create(int dimI, int dimJ) {
-		return new RGB8Frame(dimI, dimJ);
+	public RGB8Frame create(int width, int height) {
+		return new RGB8Frame(width, height);
 	}
 
-	public void setPixels(int i, int j, int w, int h, ColorModel model, int[] pixels, int off, int scansize) {
+	public void setPixels(int x, int y, int w, int h, ColorModel model, int[] pixels, int off, int scansize) {
 		if (model instanceof DirectColorModel) {
 			DirectColorModel dm = (DirectColorModel) model;
 
@@ -152,13 +153,13 @@ public class RGB8Frame extends Frame {
 				throw new UnsupportedOperationException("Unsupported color model:" + dm);
 			}
 
-			h += j;
-			w += i;
+			h += y;
+			w += x;
 			final ByteBuffer dst = this.pixels;
-			for (int jj = j; jj < h; jj++) {
+			for (int jj = y; jj < h; jj++) {
 				int lineoff = jj * scansize + off;
-				dst.position(((jj * dimI) + i) * pixelSize);
-				for (int ii = i; ii < w; ii++) {
+				dst.position(((jj * width) + x) * pixelSize);
+				for (int ii = x; ii < w; ii++) {
 					int pixelValue = pixels[lineoff + ii];
 					dst.put((byte) ((pixelValue & redMask) >> redShift));
 					dst.put((byte) ((pixelValue & greenMask) >> greenShift));
@@ -170,24 +171,24 @@ public class RGB8Frame extends Frame {
 		}
 	}
 
-	public void setPixels(int i, int j, int w, int h, ColorModel model, byte[] pixels, int off, int scansize) {
+	public void setPixels(int x, int y, int w, int h, ColorModel model, byte[] pixels, int off, int scansize) {
 		throw new UnsupportedOperationException("setPixels with byte array");
 	}
 
 	@Override
-	public RGB8Frame getSubframe(int i, int j, int dimI, int dimJ) {
-		RGB8Frame result = new RGB8Frame(dimI, dimJ);
-		getSubframeImpl(i, j, result);
+	public RGB8Frame getSubframe(int x, int y, int width, int height) {
+		RGB8Frame result = new RGB8Frame(width, height);
+		getSubframeImpl(x, y, result);
 		return result;
 	}
 
 	@Override
 	public BufferedImage toBufferedImage() {
-		BufferedImage result = new BufferedImage(dimI, dimJ, BufferedImage.TYPE_INT_RGB);
-		final int[] line = new int[dimI];
-		final ByteBuffer src = pixels;
+		BufferedImage result = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+		final int[] line = new int[width];
+		final ByteBuffer src = pixels.asReadOnlyBuffer();
 		src.clear();
-		for (int j = dimJ; --j >= 0;) {
+		for (int j = height; --j >= 0;) {
 			for (int i = 0; i < line.length; i++) {
 				int tmp = (src.get() & 0xFF) << 16;
 				tmp |= (src.get() & 0xFF) << 8;
@@ -195,16 +196,16 @@ public class RGB8Frame extends Frame {
 				tmp |= 0xFF000000;
 				line[i] = tmp;
 			}
-			result.setRGB(0, j, dimI, 1, line, 0, dimI);
+			result.setRGB(0, j, width, 1, line, 0, width);
 		}
 		return result;
 	}
 
 	@Override
-	public float getFloatComponent(int i, int j, int component) {
+	public float getFloatComponent(int x, int y, int component) {
 		if (component == 3)
 			return 1.0f;
-		return (pixels.get((j * dimI + i) * pixelSize + component) & 0xFF) / 255f;
+		return (pixels.get((y * width + x) * pixelSize + component) & 0xFF) / 255f;
 	}
 
 	@Override
@@ -215,7 +216,7 @@ public class RGB8Frame extends Frame {
 
 	@Override
 	public Frame alloc() {
-		return new RGB8Frame(dimI, dimJ);
+		return new RGB8Frame(width, height);
 	}
 
 	protected static byte bits2byte(int val, final int shift, final int size, int m) {
@@ -233,8 +234,8 @@ public class RGB8Frame extends Frame {
 		if (img.getType() == BufferedImage.TYPE_CUSTOM || img.getType() == BufferedImage.TYPE_BYTE_BINARY)
 			img = ImageScaler.copy(img, new BufferedImage(img.getWidth(), img.getHeight(), BufferedImage.TYPE_INT_RGB));
 		final ByteBuffer dst = pixels;
-		final int dstll = dimI * pixelSize;
-		int dstyoff = dstll * ((dimJ - 1) - y);
+		final int dstll = width * pixelSize;
+		int dstyoff = dstll * ((height - 1) - y);
 		switch (img.getType()) {
 		case BufferedImage.TYPE_4BYTE_ABGR:
 		case BufferedImage.TYPE_4BYTE_ABGR_PRE: {
@@ -411,8 +412,8 @@ public class RGB8Frame extends Frame {
 	}
 
 	@Override
-	public int getARGB(int i, int j) {
-		pixels.position((j * dimI + i) * pixelSize);
+	public int getARGB(int x, int y) {
+		pixels.position((y * width + x) * pixelSize);
 		int result = pixels.get() & 0xFF;
 		result <<= 8;
 		result |= pixels.get() & 0xFF;
@@ -422,39 +423,39 @@ public class RGB8Frame extends Frame {
 	}
 
 	@Override
-	public void getRGB(int i, int j, byte[] rgb) {
-		pixels.position((j * dimI + i) * pixelSize);
+	public void getRGB(int x, int y, byte[] rgb) {
+		pixels.position((y * width + x) * pixelSize);
 		rgb[0] = pixels.get();
 		rgb[1] = pixels.get();
 		rgb[2] = pixels.get();
 	}
 
 	@Override
-	public final void getRGBUnsigned(int i, int j, int[] rgb) {
-		pixels.position((j * dimI + i) * pixelSize);
+	public final void getRGBUnsigned(int x, int y, int[] rgb) {
+		pixels.position((y * width + x) * pixelSize);
 		rgb[0] = pixels.get() & 0xFF;
 		rgb[1] = pixels.get() & 0xFF;
 		rgb[2] = pixels.get() & 0xFF;
 	}
 
-	public final void getRGBFloat(int i, int j, float[] rgb) {
-		pixels.position((j * dimI + i) * pixelSize);
+	public final void getRGBFloat(int x, int y, float[] rgb) {
+		pixels.position((y * width + x) * pixelSize);
 		rgb[0] = (pixels.get() & 0xFF) / 255.0f;
 		rgb[1] = (pixels.get() & 0xFF) / 255.0f;
 		rgb[2] = (pixels.get() & 0xFF) / 255.0f;
 	}
 
 	@Override
-	public void setRGB(int i, int j, byte[] rgb) {
-		pixels.position((j * dimI + i) * pixelSize);
+	public void setRGB(int x, int y, byte[] rgb) {
+		pixels.position((y * width + x) * pixelSize);
 		pixels.put(rgb[0]);
 		pixels.put(rgb[1]);
 		pixels.put(rgb[2]);
 	}
 
 	@Override
-	public void setARGB(int i, int j, int argb) {
-		pixels.position((j * dimI + i) * pixelSize);
+	public void setARGB(int x, int y, int argb) {
+		pixels.position((y * width + x) * pixelSize);
 		pixels.put((byte) (argb >> 16));
 		pixels.put((byte) (argb >> 8));
 		pixels.put((byte) argb);
@@ -468,36 +469,36 @@ public class RGB8Frame extends Frame {
 	@Override
 	public final void getRGBBilinear(double u, double v, byte[] rgb) {
 		// bilinear interpolation
-		final int dimI_ = dimI - 1;
-		final int dimJ_ = dimJ - 1;
+		final int width_  = width - 1;
+		final int height_ = height - 1;
 
-		int i0 = (int) (u * dimI_);
-		int j0 = (int) (v * dimJ_);
+		int i0 = (int) (u * width_);
+		int j0 = (int) (v * height_);
 
 		if (i0 < 0)
 			i0 = 0;
-		else if (i0 > dimI_)
-			i0 = dimI_;
+		else if (i0 > width_)
+			i0 = width_;
 		if (j0 < 0)
 			j0 = 0;
-		else if (j0 > dimJ_)
-			j0 = dimJ_;
+		else if (j0 > height_)
+			j0 = height_;
 
 		int i1 = i0 + 1;
 		int j1 = j0 + 1;
 
 		if (i1 < 0)
 			i1 = 0;
-		else if (i1 > dimI_)
-			i1 = dimI_;
+		else if (i1 > width_)
+			i1 = width_;
 		if (j1 < 0)
 			j1 = 0;
-		else if (j1 > dimJ_)
-			j1 = dimJ_;
+		else if (j1 > height_)
+			j1 = height_;
 
 		// interpolate
-		final double w = (u - i0 / (float) dimI_) * dimI_;
-		final double h = (v - j0 / (float) dimJ_) * dimJ_;
+		final double w = (u - i0 / (float) width_) * width_;
+		final double h = (v - j0 / (float) height_) * height_;
 
 		final byte[] rgb00 = this.rgb00;
 		final byte[] rgb01 = this.rgb01;
@@ -532,8 +533,8 @@ public class RGB8Frame extends Frame {
 	}
 
 	@Override
-	public final float getBrightness(int i, int j) {
-		pixels.position((j * dimI + i) * pixelSize);
+	public final float getBrightness(int x, int y) {
+		pixels.position((y * width + x) * pixelSize);
 		int result = pixels.get() & 0xFF;
 		result += pixels.get() & 0xFF;
 		result += pixels.get() & 0xFF;
@@ -541,14 +542,14 @@ public class RGB8Frame extends Frame {
 	}
 
 	@Override
-	public void setSubframe(int i, int j, Frame src) {
+	public void setSubframe(int x, int y, Frame src) {
 		if (src.getClass() != getClass())
 			src = new RGB8Frame(src);
-		setSubframeImpl(i, j, src);
+		setSubframeImpl(x, y, src);
 	}
 
 	@Override
-	protected void loadInternal(GL3 gl, int target, int textureId) {
-		gl.glTexImage2D(target, 0, GL3.GL_RGB, dimI, dimJ, 0, GL3.GL_RGB, GL3.GL_UNSIGNED_BYTE, pixels);
+	protected void loadTexture(GL3 gl) {
+		gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL3.GL_RGB, width, height, 0, GL3.GL_RGB, GL3.GL_UNSIGNED_BYTE, pixels);
 	}
 }

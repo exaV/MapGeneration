@@ -29,139 +29,71 @@
 
 package ch.fhnw.ether.scene.mesh.material;
 
-import java.net.URL;
-
-import ch.fhnw.ether.image.Frame;
-import ch.fhnw.ether.media.AbstractMediaTarget;
-import ch.fhnw.ether.media.RenderCommandException;
-import ch.fhnw.ether.media.RenderProgram;
-import ch.fhnw.ether.video.AbstractVideoSource;
-import ch.fhnw.ether.video.IVideoRenderTarget;
-import ch.fhnw.ether.video.URLVideoSource;
-import ch.fhnw.ether.video.VideoFrame;
+import ch.fhnw.ether.image.RGBA8Frame;
+import ch.fhnw.ether.render.gl.GLObject;
+import ch.fhnw.ether.render.gl.GLObject.Type;
+import ch.fhnw.ether.view.gl.GLContextManager;
+import ch.fhnw.ether.view.gl.GLContextManager.IGLContext;
+import ch.fhnw.util.IDisposable;
 import ch.fhnw.util.Log;
-import ch.fhnw.util.UpdateRequest;
-
-import com.jogamp.opengl.GL3;
 
 /**
- * Texture data encapsulation (FIXME: needs extension/generalization, array tex, 3d tex etc)
+ * Texture data encapsulation
  *
  * @author radar
  */
-public class Texture extends AbstractMediaTarget<VideoFrame, IVideoRenderTarget> implements IVideoRenderTarget {
+public class Texture {
 	private static final Log log = Log.create();
 
-	private final UpdateRequest updater = new UpdateRequest();
+	public static final Texture TRANSPARENT_1x1 = new RGBA8Frame(1,1).getTexture();
 
-	private Frame singleFrame;
+	private GLObject glObject;
+	private int      width;
+	private int      height;
 
-	public Texture() {
-		super(Thread.MIN_PRIORITY);
-	}
+	static final class JOGLTextureWrapper implements IDisposable {
+		private final com.jogamp.opengl.util.texture.Texture texture;
 
-	public Texture(Frame frame) {
-		this();
-		setData(frame);
-	}
+		JOGLTextureWrapper(com.jogamp.opengl.util.texture.Texture texture) {
+			this.texture = texture;
+		}
 
-	public Texture(URL url) {
-		this(url, true);
-	}
-
-	public Texture(URL url, boolean autoStart) {
-		super(Thread.MIN_PRIORITY);
-		setData(url);
-	}
-
-	public Texture(AbstractVideoSource<?> source) {
-		this(source, true);
-	}
-
-	public Texture(AbstractVideoSource<?> source, boolean autoStart) {
-		super(Thread.MIN_PRIORITY);
-		setData(source);
-	}
-
-	public void setData(URL url) {
-		if(URLVideoSource.isStillImage(url)) {
-			try {
-				setData(Frame.create(url));
-			} catch (Throwable e) {
-				throw new IllegalArgumentException("can't load image " + url);
+		@Override
+		public void dispose() {
+			try(IGLContext ctx = GLContextManager.acquireContext()) {
+				texture.destroy(ctx.getGL());
+			} catch(Throwable t) {
+				log.severe(t);
 			}
 		}
-		else
-			setData(new URLVideoSource(url));
 	}
 
-	public void setData(AbstractVideoSource<?> source) {
-		try {
-			singleFrame = null;
-			useProgram(new RenderProgram<>(source));
-			start();
-			updater.request();
-		} catch (Throwable e) {
-			throw new IllegalArgumentException("can't load image " + source);
-		}
+	public Texture(GLObject glObject, int width, int height) {
+		this.glObject = glObject;
+		this.width    = width;
+		this.height   = height;
 	}
 
-	@Override
-	protected void runOneCycle() throws RenderCommandException {
-		super.runOneCycle();
-		updater.request();
-	}
-	
-	public void setData(Frame frame) {
-		singleFrame = frame;
-		try {
-			stop();
-		} catch (RenderCommandException e) {
-			log.warning(e);
-		}
-		updater.request();
-	}
-
-	public boolean needsUpdate() {
-		return updater.testAndClear();
+	public Texture(com.jogamp.opengl.util.texture.Texture texture) {
+		this.glObject = new GLObject(Type.TEXTURE, texture.getTextureObject(), new JOGLTextureWrapper(texture));
+		this.width  = texture.getWidth();
+		this.height = texture.getHeight(); 
 	}
 
 	public int getWidth() {
-		Frame frame = currentFrame();
-		return frame == null ? 0 : frame.dimI; 
+		return width;
 	}
 
 	public int getHeight() {
-		Frame frame = currentFrame();
-		return frame == null ? 0 : frame.dimJ; 
+		return height;
+	}
+
+	public GLObject getGlObject() {
+		return glObject;
 	}
 
 	@Override
 	public String toString() {
-		return "texture[w=" + getWidth() + " h=" + getHeight() + "]";
-	}
-
-	public void update() {
-		setRendering(true);
-		try {
-			runOneCycle();
-		} catch (RenderCommandException e) {
-			log.warning(e);
-		}
-		setRendering(false);
-		updater.request();
-	}
-
-	public void load(GL3 gl, int target, int textureId) {
-		Frame frame = currentFrame();
-		if(frame != null)
-			frame.load(gl, target, textureId);
-	}	
-
-	private Frame currentFrame() {
-		if(singleFrame != null) 
-			return singleFrame;
-		VideoFrame frame = getCurrentFrame();
-		return frame == null ? null : frame.frame;
+		return "texture[w=" + getWidth() + " h=" + getHeight() + " id=" + getGlObject().getId() + "]";
 	}
 }

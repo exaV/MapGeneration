@@ -1,7 +1,5 @@
 package ch.fhnw.ether.audio;
 
-import java.util.Map;
-import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -10,8 +8,7 @@ import org.jtransforms.fft.FloatFFT_1D;
 import ch.fhnw.ether.audio.AudioUtilities.Window;
 import ch.fhnw.ether.media.AbstractFrame;
 import ch.fhnw.ether.media.AbstractFrameSource;
-import ch.fhnw.ether.media.AbstractRenderCommand;
-import ch.fhnw.ether.media.PerTargetState;
+import ch.fhnw.ether.media.ITimebase;
 import ch.fhnw.ether.media.RenderCommandException;
 import ch.fhnw.ether.media.RenderProgram;
 import ch.fhnw.util.Log;
@@ -20,19 +17,21 @@ import ch.fhnw.util.math.MathUtilities;
 public class SpectrumAudioTarget implements IAudioRenderTarget {
 	private static final Log log = Log.create();
 
-	private final int                                                                                  numChannels;
-	private final float                                                                                sRate;
-	private double                                                                                     sTime;
-	private RenderProgram<IAudioRenderTarget>                                                          program;
-	private final AtomicReference<AudioFrame>                                                          frame = new AtomicReference<>();
-	private final Map<AbstractRenderCommand<IAudioRenderTarget,?>, PerTargetState<IAudioRenderTarget>> state = new WeakHashMap<>();
-	private final FloatFFT_1D                                                                          fft;
-	private final BlockBuffer                                                                          buffer;
-	private final int                                                                                  fftSize;
-	private final AtomicBoolean                                                                        isRendering = new AtomicBoolean();
-	private       AudioFrame                                                                           currentFrame;
-	private       boolean                                                                              done;
-
+	private final int                         numChannels;
+	private final float                       sRate;
+	private double                            sTime;
+	private RenderProgram<IAudioRenderTarget> program;
+	private final AtomicReference<AudioFrame> frame = new AtomicReference<>();
+	private final FloatFFT_1D                 fft;
+	private final BlockBuffer                 buffer;
+	private final int                         fftSize;
+	private final AtomicBoolean               isRendering = new AtomicBoolean();
+	private       AudioFrame                  currentFrame;
+	private       boolean                     done;
+	private       long                        totalFrames;
+	private       long                        relFrames;
+	private       ITimebase                   timebase;
+	
 	public SpectrumAudioTarget(int numChannels, float sampleRate, float minFreq, Window windowType) {
 		this.numChannels = numChannels;
 		this.sRate       = sampleRate;
@@ -49,6 +48,7 @@ public class SpectrumAudioTarget implements IAudioRenderTarget {
 
 	@Override
 	public double getTime() {
+		if(timebase != null) return timebase.getTime();
 		return sTime / (getSampleRate() * getNumChannels());
 	}
 
@@ -104,21 +104,11 @@ public class SpectrumAudioTarget implements IAudioRenderTarget {
 		return isRendering.get();
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public PerTargetState<?> getState(AbstractRenderCommand<?, ?> cmd) throws RenderCommandException {
-		synchronized (state) {
-			PerTargetState<IAudioRenderTarget> result = state.get(cmd);
-			if(result == null) {
-				result = cmd.createStateInternal(this);
-				state.put((AbstractRenderCommand<IAudioRenderTarget,?>) cmd, result);
-			}
-			return result;
-		}
-	}
-
 	@Override
 	public void sleepUntil(double time) {}
+
+	@Override
+	public void sleepUntil(double time, Runnable callback) {}
 
 	@Override
 	public void start() throws RenderCommandException {}
@@ -127,8 +117,8 @@ public class SpectrumAudioTarget implements IAudioRenderTarget {
 	public void stop() throws RenderCommandException {}
 
 	@Override
-	public AbstractFrameSource<?, ?> getFrameSource() {
-		return program.getFrameSource();
+	public IAudioSource getAudioSource() {
+		return (IAudioSource)program.getFrameSource();
 	}
 
 	@Override
@@ -137,13 +127,28 @@ public class SpectrumAudioTarget implements IAudioRenderTarget {
 	}
 
 	@Override
-	public void setFrame(AudioFrame frame) {
+	public void setFrame(AbstractFrameSource src, AudioFrame frame) {
 		this.frame.set(frame);
 	}
 
 	@Override
 	public void useProgram(RenderProgram<IAudioRenderTarget> program) throws RenderCommandException {
 		this.program = program;
-		program.addTarget(this);
+		program.setTarget(this);
+	}
+
+	@Override
+	public final long getTotalElapsedFrames() {
+		return totalFrames;
+	}
+	
+	@Override
+	public final long getRealtiveElapsedFrames() {
+		return relFrames;
+	}
+	
+	@Override
+	public void setTimebase(ITimebase timebase) {
+		this.timebase = timebase;
 	}
 }

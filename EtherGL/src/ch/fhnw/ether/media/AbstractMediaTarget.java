@@ -29,37 +29,40 @@
 
 package ch.fhnw.ether.media;
 
-import java.util.Map;
-import java.util.WeakHashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import ch.fhnw.util.Log;
 
-public abstract class AbstractMediaTarget<F extends AbstractFrame, T extends IRenderTarget> implements IRenderTarget {
+public abstract class AbstractMediaTarget<F extends AbstractFrame, T extends IRenderTarget<F>> implements IRenderTarget<F>, IScheduler {
 	private static final Log log = Log.create();
 
-	public static final double SEC2NS = 1000 * 1000 * 1000;
-	public static final double SEC2US = 1000 * 1000;
-	public static final double SEC2MS = 1000;
-
-	private   final int                                                priority;
-	protected RenderProgram<T>                                         program;
-	protected final AtomicBoolean                                      isRendering  = new AtomicBoolean();
-	private   final Map<AbstractRenderCommand<T,?>, PerTargetState<T>> state        = new WeakHashMap<>();
-	private   final long                                               startTime    = System.nanoTime();
-	private   final AtomicReference<F>                                 frame        = new AtomicReference<>();
-	private         F                                                  currentFrame;
-	private         CountDownLatch                                     startLatch;
-
-	protected AbstractMediaTarget(int threadPriority) {
+	private   final int                     priority;
+	private   final boolean                 realTime;
+	protected RenderProgram<T>              program;
+	protected ITimebase                     timebase;
+	protected final AtomicBoolean           isRendering  = new AtomicBoolean();
+	private   final AtomicReference<F>      frame        = new AtomicReference<>();
+	private         CountDownLatch          startLatch;
+	private   final List<BlockingTimeEvent> timeEvents   = new LinkedList<>();
+	private   long                          startTime;
+	private   Thread                        framePump;
+	private   long                          totalFrames;
+	private   long                          relFrames;
+	
+	protected AbstractMediaTarget(int threadPriority, boolean realTime) {
 		this.priority = threadPriority;
+		this.realTime = realTime;
 	}
 
 	@Override
 	public final void start() {
-		if(program.getFrameSource().getFrameCount() == 1) {
+		if(program == null) throw new NullPointerException("No program set for this target");
+		if(program.getFrameSource().getLengthInFrames() == 1) {
 			try {
 				setRendering(true);
 				runOneCycle();
@@ -69,7 +72,7 @@ public abstract class AbstractMediaTarget<F extends AbstractFrame, T extends IRe
 			setRendering(false);
 		} else {
 			startLatch = new CountDownLatch(1);
-			Thread t = new Thread(()->{
+			framePump = new Thread(()->{
 				try {
 					setRendering(true);
 					startLatch.countDown();
@@ -80,105 +83,180 @@ public abstract class AbstractMediaTarget<F extends AbstractFrame, T extends IRe
 					log.severe(e);
 				}
 			}, getClass().getName());
-			t.setDaemon(true);
-			t.setPriority(priority);
-			t.start();
+			framePump.setDaemon(true);
+			framePump.setPriority(priority);
+			framePump.start();
 			try {
 				startLatch.await();
+				startTime = System.nanoTime();
 			} catch (InterruptedException e) {
 				log.severe(e);
 			}
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	protected void runOneCycle() throws RenderCommandException {
-		program.runInternal(this);
-		AbstractFrame tmp = getFrame();
+		program.run((T)this);
+		final AbstractFrame tmp = getFrame();
 		if(tmp != null) {
 			render();
-			currentFrame = frame.getAndSet(null);
-			if(currentFrame.isLast())
+			if(tmp.isLast())
 				setRendering(false);
+			tmp.dispose();
+		}
+		synchronized (timeEvents) {
+			for(final Iterator<BlockingTimeEvent> i = timeEvents.iterator(); i.hasNext();) {
+				final BlockingTimeEvent e = i.next();
+				if(e.time == NOT_RENDERING) {
+					if(!isRendering()) {
+						e.unblock();
+						i.remove();
+					}
+				} else if(e.time >= getTime()) {
+					e.unblock();
+					i.remove();
+				}
+			}
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	@Override
-	public PerTargetState<?> getState(AbstractRenderCommand<?,?> cmd) throws RenderCommandException {
-		synchronized (state) {
-			PerTargetState<T> result = state.get(cmd);
-			if(result == null) {
-				result = cmd.createStateInternal(this);
-				state.put((AbstractRenderCommand<T,?>) cmd, result);
-			}
-			return result;
-		}
-	}
-
-	@SuppressWarnings("unused")
 	public void useProgram(RenderProgram<T> program) throws RenderCommandException {
+		if(this.program == program) return;
 		this.program = program;	
-		program.addTarget(this);
+		program.setTarget((T)this);
 	}
 
 	@Override
 	public void stop() throws RenderCommandException {
 		setRendering(false);
+		synchronized (timeEvents) {
+			for(final Iterator<BlockingTimeEvent> i = timeEvents.iterator(); i.hasNext();) {
+				BlockingTimeEvent e = i.next();
+				e.unblock();
+			}
+			timeEvents.clear();
+		}
 	}
 
 	@Override
 	public void render() throws RenderCommandException {}
 
 	@Override
-	public boolean isRendering() {
+	public final boolean isRendering() {
 		return isRendering.get();
 	}
 
-	protected void setRendering(boolean state) {
+	protected final void setRendering(boolean state) {
 		isRendering.set(state);
 	}
 
 	@Override
-	public double getTime() {
-		return (System.nanoTime() - startTime) / SEC2NS; 
+	public final void sleepUntil(double time) {
+		sleepUntil(time, null);
 	}
 
-	@Override
-	public void sleepUntil(double time) {
+	protected void nap() {
 		try {
-			if(time == NOT_RENDERING) {
-				while(isRendering()) {
-					Thread.sleep(2);
-				}
-			} else {
-				time *= SEC2NS;
-				long deadline = startTime + (long)time;
-				long wait     = deadline - System.nanoTime();
-				if(wait > 0) {
-					Thread.sleep(wait / 1000000L, (int)(wait % 1000000L));
-				} else {
-					//	log.warning("Missed deadline by " + -wait + "ns");
-				}
-			}
-		} catch(Throwable t) {
-			log.severe(t);
+			Thread.sleep(1);
+		} catch (Throwable t) {
+			log.warning(t);
 		}
 	}
 
-	public F getFrame() {
-		return frame.get();
-	}
-
-	public void setFrame(F frame) {
-		this.frame.set(frame);
-	}
-
-	public F getCurrentFrame() {
-		return currentFrame;
+	@Override
+	public final void sleepUntil(double time, Runnable runnable) {
+		if(time == ASAP) return;
+		if(Thread.currentThread() == framePump)
+			if(time == NOT_RENDERING) {
+				while(isRendering())
+					nap();
+			} else {
+				if(realTime) {
+					try {
+						int sleep = (int)((time - getTime()) * 1000);
+						if(sleep > 0)
+							Thread.sleep(sleep);
+					} catch (Throwable t) {
+						log.warning(t);
+					}
+				}
+				while(getTime() <= time)
+					nap();
+			}
+		else if(time == NOT_RENDERING || time > getTime()) {
+			BlockingTimeEvent event = new BlockingTimeEvent(time, runnable);
+			synchronized (timeEvents) {
+				timeEvents.add(event);
+			}
+			event.sleep();
+		}
 	}
 
 	@Override
-	public AbstractFrameSource<T, ?> getFrameSource() {
-		return program.getFrameSource();
-	}	
+	public final F getFrame() {
+		return frame.get();
+	}
+
+	@Override
+	public final void setFrame(AbstractFrameSource src, F frame) {
+		this.frame.set(frame);
+		long length = src.getLengthInFrames();
+		if(length > 0 && getRealtiveElapsedFrames() >= length)
+			relFrames = 0;
+		totalFrames++;
+		relFrames++;
+	}
+
+	static final class BlockingTimeEvent {
+		public  final double         time;
+		private final CountDownLatch latch = new CountDownLatch(1);
+		private final Runnable       callback;
+
+		public BlockingTimeEvent(double time, Runnable callback) {
+			this.time    = time;
+			this.callback = callback;
+		}
+
+		public void unblock() {
+			if(callback != null)
+				callback.run();
+			latch.countDown();
+		}
+
+		public void sleep() {
+			try {
+				latch.await();
+			} catch(Throwable t) {
+				AbstractMediaTarget.log.warning(t);
+			}
+		}
+	}
+
+	@Override
+	public double getTime() {
+		if(timebase != null) return timebase.getTime();
+		if(realTime)
+			return (System.nanoTime() - startTime) / SEC2NS;
+
+		AbstractFrameSource src = program.getFrameSource();
+		long                len = src.getLengthInFrames();
+		return getTotalElapsedFrames() / (len <= 0 ?  src.getFrameRate() : (len / src.getLengthInSeconds()));
+	}
+
+	@Override
+	public final void setTimebase(ITimebase timebase) {
+		this.timebase = timebase;
+	}
+	
+	@Override
+	public final long getTotalElapsedFrames() {
+		return totalFrames;
+	}
+
+	@Override
+	public final long getRealtiveElapsedFrames() {
+		return relFrames;
+	}
 }

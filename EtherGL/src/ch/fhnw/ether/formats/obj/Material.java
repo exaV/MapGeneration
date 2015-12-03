@@ -30,15 +30,16 @@
 package ch.fhnw.ether.formats.obj;
 
 import ch.fhnw.ether.image.Frame;
+import ch.fhnw.ether.scene.mesh.material.Texture;
 import ch.fhnw.util.color.RGB;
 
-public class Material {
+final class Material {
 	private final String name;
-	private RGB Ka;
-	private RGB Kd;
-	private RGB Ks;
-	private float shininess;
-	private Frame texture;
+	private RGB    Ka;
+	private RGB    Kd;
+	private RGB    Ks;
+	private float  shininess;
+	private Frame  texture;
 	private String textureName;
 
 	public Material(String name) {
@@ -85,8 +86,8 @@ public class Material {
 		shininess = s;
 	}
 
-	public Frame getTexture() {
-		return texture;
+	public Texture getTexture() {
+		return texture.getTexture();
 	}
 
 	public void setTexture(Frame texture) {

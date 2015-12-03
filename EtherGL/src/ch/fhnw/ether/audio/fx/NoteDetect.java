@@ -34,78 +34,27 @@ import java.util.Arrays;
 import ch.fhnw.ether.audio.IAudioRenderTarget;
 import ch.fhnw.ether.media.AbstractRenderCommand;
 import ch.fhnw.ether.media.Parameter;
-import ch.fhnw.ether.media.PerTargetState;
 import ch.fhnw.ether.media.RenderCommandException;
-import ch.fhnw.ether.media.StateHandle;
 
-public class NoteDetect extends AbstractRenderCommand<IAudioRenderTarget,NoteDetect.State> {
+public class NoteDetect extends AbstractRenderCommand<IAudioRenderTarget> {
 	private static final Parameter TRESH     = new Parameter("tresh", "Threshold",       0,    1,     0.4f);
 	private static final Parameter DELAY     = new Parameter("delay", "Sample delay",    0,    0.05f, 0.01f);
 	private static final Parameter HARMONIC0 = new Parameter("h0",    "1st harmonic",    0,    1,     0f);
 	private static final Parameter HARMONIC1 = new Parameter("h1",    "2nd harmonic",    0,    1,     0f);
 
-	private final StateHandle<BandsButterworth.State> bands;
-	private final StateHandle<OnsetDetect.State>      onset;
-	private final double                              holdTime;
+	private final BandsButterworth bands;
+	private final OnsetDetect      onset;
+	private final double           holdTime;
+	private       int              N;
+	private       float            onsetv;
+	private       float[]          values;
+	private       float[]          velocities;
+	private       double[]         noteTimes;
+	private       boolean[]        notes;
+	private       double           sampleTime;
+	private       double           now;
 
-	public class State extends PerTargetState<IAudioRenderTarget> {
-		private final int       N;
-		private       float     onsetv;
-		private final float[]   values;
-		private final float[]   velocities;
-		private final double[]  noteTimes;
-		private final boolean[] notes;
-		private       double    sampleTime;
-		private       double    now;
-		
-		public State(IAudioRenderTarget target) throws RenderCommandException {
-			super(target);
-			N          = bands.get(target).numBands();
-			values     = new float[N+36];
-			velocities = new float[values.length];
-			notes      = new boolean[values.length];
-			noteTimes  = new double[values.length];
-		}
-
-		public void process(State state) throws RenderCommandException {
-			final IAudioRenderTarget target = state.getTarget();
-			now    = target.getTime();
-			onsetv = onset.get(target).onset();
-			if(onsetv > 0.3f)
-				sampleTime = now + getVal(DELAY); 
-			if(now > sampleTime) {
-				bands.get(target).power(values);
-				float h0 = getVal(HARMONIC0);
-				float h1 = getVal(HARMONIC1);
-				for(int i = 0; i < N; i++) {
-					if(values[i] > 0.3f) {
-						values[i + 12] *= h0;
-						values[i + 24] *= h1;
-					}
-				} 
-				System.arraycopy(values, 0, velocities, 0, velocities.length);
-				sampleTime = 0;
-			}
-			else
-				Arrays.fill(values, 0f);
-			final float tresh = getVal(TRESH);
-			for(int i = 0; i < values.length; i++)
-				if(values[i] > tresh)
-					noteTimes[i] = now + holdTime;
-		}
-
-		public boolean[] notes() {
-			for(int i = 0; i < notes.length; i++)
-				notes[i] = now < noteTimes[i];
-			return notes;
-		}
-		
-		public float[] velocities() {
-			return velocities;
-		}
-	}
-
-	public NoteDetect(StateHandle<BandsButterworth.State> bands, StateHandle<OnsetDetect.State> onset, double holdTimeInSec) {
+	public NoteDetect(BandsButterworth bands, OnsetDetect onset, double holdTimeInSec) {
 		super(TRESH, DELAY, HARMONIC0, HARMONIC1);
 		this.bands    = bands;
 		this.onset    = onset;
@@ -113,12 +62,48 @@ public class NoteDetect extends AbstractRenderCommand<IAudioRenderTarget,NoteDet
 	}
 
 	@Override
-	protected void run(State state) throws RenderCommandException {
-		state.process(state);
+	protected void init(IAudioRenderTarget target) throws RenderCommandException {
+		N          = bands.numBands();
+		values     = new float[N+36];
+		velocities = new float[values.length];
+		notes      = new boolean[values.length];
+		noteTimes  = new double[values.length];
+	}
+
+	public boolean[] notes() {
+		for(int i = 0; i < notes.length; i++)
+			notes[i] = now < noteTimes[i];
+		return notes;
+	}
+
+	public float[] velocities() {
+		return velocities;
 	}
 
 	@Override
-	public State createState(IAudioRenderTarget target) throws RenderCommandException {
-		return new State(target);
+	protected void run(final IAudioRenderTarget target) throws RenderCommandException {
+		now    = target.getTime();
+		onsetv = onset.onset();
+		if(onsetv > 0.3f)
+			sampleTime = now + getVal(DELAY); 
+		if(now > sampleTime) {
+			bands.power(values);
+			float h0 = getVal(HARMONIC0);
+			float h1 = getVal(HARMONIC1);
+			for(int i = 0; i < N; i++) {
+				if(values[i] > 0.3f) {
+					values[i + 12] *= h0;
+					values[i + 24] *= h1;
+				}
+			} 
+			System.arraycopy(values, 0, velocities, 0, velocities.length);
+			sampleTime = 0;
+		}
+		else
+			Arrays.fill(values, 0f);
+		final float tresh = getVal(TRESH);
+		for(int i = 0; i < values.length; i++)
+			if(values[i] > tresh)
+				noteTimes[i] = now + holdTime;
 	}
 }

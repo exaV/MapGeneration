@@ -45,23 +45,40 @@ import javax.sound.midi.Track;
 
 import ch.fhnw.ether.media.AbstractFrameSource;
 import ch.fhnw.ether.media.AbstractMediaTarget;
-import ch.fhnw.ether.media.PerTargetState;
+import ch.fhnw.ether.media.IRenderTarget;
+import ch.fhnw.ether.media.IScheduler;
 import ch.fhnw.ether.media.RenderCommandException;
 
-public class URLMidiSource extends AbstractFrameSource<IMidiRenderTarget, URLMidiSource.State> {
-	private final Sequence seq;
-	private final int      numPlays;
-	private final URL      url;
-	private final long     frameCount;
+public class URLMidiSource extends AbstractFrameSource implements IMidiSource {
+	private final Sequence          seq;
+	private final URL               url;
+	private final long              frameCount;
+	private final float             divtype;
+	private final Track[]           tracks;
+	private final int               seqres;
+	private final int[]             trackspos;
+	private       int               mpq        = (int)AbstractMediaTarget.SEC2US / 2;
+	private       long              lasttick   = -1;
+	private       long              curtime    = 0;
+	private       int               numPlays;
+	private       double            startTime  = -1;
+	private final List<MidiMessage> msgs = new ArrayList<>();
+	private final double            length;
+	int                             count;
 
 	public URLMidiSource(URL url) throws InvalidMidiDataException, IOException {
 		this(url, Integer.MAX_VALUE);
 	}
 
 	public URLMidiSource(final URL url, final int numPlays) throws IOException, InvalidMidiDataException {
-		this.url      = url;
-		this.seq      = MidiSystem.getSequence(url);
-		this.numPlays = numPlays;
+		this.url       = url;
+		this.seq       = MidiSystem.getSequence(url);
+		this.numPlays  = numPlays;
+		this.divtype   = seq.getDivisionType();
+		this.tracks    = seq.getTracks();
+		this.seqres    = seq.getResolution();
+		this.trackspos = new int[tracks.length];
+		this.numPlays  = URLMidiSource.this.numPlays;
 		if(seq.getDivisionType() != Sequence.PPQ)
 			throw new IOException("Only PPQ Sequence supported");
 
@@ -70,6 +87,7 @@ public class URLMidiSource extends AbstractFrameSource<IMidiRenderTarget, URLMid
 		int[]   trackspos = new int[tracks.length];
 		long    lasttick   = -1;
 		int     msgs       = 0;
+		curtime            = 0;
 		
 		frameLoop:
 			for(;;) {
@@ -92,10 +110,16 @@ public class URLMidiSource extends AbstractFrameSource<IMidiRenderTarget, URLMid
 
 					trackspos[seltrack]++;
 					long tick = selevent.getTick();
+					
 					if(lasttick < 0)
 						lasttick = tick;
+					if (divtype == Sequence.PPQ)
+						curtime += ((tick - lasttick) * mpq) / seqres;
+					else
+						curtime = tick;
 					boolean setFrame = lasttick != tick;
 					lasttick = tick;
+					
 					MidiMessage msg = selevent.getMessage();
 					if(!(msg instanceof MetaMessage))
 						msgs++;
@@ -107,92 +131,62 @@ public class URLMidiSource extends AbstractFrameSource<IMidiRenderTarget, URLMid
 			}
 
 		this.frameCount = frameCount;
+		this.length     = curtime;
+		this.curtime    = 0;
 	}
 
 	@Override
-	protected void run(State s) throws RenderCommandException {
-		s.runInternal();
-	}
+	protected void run(IRenderTarget<?> target) throws RenderCommandException {
+		if(numPlays <= 0) return;
 
-	@Override
-	protected State createState(IMidiRenderTarget target) {
-		return new State(target);
-	}
+		if(startTime < 0)
+			startTime = ((IScheduler)target).getTime();
 
-	class State extends PerTargetState<IMidiRenderTarget> {
-		private final float             divtype;
-		private final Track[]           tracks;
-		private final int               seqres;
-		private final int[]             trackspos;
-		private       int               mpq        = (int)AbstractMediaTarget.SEC2US / 2;
-		private       long              lasttick   = -1;
-		private       long              curtime    = 0;
-		private       int               numPlays;
-		private       double            startTime  = -1;
-		private final List<MidiMessage> msgs = new ArrayList<>();
-		int count;
-
-		State(IMidiRenderTarget target) {
-			super(target);
-			this.divtype   = seq.getDivisionType();
-			this.tracks    = seq.getTracks();
-			this.seqres    = seq.getResolution();
-			this.trackspos = new int[tracks.length];
-			this.numPlays  = URLMidiSource.this.numPlays;
-		}
-
-		void runInternal() {
-			if(numPlays <= 0) return;
-
-			if(startTime < 0)
-				startTime = getTarget().getTime();
-
-			for(;;) {
-				MidiEvent selevent = null;
-				int       seltrack = -1;
-				for (int i = 0; i < tracks.length; i++) {
-					int trackpos = trackspos[i];
-					Track track = tracks[i];
-					if (trackpos < track.size()) {
-						MidiEvent event = track.get(trackpos);
-						if (selevent == null || event.getTick() < selevent.getTick()) {
-							selevent = event;
-							seltrack = i;
-						}
+		for(;;) {
+			MidiEvent selevent = null;
+			int       seltrack = -1;
+			for (int i = 0; i < tracks.length; i++) {
+				int trackpos = trackspos[i];
+				Track track = tracks[i];
+				if (trackpos < track.size()) {
+					MidiEvent event = track.get(trackpos);
+					if (selevent == null || event.getTick() < selevent.getTick()) {
+						selevent = event;
+						seltrack = i;
 					}
 				}
-				if (seltrack == -1) {
-					Arrays.fill(trackspos, 0);
-					numPlays--;
-					startTime = -1;
-					count = 0;
-					return;
-				}
-				trackspos[seltrack]++;
-				long tick = selevent.getTick();
-				if(lasttick < 0)
-					lasttick = tick;
-				if (divtype == Sequence.PPQ)
-					curtime += ((tick - lasttick) * mpq) / seqres;
-				else
-					curtime = tick;
-				boolean setFrame = lasttick != tick;
-				lasttick = tick;
-				MidiMessage msg = selevent.getMessage();
-				if (msg instanceof MetaMessage) {
-					if (divtype == Sequence.PPQ)
-						if (((MetaMessage) msg).getType() == 0x51) {
-							byte[] data = ((MetaMessage) msg).getData();
-							mpq = ((data[0] & 0xff) << 16) | ((data[1] & 0xff) << 8) | (data[2] & 0xff);
-						}
-				} else
-					msgs.add(msg);
-				if(setFrame && !msgs.isEmpty())
-					break;
 			}
-			getTarget().setFrame(new MidiFrame(startTime + (curtime / AbstractMediaTarget.SEC2US), msgs.toArray(new MidiMessage[msgs.size()])));
-			msgs.clear();
+			if (seltrack == -1) {
+				Arrays.fill(trackspos, 0);
+				numPlays--;
+				startTime = -1;
+				count = 0;
+				return;
+			}
+			trackspos[seltrack]++;
+			long tick = selevent.getTick();
+			if(lasttick < 0)
+				lasttick = tick;
+			if (divtype == Sequence.PPQ)
+				curtime += ((tick - lasttick) * mpq) / seqres;
+			else
+				curtime = tick;
+			boolean setFrame = lasttick != tick;
+			lasttick = tick;
+			MidiMessage msg = selevent.getMessage();
+			if (msg instanceof MetaMessage) {
+				if (divtype == Sequence.PPQ)
+					if (((MetaMessage) msg).getType() == 0x51) {
+						byte[] data = ((MetaMessage) msg).getData();
+						mpq = ((data[0] & 0xff) << 16) | ((data[1] & 0xff) << 8) | (data[2] & 0xff);
+					}
+			} else
+				msgs.add(msg);
+			if(setFrame && !msgs.isEmpty())
+				break;
 		}
+		((IMidiRenderTarget)target).setFrame(this, new MidiFrame(startTime + (curtime / AbstractMediaTarget.SEC2US), msgs.toArray(new MidiMessage[msgs.size()])));
+		msgs.clear();
 	}
 
 	@Override
@@ -201,7 +195,18 @@ public class URLMidiSource extends AbstractFrameSource<IMidiRenderTarget, URLMid
 	}
 
 	@Override
-	public long getFrameCount() {
+	public long getLengthInFrames() {
 		return frameCount;
+	}
+	
+	@Override
+	public double getLengthInSeconds() {
+		return length;
+	}
+	
+	@Override
+	public float getFrameRate() {
+		double result = getLengthInFrames() / getLengthInSeconds();
+		return (float)result;
 	}
 }

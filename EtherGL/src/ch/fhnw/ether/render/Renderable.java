@@ -35,69 +35,11 @@ import java.util.function.Supplier;
 
 import com.jogamp.opengl.GL3;
 
-import ch.fhnw.ether.render.IRenderer.IRenderUpdate;
 import ch.fhnw.ether.render.shader.IShader;
 import ch.fhnw.ether.scene.attribute.IAttribute;
 import ch.fhnw.ether.scene.mesh.IMesh;
-import ch.fhnw.util.math.Mat3;
-import ch.fhnw.util.math.Mat4;
 
 public final class Renderable {
-	public static final class RenderUpdate implements IRenderUpdate {
-		public final Renderable renderable;
-		public final Object[] materialData;
-		public final float[][] geometryData;
-		public final Mat4 positionTransform;
-		public final Mat3 normalTransform;
-
-		public RenderUpdate(Renderable renderable, IMesh mesh) {
-			this(renderable, mesh, true, true);
-		}
-		
-		public RenderUpdate(Renderable renderable, IMesh mesh, boolean materialChanged, boolean geometryChanged) {
-			this.renderable = renderable;
-			if (materialChanged)
-				materialData = mesh.getMaterial().getData().toArray();	
-			else
-				materialData = null;
-
-			if (geometryChanged) {
-				geometryData = mesh.getGeometry().getData();
-				positionTransform = Mat4.multiply(Mat4.translate(mesh.getPosition()), mesh.getTransform());
-				normalTransform = new Mat3(positionTransform).inverse().transpose();				
-			} else {
-				geometryData = null;
-				positionTransform = null;
-				normalTransform = null;
-			}
-		}	
-		
-		@Override
-		public Renderable getRenderable() {
-			return renderable;
-		}
-		
-		@Override
-		public Object[] getMaterialData() {
-			return materialData;
-		}
-		
-		@Override
-		public float[][] getGeometryData() {
-			return geometryData;
-		}
-		
-		@Override
-		public Mat4 getPositionTransform() {
-			return positionTransform;
-		}
-		
-		@Override
-		public Mat3 getNormalTransform() {
-			return normalTransform;
-		}
-	}
-
 	private final IShader shader;
 	private final VertexBuffer buffer;
 	private final IMesh.Queue queue;
@@ -114,11 +56,11 @@ public final class Renderable {
 		this.flags = mesh.getFlags();
 	}
 
-	public void update(GL3 gl, IRenderUpdate update) {
-		if (update.getMaterialData() != null)
-			shader.update(gl, update.getMaterialData());
-		if (update.getGeometryData() != null)
-			buffer.load(gl, shader, update.getGeometryData(), update.getPositionTransform(), update.getNormalTransform());
+	public void update(GL3 gl, Object[] materialData, float[][] geometryData) {
+		if (materialData != null)
+			shader.update(gl, materialData);
+		if (geometryData != null)
+			buffer.update(gl, geometryData);
 	}
 
 	public void render(GL3 gl) {
@@ -127,11 +69,6 @@ public final class Renderable {
 		shader.disable(gl);
 	}
 	
-	public void render(GL3 gl, IMesh mesh) {
-		update(gl, new RenderUpdate(this, mesh));
-		render(gl);
-	}
-
 	public IMesh.Queue getQueue() {
 		return queue;
 	}

@@ -29,7 +29,10 @@
 
 package ch.fhnw.ether.media;
 
-public class Parameter {
+import ch.fhnw.ether.scene.attribute.IAttribute;
+import ch.fhnw.util.TextUtilities;
+
+public class Parameter implements IAttribute {
 	public enum Type {RANGE, ITEMS}
 
 	private final String   name;
@@ -43,12 +46,14 @@ public class Parameter {
 	public Parameter(String name, String description, float min, float max, float val) {
 		this(name, description, min, max, val, null);
 	}
-	
+
 	public Parameter(String name, String description, int val, String ... items) {
 		this(name, description, Float.MIN_VALUE, Float.MAX_VALUE, val, items);
 	}
 
 	public Parameter(String name, String description, float min, float max, float val, String[] items) {
+		if(!name.equals(TextUtilities.cleanForId(name)))
+			throw new IllegalArgumentException("Illegal (non-id) characters in name '" + name + "'");
 		this.name        = name;
 		this.description = description;
 		this.min         = min;
@@ -102,7 +107,7 @@ public class Parameter {
 	final int getIdx() {
 		return idx;
 	}
-	
+
 	protected Parameter copy() {
 		return new Parameter(this);
 	}
@@ -113,5 +118,10 @@ public class Parameter {
 
 	public String[] getItems() {
 		return items;
+	}
+
+	@Override
+	public String id() {
+		return name;
 	}
 }

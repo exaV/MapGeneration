@@ -31,13 +31,14 @@ package ch.fhnw.ether.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Hashtable;
 import java.util.concurrent.atomic.AtomicReference;
@@ -60,30 +61,186 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import ch.fhnw.ether.audio.IAudioSource;
+import ch.fhnw.ether.image.Frame;
+import ch.fhnw.ether.image.ImageScaler;
+import ch.fhnw.ether.media.AbstractFrame;
+import ch.fhnw.ether.media.AbstractFrameSource;
 import ch.fhnw.ether.media.AbstractRenderCommand;
+import ch.fhnw.ether.media.IRenderTarget;
+import ch.fhnw.ether.media.IScheduler;
 import ch.fhnw.ether.media.Parameter;
 import ch.fhnw.ether.media.RenderProgram;
+import ch.fhnw.ether.video.IVideoSource;
+import ch.fhnw.ether.video.VideoFrame;
+import ch.fhnw.util.TextUtilities;
 
 public class ParameterWindow {
 	public enum Flag {EXIT_ON_CLOSE}
 
-	static final float S         = 1000f;
-	static final int   NUM_TICKS = 5;
+	static final float   S            = 1000f;
+	static final int     NUM_TICKS    = 5;
+	static final int     POLL_DELAY   = 40;
+	static final boolean SHOW_PREVIEW = false;
 
-	private static NumberFormat FMT = new DecimalFormat("#.##");
+	private static NumberFormat FMT = TextUtilities.decimalFormat(2);
 
 	AtomicReference<JFrame> frame = new AtomicReference<>();
+	SourceInfoUI            srcInfo;
+
+	static class SourceInfoUI extends JPanel {
+		private static final long serialVersionUID = 1948296851485298033L;
+
+		private JLabel           frameRateUI;
+		private JLabel           actualRateUI;
+		private JLabel           realTimeUI;
+		private JLabel           targetTimeUI;
+		private JLabel           frameTimeUI;
+		private JLabel           relativeFramesUI;
+		private JLabel           totalFramesUI;
+		private JLabel           lenFramesUI;
+		private JLabel           lenSecsUI;
+		private JLabel           channelsUI;
+		private JLabel           sRateUI;
+		private JLabel           widthUI;
+		private JLabel           heightUI;
+		private JComponent       previewUI;
+		private Frame            preview;
+		private TitledBorder     titleUI;
+		private long             startTime;
+		private long             startFrames;
+		private RenderProgram<?> program;
+
+		public SourceInfoUI(RenderProgram<?> program) {
+			this.program = program;
+			AbstractFrameSource src = program.getFrameSource();
+
+			setLayout(new GridBagLayout());
+			titleUI = new TitledBorder(new EtchedBorder());
+			setBorder(titleUI);
+
+			frameRateUI      = add("Nominal Frame Rate");
+			actualRateUI     = add("Actual Frame Rate [FPS]");
+			realTimeUI       = add("Real Time [secs]");
+			targetTimeUI     = add("Target Time [secs]");
+			frameTimeUI      = add("Frame Time [secs]");
+			relativeFramesUI = add("Relative Frames");
+			totalFramesUI    = add("Total Frames");
+			lenFramesUI      = add("Length [frames]");
+			lenSecsUI        = add("Length [secs]");
+			if(src instanceof IAudioSource) {
+				channelsUI = add("Channels");
+				sRateUI    = add("Sampling Rate");
+			}
+			if(src instanceof IVideoSource) {
+				widthUI   = add("Width");
+				heightUI  = add("Height");
+				if(SHOW_PREVIEW) {
+					previewUI = new JComponent() {
+						private static final long serialVersionUID = -5603882807144516938L;
+
+						@Override
+						protected void paintComponent(Graphics g) {
+							if(preview != null) {
+								int w = SwingUtilities.getRoot(this).getWidth();
+								int h = (w * preview.height) / preview.width;
+								if(getPreferredSize().width != w) {
+									setPreferredSize(new Dimension(w, h));
+									pack(SourceInfoUI.this);
+								}
+								g.drawImage(preview.toBufferedImage(), 0, 0, w, h, ImageScaler.AWT_OBSERVER);
+							}
+						}
+					};
+					previewUI.setMinimumSize(new Dimension(16, 16));
+					GridBagConstraints gbc = new GridBagConstraints();
+					gbc.gridy     = getComponentCount() / 2;
+					gbc.gridwidth = 2;
+					gbc.fill      = GridBagConstraints.BOTH;
+					gbc.weightx   = 1;
+					add(previewUI, gbc);
+				}
+			}
+
+			update(true);
+		}
+
+		@SuppressWarnings("unused")
+		void update(boolean programChange) {
+			AbstractFrameSource src    = program.getFrameSource();
+			if(programChange) {
+				titleUI.setTitle(src.toString());
+				frameRateUI.setText(FMT.format(src.getFrameRate()));
+				lenFramesUI.setText(Long.toString(src.getLengthInFrames()));
+				lenSecsUI.setText(FMT.format(src.getLengthInSeconds()));
+				if(src instanceof IAudioSource) {
+					channelsUI.setText(Integer.toString(((IAudioSource)src).getNumChannels()));
+					sRateUI.setText(FMT.format(((IAudioSource)src).getSampleRate()));
+				}
+				if(src instanceof IVideoSource) {
+					widthUI.setText(Integer.toString(((IVideoSource)src).getWidth()));
+					heightUI.setText(Integer.toString(((IVideoSource)src).getHeight()));
+				}
+			}
+			if(program.getTarget() != null) {
+				IRenderTarget<?> target = program.getTarget(); 
+				if(target.getTotalElapsedFrames() == 0 || programChange) {
+					startFrames = target.getTotalElapsedFrames();
+					startTime   = System.nanoTime();
+				} else {
+					long frames  = target.getTotalElapsedFrames() - startFrames;
+					long elapsed = System.nanoTime() - startTime;
+					realTimeUI.setText(FMT.format(elapsed / IScheduler.SEC2NS));
+					actualRateUI.setText(FMT.format((IScheduler.SEC2NS * frames) / elapsed));
+				}
+				if(target instanceof IScheduler)
+					targetTimeUI.setText(FMT.format(((IScheduler)target).getTime()));
+				if(target != null) {
+					AbstractFrame frame = target.getFrame();
+					if(frame != null) {
+						frameTimeUI.setText(FMT.format(frame.playOutTime));
+						if(SHOW_PREVIEW && frame instanceof VideoFrame) {
+							Frame f = ((VideoFrame)frame).getFrame();
+							if(f != null) {
+								preview = f;
+								previewUI.repaint();
+							}
+						}
+					}
+				}
+				relativeFramesUI.setText(Long.toString(target.getRealtiveElapsedFrames()));
+				totalFramesUI.setText(Long.toString(target.getTotalElapsedFrames()));
+			}
+		}
+
+		private JLabel add(String label) {
+			GridBagConstraints gbc = new GridBagConstraints();
+			gbc.gridx   = 0;
+			gbc.fill    = GridBagConstraints.HORIZONTAL;
+			gbc.anchor  = GridBagConstraints.WEST;
+			gbc.weightx = 0.7f;
+			add(new JLabel(label), gbc);
+			JLabel result = new JLabel("?");
+			gbc = new GridBagConstraints();
+			gbc.gridx   = 1;
+			gbc.fill    = GridBagConstraints.HORIZONTAL;
+			gbc.anchor  = GridBagConstraints.WEST;
+			gbc.weightx = 0.3f;
+			add(result, gbc);
+			return result;
+		}
+	}
 
 	static class ParamUI implements ChangeListener, ActionListener {
-		JLabel                     label;
-		JSlider                    slider;
-		JComboBox<String>          combo;
-		AbstractRenderCommand<?,?> cmd;
-		Parameter                  p;
-		float                      def;
-		Timer                      t;
+		JLabel                   label;
+		JSlider                  slider;
+		JComboBox<String>        combo;
+		AbstractRenderCommand<?> cmd;
+		Parameter                p;
+		float                    def;
+		Timer                    t;
 
-		ParamUI(AbstractRenderCommand<?,?> cmd, Parameter param) {
+		ParamUI(AbstractRenderCommand<?> cmd, Parameter param) {
 			Hashtable<Integer, JLabel> labels = new Hashtable<>();
 			float d = param.getMax() - param.getMin();
 			for(int i = 0; i < NUM_TICKS; i++) {
@@ -102,7 +259,7 @@ public class ParameterWindow {
 					this.slider.setPaintTicks(true);
 					this.slider.setLabelTable(labels);
 					this.slider.addChangeListener(this);
-					t = new Timer(40, this);
+					t = new Timer(POLL_DELAY, this);
 					t.start();
 				} catch(Throwable t) {
 					System.err.println(param);
@@ -113,7 +270,7 @@ public class ParameterWindow {
 				this.combo = new JComboBox<>(param.getItems());
 				this.combo.addActionListener(this);
 				this.combo.setSelectedIndex((int)(cmd.getVal(p)));
-				t = new Timer(40, this);
+				t = new Timer(POLL_DELAY, this);
 				t.start();
 				break;
 			}
@@ -160,7 +317,7 @@ public class ParameterWindow {
 		}
 	}
 
-	public ParameterWindow(final AbstractRenderCommand<?,?> src, Flag ... flags) {
+	public ParameterWindow(final AbstractRenderCommand<?> src, Flag ... flags) {
 		this(null, src, flags);
 	}
 
@@ -171,7 +328,7 @@ public class ParameterWindow {
 		return false;
 	}
 
-	public ParameterWindow(final JComponent addOn, final AbstractRenderCommand<?,?> src, Flag ... flags) {
+	public ParameterWindow(final JComponent addOn, final AbstractRenderCommand<? extends IRenderTarget<?>> src, Flag ... flags) {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
@@ -193,7 +350,7 @@ public class ParameterWindow {
 				menu.add(item);
 			}
 
-			JComponent createUI(AbstractRenderCommand<?,?> cmd) {
+			JComponent createUI(AbstractRenderCommand<?> cmd) {
 				if(cmd.getClass().getName().equals(cmd.toString()) && cmd.getParameters().length == 0) {
 					JLabel result = new JLabel(cmd.toString());
 					result.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
@@ -203,7 +360,7 @@ public class ParameterWindow {
 				JPopupMenu menu   = new JPopupMenu();
 				JPanel     result = new JPanel();
 				result.setComponentPopupMenu(menu);
-				result.setBorder(new TitledBorder(cmd.getClass().getName()));
+				result.setBorder(new TitledBorder(cmd.toString()));
 				Parameter[] params = cmd.getParameters();
 				result.setLayout(new GridBagLayout());
 				if(params.length > 0) {
@@ -240,7 +397,6 @@ public class ParameterWindow {
 				return result;
 			}
 
-
 			private void setEnablded(JComponent cmp, boolean state) {
 				cmp.setEnabled(state);
 				for(Component c : cmp.getComponents()) {
@@ -249,47 +405,68 @@ public class ParameterWindow {
 				}
 			}
 
-			JPanel createUIRecr(AbstractRenderCommand<?,?> src) {
+			JPanel createUIRecr(AbstractRenderCommand<?> rcmd) {
 				Insets insets = new Insets(0, 0, 0, 0);
 				JPanel result = new JPanel();
 				result.setLayout(new GridBagLayout());
-				JComponent cmp = createUI(src);
+				JComponent cmp;
+				if(rcmd instanceof RenderProgram<?>) {
+					srcInfo = new SourceInfoUI((RenderProgram<?>)rcmd);
+					cmp = srcInfo;
+				} else {
+					cmp = createUI(rcmd);
+				}
 				int w = 1;
-				if(src instanceof RenderProgram<?>) {
-					RenderProgram<?> program = (RenderProgram<?>)src;
-					program.addListener((prog, oldProgram, newProgram)->{
+				if(rcmd instanceof RenderProgram<?>) {
+
+					final RenderProgram<?> program = (RenderProgram<?>)rcmd;
+
+					Timer t = new Timer(40, new ActionListener() {
+						AbstractRenderCommand<?>[] lastProgram = program.getProgram();
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							boolean programChange = false;
+							if(lastProgram != program.getProgram()) {
+								programChange = true;
+								lastProgram = program.getProgram();
 								result.removeAll();
 								int y = 0;
-								for(AbstractRenderCommand<?, ?> cmd : newProgram)
+								for(AbstractRenderCommand<?> cmd : lastProgram)
 									result.add(createUIRecr(cmd), new GridBagConstraints(1, y++, 1, 1, 1.0, 1.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, insets, 0, 0));
-								Component c = SwingUtilities.getRoot(result);
-								if(c instanceof JFrame)
-									((JFrame)c).pack();
-								else
-									c.validate();
+								pack(result);
+							}
+							srcInfo.update(programChange);
+						}
 					});
+					t.start();
 					int y = 0;
-					for(AbstractRenderCommand<?, ?> cmd : program.getProgram())
+					for(AbstractRenderCommand<?> cmd : program.getProgram())
 						result.add(createUIRecr(cmd), new GridBagConstraints(1, y++, 1, 1, 1.0, 1.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+				} else if(rcmd instanceof AbstractFrameSource) {
+					result.add(srcInfo, new GridBagConstraints(0, 0, w, 1, 1.0, 1.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, insets, 0, 0));
 				} else {
 					result.add(cmp, new GridBagConstraints(0, 0, w, 1, 1.0, 1.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 				}
 				return result;
 			}
 		});
+	}
 
+	private static void pack(JPanel panel) {
+		Component c = SwingUtilities.getRoot(panel);
+		if(c == null) return;
+		if(c instanceof JFrame)
+			((JFrame)c).pack();
+		else
+			c.validate();
 	}
 
 	public boolean isVisible() {
-		while(frame.get() == null)
+		while(frame.get() == null) {
 			try {
-				Thread.sleep(1);
-			} catch (InterruptedException e) {}
+				Thread.sleep(2);
+			} catch (Throwable e) {}
+		}
 		return frame.get().isVisible();
-	}
-
-	public void exitOnClose() {
-		// TODO Auto-generated method stub
-
 	}
 }

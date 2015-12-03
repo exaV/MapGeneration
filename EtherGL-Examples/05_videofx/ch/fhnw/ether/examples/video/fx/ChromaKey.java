@@ -33,13 +33,13 @@ import java.nio.ByteBuffer;
 
 import ch.fhnw.ether.image.Frame;
 import ch.fhnw.ether.media.Parameter;
-import ch.fhnw.ether.media.Stateless;
 import ch.fhnw.ether.video.IVideoRenderTarget;
 import ch.fhnw.ether.video.fx.AbstractVideoFX;
+import ch.fhnw.ether.video.fx.IVideoFrameFX;
 import ch.fhnw.util.color.ColorUtilities;
 
 
-public class ChromaKey extends AbstractVideoFX<Stateless<IVideoRenderTarget>> {
+public class ChromaKey extends AbstractVideoFX implements IVideoFrameFX {
 	private static final Parameter HUE    = new Parameter("hue",   "Hue",                0, 1,    0.5f);
 	private static final Parameter RANGE  = new Parameter("range", "Color Range",        0, 0.5f, 0.1f);
 	private static final Parameter S_MIN  = new Parameter("sMin",  "Saturation Minimum", 0, 1,    0.1f);
@@ -53,7 +53,7 @@ public class ChromaKey extends AbstractVideoFX<Stateless<IVideoRenderTarget>> {
 	}
 
 	@Override
-	protected void processFrame(double playOutTime, Stateless<IVideoRenderTarget> state, Frame frame) {
+	public void processFrame(final double playOutTime, final IVideoRenderTarget target, final Frame frame) {
 		final float h  = getVal(HUE);
 		final float r  = getVal(RANGE);
 		final float s  = getVal(S_MIN);
@@ -62,13 +62,13 @@ public class ChromaKey extends AbstractVideoFX<Stateless<IVideoRenderTarget>> {
 		final float hl = wrap(h - r);
 
 		frame.processLines((pixels, j)->{
-			final float[] hsb = new float[frame.dimI * 3];
+			final float[] hsb = new float[frame.width * 3];
 			final int     pos = pixels.position();
 			ByteBuffer mask = this.mask.pixels.asReadOnlyBuffer();
 			mask.position(pos);
 			ColorUtilities.getHSBfromRGB(mask, hsb, this.mask.pixelSize);
 			pixels.position(pos);
-			for(int i = 0; i < frame.dimI; i++) {
+			for(int i = 0; i < frame.width; i++) {
 				int idx = i * 3;
 				if(hsb[idx+1] > s && hsb[idx+2] > b && hsb[idx+0] > hl && hsb[idx+0] < hh) {
 					pixels.get();

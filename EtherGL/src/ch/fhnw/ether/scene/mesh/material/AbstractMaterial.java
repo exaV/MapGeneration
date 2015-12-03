@@ -30,19 +30,34 @@
 package ch.fhnw.ether.scene.mesh.material;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import ch.fhnw.ether.scene.attribute.IAttribute;
-import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry.IGeometryAttribute;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.util.UpdateRequest;
 
 public abstract class AbstractMaterial implements IMaterial {
+	protected static final IAttribute[] NO_ATTRIBUTES = {};
+	protected static final Object[] NO_DATA = {};
+	
+	private final IAttribute[] providedAttributes;
+	private final IGeometryAttribute[] geometryAttributes;
 
 	private final UpdateRequest update = new UpdateRequest();
 	
 	private String name = "material";
+	
+	protected AbstractMaterial(IAttribute[] providedAttributes, IGeometryAttribute[] geometryAttributes) {
+		List<IAttribute> pa = new ArrayList<>(Arrays.asList(providedAttributes));
+		pa.removeIf(Objects::isNull);
+		this.providedAttributes = pa.toArray(new IAttribute[0]);
+		List<IGeometryAttribute> ga = new ArrayList<>(Arrays.asList(geometryAttributes));
+		ga.removeIf(Objects::isNull);
+		this.geometryAttributes = ga.toArray(new IGeometryAttribute[0]);
+	}
 
 	@Override
 	public final String getName() {
@@ -60,25 +75,40 @@ public abstract class AbstractMaterial implements IMaterial {
 		// default to triangles, as this is the majority of all materials
 		return Primitive.TRIANGLES;
 	}
-
+	
 	@Override
-	public List<IAttribute> getProvidedAttributes() {
-		return new ArrayList<>();
+	public final IAttribute[] getProvidedAttributes() {
+		return providedAttributes;
 	}
 
 	@Override
-	public List<IAttribute> getRequiredAttributes() {
-		return new ArrayList<>(Collections.singletonList(IGeometry.POSITION_ARRAY));
+	public final IGeometryAttribute[] getGeometryAttributes() {
+		return geometryAttributes;
 	}
-
+	
 	@Override
-	public List<Object> getData() {
-		return new ArrayList<>();
-	}
+	public abstract Object[] getData();
 
 	@Override
 	public final UpdateRequest getUpdater() {
 		return update;
+	}
+	
+	@Override
+	public String toString() {
+		return name;
+	}
+	
+	protected static IAttribute[] material(IAttribute... attributes) {
+		return attributes;
+	}
+
+	protected static IGeometryAttribute[] geometry(IGeometryAttribute... attributes) {
+		return attributes;
+	}
+	
+	protected static Object[] data(Object... data) {
+		return data;
 	}
 	
 	protected final void updateRequest() {

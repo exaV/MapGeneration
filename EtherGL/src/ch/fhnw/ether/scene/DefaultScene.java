@@ -30,6 +30,7 @@
 package ch.fhnw.ether.scene;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -68,6 +69,12 @@ public class DefaultScene implements IScene {
 		for (I3DObject object : objects)
 			add3DObject(object);
 	}
+	
+	@Override
+	public void add3DObjects(Collection<? extends I3DObject> objects) {
+		for (I3DObject object : objects)
+			add3DObject(object);
+	}
 
 	@Override
 	public final void remove3DObject(I3DObject object) {
@@ -84,6 +91,12 @@ public class DefaultScene implements IScene {
 
 	@Override
 	public void remove3DObjects(I3DObject... objects) {
+		for (I3DObject object : objects)
+			remove3DObject(object);
+	}
+	
+	@Override
+	public void remove3DObjects(Collection<? extends I3DObject> objects) {
 		for (I3DObject object : objects)
 			remove3DObject(object);
 	}

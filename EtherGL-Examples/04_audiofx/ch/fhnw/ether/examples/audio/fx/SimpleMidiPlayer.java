@@ -36,19 +36,21 @@ import java.net.MalformedURLException;
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiUnavailableException;
 
+import ch.fhnw.ether.media.IScheduler;
 import ch.fhnw.ether.media.RenderCommandException;
 import ch.fhnw.ether.media.RenderProgram;
+import ch.fhnw.ether.midi.IMidiRenderTarget;
 import ch.fhnw.ether.midi.JavaMidiSynthesizerTarget;
 import ch.fhnw.ether.midi.URLMidiSource;
 
 
 public class SimpleMidiPlayer {
-	public static void main(String[] args) throws MalformedURLException, IOException, InterruptedException, InvalidMidiDataException, MidiUnavailableException, RenderCommandException {
+	public static void main(String[] args) throws MalformedURLException, IOException, InvalidMidiDataException, MidiUnavailableException, RenderCommandException {
 		URLMidiSource             track     = new URLMidiSource(new File(args[0]).toURI().toURL());
 		JavaMidiSynthesizerTarget synthOut  = new JavaMidiSynthesizerTarget();
-		synthOut.useProgram(new RenderProgram<>(track));
+		synthOut.useProgram(new RenderProgram<IMidiRenderTarget>(track));
 		synthOut.start();
-		Thread.sleep(5 * 60 * 1000);
+		synthOut.sleepUntil(IScheduler.NOT_RENDERING);
 		synthOut.stop();
 	}
 }

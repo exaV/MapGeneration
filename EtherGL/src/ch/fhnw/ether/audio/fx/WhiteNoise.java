@@ -35,10 +35,9 @@ import ch.fhnw.ether.audio.IAudioRenderTarget;
 import ch.fhnw.ether.media.AbstractRenderCommand;
 import ch.fhnw.ether.media.Parameter;
 import ch.fhnw.ether.media.RenderCommandException;
-import ch.fhnw.ether.media.Stateless;
 import ch.fhnw.util.math.MathUtilities;
 
-public class WhiteNoise extends AbstractRenderCommand<IAudioRenderTarget,Stateless<IAudioRenderTarget>> {
+public class WhiteNoise extends AbstractRenderCommand<IAudioRenderTarget> {
 	private static final Parameter GAIN = new Parameter("gain", "Gain", 0, 1, 0);
 	private static final Random    RND  = new Random();
 	
@@ -47,14 +46,14 @@ public class WhiteNoise extends AbstractRenderCommand<IAudioRenderTarget,Statele
 	}
 		
 	@Override
-	protected void run(Stateless<IAudioRenderTarget> state) throws RenderCommandException {
+	protected void run(final IAudioRenderTarget target) throws RenderCommandException {
 		final double  gain    = getVal(GAIN);
-		final float[] samples = state.getTarget().getFrame().samples;
+		final float[] samples = target.getFrame().samples;
 		
 		for(int i = 0 ; i < samples.length ; i++)
 			samples[i] += MathUtilities.clamp(((RND.nextFloat() * 2f) - 1f) * gain, -1, 1);
 		
-		state.getTarget().getFrame().modified();
+		target.getFrame().modified();
 	}
 	
 }

@@ -33,14 +33,14 @@ import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.scene.DefaultScene;
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
-import ch.fhnw.ether.scene.mesh.MeshLibrary;
+import ch.fhnw.ether.scene.mesh.MeshUtilities;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry.Primitive;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.util.color.RGBA;
-import ch.fhnw.util.math.Transform;
+import ch.fhnw.util.math.Mat4;
 
 public class MappingScene extends DefaultScene {
 
@@ -48,13 +48,13 @@ public class MappingScene extends DefaultScene {
 		super(controller);
 		IMaterial material = new ColorMaterial(RGBA.WHITE);
 		for (int i = 0; i < 10; ++i) {
-			IGeometry geometry = DefaultGeometry.createV(Primitive.TRIANGLES, MeshLibrary.UNIT_CUBE_TRIANGLES);
+			IGeometry geometry = DefaultGeometry.createV(Primitive.TRIANGLES, MeshUtilities.UNIT_CUBE_TRIANGLES);
 			float s = 0.1f + 0.1f * (float) Math.random();
 			float tx = -1 + 2 * (float) Math.random();
 			float ty = -1 + 2 * (float) Math.random();
 			float rz = 360f * (float) Math.random();
 			IMesh mesh = new DefaultMesh(material, geometry);
-			mesh.setTransform(Transform.trs(tx, ty, s * 0.5f, 0, 0, rz, s, s, s));
+			mesh.setTransform(Mat4.trs(tx, ty, s * 0.5f, 0, 0, rz, s, s, s));
 			add3DObject(mesh);
 		}
 	}
