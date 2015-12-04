@@ -29,6 +29,11 @@
 
 package ch.fhnw.ether.controller.tool;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.jogamp.newt.event.MouseEvent;
+
 import ch.fhnw.ether.controller.IController;
 import ch.fhnw.ether.controller.event.IPointerEvent;
 import ch.fhnw.ether.scene.camera.DefaultCameraControl;
@@ -43,10 +48,6 @@ import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.IView.ViewFlag;
 import ch.fhnw.util.color.RGBA;
 import ch.fhnw.util.math.Vec3;
-import com.jogamp.newt.event.MouseEvent;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class NavigationTool extends AbstractTool {
 	public static final RGBA GRID_COLOR = RGBA.GRAY;
@@ -62,44 +63,6 @@ public class NavigationTool extends AbstractTool {
 		super(controller);
 		grid = makeGrid();
 		axes = makeAxes();
-	}
-
-	private static IMesh makeGrid() {
-		List<Vec3> lines = new ArrayList<>();
-
-		int gridNumLines = 12;
-		float gridSpacing = 0.1f;
-
-		// add axis lines
-		float e = 0.5f * gridSpacing * (gridNumLines + 1);
-		MeshUtilities.addLine(lines, -e, 0, e, 0);
-		MeshUtilities.addLine(lines, 0, -e, 0, e);
-
-		// add grid lines
-		int n = gridNumLines / 2;
-		for (int i = 1; i <= n; ++i) {
-			MeshUtilities.addLine(lines, i * gridSpacing, -e, i * gridSpacing, e);
-			MeshUtilities.addLine(lines, -i * gridSpacing, -e, -i * gridSpacing, e);
-			MeshUtilities.addLine(lines, -e, i * gridSpacing, e, i * gridSpacing);
-			MeshUtilities.addLine(lines, -e, -i * gridSpacing, e, -i * gridSpacing);
-		}
-
-		return new DefaultMesh(new LineMaterial(RGBA.GRAY), DefaultGeometry.createV(Primitive.LINES, Vec3.toArray(lines)), Queue.TRANSPARENCY);
-	}
-
-	private static IMesh makeAxes() {
-		float[] lines = {
-				0, 0, 0, 1, 0, 0,
-				0, 0, 0, 0, 1, 0,
-				0, 0, 0, 0, 0, 1
-		};
-		float[] colors = {
-				1, 0, 0, 1, 1, 0, 0, 1,
-				0, 1, 0, 1, 0, 1, 0, 1,
-				0, 0, 1, 1, 0, 0, 1, 1
-		};
-
-		return new DefaultMesh(new LineMaterial(RGBA.WHITE, true), DefaultGeometry.createVC(Primitive.LINES, lines, colors), Queue.TRANSPARENCY);
 	}
 
 	@Override
@@ -155,7 +118,7 @@ public class NavigationTool extends AbstractTool {
 	@Override
 	public void pointerScrolled(IPointerEvent e) {
 		DefaultCameraControl control = new DefaultCameraControl(getCamera(e.getView()));
-		float zoomFactor = 3f;
+		float zoomFactor = 0.1f;
 		control.addToAzimuth(-e.getScrollX());
 		if (e.isControlDown()) {
 			control.dolly(e.getScrollY() * zoomFactor);
@@ -163,5 +126,43 @@ public class NavigationTool extends AbstractTool {
 			control.addToDistance(e.getScrollY() * zoomFactor);
 		}
 		getController().viewChanged(e.getView());
+	}
+
+	private static IMesh makeGrid() {
+		List<Vec3> lines = new ArrayList<>();
+
+		int gridNumLines = 12;
+		float gridSpacing = 0.1f;
+
+		// add axis lines
+		float e = 0.5f * gridSpacing * (gridNumLines + 1);
+		MeshUtilities.addLine(lines, -e, 0, e, 0);
+		MeshUtilities.addLine(lines, 0, -e, 0, e);
+
+		// add grid lines
+		int n = gridNumLines / 2;
+		for (int i = 1; i <= n; ++i) {
+			MeshUtilities.addLine(lines, i * gridSpacing, -e, i * gridSpacing, e);
+			MeshUtilities.addLine(lines, -i * gridSpacing, -e, -i * gridSpacing, e);
+			MeshUtilities.addLine(lines, -e, i * gridSpacing, e, i * gridSpacing);
+			MeshUtilities.addLine(lines, -e, -i * gridSpacing, e, -i * gridSpacing);
+		}
+
+		return new DefaultMesh(new LineMaterial(RGBA.GRAY), DefaultGeometry.createV(Primitive.LINES, Vec3.toArray(lines)), Queue.TRANSPARENCY);
+	}
+	
+	private static IMesh makeAxes() {
+		float[] lines = {
+			0, 0, 0, 1, 0, 0, 
+			0, 0, 0, 0, 1, 0,
+			0, 0, 0, 0, 0, 1 
+		};
+		float[] colors = {
+			1, 0, 0, 1, 1, 0, 0, 1,
+			0, 1, 0, 1, 0, 1, 0, 1,
+			0, 0, 1, 1, 0, 0, 1, 1
+		};
+
+		return new DefaultMesh(new LineMaterial(RGBA.WHITE, true), DefaultGeometry.createVC(Primitive.LINES, lines, colors), Queue.TRANSPARENCY);
 	}
 }

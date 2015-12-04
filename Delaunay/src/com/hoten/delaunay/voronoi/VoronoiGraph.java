@@ -150,9 +150,7 @@ public abstract class VoronoiGraph {
                 colors[i] = new ColorMaterial(new RGBA((float) Math.random(), (float) Math.random(), (float) Math.random(), 1.f));
             }
         }
-
-        List<IMesh> meshes = new ArrayList<>(1000);
-
+        List<IMesh> meshes = new ArrayList<>(35000);
 
         //draw via triangles
         for (Center c : centers) {

@@ -1,4 +1,4 @@
-package model;
+package controller.generation;
 
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.util.color.RGBA;
@@ -10,9 +10,6 @@ import java.awt.*;
 import java.util.Random;
 
 /**
- * Implements different biomes (these ones are according to whittaker)
- * and manages their colors
- *
  * Created by P on 04.12.2015.
  */
 public class DefaultVoronoiGraph extends VoronoiGraph {
@@ -118,6 +115,5 @@ public class DefaultVoronoiGraph extends VoronoiGraph {
         }
 
     }
-
 
 }
