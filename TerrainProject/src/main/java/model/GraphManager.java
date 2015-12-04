@@ -2,7 +2,6 @@ package model;
 
 import com.hoten.delaunay.voronoi.VoronoiGraph;
 import com.hoten.delaunay.voronoi.nodename.as3delaunay.Voronoi;
-import controller.generation.DefaultVoronoiGraph;
 
 import java.util.Random;
 

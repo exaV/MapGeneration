@@ -30,12 +30,12 @@ public class TestGraphImpl extends VoronoiGraph {
     }
 
     @Override
-    protected Color getColor(Enum biome) {
+    public Color getColor(Enum biome) {
         return ((ColorData) biome).color;
     }
 
     @Override
-    protected ColorMaterial getColorAsMaterial(Enum biome) {
+    public ColorMaterial getColorAsMaterial(Enum biome) {
         throw new UnsupportedOperationException("cannot get colormaterials");
     }
 

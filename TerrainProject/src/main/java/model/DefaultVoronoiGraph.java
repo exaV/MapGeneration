@@ -1,4 +1,4 @@
-package controller.generation;
+package model;
 
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.util.color.RGBA;
@@ -19,12 +19,12 @@ public class DefaultVoronoiGraph extends VoronoiGraph {
     }
 
     @Override
-    protected Color getColor(Enum biome) {
+    public Color getColor(Enum biome) {
         throw new UnsupportedOperationException("can only get material");
     }
 
     @Override
-    protected ColorMaterial getColorAsMaterial(Enum biome) {
+    public ColorMaterial getColorAsMaterial(Enum biome) {
         return ((ColorData) biome).color;
     }
 

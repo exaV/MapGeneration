@@ -13,6 +13,7 @@ import ch.fhnw.ether.view.gl.DefaultView;
 import ch.fhnw.util.math.Mat4;
 import ch.fhnw.util.math.Vec3;
 import model.GraphManager;
+import model.GraphToMeshConverter;
 
 import java.awt.event.KeyEvent;
 import java.util.List;
@@ -41,7 +42,7 @@ public class Controller {
     private void init() {
         System.out.println("seed: " + seed);
 
-        final List<IMesh> img = graphManager.getGraph().createMapAsMesh(true, false, false, false, false, false);
+        final List<IMesh> img = GraphToMeshConverter.createMapAsMesh(graphManager.getGraph(), true, false, false, false, false, false);
 
         // Create controller
         IController controller = new DefaultController();
