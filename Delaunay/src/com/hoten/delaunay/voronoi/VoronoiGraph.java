@@ -159,7 +159,6 @@ public abstract class VoronoiGraph {
             meshes.addAll(drawPolygonAsMesh(c, drawBiomes?getColorAsMaterial(c.biome):colors[c.index]));
             //drawPolygon(g, c, drawBiomes ? getColor(c.biome) : defaultColors[c.index]);
             //drawPolygon(pixelCenterGraphics, c, new Color(c.index)); no equivalent implemented
-            System.out.printf("done %d of %d biome: %s\n", c.index + 1, centers.size(), c.biome);
         }
         List<IMesh> merged = MeshUtilities.mergeMeshes(meshes);
 
