@@ -33,6 +33,7 @@ public abstract class VoronoiGraph {
     final double startAngle;
     final double dipAngle;
     final double dipWidth;
+
     final private Random r;
     protected Color OCEAN, RIVER, LAKE, BEACH;
     double[][] noise;
@@ -84,6 +85,7 @@ public abstract class VoronoiGraph {
     abstract protected Enum getBiome(Center p);
 
     abstract protected Color getColor(Enum biome);
+
     abstract protected ColorMaterial getColorAsMaterial(Enum biome);
 
     private void improveCorners() {
@@ -142,6 +144,8 @@ public abstract class VoronoiGraph {
     }
 
     public List<IMesh> createMapAsMesh(boolean drawBiomes, boolean drawRivers, boolean drawSites, boolean drawCorners, boolean drawDelaunay, boolean drawVoronoi) {
+        final int HEIGHTFACTOR = 150;
+
         final int numSites = centers.size();
         ColorMaterial[] colors = null;
         if (!drawBiomes) {
@@ -150,17 +154,17 @@ public abstract class VoronoiGraph {
                 colors[i] = new ColorMaterial(new RGBA((float) Math.random(), (float) Math.random(), (float) Math.random(), 1.f));
             }
         }
-        List<IMesh> meshes = new ArrayList<>(35000);
+        List<IMesh> meshes = new ArrayList<>(35000); //currently there are 30'000 meshes
 
         //draw via triangles
         for (Center c : centers) {
-            meshes.addAll(drawPolygonAsMesh(c, drawBiomes?getColorAsMaterial(c.biome):colors[c.index]));
+            meshes.addAll(drawPolygonAsMesh(c, drawBiomes ? getColorAsMaterial(c.biome) : colors[c.index], HEIGHTFACTOR));
             //drawPolygon(g, c, drawBiomes ? getColor(c.biome) : defaultColors[c.index]);
             //drawPolygon(pixelCenterGraphics, c, new Color(c.index)); no equivalent implemented
         }
         List<IMesh> merged = MeshUtilities.mergeMeshes(meshes);
 
-        System.out.println("after merge: " + merged.size());
+        System.out.println("#meshes after merge: " + merged.size());
 
         return merged;
         //return meshes;
@@ -171,7 +175,7 @@ public abstract class VoronoiGraph {
     }
 
 
-    private List<IMesh> drawPolygonAsMesh(Center c, ColorMaterial color) {
+    private List<IMesh> drawPolygonAsMesh(Center c, ColorMaterial color, int HEIGHTFACTOR) {
 
         List<IMesh> polygon = new ArrayList<>();
 
@@ -201,7 +205,7 @@ public abstract class VoronoiGraph {
                 }
             }
 
-            polygon.add(createTriangle(e.v0, e.v1, c, color));
+            polygon.add(createTriangle(e.v0, e.v1, c, color, HEIGHTFACTOR));
             c.area += Math.abs(c.loc.x * (e.v0.loc.y - e.v1.loc.y)
                     + e.v0.loc.x * (e.v1.loc.y - c.loc.y)
                     + e.v1.loc.x * (c.loc.y - e.v0.loc.y)) / 2;
@@ -218,20 +222,20 @@ public abstract class VoronoiGraph {
             //TODO: find a way to fix this
 
             if (closeEnough(edgeCorner1.loc.x, edgeCorner2.loc.x, 1)) {
-                polygon.add(createTriangle(edgeCorner1, edgeCorner2, c, color));
+                polygon.add(createTriangle(edgeCorner1, edgeCorner2, c, color, HEIGHTFACTOR));
             } else {
                 float[] tr0 = {
-                        (float) c.loc.x, (float) c.loc.y, 0f,
-                        (float) edgeCorner2.loc.x, (float) edgeCorner2.loc.y, 0f,
-                        (float) edgeCorner1.loc.x, (float) edgeCorner1.loc.y, 0f
+                        (float) c.loc.x, (float) c.loc.y, (float) c.elevation * HEIGHTFACTOR,
+                        (float) edgeCorner2.loc.x, (float) edgeCorner2.loc.y, (float) edgeCorner2.elevation * HEIGHTFACTOR,
+                        (float) edgeCorner1.loc.x, (float) edgeCorner1.loc.y, (float) edgeCorner1.elevation * HEIGHTFACTOR
                 };
 
                 float[] tr1 = {
-                        (float) edgeCorner2.loc.x, (float) edgeCorner2.loc.y, 0f,
+                        (float) edgeCorner2.loc.x, (float) edgeCorner2.loc.y, (float) edgeCorner2.elevation * HEIGHTFACTOR,
                         (float) ((closeEnough(edgeCorner1.loc.x, bounds.x, 1) || closeEnough(edgeCorner2.loc.x, bounds.x, .5)) ? bounds.x : bounds.right),
                         (float) ((closeEnough(edgeCorner1.loc.y, bounds.y, 1) || closeEnough(edgeCorner2.loc.y, bounds.y, .5)) ? bounds.y : bounds.bottom),
-                        0f,
-                        (float) edgeCorner1.loc.x, (float) edgeCorner1.loc.y, 0f
+                        (float) edgeCorner2.elevation * HEIGHTFACTOR, //TODO: almost certainly wrong :/
+                        (float) edgeCorner1.loc.x, (float) edgeCorner1.loc.y, (float) edgeCorner1.elevation * HEIGHTFACTOR
                 };
                 float[] normals = {
                         0, 1, 0,
@@ -239,7 +243,7 @@ public abstract class VoronoiGraph {
                         0, 1, 0
                 };
 
-                float[] colors =  { 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1 };
+                float[] colors = {1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1};
 
                 DefaultGeometry g = DefaultGeometry.createVNC(IGeometry.Primitive.TRIANGLES, tr0, normals, colors);
                 DefaultGeometry g1 = DefaultGeometry.createVNC(IGeometry.Primitive.TRIANGLES, tr1, normals, colors);
@@ -738,18 +742,18 @@ public abstract class VoronoiGraph {
         }
     }
 
-    private IMesh createTriangle(Corner c1, Corner c2, Center center, ColorMaterial color) {
+    private IMesh createTriangle(Corner c1, Corner c2, Center center, ColorMaterial color, int HEIGHTFACTOR) {
         float[] vertices = {
-                (float) center.loc.x, (float) center.loc.y, 0f,
-                (float) c1.loc.x, (float) c1.loc.y, 0f,
-                (float) c2.loc.x, (float) c2.loc.y, 0f
+                (float) center.loc.x, (float) center.loc.y, (float) center.elevation * HEIGHTFACTOR,
+                (float) c1.loc.x, (float) c1.loc.y, (float) c1.elevation * HEIGHTFACTOR,
+                (float) c2.loc.x, (float) c2.loc.y, (float) c2.elevation * HEIGHTFACTOR
         };
         float[] normals = {
                 0, 1, 0,
                 0, 1, 0,
                 0, 1, 0
         };
-        float[] colors =  { 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1 };
+        float[] colors = {1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1};
 
 
         DefaultGeometry g = DefaultGeometry.createVNC(IGeometry.Primitive.TRIANGLES, vertices, normals, colors);
