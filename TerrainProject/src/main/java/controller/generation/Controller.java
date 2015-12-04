@@ -10,6 +10,7 @@ import ch.fhnw.ether.scene.mesh.IMesh;
 import ch.fhnw.ether.ui.Button;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.gl.DefaultView;
+import ch.fhnw.util.math.Mat4;
 import ch.fhnw.util.math.Vec3;
 import model.GraphManager;
 
@@ -55,6 +56,10 @@ public class Controller {
             ICamera camera = new Camera(new Vec3(0, -5, 5), Vec3.ZERO);
             scene.add3DObject(camera);
             scene.add3DObjects(img);
+
+            Mat4 translateToCenter = Mat4.translate(-400, 0, -400);
+            img.forEach(iMesh -> iMesh.setTransform(translateToCenter));
+
             controller.setCamera(view, camera);
 
             // Add an exit button
