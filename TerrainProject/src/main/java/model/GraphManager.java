@@ -23,7 +23,7 @@ public class GraphManager {
         graph = new DefaultVoronoiGraph(voronoi, numLloydRelaxations, r);
 
         // Save the Map to a file
-        System.out.printf("seed-%s sites-%d lloyds-%d", seed, numSites, numLloydRelaxations);
+        System.out.printf("seed-%s sites-%d lloyds-%d\n", seed, numSites, numLloydRelaxations);
     }
 
     public VoronoiGraph getGraph() {
