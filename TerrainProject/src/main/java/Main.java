@@ -9,13 +9,16 @@ import ch.fhnw.ether.ui.Button;
 import ch.fhnw.ether.view.IView;
 import ch.fhnw.ether.view.gl.DefaultView;
 import ch.fhnw.util.math.Vec3;
+import com.hoten.delaunay.examples.TestGraphImpl;
+import com.hoten.delaunay.voronoi.VoronoiGraph;
+import com.hoten.delaunay.voronoi.nodename.as3delaunay.Voronoi;
+import controller.generation.VoronoiGraphFor2D;
 
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-
-import static com.hoten.delaunay.examples.TestDriver.createVoronoiGraph;
+import java.util.Random;
 
 /**
  * Created by P on 03.12.2015.
@@ -30,7 +33,7 @@ public class Main {
         long seed = System.nanoTime();
         System.out.println("seed: " + seed);
 
-        final List<IMesh> img = createVoronoiGraph(bounds, numSites, numLloydRelxations, seed).createMapAsMesh(false, false, false, false, false, false);
+        final List<IMesh> img = createVoronoiGraph2D(bounds, numSites, numLloydRelxations, seed).createMapAsMesh(true, false, false, false, false, false);
 
         // Save the Map to a file
         File file = new File(String.format("output/seed-%s-sites-%d-lloyds-%d.png", seed, numSites, numLloydRelxations));
@@ -64,5 +67,16 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         new Main();
+    }
+
+    public static VoronoiGraph createVoronoiGraph2D(int bounds, int numSites, int numLloydRelaxations, long seed) {
+        final Random r = new Random(seed);
+
+        //make the intial underlying voronoi structure
+        final Voronoi v = new Voronoi(numSites, bounds, bounds, r, null);
+
+        //assemble the voronoi strucutre into a usable graph object representing a map
+
+        return new VoronoiGraphFor2D(v, numLloydRelaxations, r);
     }
 }

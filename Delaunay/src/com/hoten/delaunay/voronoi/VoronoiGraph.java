@@ -84,6 +84,7 @@ public abstract class VoronoiGraph {
     abstract protected Enum getBiome(Center p);
 
     abstract protected Color getColor(Enum biome);
+    abstract protected ColorMaterial getColorAsMaterial(Enum biome);
 
     private void improveCorners() {
         Point[] newP = new Point[corners.size()];
@@ -155,15 +156,15 @@ public abstract class VoronoiGraph {
 
         //draw via triangles
         for (Center c : centers) {
-            meshes.addAll(drawPolygonAsMesh(c, new ColorMaterial(new RGBA((float) Math.random(), (float) Math.random(), (float) Math.random(), 1.f))));
+            meshes.addAll(drawPolygonAsMesh(c, drawBiomes?getColorAsMaterial(c.biome):colors[c.index]));
             //drawPolygon(g, c, drawBiomes ? getColor(c.biome) : defaultColors[c.index]);
             //drawPolygon(pixelCenterGraphics, c, new Color(c.index)); no equivalent implemented
-            System.out.printf("done %d of %d\n", c.index + 1, centers.size());
+            System.out.printf("done %d of %d biome: %s\n", c.index + 1, centers.size(), c.biome);
         }
         List<IMesh> merged = MeshUtilities.mergeMeshes(meshes);
 
         System.out.println("after merge: " + merged.size());
-        System.exit(1);
+
         return merged;
         //return meshes;
     }
@@ -241,8 +242,10 @@ public abstract class VoronoiGraph {
                         0, 1, 0
                 };
 
-                DefaultGeometry g = DefaultGeometry.createVN(IGeometry.Primitive.TRIANGLES, tr0, normals);
-                DefaultGeometry g1 = DefaultGeometry.createVN(IGeometry.Primitive.TRIANGLES, tr1, normals);
+                float[] colors =  { 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1 };
+
+                DefaultGeometry g = DefaultGeometry.createVNC(IGeometry.Primitive.TRIANGLES, tr0, normals, colors);
+                DefaultGeometry g1 = DefaultGeometry.createVNC(IGeometry.Primitive.TRIANGLES, tr1, normals, colors);
 
                 polygon.add(new DefaultMesh(color, g));
                 polygon.add(new DefaultMesh(color, g1));
@@ -749,9 +752,10 @@ public abstract class VoronoiGraph {
                 0, 1, 0,
                 0, 1, 0
         };
+        float[] colors =  { 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1 };
 
 
-        DefaultGeometry g = DefaultGeometry.createVN(IGeometry.Primitive.TRIANGLES, vertices, normals);
+        DefaultGeometry g = DefaultGeometry.createVNC(IGeometry.Primitive.TRIANGLES, vertices, normals, colors);
         return new DefaultMesh(color, g);
     }
 }

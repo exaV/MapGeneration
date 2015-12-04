@@ -1,5 +1,6 @@
 package com.hoten.delaunay.examples;
 
+import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import com.hoten.delaunay.voronoi.Center;
 import com.hoten.delaunay.voronoi.VoronoiGraph;
 import com.hoten.delaunay.voronoi.nodename.as3delaunay.Voronoi;
@@ -31,6 +32,11 @@ public class TestGraphImpl extends VoronoiGraph {
     @Override
     protected Color getColor(Enum biome) {
         return ((ColorData) biome).color;
+    }
+
+    @Override
+    protected ColorMaterial getColorAsMaterial(Enum biome) {
+        throw new UnsupportedOperationException("cannot get colormaterials");
     }
 
     @Override

@@ -1,5 +1,7 @@
 package controller.generation;
 
+import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
+import ch.fhnw.util.color.RGBA;
 import com.hoten.delaunay.voronoi.Center;
 import com.hoten.delaunay.voronoi.VoronoiGraph;
 import com.hoten.delaunay.voronoi.nodename.as3delaunay.Voronoi;
@@ -18,15 +20,21 @@ public class VoronoiGraphFor2D extends VoronoiGraph {
 
     @Override
     protected Color getColor(Enum biome) {
-        return ((ColorData) biome).color;
+        throw new UnsupportedOperationException("can only get material");
     }
 
     @Override
-    protected Enum getBiome(Center p) {
-        if (p.ocean) {
-            return ColorData.OCEAN;
-        } else if (p.water) {
-            if (p.elevation < 0.1) {
+    protected ColorMaterial getColorAsMaterial(Enum biome) {
+        System.out.printf("biome: %s material: %s \n", biome, ((ColorData) biome).color);
+                return ((ColorData) biome).color;
+            }
+
+            @Override
+            protected Enum getBiome(Center p) {
+                if (p.ocean) {
+                    return ColorData.OCEAN;
+                } else if (p.water) {
+                    if (p.elevation < 0.1) {
                 return ColorData.MARSH;
             }
             if (p.elevation > 0.8) {
@@ -78,18 +86,35 @@ public class VoronoiGraphFor2D extends VoronoiGraph {
 
     public enum ColorData {
 
-        OCEAN(0x44447a), LAKE(0x336699), BEACH(0xa09077), SNOW(0xffffff),
-        TUNDRA(0xbbbbaa), BARE(0x888888), SCORCHED(0x555555), TAIGA(0x99aa77),
-        SHURBLAND(0x889977), TEMPERATE_DESERT(0xc9d29b),
-        TEMPERATE_RAIN_FOREST(0x448855), TEMPERATE_DECIDUOUS_FOREST(0x679459),
-        GRASSLAND(0x88aa55), SUBTROPICAL_DESERT(0xd2b98b), SHRUBLAND(0x889977),
-        ICE(0x99ffff), MARSH(0x2f6666), TROPICAL_RAIN_FOREST(0x337755),
-        TROPICAL_SEASONAL_FOREST(0x559944), COAST(0x33335a),
-        LAKESHORE(0x225588), RIVER(0x225588);
-        public Color color;
+        OCEAN(new ColorMaterial(new RGBA(68, 68, 122, 1))),
+        LAKE(new ColorMaterial(new RGBA(51, 102, 153, 1))),
+        BEACH(new ColorMaterial(new RGBA(160, 144, 119, 1))),
+        SNOW(new ColorMaterial(new RGBA(255, 255, 255, 1))),
+        TUNDRA(new ColorMaterial(new RGBA(187, 187, 170, 1))),
+        BARE(new ColorMaterial(new RGBA(136, 136, 136, 1))),
+        SCORCHED(new ColorMaterial(new RGBA(85, 85, 85, 1))),
+        TAIGA(new ColorMaterial(new RGBA(153, 170, 119, 1))),
+        SHURBLAND(new ColorMaterial(new RGBA(136, 153, 119, 1))),
+        TEMPERATE_DESERT(new ColorMaterial(new RGBA(201, 210, 155, 1))),
+        TEMPERATE_RAIN_FOREST(new ColorMaterial(new RGBA(68, 136, 85, 1))),
+        TEMPERATE_DECIDUOUS_FOREST(new ColorMaterial(new RGBA(103, 148, 89, 1))),
+        GRASSLAND(new ColorMaterial(new RGBA(136, 170, 85, 1))),
+        SUBTROPICAL_DESERT(new ColorMaterial(new RGBA(210, 185, 139, 1))),
+        SHRUBLAND(new ColorMaterial(new RGBA(136, 153, 119, 1))),
+        ICE(new ColorMaterial(new RGBA(153, 255, 255, 1))),
+        MARSH(new ColorMaterial(new RGBA(47, 102, 102, 1))),
+        TROPICAL_RAIN_FOREST(new ColorMaterial(new RGBA(51, 119, 85, 1))),
+        TROPICAL_SEASONAL_FOREST(new ColorMaterial(new RGBA(85, 153, 68, 1))),
+        COAST(new ColorMaterial(new RGBA(51, 51, 90, 1))),
+        LAKESHORE(new ColorMaterial(new RGBA(34, 85, 136, 1))),
+        RIVER(new ColorMaterial(new RGBA(34, 85, 136, 1)));
 
-        ColorData(int color) {
-            this.color = new Color(color);
+        public ColorMaterial color;
+
+        ColorData(ColorMaterial colorMaterial) {
+            this.color = colorMaterial;
         }
+
     }
+
 }
