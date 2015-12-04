@@ -1,5 +1,12 @@
 package com.hoten.delaunay.voronoi;
 
+import ch.fhnw.ether.scene.mesh.DefaultMesh;
+import ch.fhnw.ether.scene.mesh.IMesh;
+import ch.fhnw.ether.scene.mesh.MeshUtilities;
+import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
+import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
+import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
+import ch.fhnw.util.color.RGBA;
 import com.hoten.delaunay.geom.Point;
 import com.hoten.delaunay.geom.Rectangle;
 import com.hoten.delaunay.voronoi.nodename.as3delaunay.LineSegment;
@@ -8,6 +15,7 @@ import com.hoten.delaunay.voronoi.nodename.as3delaunay.Voronoi;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.*;
+import java.util.List;
 
 /**
  * VoronoiGraph.java
@@ -132,8 +140,106 @@ public abstract class VoronoiGraph {
         return img;
     }
 
+    public List<IMesh> createMapAsMesh(boolean drawBiomes, boolean drawRivers, boolean drawSites, boolean drawCorners, boolean drawDelaunay, boolean drawVoronoi) {
+        final int numSites = centers.size();
+        ColorMaterial[] colors = null;
+        if (!drawBiomes) {
+            colors = new ColorMaterial[numSites];
+            for (int i = 0; i < colors.length; i++) {
+                colors[i] = new ColorMaterial(new RGBA((float) Math.random(), (float) Math.random(), (float) Math.random(), 1.f));
+            }
+        }
+
+        List<IMesh> meshes = new ArrayList<>(1000);
+
+        //draw via triangles
+        for (Center c : centers) {
+            meshes.addAll(drawPolygonAsMesh(c, colors[c.index]));
+            //drawPolygon(g, c, drawBiomes ? getColor(c.biome) : defaultColors[c.index]);
+            //drawPolygon(pixelCenterGraphics, c, new Color(c.index)); no equivalent implemented
+        }
+
+        return MeshUtilities.mergeMeshes(meshes);
+    }
+
     public void paint(Graphics2D g) {
         paint(g, true, true, false, false, false, true);
+    }
+
+
+    private List<IMesh> drawPolygonAsMesh(Center c, ColorMaterial color) {
+
+        List<IMesh> polygon = new ArrayList<>();
+
+        //only used if Center c is on the edge of the graph. allows for completely filling in the outer polygons
+        Corner edgeCorner1 = null;
+        Corner edgeCorner2 = null;
+        c.area = 0;
+        for (Center n : c.neighbors) {
+            Edge e = edgeWithCenters(c, n);
+
+            if (e.v0 == null) {
+                //outermost voronoi edges aren't stored in the graph
+                continue;
+            }
+
+            //find a corner on the exterior of the graph
+            //if this Edge e has one, then it must have two,
+            //finding these two corners will give us the missing
+            //triangle to render. this special triangle is handled
+            //outside this for loop
+            Corner cornerWithOneAdjacent = e.v0.border ? e.v0 : e.v1;
+            if (cornerWithOneAdjacent.border) {
+                if (edgeCorner1 == null) {
+                    edgeCorner1 = cornerWithOneAdjacent;
+                } else {
+                    edgeCorner2 = cornerWithOneAdjacent;
+                }
+            }
+
+            polygon.add(createTriangle(e.v0, e.v1, c, color));
+            c.area += Math.abs(c.loc.x * (e.v0.loc.y - e.v1.loc.y)
+                    + e.v0.loc.x * (e.v1.loc.y - c.loc.y)
+                    + e.v1.loc.x * (c.loc.y - e.v0.loc.y)) / 2;
+        }
+
+        //handle the missing triangle
+        if (edgeCorner2 != null) {
+            //if these two outer corners are NOT on the same exterior edge of the graph,
+            //then we actually must render a polygon (w/ 4 points) and take into consideration
+            //one of the four corners (either 0,0 or 0,height or width,0 or width,height)
+            //note: the 'missing polygon' may have more than just 4 points. this
+            //is common when the number of sites are quite low (less than 5), but not a problem
+            //with a more useful number of sites.
+            //TODO: find a way to fix this
+
+            if (closeEnough(edgeCorner1.loc.x, edgeCorner2.loc.x, 1)) {
+                polygon.add(createTriangle(edgeCorner1, edgeCorner2, c, color));
+            } else {
+                float[] tr0 = {
+                        (float) c.loc.x, (float) c.loc.y, 0f,
+                        (float) edgeCorner1.loc.x, (float) edgeCorner1.loc.y, 0f,
+                        (float) edgeCorner2.loc.x, (float) edgeCorner2.loc.y, 0f
+                };
+
+                float[] tr1 = {
+                        (float) edgeCorner1.loc.x, (float) edgeCorner1.loc.y, 0f,
+                        (float) ((closeEnough(edgeCorner1.loc.x, bounds.x, 1) || closeEnough(edgeCorner2.loc.x, bounds.x, .5)) ? bounds.x : bounds.right),
+                        (float) ((closeEnough(edgeCorner1.loc.y, bounds.y, 1) || closeEnough(edgeCorner2.loc.y, bounds.y, .5)) ? bounds.y : bounds.bottom),
+                        0f,
+                        (float) edgeCorner2.loc.x, (float) edgeCorner2.loc.y, 0f
+                };
+
+                DefaultGeometry g = DefaultGeometry.createV(IGeometry.Primitive.TRIANGLES, tr0);
+                DefaultGeometry g1 = DefaultGeometry.createV(IGeometry.Primitive.TRIANGLES, tr1);
+
+                polygon.add(new DefaultMesh(color, g));
+                polygon.add(new DefaultMesh(color, g1));
+                c.area += 0; //TODO: area of polygon given vertices
+            }
+
+        }
+        return MeshUtilities.mergeMeshes(polygon);
     }
 
     private void drawPolygon(Graphics2D g, Center c, Color color) {
@@ -198,11 +304,13 @@ public abstract class VoronoiGraph {
                 x[3] = (int) edgeCorner2.loc.x;
                 y[3] = (int) edgeCorner2.loc.y;
 
+
                 g.fillPolygon(x, y, 4);
                 c.area += 0; //TODO: area of polygon given vertices
             }
         }
     }
+
 
     //also records the area of each voronoi cell
     public void paint(Graphics2D g, boolean drawBiomes, boolean drawRivers, boolean drawSites, boolean drawCorners, boolean drawDelaunay, boolean drawVoronoi) {
@@ -615,5 +723,15 @@ public abstract class VoronoiGraph {
         for (Center center : centers) {
             center.biome = getBiome(center);
         }
+    }
+
+    private IMesh createTriangle(Corner c1, Corner c2, Center center, ColorMaterial color) {
+        float[] vertices = {
+                (float) center.loc.x, (float) center.loc.y, 0f,
+                (float) c1.loc.x, (float) c1.loc.y, 0f,
+                (float) c2.loc.x, (float) c2.loc.y, 0f
+        };
+        DefaultGeometry g = DefaultGeometry.createV(IGeometry.Primitive.TRIANGLES, vertices);
+        return new DefaultMesh(color, g);
     }
 }
