@@ -152,14 +152,20 @@ public abstract class VoronoiGraph {
 
         List<IMesh> meshes = new ArrayList<>(1000);
 
+
         //draw via triangles
         for (Center c : centers) {
-            meshes.addAll(drawPolygonAsMesh(c, colors[c.index]));
+            meshes.addAll(drawPolygonAsMesh(c, new ColorMaterial(new RGBA((float) Math.random(), (float) Math.random(), (float) Math.random(), 1.f))));
             //drawPolygon(g, c, drawBiomes ? getColor(c.biome) : defaultColors[c.index]);
             //drawPolygon(pixelCenterGraphics, c, new Color(c.index)); no equivalent implemented
+            System.out.printf("done %d of %d\n", c.index, centers.size());
         }
+        List<IMesh> merged = MeshUtilities.mergeMeshes(meshes);
 
-        return MeshUtilities.mergeMeshes(meshes);
+        System.out.println("after merge: " + merged.size());
+        System.exit(1);
+        return merged;
+        //return meshes;
     }
 
     public void paint(Graphics2D g) {
@@ -218,20 +224,25 @@ public abstract class VoronoiGraph {
             } else {
                 float[] tr0 = {
                         (float) c.loc.x, (float) c.loc.y, 0f,
-                        (float) edgeCorner1.loc.x, (float) edgeCorner1.loc.y, 0f,
-                        (float) edgeCorner2.loc.x, (float) edgeCorner2.loc.y, 0f
+                        (float) edgeCorner2.loc.x, (float) edgeCorner2.loc.y, 0f,
+                        (float) edgeCorner1.loc.x, (float) edgeCorner1.loc.y, 0f
                 };
 
                 float[] tr1 = {
-                        (float) edgeCorner1.loc.x, (float) edgeCorner1.loc.y, 0f,
+                        (float) edgeCorner2.loc.x, (float) edgeCorner2.loc.y, 0f,
                         (float) ((closeEnough(edgeCorner1.loc.x, bounds.x, 1) || closeEnough(edgeCorner2.loc.x, bounds.x, .5)) ? bounds.x : bounds.right),
                         (float) ((closeEnough(edgeCorner1.loc.y, bounds.y, 1) || closeEnough(edgeCorner2.loc.y, bounds.y, .5)) ? bounds.y : bounds.bottom),
                         0f,
-                        (float) edgeCorner2.loc.x, (float) edgeCorner2.loc.y, 0f
+                        (float) edgeCorner1.loc.x, (float) edgeCorner1.loc.y, 0f
+                };
+                float[] normals = {
+                        0, 1, 0,
+                        0, 1, 0,
+                        0, 1, 0
                 };
 
-                DefaultGeometry g = DefaultGeometry.createV(IGeometry.Primitive.TRIANGLES, tr0);
-                DefaultGeometry g1 = DefaultGeometry.createV(IGeometry.Primitive.TRIANGLES, tr1);
+                DefaultGeometry g = DefaultGeometry.createVN(IGeometry.Primitive.TRIANGLES, tr0, normals);
+                DefaultGeometry g1 = DefaultGeometry.createVN(IGeometry.Primitive.TRIANGLES, tr1, normals);
 
                 polygon.add(new DefaultMesh(color, g));
                 polygon.add(new DefaultMesh(color, g1));
@@ -239,6 +250,8 @@ public abstract class VoronoiGraph {
             }
 
         }
+
+        //return polygon;
         return MeshUtilities.mergeMeshes(polygon);
     }
 
@@ -731,7 +744,14 @@ public abstract class VoronoiGraph {
                 (float) c1.loc.x, (float) c1.loc.y, 0f,
                 (float) c2.loc.x, (float) c2.loc.y, 0f
         };
-        DefaultGeometry g = DefaultGeometry.createV(IGeometry.Primitive.TRIANGLES, vertices);
+        float[] normals = {
+                0, 1, 0,
+                0, 1, 0,
+                0, 1, 0
+        };
+
+
+        DefaultGeometry g = DefaultGeometry.createVN(IGeometry.Primitive.TRIANGLES, vertices, normals);
         return new DefaultMesh(color, g);
     }
 }
