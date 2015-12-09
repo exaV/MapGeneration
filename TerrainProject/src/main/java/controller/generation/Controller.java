@@ -1,9 +1,15 @@
 package controller.generation;
 
-import sun.nio.cs.ext.ISCII91;
+import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.time.Instant;
+import java.util.List;
+import java.util.Random;
 
 import ch.fhnw.ether.controller.DefaultController;
 import ch.fhnw.ether.controller.IController;
+import ch.fhnw.ether.formats.obj.ObjWriter;
 import ch.fhnw.ether.scene.DefaultScene;
 import ch.fhnw.ether.scene.IScene;
 import ch.fhnw.ether.scene.camera.Camera;
@@ -16,15 +22,6 @@ import ch.fhnw.util.math.Mat4;
 import ch.fhnw.util.math.Vec3;
 import model.GraphManager;
 import model.GraphToMeshConverter;
-
-import java.awt.event.KeyEvent;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.time.Instant;
-import java.util.List;
-import java.util.Random;
-
-import ch.fhnw.ether.formats.obj.ObjWriter;
 
 /**
  * ether-gl stuff
@@ -71,7 +68,7 @@ public class Controller {
             controller.getUI().addWidget(new Button(0, 0, "Quit", "Quit", KeyEvent.VK_ESCAPE, (button, v) -> System.exit(0)));
             controller.getUI().addWidget(new Button(0, 1, "Generate", "Generate", KeyEvent.VK_G, (button, v) -> generateGraph()));
             controller.getUI().addWidget(new Button(0, 2, "changeResolution", String.valueOf(resolution), KeyEvent.VK_R, (button, v) -> resolutionSteps()));
-            controller.getUI().addWidget(new Button(0, 3, "save", "save", KeyEvent.VK_S, (button, v) -> saveObj()));
+            controller.getUI().addWidget(new Button(0, 3, "export", "export", KeyEvent.VK_S, (button, v) -> saveObj()));
         });
     }
 
