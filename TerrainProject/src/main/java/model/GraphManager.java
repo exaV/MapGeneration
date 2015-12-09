@@ -12,12 +12,14 @@ import java.util.Random;
 public class GraphManager {
 
     final int bounds = 1000;
-    final int numSites = 30000;
+    final int numSites;
     final int numLloydRelaxations = 2;
     private VoronoiGraph graph;
     private Voronoi voronoi;
 
-    public GraphManager(Random r, long seed) {
+    public GraphManager(Random r, long seed,int resolution) {
+        this.numSites = resolution;
+
         voronoi = new Voronoi(numSites, bounds, bounds, r, null);
         graph = new DefaultVoronoiGraph(voronoi, numLloydRelaxations, r);
 
