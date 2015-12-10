@@ -17,7 +17,7 @@ public class GraphManager {
     private VoronoiGraph graph;
     private Voronoi voronoi;
 
-    public GraphManager(Random r, long seed,int resolution) {
+    public GraphManager(Random r, long seed, int resolution) {
         this.numSites = resolution;
 
         voronoi = new Voronoi(numSites, bounds, bounds, r, null);

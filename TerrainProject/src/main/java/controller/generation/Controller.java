@@ -79,22 +79,23 @@ public class Controller {
         });
     }
 
-    private void generateGraph(){
-        if(world!= null){
+    private void generateGraph() {
+        if (world != null) {
             scene.remove3DObjects(world);
         }
 
         long seed = System.nanoTime();
         Random rngesus = new Random(seed);
-        graphManager = new GraphManager(rngesus,seed,resolution);
+        graphManager = new GraphManager(rngesus, seed, resolution);
         world = GraphToMeshConverter.createMapAsMesh(graphManager.getGraph(), true, false, false, false, false, false);
 
         scene.add3DObjects(world);
         Mat4 translateToCenter = Mat4.translate(-400, 0, -400);
         world.forEach(iMesh -> iMesh.setTransform(translateToCenter));
     }
-    private void resolutionSteps(){
-        switch (resolution){
+
+    private void resolutionSteps() {
+        switch (resolution) {
             case 15000:
                 resolution = 45000;
                 break;
@@ -106,11 +107,12 @@ public class Controller {
                 break;
         }
 
-        System.out.println("set resolution to"+resolution);
+        System.out.println("set resolution to" + resolution);
     }
-    private boolean saveObj(){
+
+    private boolean saveObj() {
         try {
-            ObjWriter out = new ObjWriter(new File("ModelSaves_"+ Instant.now().toString().replace("-","_").replace(":","_").replace(".","_")));
+            ObjWriter out = new ObjWriter(new File("ModelSaves_" + Instant.now().toString().replace("-", "_").replace(":", "_").replace(".", "_")));
             world.forEach(out::addMesh);
             out.write();
             return true;
