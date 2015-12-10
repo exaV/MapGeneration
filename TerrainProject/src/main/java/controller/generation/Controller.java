@@ -33,6 +33,7 @@ import java.util.Random;
  */
 public class Controller {
     final long seed;
+    //final long seed = 177470702879216; //nice value, for debugging :)
 
     List<IMesh> world = null;
     IScene scene;

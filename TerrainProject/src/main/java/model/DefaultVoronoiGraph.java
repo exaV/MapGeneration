@@ -1,6 +1,7 @@
 package model;
 
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
+import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.util.color.RGBA;
 import com.hoten.delaunay.voronoi.Center;
 import com.hoten.delaunay.voronoi.VoronoiGraph;
@@ -24,7 +25,7 @@ public class DefaultVoronoiGraph extends VoronoiGraph {
     }
 
     @Override
-    public ColorMaterial getColorAsMaterial(Enum biome) {
+    public IMaterial getColorAsMaterial(Enum biome) {
         return ((ColorData) biome).color;
     }
 
@@ -108,9 +109,9 @@ public class DefaultVoronoiGraph extends VoronoiGraph {
         LAKESHORE(new ColorMaterial(new RGBA(0x225588FF))),
         RIVER(new ColorMaterial(new RGBA(0x225588FF)));
 
-        public ColorMaterial color;
+        public IMaterial color;
 
-        ColorData(ColorMaterial colorMaterial) {
+        ColorData(IMaterial colorMaterial) {
             this.color = colorMaterial;
         }
 
