@@ -6,6 +6,7 @@ import ch.fhnw.ether.scene.mesh.MeshUtilities;
 import ch.fhnw.ether.scene.mesh.geometry.DefaultGeometry;
 import ch.fhnw.ether.scene.mesh.geometry.IGeometry;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
+import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.util.color.RGBA;
 import com.hoten.delaunay.voronoi.Center;
 import com.hoten.delaunay.voronoi.Corner;
@@ -24,7 +25,7 @@ public class GraphToMeshConverter {
 
     public static List<IMesh> createMapAsMesh(VoronoiGraph v, boolean drawBiomes, boolean drawRivers, boolean drawSites, boolean drawCorners, boolean drawDelaunay, boolean drawVoronoi) {
 
-        ColorMaterial[] colors = null;
+        IMaterial[] colors = null;
         if (!drawBiomes) {
             colors = new ColorMaterial[100];
             for (int i = 0; i < colors.length; i++) {
@@ -48,7 +49,7 @@ public class GraphToMeshConverter {
     }
 
 
-    private static List<IMesh> drawPolygonAsMesh(VoronoiGraph v, Center c, ColorMaterial color, int HEIGHTFACTOR) {
+    private static List<IMesh> drawPolygonAsMesh(VoronoiGraph v, Center c, IMaterial color, int HEIGHTFACTOR) {
 
         List<IMesh> polygon = new ArrayList<>();
 
@@ -132,7 +133,7 @@ public class GraphToMeshConverter {
         return MeshUtilities.mergeMeshes(polygon);
     }
 
-    private static IMesh createTriangle(Corner c1, Corner c2, Center center, ColorMaterial color, int HEIGHTFACTOR) {
+    private static IMesh createTriangle(Corner c1, Corner c2, Center center, IMaterial color, int HEIGHTFACTOR) {
         float[] vertices = {
                 (float) center.loc.x, (float) center.loc.y, (float) center.elevation * HEIGHTFACTOR,
                 (float) c1.loc.x, (float) c1.loc.y, (float) c1.elevation * HEIGHTFACTOR,

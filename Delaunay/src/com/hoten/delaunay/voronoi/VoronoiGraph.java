@@ -1,6 +1,6 @@
 package com.hoten.delaunay.voronoi;
 
-import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
+import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import com.hoten.delaunay.geom.Point;
 import com.hoten.delaunay.geom.Rectangle;
 import com.hoten.delaunay.voronoi.nodename.as3delaunay.LineSegment;
@@ -79,7 +79,7 @@ public abstract class VoronoiGraph {
 
     abstract public Color getColor(Enum biome);
 
-    abstract public ColorMaterial getColorAsMaterial(Enum biome);
+    abstract public IMaterial getColorAsMaterial(Enum biome);
 
     private void improveCorners() {
         Point[] newP = new Point[corners.size()];
