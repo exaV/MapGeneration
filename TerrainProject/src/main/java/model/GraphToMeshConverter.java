@@ -20,7 +20,8 @@ import java.util.List;
  * Created by P on 04.12.2015.
  */
 public class GraphToMeshConverter {
-    final static int HEIGHTFACTOR = 150;
+    final private static int HEIGHTFACTOR = 140;
+    final private static int NMESHES = 35000;
 
 
     public static List<IMesh> createMapAsMesh(VoronoiGraph v, boolean drawBiomes, boolean drawRivers, boolean drawSites, boolean drawCorners, boolean drawDelaunay, boolean drawVoronoi) {
@@ -32,7 +33,7 @@ public class GraphToMeshConverter {
                 colors[i] = new ColorMaterial(new RGBA((float) Math.random(), (float) Math.random(), (float) Math.random(), 1.f));
             }
         }
-        List<IMesh> meshes = new ArrayList<>(35000); //currently there are 30'000 meshes
+        List<IMesh> meshes = new ArrayList<>(NMESHES); //currently there are 30'000 meshes
 
         //draw via triangles
         for (Center c : v.centers) {

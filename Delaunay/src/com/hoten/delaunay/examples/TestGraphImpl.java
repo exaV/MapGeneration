@@ -22,7 +22,7 @@ import java.util.Random;
 public class TestGraphImpl extends VoronoiGraph {
 
     public TestGraphImpl(Voronoi v, int numLloydRelaxations, Random r) {
-        super(v, numLloydRelaxations, r);
+        super(v, numLloydRelaxations, r,Generation_Type.RANDOM,null);
         OCEAN = ColorData.OCEAN.color;
         LAKE = ColorData.LAKE.color;
         BEACH = ColorData.BEACH.color;

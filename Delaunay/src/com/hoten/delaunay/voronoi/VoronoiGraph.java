@@ -1,6 +1,8 @@
 package com.hoten.delaunay.voronoi;
 
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
+import controller.generation.TerrainCircle;
+
 import com.hoten.delaunay.geom.Point;
 import com.hoten.delaunay.geom.Rectangle;
 import com.hoten.delaunay.voronoi.nodename.as3delaunay.LineSegment;
@@ -9,6 +11,7 @@ import com.hoten.delaunay.voronoi.nodename.as3delaunay.Voronoi;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.*;
+import java.util.List;
 
 /**
  * VoronoiGraph.java
@@ -26,13 +29,28 @@ public abstract class VoronoiGraph {
     final double startAngle;
     final double dipAngle;
     final double dipWidth;
+    final Generation_Type generationType;
+    final List<TerrainCircle> circles;
 
     final private Random r;
     protected Color OCEAN, RIVER, LAKE, BEACH;
     double[][] noise;
-    double ISLAND_FACTOR = 1.07;  // 1.0 means no small islands; 2.0 leads to a lot
+    double ISLAND_FACTOR = 1;  // 1.0 means no small islands; 2.0 leads to a lot
 
-    public VoronoiGraph(Voronoi v, int numLloydRelaxations, Random r) {
+
+    public enum Generation_Type{
+        RANDOM,
+        DRAWNCIRCLES
+    }
+
+    public VoronoiGraph(Voronoi v, int numLloydRelaxations, Random r, Generation_Type generationType, List<TerrainCircle> circles) {
+        this.generationType = generationType;
+        this.circles = circles;
+        if(generationType==Generation_Type.DRAWNCIRCLES && circles == null){
+            throw new IllegalArgumentException("must supply terraincircles if you want to generate from drawn circles");
+        }
+
+
         this.r = r;
         bumps = r.nextInt(5) + 1;
         startAngle = r.nextDouble() * 2 * Math.PI;
@@ -395,19 +413,16 @@ public abstract class VoronoiGraph {
     //only the radial implementation of amitp's map generation
     //TODO implement more island shapes
     private boolean isWater(Point p) {
-        p = new Point(2 * (p.x / bounds.width - 0.5), 2 * (p.y / bounds.height - 0.5));
+        switch (generationType){
 
-        double angle = Math.atan2(p.y, p.x);
-        double length = 0.5 * (Math.max(Math.abs(p.x), Math.abs(p.y)) + p.length());
-
-        double r1 = 0.5 + 0.40 * Math.sin(startAngle + bumps * angle + Math.cos((bumps + 3) * angle));
-        double r2 = 0.7 - 0.20 * Math.sin(startAngle + bumps * angle - Math.sin((bumps + 2) * angle));
-        if (Math.abs(angle - dipAngle) < dipWidth
-                || Math.abs(angle - dipAngle + 2 * Math.PI) < dipWidth
-                || Math.abs(angle - dipAngle - 2 * Math.PI) < dipWidth) {
-            r1 = r2 = 0.2;
+            case RANDOM:
+                return centralIsland(p);
+            case DRAWNCIRCLES:
+                return drawnShapes(circles,p);
+            default:
+                return false;
         }
-        return !(length < r1 || (length > r1 * ISLAND_FACTOR && length < r2));
+
 
         //return false;
 
@@ -422,6 +437,32 @@ public abstract class VoronoiGraph {
          boolean eye2 = new Point(p.x + 0.2, p.y / 2 + 0.2).length() < 0.05;
          boolean body = p.length() < 0.8 - 0.18 * Math.sin(5 * Math.atan2(p.y, p.x));
          return !(body && !eye1 && !eye2);*/
+    }
+
+    private boolean centralIsland(Point p){
+        p = new Point(2 * (p.x / bounds.width - 0.5), 2 * (p.y / bounds.height - 0.5));
+
+        double angle = Math.atan2(p.y, p.x);
+        double length = 0.5 * (Math.max(Math.abs(p.x), Math.abs(p.y)) + p.length());
+
+        double r1 = 0.5 + 0.40 * Math.sin(startAngle + bumps * angle + Math.cos((bumps + 3) * angle));
+        double r2 = 0.7 - 0.20 * Math.sin(startAngle + bumps * angle - Math.sin((bumps + 2) * angle));
+        if (Math.abs(angle - dipAngle) < dipWidth
+                || Math.abs(angle - dipAngle + 2 * Math.PI) < dipWidth
+                || Math.abs(angle - dipAngle - 2 * Math.PI) < dipWidth) {
+            r1 = r2 = 0.2;
+        }
+        return !(length < r1 || (length > r1 * ISLAND_FACTOR && length < r2));
+    }
+
+    private boolean drawnShapes(List<TerrainCircle> circles,Point p){
+
+        for (TerrainCircle circle : circles) {
+           if( Math.pow(p.x - circle.m.x,2) + Math.pow(p.y - circle.m.y,2) < Math.pow(circle.r,2)){
+               return false;
+           }
+        }
+        return true;
     }
 
     private void assignOceanCoastAndLand() {

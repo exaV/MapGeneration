@@ -1,7 +1,10 @@
 package controller.generation;
 
+import com.hoten.delaunay.voronoi.VoronoiGraph;
+
 import ch.fhnw.ether.controller.DefaultController;
 import ch.fhnw.ether.controller.IController;
+import ch.fhnw.ether.controller.event.IEventScheduler;
 import ch.fhnw.ether.formats.obj.ObjWriter;
 import ch.fhnw.ether.scene.DefaultScene;
 import ch.fhnw.ether.scene.IScene;
@@ -38,7 +41,11 @@ public class Controller {
     List<IMesh> world = null;
     IScene scene;
 
-    int resolution = 15000;
+    int resolution = 5000;
+
+    private boolean drawByHandToggle = false;
+    IslandDrawTool islandDrawTool;
+    IController controller;
 
 
     GraphManager graphManager;
@@ -52,7 +59,9 @@ public class Controller {
         System.out.println("seed: " + seed);
 
         // Create controller
-        IController controller = new DefaultController();
+        controller = new DefaultController();
+        islandDrawTool = new IslandDrawTool(controller,1000,1000);
+
         controller.run(time -> {
             IView view = new DefaultView(controller, 100, 100, 800, 800, IView.INTERACTIVE_VIEW, "Map_Generation");
 
@@ -76,26 +85,45 @@ public class Controller {
             controller.getUI().addWidget(new Button(0, 1, "Generate", "Generate", KeyEvent.VK_G, (button, v) -> generateGraph()));
             controller.getUI().addWidget(new Button(0, 2, "changeResolution", String.valueOf(resolution), KeyEvent.VK_R, (button, v) -> resolutionSteps()));
             controller.getUI().addWidget(new Button(0, 3, "export", "export", KeyEvent.VK_S, (button, v) -> saveObj()));
+            controller.getUI().addWidget(new Button(0, 4, "drawByHandToggle", "drawByHandToggle", KeyEvent.VK_D, (button, v) -> drawByHandToggle(!drawByHandToggle)));
+
+        });
+
+        controller.animate(new IEventScheduler.IAnimationAction() {
+            @Override
+            public void run(double time, double interval) {
+                islandDrawTool.update((float)interval);
+            }
         });
     }
 
     private void generateGraph() {
-        if (world != null) {
+        if (world != null && drawByHandToggle == false) {
             scene.remove3DObjects(world);
         }
 
+        Random rngesus = new Random();
+
+        if(drawByHandToggle){
+            graphManager = new GraphManager(rngesus, seed, resolution, VoronoiGraph.Generation_Type.DRAWNCIRCLES, islandDrawTool.getCircles());
+        }else{
+            graphManager = new GraphManager(rngesus, seed, resolution);
+        }
+
         long seed = System.nanoTime();
-        Random rngesus = new Random(seed);
-        graphManager = new GraphManager(rngesus, seed, resolution);
+
         world = GraphToMeshConverter.createMapAsMesh(graphManager.getGraph(), true, false, false, false, false, false);
 
-        scene.add3DObjects(world);
-        Mat4 translateToCenter = Mat4.translate(-400, 0, -400);
+        Mat4 translateToCenter = Mat4.translate(-500, -500, 0);
         world.forEach(iMesh -> iMesh.setTransform(translateToCenter));
+        drawByHandToggle(false);
     }
 
     private void resolutionSteps() {
         switch (resolution) {
+            case 5000:
+                resolution = 15000;
+                break;
             case 15000:
                 resolution = 45000;
                 break;
@@ -103,7 +131,7 @@ public class Controller {
                 resolution = 150000;
                 break;
             case 150000:
-                resolution = 15000;
+                resolution = 5000;
                 break;
         }
 
@@ -142,5 +170,17 @@ public class Controller {
 //        scene.add3DObjects(world);
 //        Mat4 translateToCenter = Mat4.translate(-400, 0, -400);
 //        world.forEach(iMesh -> iMesh.setTransform(translateToCenter));
+    }
+
+    private void drawByHandToggle(boolean flag){
+        drawByHandToggle = flag;
+        if(drawByHandToggle){
+            scene.remove3DObjects(world);
+            controller.setCurrentTool(islandDrawTool);
+        }else{
+            scene.add3DObjects(world);
+            controller.setCurrentTool(null);
+        }
+
     }
 }

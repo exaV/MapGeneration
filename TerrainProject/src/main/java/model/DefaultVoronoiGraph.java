@@ -3,23 +3,31 @@ package model;
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;
 import ch.fhnw.util.color.RGBA;
+import controller.generation.TerrainCircle;
+
 import com.hoten.delaunay.voronoi.Center;
 import com.hoten.delaunay.voronoi.VoronoiGraph;
 import com.hoten.delaunay.voronoi.nodename.as3delaunay.Voronoi;
 
 import java.awt.*;
-import java.util.Random;
+import java.util.*;
+import java.util.List;
 
 /**
  * Created by P on 04.12.2015.
  */
 public class DefaultVoronoiGraph extends VoronoiGraph {
-    public DefaultVoronoiGraph(Voronoi v, int numLloydRelaxations, Random r) {
-        super(v, numLloydRelaxations, r);
+    public DefaultVoronoiGraph(Voronoi v, int numLloydRelaxations, Random r, Generation_Type generation_type) {
+        super(v, numLloydRelaxations, r, Generation_Type.RANDOM, null);
 
     }
 
-    @Override
+    public DefaultVoronoiGraph(Voronoi v, int numLloydRelaxations, Random r, Generation_Type generation_type, List<TerrainCircle> circles) {
+        super(v, numLloydRelaxations, r, generation_type, circles);
+    }
+
+
+        @Override
     public Color getColor(Enum biome) {
         throw new UnsupportedOperationException("can only get material");
     }
