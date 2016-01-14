@@ -31,8 +31,8 @@ public class IslandDrawTool extends AbstractTool {
 
 
   private IMesh mapBoundaries;
-  private final RGBA TOOL_COLOR = new RGBA(1.1f, 0.1f, 0.1f, 0f);
-  private final RGBA MAPBOUNDARIES_COLOR = new RGBA(0.1f, 0.6f, 0.2f, 0);
+  private final RGBA TOOL_COLOR = new RGBA(0xff8c0000);
+  private final RGBA MAPBOUNDARIES_COLOR = new RGBA(0x19197000);
 
   private boolean moving = false;
 
