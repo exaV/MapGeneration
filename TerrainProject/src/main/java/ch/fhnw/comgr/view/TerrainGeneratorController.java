@@ -8,6 +8,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 
 import java.io.File;
 import java.io.IOException;
@@ -72,6 +73,8 @@ public class TerrainGeneratorController {
     private void exportAction() {
     	System.out.println("Export");
     	FileChooser fileChooser = new FileChooser();
+    	fileChooser.getExtensionFilters().add(new ExtensionFilter("Wavefront OBJ files", "*.obj"));
+    	//fileChooser.setSelectedExtensionFilter();
         fileChooser.setTitle("Save OBJ");
 
         File file = fileChooser.showSaveDialog(mainApp.getStage());
