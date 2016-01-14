@@ -1,4 +1,4 @@
-package model;
+package ch.fhnw.comgr.model;
 
 import ch.fhnw.ether.scene.mesh.material.ColorMaterial;
 import ch.fhnw.ether.scene.mesh.material.IMaterial;

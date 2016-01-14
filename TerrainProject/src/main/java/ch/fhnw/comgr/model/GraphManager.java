@@ -1,4 +1,4 @@
-package model;
+package ch.fhnw.comgr.model;
 
 import com.hoten.delaunay.voronoi.VoronoiGraph;
 import com.hoten.delaunay.voronoi.nodename.as3delaunay.Voronoi;

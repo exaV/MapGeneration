@@ -1,4 +1,4 @@
-package model;
+package ch.fhnw.comgr.model;
 
 import ch.fhnw.ether.scene.mesh.DefaultMesh;
 import ch.fhnw.ether.scene.mesh.IMesh;
@@ -20,10 +20,11 @@ import java.util.List;
  * Created by P on 04.12.2015.
  */
 public class GraphToMeshConverter {
-    final static int HEIGHTFACTOR = 150;
+    static int HEIGHTFACTOR = 150;
+//    final static int HEIGHTFACTOR = 150;
 
 
-    public static List<IMesh> createMapAsMesh(VoronoiGraph v, boolean drawBiomes, boolean drawRivers, boolean drawSites, boolean drawCorners, boolean drawDelaunay, boolean drawVoronoi) {
+    public static List<IMesh> createMapAsMesh(VoronoiGraph v, boolean drawBiomes, boolean drawRivers, boolean drawSites, boolean drawCorners, boolean drawDelaunay, boolean drawVoronoi, int heightfactor) {
 
         IMaterial[] colors = null;
         if (!drawBiomes) {
@@ -36,7 +37,7 @@ public class GraphToMeshConverter {
 
         //draw via triangles
         for (Center c : v.centers) {
-            meshes.addAll(drawPolygonAsMesh(v, c, drawBiomes ? v.getColorAsMaterial(c.biome) : colors[c.index % 100], HEIGHTFACTOR));
+            meshes.addAll(drawPolygonAsMesh(v, c, drawBiomes ? v.getColorAsMaterial(c.biome) : colors[c.index % 100], heightfactor));
             //drawPolygon(g, c, drawBiomes ? getColor(c.biome) : defaultColors[c.index]);
             //drawPolygon(pixelCenterGraphics, c, new Color(c.index)); no equivalent implemented
         }
